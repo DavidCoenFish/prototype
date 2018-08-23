@@ -1,0 +1,9 @@
+todo:
+	map
+	place start units
+	movement
+	time adjust on select
+	enemies arriving
+	enemy ai, attack, tip over cauldron
+	troup type~ skill cards?
+

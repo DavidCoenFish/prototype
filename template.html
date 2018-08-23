@@ -1,0 +1,572 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<title>template</title>
+		<meta http-equiv="Content-Style-Type" content="text/css"/>
+	</head>
+	<body style='background-color: #7F7F7F'>
+	<canvas id='canvasId' style = 'background-color: #0000FF; width: 640px; height: 360px;' >
+		This text is displayed if your browser does not support HTML5 Canvas.
+	</canvas>
+
+	<script type='text/javascript'>
+//<!-- 
+var DSC = {};
+
+DSC.OnPageLoad = function()
+{
+	console.info("OnPageLoad");
+	DSC.m_canvas = document.getElementById('canvasId');
+	if (DSC.m_canvas)
+	{
+		DSC.m_canvas.width = DSC.m_canvas.clientWidth;
+		DSC.m_canvas.height = DSC.m_canvas.clientHeight;
+		DSC.m_context = DSC.m_canvas.getContext('2d');
+		DSC.m_input = DSC.Input.FactoryRaw(DSC.m_canvas);
+	}
+	if (DSC.m_context)
+	{
+		DSC.m_context.save();
+	}
+
+	DSC.m_time = undefined;
+	DSC.m_averageFPS = undefined;
+	DSC.m_defaultDrawStyle = DSC.DrawStyle.FactoryRaw();
+	DSC.m_defaultTextStyle = DSC.TextStyle.FactoryRaw();
+
+	DSC.m_textStyleButton = DSC.TextStyle.FactoryRaw("rgb(255, 255, 0)", "rgb(0, 0, 0)", 1.0, "left", "top", "16px sans-serif");
+	DSC.m_drawStyleButton = DSC.DrawStyle.FactoryRaw("rgb(0, 255, 0)", "rgb(255, 0, 255)");
+	DSC.m_drawStyleRollover = DSC.DrawStyle.FactoryRaw("rgb(0, 0, 255)", "rgb(255, 255, 0)");
+	DSC.m_drawStyleClick = DSC.DrawStyle.FactoryRaw("rgb(255, 0, 0)", "rgb(0, 255, 255)");
+
+	DSC.PushState(DSC.StateMain.FactoryRaw());
+
+	//lines up a new frame to be rendered once thread is passed back to browser
+	DSC.m_requestAnimationFrameId = window.requestAnimationFrame(function(in_timeStamp){DSC.RequestAnimationFrameCallback(in_timeStamp);}); 
+}
+
+DSC.RequestAnimationFrameCallback = function(_timeStamp)
+{
+	var runKeepGoing = false;
+	var timeDelta = DSC.IncrementTime(_timeStamp);
+
+	DSC.Clear();
+
+	if (undefined != DSC.m_state)
+	{
+		runKeepGoing = DSC.m_state.Run(timeDelta, DSC.m_input, DSC.m_canvas, DSC.m_context);
+	}
+
+	DSC.m_context.save();
+	DSC.m_defaultTextStyle.Apply(DSC.m_context);
+	DSC.m_context.fillText("" + DSC.m_averageFPS, 10.0, 10.0)
+	DSC.m_context.fillText("x: " + DSC.m_input.m_mouseX + "y: " + DSC.m_input.m_mouseY, 10.0, 20.0)
+	DSC.m_context.restore();
+
+	if (true == runKeepGoing)
+	{
+		DSC.m_requestAnimationFrameId = window.requestAnimationFrame(function(in_timeStamp){DSC.RequestAnimationFrameCallback(in_timeStamp);}); 
+		//run input last, resets edge change states
+		DSC.m_input.Run();
+	}
+	else
+	{
+		console.info("RequestAnimationFrameCallback not requesting new frame");
+	}
+
+	return;
+}
+
+DSC.IncrementTime = function(_timeStamp)
+{
+	if (undefined == _timeStamp)
+	{
+		return 0;
+	}
+	var timeDelta = 0.0;
+	if (undefined == DSC.m_time)
+	{
+		DSC.m_time = _timeStamp;
+	}
+	else
+	{
+		timeDelta = (_timeStamp - DSC.m_time) / 1000.0;
+		DSC.m_time = _timeStamp;
+
+		if (0.0 != timeDelta)
+		{
+			var fps = 1.0 / timeDelta;
+			if (undefined == DSC.m_averageFPS)
+			{
+				DSC.m_averageFPS = fps;
+			}
+			else
+			{
+				DSC.m_averageFPS = (fps * 0.05) + (DSC.m_averageFPS * 0.95);
+			}
+		}
+	}
+	return timeDelta;
+}
+
+DSC.PushState = function(_state)
+{
+	if (undefined != _state)
+	{
+		_state.m_nextState = DSC.m_state;
+	}
+	DSC.m_state = _state;
+}
+
+DSC.PopState = function()
+{
+	if (undefined != DSC.m_state)
+	{
+		DSC.m_state = DSC.m_state.m_nextState;
+	}
+}
+
+DSC.SetState = function(_state)
+{
+	DSC.m_state = _state;
+}
+
+DSC.Clear = function()
+{
+	DSC.m_context.save();
+	DSC.m_defaultDrawStyle.Apply(DSC.m_context);
+	DSC.m_context.fillRect(
+		0,
+		0,
+		DSC.m_canvas.width,
+		DSC.m_canvas.height
+		);
+	DSC.m_context.restore();
+}
+
+DSC.DrawStyle = function(_stringFill, _stringStroke, _alpha)
+{
+	if ( !(this instanceof DSC.DrawStyle) )
+		alert("DSC.DrawStyle: call constuctor with new keyword");
+	this.m_stringFill = (undefined == _stringFill) ? "rgb(0, 0, 0)" : _stringFill;
+	this.m_stringStroke = (undefined == _stringStroke) ? "rgb(0, 0, 0)" : _stringStroke;
+	this.m_alpha = (undefined == _alpha) ? 1.0 : _alpha;
+}
+
+DSC.DrawStyle.prototype.Apply = function(in_context)
+{
+	in_context.fillStyle = this.m_stringFill;
+	in_context.strokeStyle = this.m_stringStroke;
+	in_context.globalAlpha = this.m_alpha;
+}
+
+DSC.DrawStyle.FactoryRaw = function(_stringFill, _stringStroke, _alpha)
+{
+	return new DSC.DrawStyle(_stringFill, _stringStroke, _alpha);
+}
+
+DSC.TextStyle = function(_stringFill, _stringStroke, _alpha, _textAlign, _textBaseLine, _font)
+{
+	if ( !(this instanceof DSC.TextStyle) )
+		alert("DSC.TextStyle: call constuctor with new keyword");
+	this.m_stringFill = (undefined == _stringFill) ? "rgb(255, 255, 255)" : _stringFill;
+	this.m_stringStroke = (undefined == _stringStroke) ? "rgb(0, 0, 0)" : _stringStroke;
+	this.m_alpha = (undefined == _alpha) ? 1.0 : _alpha;
+	this.m_textAlign = (undefined == _textAlign) ? "left" : _textAlign;
+	this.m_textBaseLine = (undefined == _textBaseLine) ? "top" : _textBaseLine;
+  this.m_font = (undefined == _font) ? "10px sans-serif" : _font;
+  return;
+}
+
+DSC.TextStyle.prototype.Apply = function(in_context)
+{
+	in_context.fillStyle = this.m_stringFill;
+	in_context.strokeStyle = this.m_stringStroke;
+	in_context.globalAlpha = this.m_alpha;
+	in_context.textAlign = this.m_textAlign;
+	in_context.textBaseline = this.m_textBaseLine;
+	in_context.font = this.m_font;
+}
+
+DSC.TextStyle.FactoryRaw = function(_stringFill, _stringStroke, _alpha, _textAlign, _textBaseLine, _font)
+{
+	return new DSC.TextStyle(_stringFill, _stringStroke, _alpha, _textAlign, _textBaseLine, _font);
+}
+
+DSC.Input = function(_canvas)
+{
+	if ( !(this instanceof DSC.Input) )
+		alert("DSC.Input: call constuctor with new keyword");
+
+	this.m_mouseDownOld = false;
+	this.m_mouseDown = false;
+	this.m_mouseEdge = false;
+	this.m_mouseX = undefined;
+	this.m_mouseY = undefined;
+	this.m_mouseXOld = undefined;
+	this.m_mouseYOld = undefined;
+	this.m_canvas = _canvas;
+	
+	this.AddEvents();
+
+	return;
+}
+
+DSC.Input.prototype.AddEvents = function()
+{
+	if (!this.m_canvas)
+		return;
+	
+	var input = this;
+	this.m_mousedownCallback = function(){ input.CallbackMouseDown(); };
+	this.m_canvas.addEventListener("mousedown", this.m_mousedownCallback, false);
+
+	this.m_mouseupCallback = function(){ input.CallbackMouseUp(); };
+	this.m_canvas.addEventListener("mouseup", this.m_mouseupCallback, false);
+	
+	this.m_mousemoveCallback = function(in_event){ input.CallbackMouseMove(in_event); };
+	this.m_canvas.addEventListener("mousemove", this.m_mousemoveCallback, false);
+
+	this.m_touchCallback = function(in_event){ input.CallbackTouch(in_event); };
+	this.m_canvas.addEventListener("touchstart", this.m_touchCallback, false);
+	this.m_canvas.addEventListener("touchmove", this.m_touchCallback, false);
+	this.m_canvas.addEventListener("touchend", this.m_touchCallback, false);
+	this.m_canvas.addEventListener("touchcancel", this.m_touchCallback, false);
+}
+
+DSC.Input.prototype.DeleteEvents = function()
+{
+	if (!this.m_canvas)
+		return;
+	this.m_canvas.removeEventListener("mousedown", this.m_mousedownCallback);
+	this.m_canvas.removeEventListener("mouseup", this.m_mouseupCallback);
+	this.m_canvas.removeEventListener("mousemove", this.m_touchCallback);
+
+	this.m_canvas.removeEventListener("touchstart", this.m_touchCallback);
+	this.m_canvas.removeEventListener("touchmove", this.m_touchCallback);
+	this.m_canvas.removeEventListener("touchend", this.m_touchCallback);
+	this.m_canvas.removeEventListener("touchcancel", this.m_touchCallback);
+}
+
+DSC.Input.prototype.Run = function()
+{
+	this.m_mouseDownOld = this.m_mouseDown;
+	this.m_mouseEdge = false;
+	this.m_mouseXOld = this.m_mouseX;
+	this.m_mouseYOld = this.m_mouseY;
+}
+	
+DSC.Input.prototype.CallbackMouseDown = function()
+{
+	this.m_mouseDown = true;
+	if (this.m_mouseDownOld != this.m_mouseDown)
+	{
+		this.m_mouseEdge = true;
+	}
+}
+	
+DSC.Input.prototype.CallbackMouseUp = function()
+{
+	this.m_mouseDown = false;
+	if (this.m_mouseDownOld != this.m_mouseDown)
+	{
+		this.m_mouseEdge = true;
+	}
+}
+
+DSC.Input.prototype.CallbackMouseMove = function(in_event)
+{
+	this.m_mouseX = in_event.clientX - DSC.Input.GetTrueOffsetLeft(this.m_canvas) + window.pageXOffset;
+	this.m_mouseY = in_event.clientY - DSC.Input.GetTrueOffsetTop(this.m_canvas) + window.pageYOffset;
+}
+
+DSC.Input.prototype.CallbackTouch = function(in_event)
+{
+	in_event.preventDefault();
+
+	switch(event.type)
+	{
+	case "touchmove":
+		break;
+	case "touchstart":
+		this.m_input.CallbackMouseDown(in_event);
+		break;
+	case "touchend":
+	case "touchcancel":
+		this.CallbackMouseUp(in_event);
+		break;
+	default: 
+		return;
+	}
+
+	var touches = in_event.changedTouches;
+	var first = touches[0];
+
+	this.m_mouseX = first.pageX - DSC.Input.GetTrueOffsetLeft(this.m_canvas) + window.pageXOffset;
+	this.m_mouseY = first.pageY - DSC.Input.GetTrueOffsetTop(this.m_canvas) + window.pageYOffset;
+
+	return;
+}
+
+DSC.Input.GetTrueOffsetLeft = function(in_element)
+{
+	var traceElement = in_element;
+	var result = 0;
+	while (traceElement)
+	{
+		result += traceElement.offsetLeft || 0;
+		traceElement = traceElement.offsetParent;
+	}
+	return result;
+}
+
+DSC.Input.GetTrueOffsetTop = function(in_element)
+{
+	var traceElement = in_element;
+	var result = 0;
+	while (traceElement)
+	{
+		result += traceElement.offsetTop || 0;
+		traceElement = traceElement.offsetParent;
+	}
+	return result;
+}
+
+DSC.Input.FactoryRaw = function(_canvas)
+{
+	return new DSC.Input(_canvas);
+}
+
+/*
+_functor
+  CallbackOver(relX, relY)
+	CallbackHeld(duration, _timeDelta);
+	CallbackDrag(x, y);
+	CallbackDown(x, y);
+	CallbackUp(x, y);
+*/
+DSC.Button = function(_text, in_x, in_y, in_width, in_height, _functor, _textStyle, _drawStyle, _rolloverDrawStyle, _clickDrawStyle)
+{
+	if ( !(this instanceof DSC.Button) )
+		alert("DSC.Button: call constuctor with new keyword");
+
+	this.m_text = (undefined == _text) ? "" : _text;
+	this.m_x = in_x;
+	this.m_y = in_y;
+	this.m_width = in_width;
+	this.m_height = in_height;
+	this.m_functor = _functor;
+	this.m_textStyle = _textStyle;
+	this.m_drawStyle = _drawStyle;
+	this.m_rolloverDrawStyle = _rolloverDrawStyle;
+	this.m_clickDrawStyle = _clickDrawStyle;
+	this.m_state = DSC.Button.s_state.TDefault;
+	this.m_over = false;
+
+	return;
+}
+
+DSC.Button.s_state = 
+{
+	TDefault : 0,
+	TRollover : 1,
+	TClick : 2,
+	THidden : 3
+}
+
+DSC.Button.s_stateClickCooldown = 0.1;
+
+DSC.Button.prototype.Run = function(in_timeDelta, in_input, in_canvas, in_context)
+{
+	if (DSC.Button.s_state.THidden == this.m_state)
+	{
+		return;
+	}
+
+	if (0.0 < this.m_clickCooldown)
+	{
+		this.m_clickCooldown -= in_timeDelta;
+	}
+
+	var x = in_input.m_mouseX - this.m_x;
+	var y = in_input.m_mouseY - this.m_y;
+
+	var over = ((0 <= x) &&
+		(x <= this.m_width) &&
+		(0 <= y) &&
+		(y <= this.m_height));
+
+	if (over != this.m_over)
+	{
+		this.m_over = over;
+		if ((undefined != this.m_functor) &&
+			("CallbackOver" in this.m_functor))
+		{
+			this.m_functor.CallbackOver(x, y);
+		}
+	}
+
+	if (true == in_input.m_mouseEdge)
+	{
+		if (true == in_input.m_mouseDown)
+		{
+			//mouse down edge
+			if (true == this.m_over)
+			{
+				this.m_clicked = true;
+				this.m_clickDuration = 0.0;
+				if ((undefined != this.m_functor) &&
+					("CallbackDown" in this.m_functor))
+				{
+					this.m_functor.CallbackDown(x, y);
+				}
+			}
+			else
+			{
+				//a new click, deactivate incase old click up got lost
+				this.m_clicked = false;
+			}
+		}
+		else
+		{
+			//mouse up edge
+			if (true == this.m_clicked)
+			{
+				this.m_clicked = false;
+				this.m_clickCooldown = DSC.Button.s_stateClickCooldown;
+				if ((true == this.m_over) &&  
+					(undefined != this.m_functor) &&
+					("CallbackUp" in this.m_functor))
+				{
+					this.m_functor.CallbackUp(x, y);
+				}
+			}
+		}
+	}
+	else if ((true == in_input.m_mouseDown) &&
+		(true == this.m_clicked))
+	{
+		this.m_clickDuration += in_timeDelta;
+		if ((undefined != this.m_functor) &&
+			("CallbackHeld" in this.m_functor))
+		{
+			this.m_functor.CallbackHeld(this.m_clickDuration, _timeDelta);
+		}
+		if ((undefined != this.m_functor) &&
+			("CallbackDrag" in this.m_functor))
+		{
+			this.m_functor.CallbackDrag(x, y);
+		}
+	}
+
+	if ((0.0 < this.m_clickCooldown) ||
+		(true == this.m_clicked))
+	{
+		this.m_state = DSC.Button.s_state.TClick;
+	}
+	else if (true == this.m_over)
+	{
+		this.m_state = DSC.Button.s_state.TRollover;
+	}
+	else if (DSC.Button.s_state.TDefault != this.m_state)
+	{
+		this.m_state = DSC.Button.s_state.TDefault;
+	}
+
+	return;
+}
+
+DSC.Button.prototype.Draw = function(in_canvas, in_context)
+{
+	switch (this.m_state)
+	{
+	default:
+		return;
+	case DSC.Button.s_state.TDefault:
+		this.m_drawStyle.Apply(in_context);
+		break;
+	case DSC.Button.s_state.TRollover:
+		this.m_rolloverDrawStyle.Apply(in_context);
+		break;
+	case DSC.Button.s_state.TClick:
+		this.m_clickDrawStyle.Apply(in_context);
+		break;
+	}
+	in_context.beginPath();
+	in_context.rect(
+		this.m_x,
+		this.m_y,
+		this.m_width,
+		this.m_height
+		);
+	in_context.closePath();
+	in_context.fill();
+	in_context.stroke();
+
+	this.m_textStyle.Apply(in_context);
+	in_context.fillText(this.m_text, this.m_x + 8, this.m_y + 8);
+	in_context.stroke();
+
+	return;  
+}
+
+DSC.Button.FactoryRaw = function(_text, in_x, in_y, in_width, in_height, _functor, _textStyle, _drawStyle, _rolloverDrawStyle, _clickDrawStyle)
+{
+	return new DSC.Button(_text, in_x, in_y, in_width, in_height, _functor, _textStyle, _drawStyle, _rolloverDrawStyle, _clickDrawStyle);
+}
+
+DSC.StateMain = function()
+{
+	if ( !(this instanceof DSC.StateMain) )
+		alert("DSC.StateMain: call constuctor with new keyword");
+	this.m_keepGoing = true;
+	this.m_arrayDraw = [];
+	var that = this;
+	this.m_arrayDraw.push(DSC.Button.FactoryRaw(
+		"exit", 
+		20, 100, 128, 32, 
+		{
+			CallbackUp : function(x, y)
+			{
+				that.m_keepGoing = false;
+			}
+		}, //_functor, 
+		DSC.m_textStyleButton, 
+		DSC.m_drawStyleButton, 
+		DSC.m_drawStyleRollover, 
+		DSC.m_drawStyleClick
+		));
+	return;
+}
+
+DSC.StateMain.prototype.Run = function(in_timeDelta, in_input, in_canvas, in_context)
+{
+	this.m_arrayDraw.forEach(function(item)
+	{
+		item.Run(in_timeDelta, in_input, in_canvas, in_context);
+	});
+
+	this.Draw(in_canvas, in_context);
+
+	return this.m_keepGoing;
+}
+
+DSC.StateMain.prototype.Draw = function(in_canvas, in_context)
+{
+	this.m_arrayDraw.forEach(function(item)
+	{
+		item.Draw(in_canvas, in_context);
+	});
+}
+
+DSC.StateMain.FactoryRaw = function()
+{
+	return new DSC.StateMain();
+}
+
+window.addEventListener('load', DSC.OnPageLoad, true);
+
+			// -->
+		</script>
+	</body>
+</html>
