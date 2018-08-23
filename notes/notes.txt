@@ -7,3 +7,9 @@ todo:
 	enemy ai, attack, tip over cauldron
 	troup type~ skill cards?
 
+
+language:
+	this.m_arrayDraw.forEach(function(item)
+	{
+		item.Run(in_timeDelta, in_input, in_canvas, in_context);
+	});
