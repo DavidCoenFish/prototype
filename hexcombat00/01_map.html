@@ -197,8 +197,8 @@ DSC.TextStyle = function(_stringFill, _stringStroke, _alpha, _textAlign, _textBa
 	this.m_stringFill = (undefined == _stringFill) ? "rgb(255, 255, 255)" : _stringFill;
 	this.m_stringStroke = (undefined == _stringStroke) ? "rgb(0, 0, 0)" : _stringStroke;
 	this.m_alpha = (undefined == _alpha) ? 1.0 : _alpha;
-	this.m_textAlign = (undefined == _textAlign) ? "left" : _textAlign;
-	this.m_textBaseLine = (undefined == _textBaseLine) ? "top" : _textBaseLine;
+	this.m_textAlign = (undefined == _textAlign) ? "left" : _textAlign; //start, end, left, center, right
+	this.m_textBaseLine = (undefined == _textBaseLine) ? "top" : _textBaseLine; //top, bottom, middle, alphabetic, hanging
   this.m_font = (undefined == _font) ? "10px sans-serif" : _font;
   return;
 }
@@ -372,13 +372,13 @@ DSC.Input.Factory = function(_canvas)
 
 /*
 _functor
-  CallbackOver(relX, relY)
+	CallbackOver(relX, relY)
 	CallbackHeld(duration, _timeDelta);
 	CallbackDrag(x, y);
 	CallbackDown(x, y);
 	CallbackUp(x, y);
 */
-DSC.Button = function(_text, in_x, in_y, in_width, in_height, _functor, _textStyle, _drawStyle, _rolloverDrawStyle, _clickDrawStyle)
+DSC.Button = function(_text, in_x, in_y, in_width, in_height, _functor)
 {
 	if ( !(this instanceof DSC.Button) )
 		alert("DSC.Button: call constuctor with new keyword");
@@ -389,10 +389,6 @@ DSC.Button = function(_text, in_x, in_y, in_width, in_height, _functor, _textSty
 	this.m_width = in_width;
 	this.m_height = in_height;
 	this.m_functor = _functor;
-	this.m_textStyle = _textStyle;
-	this.m_drawStyle = _drawStyle;
-	this.m_rolloverDrawStyle = _rolloverDrawStyle;
-	this.m_clickDrawStyle = _clickDrawStyle;
 	this.m_state = DSC.Button.s_state.TDefault;
 	this.m_over = false;
 
@@ -524,13 +520,13 @@ DSC.Button.prototype.Draw = function(in_canvas, in_context)
 	default:
 		return;
 	case DSC.Button.s_state.TDefault:
-		this.m_drawStyle.Apply(in_context);
+		DSC.m_drawStyleButton.Apply(in_context);
 		break;
 	case DSC.Button.s_state.TRollover:
-		this.m_rolloverDrawStyle.Apply(in_context);
+		DSC.m_drawStyleRollover.Apply(in_context);
 		break;
 	case DSC.Button.s_state.TClick:
-		this.m_clickDrawStyle.Apply(in_context);
+		DSC.m_drawStyleClick.Apply(in_context);
 		break;
 	}
 	in_context.beginPath();
@@ -544,16 +540,16 @@ DSC.Button.prototype.Draw = function(in_canvas, in_context)
 	in_context.fill();
 	in_context.stroke();
 
-	this.m_textStyle.Apply(in_context);
+	DSC.m_textStyleButton.Apply(in_context);
 	in_context.fillText(this.m_text, this.m_x + 8, this.m_y + 8);
 	in_context.stroke();
 
 	return;
 }
 
-DSC.Button.Factory = function(_text, in_x, in_y, in_width, in_height, _functor, _textStyle, _drawStyle, _rolloverDrawStyle, _clickDrawStyle)
+DSC.Button.Factory = function(_text, in_x, in_y, in_width, in_height, _functor)
 {
-	return new DSC.Button(_text, in_x, in_y, in_width, in_height, _functor, _textStyle, _drawStyle, _rolloverDrawStyle, _clickDrawStyle);
+	return new DSC.Button(_text, in_x, in_y, in_width, in_height, _functor);
 }
 
 //==================================================================
@@ -567,9 +563,12 @@ DSC.MapCellUI = function(in_mapCellData, in_mapViewportData)
 
 	this.m_mapCellData = in_mapCellData;
 	this.m_mapViewportData = in_mapViewportData;
-	this.m_state = DSC.MapCellUI.s_state.TDefault;
-	this.m_over = false;
 	this.m_defaultDrawStyle = DSC.DrawStyle.Factory(this.MakeRgb(), "rgb(64, 64, 64)");
+
+	this.m_state = DSC.MapCellUI.s_state.TDefault;
+	this.m_clickCooldown = 0.0;
+	this.m_over = false;
+	this.m_clicked = false;
 
 	return;
 }
@@ -582,8 +581,8 @@ DSC.MapCellUI.s_state =
 }
 
 DSC.MapCellUI.s_stateClickCooldown = 0.1;
-DSC.MapCellUI.RolloverDrawStyle = DSC.DrawStyle.Factory("rgb(0, 0, 255)", "rgb(255, 255, 0)");
-DSC.MapCellUI.ClickDrawStyle = DSC.DrawStyle.Factory("rgb(255, 0, 0)", "rgb(0, 255, 255)");
+DSC.MapCellUI.RolloverDrawStyle = DSC.DrawStyle.Factory("rgb(128, 128, 0)", "rgb(128, 0, 0)");
+DSC.MapCellUI.ClickDrawStyle = DSC.DrawStyle.Factory("rgb(255, 255, 0)", "rgb(255, 0, 0)");
 DSC.MapCellUI.Radius = 1.0 / Math.sqrt(3.0);
 DSC.MapCellUI.YStep = 1.5 * DSC.MapCellUI.Radius;
 
@@ -595,6 +594,102 @@ DSC.MapCellUI.prototype.MakeRgb = function()
 
 DSC.MapCellUI.prototype.Run = function(in_timeDelta, in_input)
 {
+	if (0.0 < this.m_clickCooldown)
+	{
+		this.m_clickCooldown -= in_timeDelta;
+	}
+
+	const centerX = this.CalcCenterX();
+	const centerY = this.CalcCenterY();
+	const canvas = DSC.m_canvas;
+	var xLow = DSC.CalcViewportToScreenX(centerX - 0.5, canvas, this.m_mapViewportData);
+	var xHigh = DSC.CalcViewportToScreenX(centerX + 0.5, canvas, this.m_mapViewportData);
+	var yLow = DSC.CalcViewportToScreenY(centerY - (DSC.MapCellUI.YStep * 0.5), canvas, this.m_mapViewportData);
+	var yHigh = DSC.CalcViewportToScreenY(centerY + (DSC.MapCellUI.YStep * 0.5), canvas, this.m_mapViewportData);
+
+	var over = ((xLow <= in_input.m_mouseX) &&
+		(in_input.m_mouseX < xHigh) &&
+		(yLow < in_input.m_mouseY) &&
+		(in_input.m_mouseY < yHigh));
+
+	if (over != this.m_over)
+	{
+		this.m_over = over;
+		if ((undefined != this.m_functor) &&
+			("CallbackOver" in this.m_functor))
+		{
+			this.m_functor.CallbackOver(x, y, this);
+		}
+	}
+
+	if (true == in_input.m_mouseEdge)
+	{
+		if (true == in_input.m_mouseDown)
+		{
+			//mouse down edge
+			if (true == this.m_over)
+			{
+				this.m_clicked = true;
+				this.m_clickDuration = 0.0;
+				if ((undefined != this.m_functor) &&
+					("CallbackDown" in this.m_functor))
+				{
+					this.m_functor.CallbackDown(x, y, this);
+				}
+			}
+			else
+			{
+				//a new click, deactivate incase old click up got lost
+				this.m_clicked = false;
+			}
+		}
+		else
+		{
+			//mouse up edge
+			if (true == this.m_clicked)
+			{
+				this.m_clicked = false;
+				this.m_clickCooldown = DSC.Button.s_stateClickCooldown;
+				if ((true == this.m_over) &&  
+					(undefined != this.m_functor) &&
+					("CallbackUp" in this.m_functor))
+				{
+					this.m_functor.CallbackUp(x, y, this);
+				}
+			}
+		}
+	}
+	else if ((true == in_input.m_mouseDown) &&
+		(true == this.m_clicked))
+	{
+		this.m_clickDuration += in_timeDelta;
+		if ((undefined != this.m_functor) &&
+			("CallbackHeld" in this.m_functor))
+		{
+			this.m_functor.CallbackHeld(this.m_clickDuration, _timeDelta, this);
+		}
+		if ((undefined != this.m_functor) &&
+			("CallbackDrag" in this.m_functor))
+		{
+			this.m_functor.CallbackDrag(x, y, this);
+		}
+	}
+
+	if ((0.0 < this.m_clickCooldown) ||
+		(true == this.m_clicked))
+	{
+		this.m_state = DSC.MapCellUI.s_state.TClick;
+	}
+	else if (true == this.m_over)
+	{
+		this.m_state = DSC.MapCellUI.s_state.TRollover;
+	}
+	else if (DSC.MapCellUI.s_state.TDefault != this.m_state)
+	{
+		this.m_state = DSC.MapCellUI.s_state.TDefault;
+	}
+
+	return;
 }
 
 DSC.MapCellUI.prototype.Draw = function(in_canvas, in_context)
@@ -637,16 +732,16 @@ DSC.MapCellUI.prototype.CalcCenterY = function()
 	return this.m_mapCellData.y * DSC.MapCellUI.YStep;
 }
 
-DSC.MapCellUI.prototype.CalcViewportToScreenX = function(in_x, in_canvas)
+DSC.CalcViewportToScreenX = function(in_x, in_canvas, in_mapViewportData)
 {
-	const normX = (in_x - this.m_mapViewportData.x) / (this.m_mapViewportData.width);
+	const normX = (in_x - in_mapViewportData.x) / (in_mapViewportData.width);
 	const deNormX = normX * in_canvas.width;
 	return deNormX;
 }
 
-DSC.MapCellUI.prototype.CalcViewportToScreenY = function(in_y, in_canvas)
+DSC.CalcViewportToScreenY = function(in_y, in_canvas, in_mapViewportData)
 {
-	const normY = (in_y - this.m_mapViewportData.y) / (this.m_mapViewportData.height);
+	const normY = (in_y - in_mapViewportData.y) / (in_mapViewportData.height);
 	const deNormY = normY * in_canvas.height;
 	return deNormY;
 }
@@ -656,7 +751,7 @@ DSC.MapCellUI.prototype.CalcX = function(in_angleRad, in_canvas)
 {
 	const centerX = this.CalcCenterX();
 	const x = centerX + (Math.sin(in_angleRad) * DSC.MapCellUI.Radius);
-	const deNormX = this.CalcViewportToScreenX(x, in_canvas);
+	const deNormX = DSC.CalcViewportToScreenX(x, in_canvas, this.m_mapViewportData);
 	return deNormX;
 }
 
@@ -664,13 +759,205 @@ DSC.MapCellUI.prototype.CalcY = function(in_angleRad, in_canvas)
 {
 	const centerY = this.CalcCenterY();
 	const y = centerY + (Math.cos(in_angleRad) * DSC.MapCellUI.Radius);
-	const deNormY = this.CalcViewportToScreenY(y, in_canvas);
+	const deNormY = DSC.CalcViewportToScreenY(y, in_canvas, this.m_mapViewportData);
 	return deNormY;
 }
 
 DSC.MapCellUI.Factory = function(in_mapCellData, in_mapViewportData)
 {
 	return new DSC.MapCellUI(in_mapCellData, in_mapViewportData);
+}
+
+
+//==================================================================
+//=============================== map button
+//==================================================================
+
+/*
+_functor
+	CallbackOver(relX, relY)
+	CallbackHeld(duration, _timeDelta);
+	CallbackDrag(x, y);
+	CallbackDown(x, y);
+	CallbackUp(x, y);
+*/
+DSC.MapButton = function(_text, in_mapLocation, in_mapViewportData, _functor)
+{
+	if ( !(this instanceof DSC.MapButton) )
+		alert("DSC.MapButton: call constuctor with new keyword");
+
+	this.m_text = (undefined == _text) ? "" : _text;
+	this.m_mapLocation = in_mapLocation;
+	this.m_mapViewportData = in_mapViewportData;
+	this.m_functor = _functor;
+	this.m_state = DSC.MapButton.s_state.TDefault;
+	this.m_over = false;
+
+	return;
+}
+
+DSC.MapButton.s_state = 
+{
+	TDefault : 0,
+	TRollover : 1,
+	TClick : 2
+}
+
+DSC.MapButton.s_stateClickCooldown = 0.1;
+DSC.MapButton.DefaultDrawStyle = DSC.DrawStyle.Factory("rgb(255, 255, 255)", "rgb(0, 0, 0)");
+DSC.MapButton.RolloverDrawStyle = DSC.DrawStyle.Factory("rgb(128, 128, 255)", "rgb(64, 64, 64)");
+DSC.MapButton.ClickDrawStyle = DSC.DrawStyle.Factory("rgb(255, 255, 0)", "rgb(128, 128, 0)");
+DSC.MapButton.TextDrawStyle = DSC.TextStyle.Factory("rgb(128, 128, 128)", "rgb(0, 0, 0)", 1.0, "center", "middle", "16px sans-serif");
+
+DSC.MapButton.prototype.Run = function(in_timeDelta, in_input)
+{
+	if (0.0 < this.m_clickCooldown)
+	{
+		this.m_clickCooldown -= in_timeDelta;
+	}
+
+	const canvas = DSC.m_canvas;
+	const xLow = DSC.CalcViewportToScreenX(this.m_mapLocation.x - this.m_mapLocation.radius, canvas, this.m_mapViewportData);
+	const xHigh = DSC.CalcViewportToScreenX(this.m_mapLocation.x + this.m_mapLocation.radius, canvas, this.m_mapViewportData);
+	const yLow = DSC.CalcViewportToScreenY(this.m_mapLocation.y - this.m_mapLocation.radius, canvas, this.m_mapViewportData);
+	const yHigh = DSC.CalcViewportToScreenY(this.m_mapLocation.y + this.m_mapLocation.radius, canvas, this.m_mapViewportData);
+
+	var over = ((xLow <= in_input.m_mouseX) &&
+		(in_input.m_mouseX < xHigh) &&
+		(yLow <= in_input.m_mouseY) &&
+		(in_input.m_mouseY < yHigh));
+
+	if (over != this.m_over)
+	{
+		this.m_over = over;
+		if ((undefined != this.m_functor) &&
+			("CallbackOver" in this.m_functor))
+		{
+			this.m_functor.CallbackOver(x, y, this);
+		}
+	}
+
+	if (true == in_input.m_mouseEdge)
+	{
+		if (true == in_input.m_mouseDown)
+		{
+			//mouse down edge
+			if (true == this.m_over)
+			{
+				this.m_clicked = true;
+				this.m_clickDuration = 0.0;
+				if ((undefined != this.m_functor) &&
+					("CallbackDown" in this.m_functor))
+				{
+					this.m_functor.CallbackDown(x, y, this);
+				}
+			}
+			else
+			{
+				//a new click, deactivate incase old click up got lost
+				this.m_clicked = false;
+			}
+		}
+		else
+		{
+			//mouse up edge
+			if (true == this.m_clicked)
+			{
+				this.m_clicked = false;
+				this.m_clickCooldown = DSC.Button.s_stateClickCooldown;
+				if ((true == this.m_over) &&  
+					(undefined != this.m_functor) &&
+					("CallbackUp" in this.m_functor))
+				{
+					this.m_functor.CallbackUp(x, y, this);
+				}
+			}
+		}
+	}
+	else if ((true == in_input.m_mouseDown) &&
+		(true == this.m_clicked))
+	{
+		this.m_clickDuration += in_timeDelta;
+		if ((undefined != this.m_functor) &&
+			("CallbackHeld" in this.m_functor))
+		{
+			this.m_functor.CallbackHeld(this.m_clickDuration, _timeDelta, this);
+		}
+		if ((undefined != this.m_functor) &&
+			("CallbackDrag" in this.m_functor))
+		{
+			this.m_functor.CallbackDrag(x, y, this);
+		}
+	}
+
+	if ((0.0 < this.m_clickCooldown) ||
+		(true == this.m_clicked))
+	{
+		this.m_state = DSC.Button.s_state.TClick;
+	}
+	else if (true == this.m_over)
+	{
+		this.m_state = DSC.Button.s_state.TRollover;
+	}
+	else if (DSC.Button.s_state.TDefault != this.m_state)
+	{
+		this.m_state = DSC.Button.s_state.TDefault;
+	}
+
+	return;
+}
+
+DSC.MapButton.prototype.ResetState = function()
+{
+	this.m_clickCooldown = 0.0;
+	this.m_clicked = false;
+	this.m_over = false;
+	this.m_state = DSC.MapButton.s_state.TDefault;
+}
+
+DSC.MapButton.prototype.Draw = function(in_canvas, in_context)
+{
+	switch (this.m_state)
+	{
+	default:
+		return;
+	case DSC.MapButton.s_state.TDefault:
+		DSC.MapButton.DefaultDrawStyle.Apply(in_context);
+		break;
+	case DSC.MapButton.s_state.TRollover:
+		DSC.MapButton.RolloverDrawStyle.Apply(in_context);
+		break;
+	case DSC.MapButton.s_state.TClick:
+		DSC.MapButton.ClickDrawStyle.Apply(in_context);
+		break;
+	}
+
+	const xLow = DSC.CalcViewportToScreenX(this.m_mapLocation.x - this.m_mapLocation.radius, in_canvas, this.m_mapViewportData);
+	const xHigh = DSC.CalcViewportToScreenX(this.m_mapLocation.x + this.m_mapLocation.radius, in_canvas, this.m_mapViewportData);
+	const yLow = DSC.CalcViewportToScreenY(this.m_mapLocation.y - this.m_mapLocation.radius, in_canvas, this.m_mapViewportData);
+	const yHigh = DSC.CalcViewportToScreenY(this.m_mapLocation.y + this.m_mapLocation.radius, in_canvas, this.m_mapViewportData);
+
+	in_context.beginPath();
+	in_context.rect(
+		xLow,
+		yLow,
+		xHigh - xLow,
+		yHigh - yLow
+		);
+	in_context.closePath();
+	in_context.fill();
+	in_context.stroke();
+
+	DSC.MapButton.TextDrawStyle.Apply(in_context);
+	in_context.fillText(this.m_text, (xLow + xHigh) * 0.5, (yLow + yHigh) * 0.5);
+	in_context.stroke();
+
+	return;
+}
+
+DSC.MapButton.Factory = function(_text, in_mapLocation, in_mapViewportData, _functor)
+{
+	return new DSC.MapButton(_text, in_mapLocation, in_mapViewportData, _functor);
 }
 
 //==================================================================
@@ -694,18 +981,36 @@ DSC.StateMain = function()
 				DSC.PushState(DSC.StateGame.Factory(
 					DSC.MapViewportDataFactory(-2, -2, DSC.m_canvas.width / 40.0, DSC.m_canvas.height / 40.0),
 					[
-						DSC.MapCellDataFactory(0, 0, 0, -1),
 						DSC.MapCellDataFactory(1, 0, 1, -1),
-						DSC.MapCellDataFactory(2, 0, 3, -1),
-						DSC.MapCellDataFactory(0, 1, 10, -1),
-						DSC.MapCellDataFactory(1, 1, 20, -1),
-					]));
+						DSC.MapCellDataFactory(2, 0, 1.5, -1),
+						DSC.MapCellDataFactory(3, 0, 2, -1),
+
+						DSC.MapCellDataFactory(0, 1, 6.5, -1),
+						DSC.MapCellDataFactory(1, 1, 7, -1),
+						DSC.MapCellDataFactory(2, 1, 7.5, -1),
+						DSC.MapCellDataFactory(3, 1, 2.5, -1),
+
+						DSC.MapCellDataFactory(0, 2, 6, -1),
+						DSC.MapCellDataFactory(1, 2, 9.5, -1),
+						DSC.MapCellDataFactory(2, 2, 10, -1),
+						DSC.MapCellDataFactory(3, 2, 8, -1),
+						DSC.MapCellDataFactory(4, 2, 3, -1),
+
+						DSC.MapCellDataFactory(0, 3, 5.5, -1),
+						DSC.MapCellDataFactory(1, 3, 9, -1),
+						DSC.MapCellDataFactory(2, 3, 8.5, -1),
+						DSC.MapCellDataFactory(3, 3, 3.5, -1),
+
+						DSC.MapCellDataFactory(1, 4, 5, -1),
+						DSC.MapCellDataFactory(2, 4, 4.5, -1),
+						DSC.MapCellDataFactory(3, 4, 4, -1),
+					],
+					[
+						DSC.MapLocationFactory(2, DSC.MapCellUI.YStep * 2, 10, 0.33)
+					]
+					));
 			}
-		}, //_functor, 
-		DSC.m_textStyleButton, 
-		DSC.m_drawStyleButton, 
-		DSC.m_drawStyleRollover, 
-		DSC.m_drawStyleClick
+		} //_functor
 		));
 
 	this.m_arrayDraw.push(DSC.Button.Factory(
@@ -716,11 +1021,7 @@ DSC.StateMain = function()
 			{
 				that.m_keepGoing = false;
 			}
-		}, //_functor, 
-		DSC.m_textStyleButton, 
-		DSC.m_drawStyleButton, 
-		DSC.m_drawStyleRollover, 
-		DSC.m_drawStyleClick
+		} //_functor 
 		));
 	return;
 }
@@ -751,17 +1052,12 @@ DSC.StateMain.Factory = function()
 //=============================== state game
 //==================================================================
 
-DSC.StateGame = function(in_mapViewportData, in_arrayMapCellData)
+DSC.StateGame = function(in_mapViewportData, in_arrayDraw)
 {
 	if ( !(this instanceof DSC.StateGame) )
 		alert("DSC.StateGame: call constuctor with new keyword");
 	this.m_mapViewportData = in_mapViewportData;
-	this.m_arrayDraw = [];
-	const that = this;
-	in_arrayMapCellData.forEach(function(item)
-	{
-		that.m_arrayDraw.push(DSC.MapCellUI.Factory(item, in_mapViewportData));
-	});
+	this.m_arrayDraw = in_arrayDraw;
 	this.m_arrayDraw.push(DSC.Button.Factory(
 		"main", 
 		20, 296, 128, 32, 
@@ -770,11 +1066,7 @@ DSC.StateGame = function(in_mapViewportData, in_arrayMapCellData)
 			{
 				DSC.PopState();
 			}
-		}, //_functor, 
-		DSC.m_textStyleButton, 
-		DSC.m_drawStyleButton, 
-		DSC.m_drawStyleRollover, 
-		DSC.m_drawStyleClick
+		} //_functor
 		));
 }
 
@@ -796,9 +1088,19 @@ DSC.StateGame.prototype.Draw = function(in_canvas, in_context)
 	});
 }
 
-DSC.StateGame.Factory = function(in_mapViewportData, in_arrayMapCellData)
+DSC.StateGame.Factory = function(in_mapViewportData, in_arrayMapCellData, in_arrayMapLocationCauldron)
 {
-	return new DSC.StateGame(in_mapViewportData, in_arrayMapCellData);
+	var arrayDraw = [];
+	in_arrayMapCellData.forEach(function(item)
+	{
+		arrayDraw.push(DSC.MapCellUI.Factory(item, in_mapViewportData));
+	});
+	in_arrayMapLocationCauldron.forEach(function(item)
+	{
+		arrayDraw.push(DSC.MapButton.Factory("C", item, in_mapViewportData));
+	});
+
+	return new DSC.StateGame(in_mapViewportData, arrayDraw);
 }
 
 //==================================================================
@@ -821,7 +1123,16 @@ DSC.MapCellDataFactory = function(in_x, in_y, in_zHigh, in_zLow)
 		"y" : in_y,
 		"zHigh" : in_zHigh,
 		"zLow" : in_zLow
+	};
+}
 
+DSC.MapLocationFactory = function(in_x, in_y, in_z, in_radius)
+{
+	return {
+		"x" : in_x,
+		"y" : in_y,
+		"z" : in_z,
+		"radius" : in_radius
 	};
 }
 
