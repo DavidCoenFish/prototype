@@ -1,7 +1,11 @@
 todo:
 	map
+		rollover
+		cauldrons
 	place start units
+		checkbox on troup list...
 	movement
+		select troup, select dest, or deselect, or select other troup or cauldron
 	time adjust on select
 	enemies arriving
 	enemy ai, attack, tip over cauldron

@@ -569,6 +569,7 @@ DSC.MapCellUI = function(in_mapCellData, in_mapViewportData)
 	this.m_mapViewportData = in_mapViewportData;
 	this.m_state = DSC.MapCellUI.s_state.TDefault;
 	this.m_over = false;
+	this.m_defaultDrawStyle = DSC.DrawStyle.Factory(this.MakeRgb(), "rgb(64, 64, 64)");
 
 	return;
 }
@@ -581,11 +582,16 @@ DSC.MapCellUI.s_state =
 }
 
 DSC.MapCellUI.s_stateClickCooldown = 0.1;
-DSC.MapCellUI.DefaultDrawStyle = DSC.DrawStyle.Factory("rgb(0, 255, 0)", "rgb(255, 0, 255)");
 DSC.MapCellUI.RolloverDrawStyle = DSC.DrawStyle.Factory("rgb(0, 0, 255)", "rgb(255, 255, 0)");
 DSC.MapCellUI.ClickDrawStyle = DSC.DrawStyle.Factory("rgb(255, 0, 0)", "rgb(0, 255, 255)");
 DSC.MapCellUI.Radius = 1.0 / Math.sqrt(3.0);
 DSC.MapCellUI.YStep = 1.5 * DSC.MapCellUI.Radius;
+
+DSC.MapCellUI.prototype.MakeRgb = function()
+{
+	const value = Math.round(Math.max(128, Math.min(((this.m_mapCellData.zHigh / 20.0) * 128) + 128, 256))).toString();
+	return "rgb(" + value + ", " + value + ", " + value + ")";
+}
 
 DSC.MapCellUI.prototype.Run = function(in_timeDelta, in_input)
 {
@@ -598,7 +604,7 @@ DSC.MapCellUI.prototype.Draw = function(in_canvas, in_context)
 	default:
 		return;
 	case DSC.Button.s_state.TDefault:
-		DSC.MapCellUI.DefaultDrawStyle.Apply(in_context);
+		this.m_defaultDrawStyle.Apply(in_context);
 		break;
 	case DSC.Button.s_state.TRollover:
 		DSC.MapCellUI.RolloverDrawStyle.Apply(in_context);
@@ -688,11 +694,11 @@ DSC.StateMain = function()
 				DSC.PushState(DSC.StateGame.Factory(
 					DSC.MapViewportDataFactory(-2, -2, DSC.m_canvas.width / 40.0, DSC.m_canvas.height / 40.0),
 					[
-						DSC.MapCellDataFactory(0, 0, -1, 1),
-						DSC.MapCellDataFactory(1, 0, -1, 1),
-						DSC.MapCellDataFactory(2, 0, -1, 1),
-						DSC.MapCellDataFactory(0, 1, -1, 1),
-						DSC.MapCellDataFactory(1, 1, -1, 1),
+						DSC.MapCellDataFactory(0, 0, 0, -1),
+						DSC.MapCellDataFactory(1, 0, 1, -1),
+						DSC.MapCellDataFactory(2, 0, 3, -1),
+						DSC.MapCellDataFactory(0, 1, 10, -1),
+						DSC.MapCellDataFactory(1, 1, 20, -1),
 					]));
 			}
 		}, //_functor, 
