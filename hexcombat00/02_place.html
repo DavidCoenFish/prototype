@@ -1,0 +1,1523 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<title>02_place</title>
+		<meta http-equiv="Content-Style-Type" content="text/css"/>
+	</head>
+	<body style='background-color: #7F7F7F'>
+	<canvas id='canvasId' style = 'background-color: #0000FF; width: 640px; height: 360px;' >
+		This text is displayed if your browser does not support HTML5 Canvas.
+	</canvas>
+
+	<script type='text/javascript'>
+//<!-- 
+var DSC = {};
+
+DSC.OnPageLoad = function()
+{
+	console.info("OnPageLoad");
+	DSC.m_canvas = document.getElementById('canvasId');
+	if (DSC.m_canvas)
+	{
+		DSC.m_canvas.width = DSC.m_canvas.clientWidth;
+		DSC.m_canvas.height = DSC.m_canvas.clientHeight;
+		DSC.m_context = DSC.m_canvas.getContext('2d');
+		DSC.m_input = DSC.Input.Factory(DSC.m_canvas);
+	}
+	if (DSC.m_context)
+	{
+		DSC.m_context.save();
+	}
+
+	DSC.m_time = undefined;
+	DSC.m_averageFPS = undefined;
+	DSC.m_defaultDrawStyle = DSC.DrawStyle.Factory();
+	DSC.m_defaultTextStyle = DSC.TextStyle.Factory();
+
+	DSC.m_textStyleButton = DSC.TextStyle.Factory("rgb(255, 255, 0)", "rgb(0, 0, 0)", 1.0, "left", "top", "16px sans-serif");
+	DSC.m_drawStyleButton = DSC.DrawStyle.Factory("rgb(0, 255, 0)", "rgb(255, 0, 255)");
+	DSC.m_drawStyleButtonOn = DSC.DrawStyle.Factory("rgb(0, 255, 255)", "rgb(255, 255, 255)");
+	DSC.m_drawStyleRollover = DSC.DrawStyle.Factory("rgb(0, 0, 255)", "rgb(255, 255, 0)");
+	DSC.m_drawStyleClick = DSC.DrawStyle.Factory("rgb(255, 0, 0)", "rgb(0, 255, 255)");
+
+	DSC.PushState(DSC.StateMain.Factory());
+
+	//lines up a new frame to be rendered once thread is passed back to browser
+	DSC.m_requestAnimationFrameId = window.requestAnimationFrame(DSC.RequestAnimationFrameCallback); 
+
+	return;
+}
+
+// do we put this last to ensure page finishes loading, but it should not matter?
+window.addEventListener('load', DSC.OnPageLoad, true);
+
+DSC.RequestAnimationFrameCallback = function(_timeStamp)
+{
+	var runKeepGoing = false;
+	var timeDelta = DSC.IncrementTime(_timeStamp);
+	
+	DSC.Clear();
+
+	if (undefined != DSC.m_state)
+	{
+		runKeepGoing = DSC.m_state.Run(timeDelta, DSC.m_input);
+	}
+
+	if (true == runKeepGoing)
+	{
+		DSC.m_state.Draw(DSC.m_canvas, DSC.m_context);
+	}
+
+	DSC.DrawDebug();
+
+	if (true == runKeepGoing)
+	{
+		//lines up a new frame to be rendered once thread is passed back to browser
+		DSC.m_requestAnimationFrameId = window.requestAnimationFrame(DSC.RequestAnimationFrameCallback); 
+
+		//run input last, resets edge change states
+		DSC.m_input.Run();
+	}
+	else
+	{
+		console.info("RequestAnimationFrameCallback not requesting new frame");
+	}
+
+	return;
+}
+
+DSC.IncrementTime = function(_timeStamp)
+{
+	if (undefined == _timeStamp)
+	{
+		return 0;
+	}
+	var timeDelta = 0.0;
+	if (undefined == DSC.m_time)
+	{
+		DSC.m_time = _timeStamp;
+	}
+	else
+	{
+		timeDelta = (_timeStamp - DSC.m_time) / 1000.0;
+		DSC.m_time = _timeStamp;
+
+		if (0.0 != timeDelta)
+		{
+			var fps = 1.0 / timeDelta;
+			if (undefined == DSC.m_averageFPS)
+			{
+				DSC.m_averageFPS = fps;
+			}
+			else
+			{
+				DSC.m_averageFPS = (fps * 0.05) + (DSC.m_averageFPS * 0.95);
+			}
+		}
+	}
+	return timeDelta;
+}
+
+DSC.DrawDebug = function()
+{
+	DSC.m_context.save();
+	DSC.m_defaultTextStyle.Apply(DSC.m_context);
+	DSC.m_context.fillText("" + DSC.m_averageFPS, 10.0, 10.0)
+	DSC.m_context.fillText("x: " + DSC.m_input.m_mouseX + "y: " + DSC.m_input.m_mouseY, 10.0, 20.0)
+	DSC.m_context.restore();
+}
+
+DSC.PushState = function(_state)
+{
+	if (undefined != _state)
+	{
+		_state.m_nextState = DSC.m_state;
+	}
+	DSC.m_state = _state;
+}
+
+DSC.PopState = function()
+{
+	if (undefined != DSC.m_state)
+	{
+		DSC.m_state = DSC.m_state.m_nextState;
+	}
+}
+
+DSC.SetState = function(_state)
+{
+	DSC.m_state = _state;
+}
+
+DSC.Clear = function()
+{
+	DSC.m_context.save();
+	DSC.m_defaultDrawStyle.Apply(DSC.m_context);
+	DSC.m_context.fillRect(
+		0,
+		0,
+		DSC.m_canvas.width,
+		DSC.m_canvas.height
+		);
+	DSC.m_context.restore();
+}
+
+//==================================================================
+//=============================== draw style
+//==================================================================
+
+DSC.DrawStyle = function(_stringFill, _stringStroke, _alpha)
+{
+	if ( !(this instanceof DSC.DrawStyle) )
+		alert("DSC.DrawStyle: call constuctor with new keyword");
+	this.m_stringFill = (undefined == _stringFill) ? "rgb(0, 0, 0)" : _stringFill;
+	this.m_stringStroke = (undefined == _stringStroke) ? "rgb(0, 0, 0)" : _stringStroke;
+	this.m_alpha = (undefined == _alpha) ? 1.0 : _alpha;
+}
+
+DSC.DrawStyle.prototype.Apply = function(in_context)
+{
+	in_context.fillStyle = this.m_stringFill;
+	in_context.strokeStyle = this.m_stringStroke;
+	in_context.globalAlpha = this.m_alpha;
+}
+
+DSC.DrawStyle.Factory = function(_stringFill, _stringStroke, _alpha)
+{
+	return new DSC.DrawStyle(_stringFill, _stringStroke, _alpha);
+}
+
+//==================================================================
+//=============================== text style
+//==================================================================
+
+DSC.TextStyle = function(_stringFill, _stringStroke, _alpha, _textAlign, _textBaseLine, _font)
+{
+	if ( !(this instanceof DSC.TextStyle) )
+		alert("DSC.TextStyle: call constuctor with new keyword");
+	this.m_stringFill = (undefined == _stringFill) ? "rgb(255, 255, 255)" : _stringFill;
+	this.m_stringStroke = (undefined == _stringStroke) ? "rgb(0, 0, 0)" : _stringStroke;
+	this.m_alpha = (undefined == _alpha) ? 1.0 : _alpha;
+	this.m_textAlign = (undefined == _textAlign) ? "left" : _textAlign; //start, end, left, center, right
+	this.m_textBaseLine = (undefined == _textBaseLine) ? "top" : _textBaseLine; //top, bottom, middle, alphabetic, hanging
+  this.m_font = (undefined == _font) ? "10px sans-serif" : _font;
+  return;
+}
+
+DSC.TextStyle.prototype.Apply = function(in_context)
+{
+	in_context.fillStyle = this.m_stringFill;
+	in_context.strokeStyle = this.m_stringStroke;
+	in_context.globalAlpha = this.m_alpha;
+	in_context.textAlign = this.m_textAlign;
+	in_context.textBaseline = this.m_textBaseLine;
+	in_context.font = this.m_font;
+}
+
+DSC.TextStyle.Factory = function(_stringFill, _stringStroke, _alpha, _textAlign, _textBaseLine, _font)
+{
+	return new DSC.TextStyle(_stringFill, _stringStroke, _alpha, _textAlign, _textBaseLine, _font);
+}
+
+//==================================================================
+//=============================== input
+//==================================================================
+
+DSC.Input = function(_canvas)
+{
+	if ( !(this instanceof DSC.Input) )
+		alert("DSC.Input: call constuctor with new keyword");
+
+	this.m_mouseDownOld = false;
+	this.m_mouseDown = false;
+	this.m_mouseEdge = false;
+	this.m_mouseX = undefined;
+	this.m_mouseY = undefined;
+	this.m_mouseXOld = undefined;
+	this.m_mouseYOld = undefined;
+	this.m_canvas = _canvas;
+	
+	this.AddEvents();
+
+	return;
+}
+
+DSC.Input.prototype.AddEvents = function()
+{
+	if (!this.m_canvas)
+		return;
+	
+	var input = this;
+	this.m_mousedownCallback = function(){ input.CallbackMouseDown(); };
+	this.m_canvas.addEventListener("mousedown", this.m_mousedownCallback, false);
+
+	this.m_mouseupCallback = function(){ input.CallbackMouseUp(); };
+	this.m_canvas.addEventListener("mouseup", this.m_mouseupCallback, false);
+	
+	this.m_mousemoveCallback = function(in_event){ input.CallbackMouseMove(in_event); };
+	this.m_canvas.addEventListener("mousemove", this.m_mousemoveCallback, false);
+
+	this.m_touchCallback = function(in_event){ input.CallbackTouch(in_event); };
+	this.m_canvas.addEventListener("touchstart", this.m_touchCallback, false);
+	this.m_canvas.addEventListener("touchmove", this.m_touchCallback, false);
+	this.m_canvas.addEventListener("touchend", this.m_touchCallback, false);
+	this.m_canvas.addEventListener("touchcancel", this.m_touchCallback, false);
+}
+
+DSC.Input.prototype.DeleteEvents = function()
+{
+	if (!this.m_canvas)
+		return;
+	this.m_canvas.removeEventListener("mousedown", this.m_mousedownCallback);
+	this.m_canvas.removeEventListener("mouseup", this.m_mouseupCallback);
+	this.m_canvas.removeEventListener("mousemove", this.m_touchCallback);
+
+	this.m_canvas.removeEventListener("touchstart", this.m_touchCallback);
+	this.m_canvas.removeEventListener("touchmove", this.m_touchCallback);
+	this.m_canvas.removeEventListener("touchend", this.m_touchCallback);
+	this.m_canvas.removeEventListener("touchcancel", this.m_touchCallback);
+}
+
+DSC.Input.prototype.Run = function()
+{
+	this.m_mouseDownOld = this.m_mouseDown;
+	this.m_mouseEdge = false;
+	this.m_mouseXOld = this.m_mouseX;
+	this.m_mouseYOld = this.m_mouseY;
+}
+	
+DSC.Input.prototype.CallbackMouseDown = function()
+{
+	this.m_mouseDown = true;
+	if (this.m_mouseDownOld != this.m_mouseDown)
+	{
+		this.m_mouseEdge = true;
+	}
+}
+	
+DSC.Input.prototype.CallbackMouseUp = function()
+{
+	this.m_mouseDown = false;
+	if (this.m_mouseDownOld != this.m_mouseDown)
+	{
+		this.m_mouseEdge = true;
+	}
+}
+
+DSC.Input.prototype.CallbackMouseMove = function(in_event)
+{
+	this.m_mouseX = in_event.clientX - DSC.Input.GetTrueOffsetLeft(this.m_canvas) + window.pageXOffset;
+	this.m_mouseY = in_event.clientY - DSC.Input.GetTrueOffsetTop(this.m_canvas) + window.pageYOffset;
+}
+
+DSC.Input.prototype.CallbackTouch = function(in_event)
+{
+	in_event.preventDefault();
+
+	switch(event.type)
+	{
+	case "touchmove":
+		break;
+	case "touchstart":
+		this.m_input.CallbackMouseDown(in_event);
+		break;
+	case "touchend":
+	case "touchcancel":
+		this.CallbackMouseUp(in_event);
+		break;
+	default: 
+		return;
+	}
+
+	var touches = in_event.changedTouches;
+	var first = touches[0];
+
+	this.m_mouseX = first.pageX - DSC.Input.GetTrueOffsetLeft(this.m_canvas) + window.pageXOffset;
+	this.m_mouseY = first.pageY - DSC.Input.GetTrueOffsetTop(this.m_canvas) + window.pageYOffset;
+
+	return;
+}
+
+DSC.Input.GetTrueOffsetLeft = function(in_element)
+{
+	var traceElement = in_element;
+	var result = 0;
+	while (traceElement)
+	{
+		result += traceElement.offsetLeft || 0;
+		traceElement = traceElement.offsetParent;
+	}
+	return result;
+}
+
+DSC.Input.GetTrueOffsetTop = function(in_element)
+{
+	var traceElement = in_element;
+	var result = 0;
+	while (traceElement)
+	{
+		result += traceElement.offsetTop || 0;
+		traceElement = traceElement.offsetParent;
+	}
+	return result;
+}
+
+DSC.Input.Factory = function(_canvas)
+{
+	return new DSC.Input(_canvas);
+}
+
+//==================================================================
+//=============================== button
+//==================================================================
+
+/*
+_functor
+	CallbackOver(relX, relY)
+	CallbackHeld(duration, _timeDelta);
+	CallbackDrag(x, y);
+	CallbackDown(x, y);
+	CallbackUp(x, y);
+*/
+DSC.Button = function(_text, in_x, in_y, in_width, in_height, _functor)
+{
+	if ( !(this instanceof DSC.Button) )
+		alert("DSC.Button: call constuctor with new keyword");
+
+	this.m_text = (undefined == _text) ? "" : _text;
+	this.m_x = in_x;
+	this.m_y = in_y;
+	this.m_width = in_width;
+	this.m_height = in_height;
+	this.m_functor = _functor;
+	this.m_state = DSC.Button.s_state.TDefault;
+	this.m_over = false;
+
+	return;
+}
+
+DSC.Button.s_state = 
+{
+	TDefault : 0,
+	TRollover : 1,
+	TClick : 2,
+	THidden : 3
+}
+
+DSC.Button.s_stateClickCooldown = 0.1;
+
+DSC.Button.prototype.Run = function(in_timeDelta, in_input)
+{
+	if (DSC.Button.s_state.THidden == this.m_state)
+	{
+		return;
+	}
+
+	if (0.0 < this.m_clickCooldown)
+	{
+		this.m_clickCooldown -= in_timeDelta;
+	}
+
+	var x = in_input.m_mouseX - this.m_x;
+	var y = in_input.m_mouseY - this.m_y;
+
+	var over = ((0 <= x) &&
+		(x <= this.m_width) &&
+		(0 <= y) &&
+		(y <= this.m_height));
+
+	if (over != this.m_over)
+	{
+		this.m_over = over;
+		if ((undefined != this.m_functor) &&
+			("CallbackOver" in this.m_functor))
+		{
+			this.m_functor.CallbackOver(x, y, this);
+		}
+	}
+
+	if (true == in_input.m_mouseEdge)
+	{
+		if (true == in_input.m_mouseDown)
+		{
+			//mouse down edge
+			if (true == this.m_over)
+			{
+				this.m_clicked = true;
+				this.m_clickDuration = 0.0;
+				if ((undefined != this.m_functor) &&
+					("CallbackDown" in this.m_functor))
+				{
+					this.m_functor.CallbackDown(x, y, this);
+				}
+			}
+			else
+			{
+				//a new click, deactivate incase old click up got lost
+				this.m_clicked = false;
+			}
+		}
+		else
+		{
+			//mouse up edge
+			if (true == this.m_clicked)
+			{
+				this.m_clicked = false;
+				this.m_clickCooldown = DSC.Button.s_stateClickCooldown;
+				if ((true == this.m_over) &&  
+					(undefined != this.m_functor) &&
+					("CallbackUp" in this.m_functor))
+				{
+					this.m_functor.CallbackUp(x, y, this);
+				}
+			}
+		}
+	}
+	else if ((true == in_input.m_mouseDown) &&
+		(true == this.m_clicked))
+	{
+		this.m_clickDuration += in_timeDelta;
+		if ((undefined != this.m_functor) &&
+			("CallbackHeld" in this.m_functor))
+		{
+			this.m_functor.CallbackHeld(this.m_clickDuration, _timeDelta, this);
+		}
+		if ((undefined != this.m_functor) &&
+			("CallbackDrag" in this.m_functor))
+		{
+			this.m_functor.CallbackDrag(x, y, this);
+		}
+	}
+
+	if ((0.0 < this.m_clickCooldown) ||
+		(true == this.m_clicked))
+	{
+		this.m_state = DSC.Button.s_state.TClick;
+	}
+	else if (true == this.m_over)
+	{
+		this.m_state = DSC.Button.s_state.TRollover;
+	}
+	else if (DSC.Button.s_state.TDefault != this.m_state)
+	{
+		this.m_state = DSC.Button.s_state.TDefault;
+	}
+
+	return;
+}
+
+DSC.Button.prototype.ResetState = function()
+{
+	this.m_clickCooldown = 0.0;
+	this.m_clicked = false;
+	this.m_over = false;
+	this.m_state = DSC.Button.s_state.TDefault;
+}
+
+DSC.Button.prototype.Draw = function(in_canvas, in_context)
+{
+	switch (this.m_state)
+	{
+	default:
+		return;
+	case DSC.Button.s_state.TDefault:
+		DSC.m_drawStyleButton.Apply(in_context);
+		break;
+	case DSC.Button.s_state.TRollover:
+		DSC.m_drawStyleRollover.Apply(in_context);
+		break;
+	case DSC.Button.s_state.TClick:
+		DSC.m_drawStyleClick.Apply(in_context);
+		break;
+	}
+	in_context.beginPath();
+	in_context.rect(
+		this.m_x,
+		this.m_y,
+		this.m_width,
+		this.m_height
+		);
+	in_context.closePath();
+	in_context.fill();
+	in_context.stroke();
+
+	DSC.m_textStyleButton.Apply(in_context);
+	in_context.fillText(this.m_text, this.m_x + 8, this.m_y + 8);
+	in_context.stroke();
+
+	return;
+}
+
+DSC.Button.Factory = function(_text, in_x, in_y, in_width, in_height, _functor)
+{
+	return new DSC.Button(_text, in_x, in_y, in_width, in_height, _functor);
+}
+
+//==================================================================
+//=============================== button
+//==================================================================
+
+/*
+_functor
+	CallbackOver(relX, relY)
+	CallbackHeld(duration, _timeDelta);
+	CallbackDrag(x, y);
+	CallbackDown(x, y);
+	CallbackUp(x, y);
+*/
+DSC.ToggleButton = function(_textOff, _textOn, _toggleState, in_x, in_y, in_width, in_height, _functor)
+{
+	if ( !(this instanceof DSC.ToggleButton) )
+		alert("DSC.ToggleButton: call constuctor with new keyword");
+
+	this.m_textOff = (undefined == _textOff) ? "" : _textOff;
+	this.m_textOn = (undefined == _textOn) ? "" : _textOn;
+	this.m_toggleState = (undefined == _toggleState) ? false : _toggleState;
+	this.m_x = in_x;
+	this.m_y = in_y;
+	this.m_width = in_width;
+	this.m_height = in_height;
+	this.m_functor = _functor;
+
+	this.m_state = DSC.Button.s_state.TDefault;
+	this.m_over = false;
+
+	return;
+}
+
+DSC.ToggleButton.s_state = 
+{
+	TDefault : 0,
+	TRollover : 1,
+	TClick : 2
+}
+
+DSC.ToggleButton.s_stateClickCooldown = 0.1;
+
+DSC.ToggleButton.prototype.GetToggleState = function()
+{
+	return this.m_toggleState;
+}
+
+DSC.ToggleButton.prototype.Run = function(in_timeDelta, in_input)
+{
+	if (DSC.ToggleButton.s_state.THidden == this.m_state)
+	{
+		return;
+	}
+
+	if (0.0 < this.m_clickCooldown)
+	{
+		this.m_clickCooldown -= in_timeDelta;
+	}
+
+	var x = in_input.m_mouseX - this.m_x;
+	var y = in_input.m_mouseY - this.m_y;
+
+	var over = ((0 <= x) &&
+		(x <= this.m_width) &&
+		(0 <= y) &&
+		(y <= this.m_height));
+
+	if (over != this.m_over)
+	{
+		this.m_over = over;
+		if ((undefined != this.m_functor) &&
+			("CallbackOver" in this.m_functor))
+		{
+			this.m_functor.CallbackOver(x, y, this);
+		}
+	}
+
+	if (true == in_input.m_mouseEdge)
+	{
+		if (true == in_input.m_mouseDown)
+		{
+			//mouse down edge
+			if (true == this.m_over)
+			{
+				this.m_clicked = true;
+				this.m_clickDuration = 0.0;
+				if ((undefined != this.m_functor) &&
+					("CallbackDown" in this.m_functor))
+				{
+					this.m_functor.CallbackDown(x, y, this);
+				}
+			}
+			else
+			{
+				//a new click, deactivate incase old click up got lost
+				this.m_clicked = false;
+			}
+		}
+		else
+		{
+			//mouse up edge
+			if (true == this.m_clicked)
+			{
+				this.m_clicked = false;
+				this.m_clickCooldown = DSC.Button.s_stateClickCooldown;
+				if (true == this.m_over)
+				{
+					this.m_toggleState = (true == this.m_toggleState) ? false : true;
+					if ((undefined != this.m_functor) &&
+						("CallbackUp" in this.m_functor))
+					{
+						this.m_functor.CallbackUp(x, y, this);
+					}
+				}
+			}
+		}
+	}
+	else if ((true == in_input.m_mouseDown) &&
+		(true == this.m_clicked))
+	{
+		this.m_clickDuration += in_timeDelta;
+		if ((undefined != this.m_functor) &&
+			("CallbackHeld" in this.m_functor))
+		{
+			this.m_functor.CallbackHeld(this.m_clickDuration, _timeDelta, this);
+		}
+		if ((undefined != this.m_functor) &&
+			("CallbackDrag" in this.m_functor))
+		{
+			this.m_functor.CallbackDrag(x, y, this);
+		}
+	}
+
+	if ((0.0 < this.m_clickCooldown) ||
+		(true == this.m_clicked))
+	{
+		this.m_state = DSC.Button.s_state.TClick;
+	}
+	else if (true == this.m_over)
+	{
+		this.m_state = DSC.Button.s_state.TRollover;
+	}
+	else if (DSC.Button.s_state.TDefault != this.m_state)
+	{
+		this.m_state = DSC.Button.s_state.TDefault;
+	}
+
+	return;
+}
+
+DSC.ToggleButton.prototype.Draw = function(in_canvas, in_context)
+{
+	switch (this.m_state)
+	{
+	default:
+		return;
+	case DSC.ToggleButton.s_state.TDefault:
+		if (true == this.m_toggleState)
+		{
+			DSC.m_drawStyleButtonOn.Apply(in_context);
+		}
+		else
+		{
+			DSC.m_drawStyleButton.Apply(in_context);
+		}
+		break;
+	case DSC.ToggleButton.s_state.TRollover:
+		DSC.m_drawStyleRollover.Apply(in_context);
+		break;
+	case DSC.ToggleButton.s_state.TClick:
+		DSC.m_drawStyleClick.Apply(in_context);
+		break;
+	}
+	in_context.beginPath();
+	in_context.rect(
+		this.m_x,
+		this.m_y,
+		this.m_width,
+		this.m_height
+		);
+	in_context.closePath();
+	in_context.fill();
+	in_context.stroke();
+
+	DSC.m_textStyleButton.Apply(in_context);
+	in_context.fillText(this.m_toggleState ? this.m_textOn : this.m_textOff, this.m_x + 8, this.m_y + 8);
+	in_context.stroke();
+
+	return;
+}
+
+DSC.ToggleButton.Factory = function(_textOff, _textOn, _toggleState, in_x, in_y, in_width, in_height, _functor)
+{
+	return new DSC.ToggleButton(_textOff, _textOn, _toggleState, in_x, in_y, in_width, in_height, _functor);
+}
+
+//==================================================================
+//=============================== MapCellData
+//==================================================================
+
+DSC.MapCellUI = function(in_mapCellData, in_mapViewportData)
+{
+	if ( !(this instanceof DSC.MapCellUI) )
+		alert("DSC.MapCellUI: call constuctor with new keyword");
+
+	this.m_mapCellData = in_mapCellData;
+	this.m_mapViewportData = in_mapViewportData;
+	this.m_defaultDrawStyle = DSC.DrawStyle.Factory(this.MakeRgb(), "rgb(64, 64, 64)");
+
+	this.m_state = DSC.MapCellUI.s_state.TDefault;
+	this.m_clickCooldown = 0.0;
+	this.m_over = false;
+	this.m_clicked = false;
+
+	return;
+}
+
+DSC.MapCellUI.s_state = 
+{
+	TDefault : 0,
+	TRollover : 1,
+	TClick : 2,
+}
+
+DSC.MapCellUI.s_stateClickCooldown = 0.1;
+DSC.MapCellUI.RolloverDrawStyle = DSC.DrawStyle.Factory("rgb(128, 128, 0)", "rgb(128, 0, 0)");
+DSC.MapCellUI.ClickDrawStyle = DSC.DrawStyle.Factory("rgb(255, 255, 0)", "rgb(255, 0, 0)");
+DSC.MapCellUI.Radius = 1.0 / Math.sqrt(3.0);
+DSC.MapCellUI.YStep = 1.5 * DSC.MapCellUI.Radius;
+
+DSC.MapCellUI.prototype.MakeRgb = function()
+{
+	const value = Math.round(Math.max(128, Math.min(((this.m_mapCellData.zHigh / 20.0) * 128) + 128, 256))).toString();
+	return "rgb(" + value + ", " + value + ", " + value + ")";
+}
+
+DSC.MapCellUI.prototype.Run = function(in_timeDelta, in_input)
+{
+	if (0.0 < this.m_clickCooldown)
+	{
+		this.m_clickCooldown -= in_timeDelta;
+	}
+
+	const centerX = DSC.CalcCellX(this.m_mapCellData);
+	const centerY = DSC.CalcCellY(this.m_mapCellData);
+	const canvas = DSC.m_canvas;
+	var xLow = DSC.CalcViewportToScreenX(centerX - 0.5, canvas, this.m_mapViewportData);
+	var xHigh = DSC.CalcViewportToScreenX(centerX + 0.5, canvas, this.m_mapViewportData);
+	var yLow = DSC.CalcViewportToScreenY(centerY - (DSC.MapCellUI.YStep * 0.5), canvas, this.m_mapViewportData);
+	var yHigh = DSC.CalcViewportToScreenY(centerY + (DSC.MapCellUI.YStep * 0.5), canvas, this.m_mapViewportData);
+
+	var over = ((xLow <= in_input.m_mouseX) &&
+		(in_input.m_mouseX < xHigh) &&
+		(yLow < in_input.m_mouseY) &&
+		(in_input.m_mouseY < yHigh));
+
+	if (over != this.m_over)
+	{
+		this.m_over = over;
+		if ((undefined != this.m_functor) &&
+			("CallbackOver" in this.m_functor))
+		{
+			this.m_functor.CallbackOver(x, y, this);
+		}
+	}
+
+	if (true == in_input.m_mouseEdge)
+	{
+		if (true == in_input.m_mouseDown)
+		{
+			//mouse down edge
+			if (true == this.m_over)
+			{
+				this.m_clicked = true;
+				this.m_clickDuration = 0.0;
+				if ((undefined != this.m_functor) &&
+					("CallbackDown" in this.m_functor))
+				{
+					this.m_functor.CallbackDown(x, y, this);
+				}
+			}
+			else
+			{
+				//a new click, deactivate incase old click up got lost
+				this.m_clicked = false;
+			}
+		}
+		else
+		{
+			//mouse up edge
+			if (true == this.m_clicked)
+			{
+				this.m_clicked = false;
+				this.m_clickCooldown = DSC.Button.s_stateClickCooldown;
+				if ((true == this.m_over) &&  
+					(undefined != this.m_functor) &&
+					("CallbackUp" in this.m_functor))
+				{
+					this.m_functor.CallbackUp(x, y, this);
+				}
+			}
+		}
+	}
+	else if ((true == in_input.m_mouseDown) &&
+		(true == this.m_clicked))
+	{
+		this.m_clickDuration += in_timeDelta;
+		if ((undefined != this.m_functor) &&
+			("CallbackHeld" in this.m_functor))
+		{
+			this.m_functor.CallbackHeld(this.m_clickDuration, _timeDelta, this);
+		}
+		if ((undefined != this.m_functor) &&
+			("CallbackDrag" in this.m_functor))
+		{
+			this.m_functor.CallbackDrag(x, y, this);
+		}
+	}
+
+	if ((0.0 < this.m_clickCooldown) ||
+		(true == this.m_clicked))
+	{
+		this.m_state = DSC.MapCellUI.s_state.TClick;
+	}
+	else if (true == this.m_over)
+	{
+		this.m_state = DSC.MapCellUI.s_state.TRollover;
+	}
+	else if (DSC.MapCellUI.s_state.TDefault != this.m_state)
+	{
+		this.m_state = DSC.MapCellUI.s_state.TDefault;
+	}
+
+	return;
+}
+
+DSC.MapCellUI.prototype.Draw = function(in_canvas, in_context)
+{
+	switch (this.m_state)
+	{
+	default:
+		return;
+	case DSC.Button.s_state.TDefault:
+		this.m_defaultDrawStyle.Apply(in_context);
+		break;
+	case DSC.Button.s_state.TRollover:
+		DSC.MapCellUI.RolloverDrawStyle.Apply(in_context);
+		break;
+	case DSC.Button.s_state.TClick:
+		DSC.MapCellUI.ClickDrawStyle.Apply(in_context);
+		break;
+	}
+	in_context.beginPath();
+	in_context.moveTo(this.CalcX(0.0, in_canvas), this.CalcY(0.0, in_canvas));
+	for ( var index = 1; index < 6; ++index)
+	{
+		const angle = (index * 60.0) / 180.0 * Math.PI;
+		in_context.lineTo(this.CalcX(angle, in_canvas), this.CalcY(angle, in_canvas));
+	}
+	in_context.closePath();
+	in_context.fill();
+	in_context.stroke();
+
+	return;  
+}
+
+DSC.CalcCellX = function(in_mapCellData)
+{
+	return in_mapCellData.x + (0.5 * (in_mapCellData.y & 1 ? 1.0 : 0.0));
+}
+
+DSC.CalcCellY = function(in_mapCellData)
+{
+	return in_mapCellData.y * DSC.MapCellUI.YStep;
+}
+
+DSC.CalcViewportToScreenX = function(in_x, in_canvas, in_mapViewportData)
+{
+	const normX = (in_x - in_mapViewportData.x) / (in_mapViewportData.width);
+	const deNormX = normX * in_canvas.width;
+	return deNormX;
+}
+
+DSC.CalcViewportToScreenY = function(in_y, in_canvas, in_mapViewportData)
+{
+	const normY = (in_y - in_mapViewportData.y) / (in_mapViewportData.height);
+	const deNormY = normY * in_canvas.height;
+	return deNormY;
+}
+
+//we work out our object space, then normalise in viewport, then denormalise in canvas space
+DSC.MapCellUI.prototype.CalcX = function(in_angleRad, in_canvas)
+{
+	const centerX = DSC.CalcCellX(this.m_mapCellData);
+	const x = centerX + (Math.sin(in_angleRad) * DSC.MapCellUI.Radius);
+	const deNormX = DSC.CalcViewportToScreenX(x, in_canvas, this.m_mapViewportData);
+	return deNormX;
+}
+
+DSC.MapCellUI.prototype.CalcY = function(in_angleRad, in_canvas)
+{
+	const centerY = DSC.CalcCellY(this.m_mapCellData);
+	const y = centerY + (Math.cos(in_angleRad) * DSC.MapCellUI.Radius);
+	const deNormY = DSC.CalcViewportToScreenY(y, in_canvas, this.m_mapViewportData);
+	return deNormY;
+}
+
+DSC.MapCellUI.Factory = function(in_mapCellData, in_mapViewportData)
+{
+	return new DSC.MapCellUI(in_mapCellData, in_mapViewportData);
+}
+
+
+//==================================================================
+//=============================== map button
+//==================================================================
+
+/*
+_functor
+	CallbackOver(relX, relY)
+	CallbackHeld(duration, _timeDelta);
+	CallbackDrag(x, y);
+	CallbackDown(x, y);
+	CallbackUp(x, y);
+*/
+DSC.MapButton = function(_text, in_mapLocation, in_mapViewportData, _functor)
+{
+	if ( !(this instanceof DSC.MapButton) )
+		alert("DSC.MapButton: call constuctor with new keyword");
+
+	this.m_text = (undefined == _text) ? "" : _text;
+	this.m_mapLocation = in_mapLocation;
+	this.m_mapViewportData = in_mapViewportData;
+	this.m_functor = _functor;
+	this.m_state = DSC.MapButton.s_state.TDefault;
+	this.m_over = false;
+
+	return;
+}
+
+DSC.MapButton.s_state = 
+{
+	TDefault : 0,
+	TRollover : 1,
+	TClick : 2
+}
+
+DSC.MapButton.s_stateClickCooldown = 0.1;
+DSC.MapButton.DefaultDrawStyle = DSC.DrawStyle.Factory("rgb(255, 255, 255)", "rgb(0, 0, 0)");
+DSC.MapButton.RolloverDrawStyle = DSC.DrawStyle.Factory("rgb(128, 128, 255)", "rgb(64, 64, 64)");
+DSC.MapButton.ClickDrawStyle = DSC.DrawStyle.Factory("rgb(255, 255, 0)", "rgb(128, 128, 0)");
+DSC.MapButton.TextDrawStyle = DSC.TextStyle.Factory("rgb(128, 128, 128)", "rgb(0, 0, 0)", 1.0, "center", "middle", "16px sans-serif");
+
+DSC.MapButton.prototype.Run = function(in_timeDelta, in_input)
+{
+	if (0.0 < this.m_clickCooldown)
+	{
+		this.m_clickCooldown -= in_timeDelta;
+	}
+
+	const canvas = DSC.m_canvas;
+	const xLow = DSC.CalcViewportToScreenX(this.m_mapLocation.x - this.m_mapLocation.radius, canvas, this.m_mapViewportData);
+	const xHigh = DSC.CalcViewportToScreenX(this.m_mapLocation.x + this.m_mapLocation.radius, canvas, this.m_mapViewportData);
+	const yLow = DSC.CalcViewportToScreenY(this.m_mapLocation.y - this.m_mapLocation.radius, canvas, this.m_mapViewportData);
+	const yHigh = DSC.CalcViewportToScreenY(this.m_mapLocation.y + this.m_mapLocation.radius, canvas, this.m_mapViewportData);
+
+	var over = ((xLow <= in_input.m_mouseX) &&
+		(in_input.m_mouseX < xHigh) &&
+		(yLow <= in_input.m_mouseY) &&
+		(in_input.m_mouseY < yHigh));
+
+	if (over != this.m_over)
+	{
+		this.m_over = over;
+		if ((undefined != this.m_functor) &&
+			("CallbackOver" in this.m_functor))
+		{
+			this.m_functor.CallbackOver(x, y, this);
+		}
+	}
+
+	if (true == in_input.m_mouseEdge)
+	{
+		if (true == in_input.m_mouseDown)
+		{
+			//mouse down edge
+			if (true == this.m_over)
+			{
+				this.m_clicked = true;
+				this.m_clickDuration = 0.0;
+				if ((undefined != this.m_functor) &&
+					("CallbackDown" in this.m_functor))
+				{
+					this.m_functor.CallbackDown(x, y, this);
+				}
+			}
+			else
+			{
+				//a new click, deactivate incase old click up got lost
+				this.m_clicked = false;
+			}
+		}
+		else
+		{
+			//mouse up edge
+			if (true == this.m_clicked)
+			{
+				this.m_clicked = false;
+				this.m_clickCooldown = DSC.Button.s_stateClickCooldown;
+				if ((true == this.m_over) &&  
+					(undefined != this.m_functor) &&
+					("CallbackUp" in this.m_functor))
+				{
+					this.m_functor.CallbackUp(x, y, this);
+				}
+			}
+		}
+	}
+	else if ((true == in_input.m_mouseDown) &&
+		(true == this.m_clicked))
+	{
+		this.m_clickDuration += in_timeDelta;
+		if ((undefined != this.m_functor) &&
+			("CallbackHeld" in this.m_functor))
+		{
+			this.m_functor.CallbackHeld(this.m_clickDuration, _timeDelta, this);
+		}
+		if ((undefined != this.m_functor) &&
+			("CallbackDrag" in this.m_functor))
+		{
+			this.m_functor.CallbackDrag(x, y, this);
+		}
+	}
+
+	if ((0.0 < this.m_clickCooldown) ||
+		(true == this.m_clicked))
+	{
+		this.m_state = DSC.Button.s_state.TClick;
+	}
+	else if (true == this.m_over)
+	{
+		this.m_state = DSC.Button.s_state.TRollover;
+	}
+	else if (DSC.Button.s_state.TDefault != this.m_state)
+	{
+		this.m_state = DSC.Button.s_state.TDefault;
+	}
+
+	return;
+}
+
+DSC.MapButton.prototype.ResetState = function()
+{
+	this.m_clickCooldown = 0.0;
+	this.m_clicked = false;
+	this.m_over = false;
+	this.m_state = DSC.MapButton.s_state.TDefault;
+}
+
+DSC.MapButton.prototype.Draw = function(in_canvas, in_context)
+{
+	switch (this.m_state)
+	{
+	default:
+		return;
+	case DSC.MapButton.s_state.TDefault:
+		DSC.MapButton.DefaultDrawStyle.Apply(in_context);
+		break;
+	case DSC.MapButton.s_state.TRollover:
+		DSC.MapButton.RolloverDrawStyle.Apply(in_context);
+		break;
+	case DSC.MapButton.s_state.TClick:
+		DSC.MapButton.ClickDrawStyle.Apply(in_context);
+		break;
+	}
+
+	const xLow = DSC.CalcViewportToScreenX(this.m_mapLocation.x - this.m_mapLocation.radius, in_canvas, this.m_mapViewportData);
+	const xHigh = DSC.CalcViewportToScreenX(this.m_mapLocation.x + this.m_mapLocation.radius, in_canvas, this.m_mapViewportData);
+	const yLow = DSC.CalcViewportToScreenY(this.m_mapLocation.y - this.m_mapLocation.radius, in_canvas, this.m_mapViewportData);
+	const yHigh = DSC.CalcViewportToScreenY(this.m_mapLocation.y + this.m_mapLocation.radius, in_canvas, this.m_mapViewportData);
+
+	in_context.beginPath();
+	in_context.rect(
+		xLow,
+		yLow,
+		xHigh - xLow,
+		yHigh - yLow
+		);
+	in_context.closePath();
+	in_context.fill();
+	in_context.stroke();
+
+	DSC.MapButton.TextDrawStyle.Apply(in_context);
+	in_context.fillText(this.m_text, (xLow + xHigh) * 0.5, (yLow + yHigh) * 0.5);
+	in_context.stroke();
+
+	return;
+}
+
+DSC.MapButton.Factory = function(_text, in_mapLocation, in_mapViewportData, _functor)
+{
+	return new DSC.MapButton(_text, in_mapLocation, in_mapViewportData, _functor);
+}
+
+//==================================================================
+//=============================== state main
+//==================================================================
+
+DSC.StateMain = function()
+{
+	if ( !(this instanceof DSC.StateMain) )
+		alert("DSC.StateMain: call constuctor with new keyword");
+	this.m_keepGoing = true;
+	this.m_arrayDraw = [];
+	const that = this;
+	this.m_arrayDraw.push(DSC.Button.Factory(
+		"map 0", 
+		20, 20, 128, 32, 
+		{
+			CallbackUp : function(x, y, in_button)
+			{
+				in_button.ResetState();
+				DSC.PushState(DSC.StateGame.Factory(
+					DSC.MapViewportDataFactory(-2, -2, DSC.m_canvas.width / 40.0, DSC.m_canvas.height / 40.0),
+					[
+						DSC.MapCellDataFactory(1, 0, 1, -1),
+						DSC.MapCellDataFactory(2, 0, 1.5, -1),
+						DSC.MapCellDataFactory(3, 0, 2, -1),
+
+						DSC.MapCellDataFactory(0, 1, 6.5, -1, 4),
+						DSC.MapCellDataFactory(1, 1, 7, -1, 5),
+						DSC.MapCellDataFactory(2, 1, 7.5, -1, 6),
+						DSC.MapCellDataFactory(3, 1, 2.5, -1),
+
+						DSC.MapCellDataFactory(0, 2, 6, -1, 3),
+						DSC.MapCellDataFactory(1, 2, 9.5, -1, 10),
+						DSC.MapCellDataFactory(2, 2, 10, -1, 0, 1),
+						DSC.MapCellDataFactory(3, 2, 8, -1, 7),
+						DSC.MapCellDataFactory(4, 2, 3, -1),
+
+						DSC.MapCellDataFactory(0, 3, 5.5, -1, 2),
+						DSC.MapCellDataFactory(1, 3, 9, -1, 9),
+						DSC.MapCellDataFactory(2, 3, 8.5, -1, 8),
+						DSC.MapCellDataFactory(3, 3, 3.5, -1),
+
+						DSC.MapCellDataFactory(1, 4, 5, -1, 1),
+						DSC.MapCellDataFactory(2, 4, 4.5, -1),
+						DSC.MapCellDataFactory(3, 4, 4, -1),
+					]
+					));
+			}
+		} //_functor
+		));
+
+	this.m_arrayDraw.push(DSC.Button.Factory(
+		"exit", 
+		20, 300, 128, 32, 
+		{
+			CallbackUp : function(x, y)
+			{
+				that.m_keepGoing = false;
+			}
+		} //_functor 
+		));
+	return;
+}
+
+DSC.StateMain.prototype.Run = function(in_timeDelta, in_input)
+{
+	this.m_arrayDraw.forEach(function(item)
+	{
+		item.Run(in_timeDelta, in_input);
+	});
+	return this.m_keepGoing;
+}
+
+DSC.StateMain.prototype.Draw = function(in_canvas, in_context)
+{
+	this.m_arrayDraw.forEach(function(item)
+	{
+		item.Draw(in_canvas, in_context);
+	});
+}
+
+DSC.StateMain.Factory = function()
+{
+	return new DSC.StateMain();
+}
+
+//==================================================================
+//=============================== state game
+//==================================================================
+
+DSC.StateGame = function(in_mapViewportData, in_arrayDraw, in_mapCellDataArray)
+{
+	if ( !(this instanceof DSC.StateGame) )
+		alert("DSC.StateGame: call constuctor with new keyword");
+	this.m_mapViewportData = in_mapViewportData;
+	this.m_arrayDraw = in_arrayDraw;
+	this.m_mapCellDataArray = in_mapCellDataArray;
+
+	this.m_hasSelectedStart = false;
+	this.m_hasAddedExit = false;
+
+	this.m_arrayTroups = [];
+
+	return;
+}
+
+DSC.StateGame.prototype.Run = function(in_timeDelta, in_input)
+{
+	if (false == this.m_hasSelectedStart)
+	{
+		this.m_hasSelectedStart = true;
+		DSC.PushState(DSC.StateSelectTroups.Factory(this));
+		return true;
+	}
+
+	if (false == this.m_hasAddedExit)
+	{
+		this.m_hasAddedExit = true;
+		this.m_arrayDraw.push(DSC.Button.Factory(
+			"main", 
+			20, 300, 128, 32, 
+			{
+				CallbackUp : function(x, y)
+				{
+					DSC.PopState();
+				}
+			} //_functor
+			));
+	}
+
+	this.m_arrayDraw.forEach(function(item)
+	{
+		item.Run(in_timeDelta, in_input);
+	});
+
+	return true;
+}
+
+DSC.StateGame.prototype.Draw = function(in_canvas, in_context)
+{
+	this.m_arrayDraw.forEach(function(item)
+	{
+		item.Draw(in_canvas, in_context);
+	});
+}
+
+DSC.StateGame.prototype.SetArrayTroups = function(in_arrayTroups)
+{
+	//collect sorted array of where we can place troups, if this ends up being reused, then we need to 
+	// disallow any placeable location with troups too close
+	const sortDataArray = this.m_mapCellDataArray.sort(DSC.CompareMapCellDataPlacement);
+	trace = 0;
+	const that = this;
+	in_arrayTroups.forEach(function(item)
+	{
+		if (sortDataArray.length <= trace)
+		{
+			return;
+		}
+		//console.log("SetArrayTroups:" + item.name);
+		const sortData = sortDataArray[trace];
+		trace += 1;
+		//for now, just put a map button
+		const location = DSC.MapLocationFactoryFromMapCellData(sortData, 0.3);
+		that.m_arrayDraw.push(DSC.MapButton.Factory(item.name, location, that.m_mapViewportData));
+	});
+	return;
+}
+
+DSC.StateGame.Factory = function(in_mapViewportData, in_arrayMapCellData, in_arrayMapLocationCauldron)
+{
+	var mapLayer = [];
+	var propLayer = [];
+	in_arrayMapCellData.forEach(function(item)
+	{
+		mapLayer.push(DSC.MapCellUI.Factory(item, in_mapViewportData));
+		if (0 != item.cauldron)
+		{
+			const location = DSC.MapLocationFactoryFromMapCellData(item, 0.4);
+			propLayer.push(DSC.MapButton.Factory("C", location, in_mapViewportData));
+		}
+	});
+
+	const arrayDraw = mapLayer.concat(propLayer);
+	return new DSC.StateGame(in_mapViewportData, arrayDraw, in_arrayMapCellData);
+}
+
+//==================================================================
+//=============================== StateSelectTroups
+//==================================================================
+DSC.StateSelectTroups = function(in_stateGame, in_troupDataArray)
+{
+	if ( !(this instanceof DSC.StateSelectTroups) )
+		alert("DSC.StateSelectTroups: call constuctor with new keyword");
+	this.m_stateGame = in_stateGame;
+	this.m_arrayDraw = [];
+	this.m_activeTroupDataArray = [];
+
+	//this.m_troupDataArray = in_troupDataArray;
+	const that = this;
+	var trace = 0;
+	in_troupDataArray.forEach(function(item)
+	{
+		const deploy = (trace < 2);
+		that.m_arrayDraw.push(
+			DSC.ToggleButton.Factory(
+				item.name,
+				item.name + " deploy", 
+				deploy,
+				20, 20 + (trace * 40), 128, 32, 
+				{
+					CallbackUp : function(x, y, in_button)
+					{
+						if (true == in_button.GetToggleState())
+						{
+							that.MakeActive(item);
+						}
+						else
+						{
+							that.MakeInactive(item);
+						}
+					}
+				} //_functor
+			));
+		trace += 1;
+		if (true == deploy)
+		{
+			that.MakeActive(item);
+		}
+	});
+
+	this.m_arrayDraw.push(
+		DSC.Button.Factory(
+			"confirm", 
+			20, 300, 128, 32, 
+			{
+				CallbackUp : function(x, y)
+				{
+					that.m_stateGame.SetArrayTroups(that.m_activeTroupDataArray);
+					DSC.PopState();
+				}
+			} //_functor
+		)
+	);
+
+	return;
+}
+
+DSC.StateSelectTroups.prototype.Run = function(in_timeDelta, in_input)
+{
+	this.m_arrayDraw.forEach(function(item)
+	{
+		item.Run(in_timeDelta, in_input);
+	});
+
+	return true;
+}
+
+DSC.StateSelectTroups.prototype.Draw = function(in_canvas, in_context)
+{
+	this.m_stateGame.Draw(in_canvas, in_context);
+	this.m_arrayDraw.forEach(function(item)
+	{
+		item.Draw(in_canvas, in_context);
+	});
+	return;
+}
+
+DSC.StateSelectTroups.prototype.MakeActive = function(in_troupData)
+{
+	//console.log("MakeActive:" + in_troupData.name);
+	this.m_activeTroupDataArray.push(in_troupData);
+	return;
+}
+
+DSC.StateSelectTroups.prototype.MakeInactive = function(in_troupData)
+{
+	//console.log("MakeInactive:" + in_troupData.name);
+	const index = this.m_activeTroupDataArray.indexOf(in_troupData);
+	if (-1 < index) 
+	{
+		this.m_activeTroupDataArray.splice(index, 1);
+	}
+	return;
+}
+
+DSC.StateSelectTroups.Factory = function(in_stateGame)
+{
+	const troupArray = [
+		DSC.TroupDataFactory("L"),
+		DSC.TroupDataFactory("S"),
+		DSC.TroupDataFactory("G"),
+		DSC.TroupDataFactory("P"),
+		DSC.TroupDataFactory("R"),
+		DSC.TroupDataFactory("P"),
+		DSC.TroupDataFactory("W"),
+	];
+	return new DSC.StateSelectTroups(in_stateGame, troupArray);
+}
+
+//==================================================================
+//=============================== data factories
+//==================================================================
+DSC.MapViewportDataFactory = function(in_x, in_y, in_width, in_height)
+{
+	return {
+		"x" : in_x,
+		"y" : in_y,
+		"width" : in_width,
+		"height" : in_height
+	};
+}
+
+DSC.MapCellDataFactory = function(in_x, in_y, in_zHigh, in_zLow, _placementPriority, _cauldron)
+{
+	return {
+		"x" : in_x,
+		"y" : in_y,
+		"zHigh" : in_zHigh,
+		"zLow" : in_zLow,
+		"placementPriority" : (undefined === _placementPriority) ? 0 : _placementPriority,
+		"cauldron" : (undefined === _cauldron) ? 0 : _cauldron,
+	};
+}
+
+DSC.CompareMapCellDataPlacement = function(a, b)
+{
+	if (a.placementPriority < b.placementPriority)
+	{
+		return 1;
+	}
+	else if (b.placementPriority < a.placementPriority)
+	{
+		return -1;
+	}
+	return 0;
+}
+
+DSC.MapLocationFactoryFromMapCellData = function(in_mapCellData, in_radius)
+{
+	const x = DSC.CalcCellX(in_mapCellData);
+	const y = DSC.CalcCellY(in_mapCellData);
+	return DSC.MapLocationFactory(x, y, in_mapCellData.z, in_radius);
+}
+
+DSC.MapLocationFactory = function(in_x, in_y, in_z, in_radius)
+{
+	return {
+		"x" : in_x,
+		"y" : in_y,
+		"z" : in_z,
+		"radius" : in_radius
+	};
+}
+
+DSC.TroupDataFactory = function(in_name)
+{
+	return {
+		"name" : in_name
+	};
+}
+
+			// -->
+		</script>
+	</body>
+</html>
