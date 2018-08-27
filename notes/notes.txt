@@ -5,7 +5,9 @@ todo:
 	place start units
 		checkbox on troup list...
 	movement
-		select troup, select dest, or deselect, or select other troup or cauldron
+		select troup, 
+		select dest, or deselect 
+		//, or select other troup or cauldron
 		time adjust on select, pan/ zoom on select/pinch none
 	enemies arriving
 		enemy ai, attack, tip over cauldron
@@ -18,7 +20,10 @@ language:
 	{
 		item.Run(in_timeDelta, in_input, in_canvas, in_context);
 	});
-
+	for (const [key, value] of Object.entries(object)) 
+	{
+		console.log(key, value);
+	}
 
 design:
 lust		
