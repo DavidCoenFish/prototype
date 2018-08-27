@@ -1266,6 +1266,10 @@ DSC.Troup.prototype.GetCurrentLocationHash = function()
 	return DSC.MovementMap.HashLocation(this.m_gridX, this.m_gridY, this.m_gridZ);
 }
 
+DSC.Troup.prototype.SetMoveQueue = function(in_movementData)
+{
+}
+
 DSC.Troup.Factory = function(in_troupData, in_location, in_gridX, in_gridY, in_gridZ)
 {
 	return new DSC.Troup(in_troupData, in_location, in_gridX, in_gridY, in_gridZ);
@@ -1368,6 +1372,7 @@ DSC.StateGame = function(in_mapViewportData, in_arrayMapCellData)
 	this.m_arrayMapCellData = in_arrayMapCellData;
 	this.m_movementMap = DSC.MovementMap.Factory(in_arrayMapCellData);
 	this.m_movementMapResults = undefined;
+	this.m_selectedTroup = undefined;
 
 	const that = this;
 
@@ -1392,13 +1397,26 @@ DSC.StateGame = function(in_mapViewportData, in_arrayMapCellData)
 					//that.m_dragY = y;
 					return;
 				},
-				"CallbackDown" : function(in_x, in_y, in_button){
+				"CallbackDown" : function(in_x, in_y, in_button)
+				{
 					const x = DSC.CalcScreenToViewportX(in_x, DSC.m_canvas, that.m_mapViewportData);
 					const y = DSC.CalcScreenToViewportY(in_y, DSC.m_canvas, that.m_mapViewportData);
 					that.m_dragX = x;
 					that.m_dragY = y;
+					that.m_dragScreenX = in_x;
+					that.m_dragScreenY = in_y;
 					return;
 				},
+				"CallbackUp" : function(in_x, in_y, in_button)
+				{
+					if ((in_x === that.m_dragScreenX) &&
+						(in_y === that.m_dragScreenY) &&
+						(this.m_state !== DSC.StateGame.s_state.TSelectTroups))
+					{
+						this.m_state = DSC.StateGame.s_state.TSelectTroups;
+					}
+					return;
+				}
 			})
 		];
 
@@ -1419,7 +1437,25 @@ DSC.StateGame = function(in_mapViewportData, in_arrayMapCellData)
 							}
 							return false;
 						};
-					})(item)
+					})(item),
+					//						that.m_selectedTroup = item;
+					"CallbackUp" :  (function(in_item){
+						const hashKey = DSC.MovementMap.HashLocation(in_item.x, in_item.y, in_item.z);
+						return function(in_x, in_y, in_button){
+							if (that.m_state === DSC.StateGame.s_state.TSelectDestination)
+							{
+								if ((hashKey in that.m_movementMapResults) &&
+									(undefined !== that.m_selectedTroup))
+								{
+									const movementData = that.m_movementMapResults[hashKey];
+									that.m_selectedTroup.SetMoveQueue(movementData);
+									that.m_selectedTroup = undefined;
+									that.m_state = DSC.StateGame.s_state.TSelectTroups;
+								}
+							}
+							return;
+						};
+					})(item),
 				}
 				)
 			);
@@ -1532,6 +1568,7 @@ DSC.StateGame.prototype.SetArrayTroups = function(in_arrayTroups)
 					},
 					"CallbackUp" : function(in_x, in_y, in_button){
 						const start = troup.GetCurrentLocationHash();
+						that.m_selectedTroup = item;
 						that.m_movementMapResults = that.m_movementMap.GetAvaliableMove(item, start);
 						that.m_state = DSC.StateGame.s_state.TSelectDestination;
 						return;
@@ -1830,7 +1867,6 @@ DSC.MovementMap.IsLink = function(in_mapCellDataA, in_mapCellDataB)
    (0,1) (1,1) (2,1) (3,1)
 (0,2) (1,2) (2,2) (3,2)
    (0,3) (1,3) (2,3) (3,3)
-
 */
 DSC.MovementMap.IsNeibour = function(in_mapCellDataA, in_mapCellDataB)
 {
@@ -1977,7 +2013,7 @@ DSC.TroupDataFactory = function(
 		"maxStepUp" : (undefined === _maxStepUp) ? 3.0 : _maxStepUp,
 		"maxStepUpWithoutCost" : (undefined === _maxStepUpWithoutCost) ? 0.5 : _maxStepUpWithoutCost,
 		"stepUpCost" : (undefined === _stepUpCost) ? 3.0 : _stepUpCost,
-		"moveCost" : (undefined === _moveCost) ? 0.3 : _moveCost,
+		"moveCost" : (undefined === _moveCost) ? 0.3 : _moveCost
 	};
 }
 
