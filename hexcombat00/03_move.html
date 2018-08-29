@@ -1237,10 +1237,244 @@ DSC.MapButton.Factory = function(_text, in_mapLocation, in_mapViewportData, _fun
 	return new DSC.MapButton(_text, in_mapLocation, in_mapViewportData, _functor);
 }
 
+
+//==================================================================
+//=============================== MovementMap
+//==================================================================
+DSC.MovementMap = function(in_mapMovementData)
+{
+	if ( !(this instanceof DSC.MovementMap) )
+		alert("DSC.MovementMap: call constuctor with new keyword");
+	this.m_mapMovementData = in_mapMovementData;
+}
+
+//return the map of locations we can move to
+DSC.MovementMap.prototype.GetAvaliableMove = function(in_troupData, in_locationStart, in_timeToStart)
+{
+	var flowMap = {};
+
+	this.MovementFlow(in_troupData, flowMap, in_locationStart, [], 0, in_timeToStart);
+
+	return flowMap;
+}
+
+DSC.MovementMap.prototype.GetCellData = function(in_key)
+{
+	if (in_key in this.m_mapMovementData)
+	{
+		return this.m_mapMovementData[in_key];
+	}
+	return undefined;
+}
+
+DSC.MovementMap.prototype.MovementFlow = function(in_troupData, in_flowMap, in_locationHash, in_history, in_cost, in_costStep)
+{
+	const mapMoveData = this.GetCellData(in_locationHash);
+	if (undefined === mapMoveData)
+	{
+		return;
+	}
+
+	const moveHistory = DSC.MapMoveHistoryDataFactory(in_costStep, in_locationHash);
+	//const localHistory = in_history.concat([moveHistory]);
+	const localHistory = [moveHistory].concat(in_history);
+
+	//does the flow map already contain an entry for this cell
+	if (in_locationHash in in_flowMap)
+	{	
+		if (in_flowMap[in_locationHash].cost <= in_cost)
+		{
+			return;
+		}
+	}
+
+	in_flowMap[in_locationHash] = DSC.MapPotentialMovementDataFactory(in_cost, localHistory);
+
+	const that = this;
+	mapMoveData.linkNodes.forEach(function(item){
+		const localCost = that.EvalueCost(in_troupData, in_locationHash, item, true);
+		if (undefined == localCost)
+		{
+			return;
+		}
+		that.MovementFlow(in_troupData, in_flowMap, item, localHistory, localCost + in_cost, localCost);
+	});
+
+	mapMoveData.neigbourNodes.forEach(function(item){
+		const localCost = that.EvalueCost(in_troupData, in_locationHash, item, false);
+		if (undefined == localCost)
+		{
+			return;
+		}
+		that.MovementFlow(in_troupData, in_flowMap, item, localHistory, localCost + in_cost, localCost);
+	});
+
+	return;
+}
+
+DSC.MovementMap.prototype.EvalueCost = function(in_troupData, in_start, in_end, in_isLink)
+{
+	const mapMoveDataStart = this.GetCellData(in_start);
+	if (undefined === mapMoveDataStart)
+	{
+		return undefined;
+	}
+	const mapMoveDataEnd = this.GetCellData(in_end);
+	if (undefined === mapMoveDataEnd)
+	{
+		return undefined;
+	}
+
+	const xDelta = mapMoveDataEnd.location.x - mapMoveDataStart.location.x;
+	const yDelta = mapMoveDataEnd.location.y - mapMoveDataStart.location.y;
+	const heightDelta = mapMoveDataEnd.location.z - mapMoveDataStart.location.z;
+	var cost = 0;
+	// troups can only move a certain step up or down when it is not a link
+	if (false === in_isLink)
+	{
+		if ((heightDelta < -(in_troupData.maxDropHeight)) ||
+			(in_troupData.maxStepUp < heightDelta))
+		{
+			return undefined;
+		}
+
+		if (heightDelta < -(in_troupData.maxDropHeightWithoutCost))
+		{
+			const costDropPerUnit = ((-heightDelta) - in_troupData.maxDropHeightWithoutCost) / (in_troupData.maxDropHeight - in_troupData.maxDropHeightWithoutCost);
+			cost += costDropPerUnit * (-heightDelta);
+		}
+		else if (in_troupData.maxStepUpWithoutCost < heightDelta)
+		{
+			const costDropPerUnit = ((-heightDelta) - in_troupData.maxDropHeightWithoutCost) / (in_troupData.maxDropHeight - in_troupData.maxDropHeightWithoutCost);
+			cost += costDropPerUnit * (-heightDelta);
+		}
+		cost += in_troupData.moveCost;
+	}
+	else
+	{
+		const dist = Math.sqrt((xDelta * xDelta) + (yDelta * yDelta) + (heightDelta * heightDelta));
+		cost += (dist * in_troupData.moveCost);
+	}
+
+	return cost;
+}
+
+DSC.MovementMap.HashLocation = function(in_gridX, in_gridY, in_gridZ)
+{
+	var hash = DSC.SimpleHash(in_gridX);
+	hash = DSC.SimpleHash(in_gridY, hash);
+	hash = DSC.SimpleHash(in_gridZ, hash);
+	return hash;
+}
+
+DSC.MovementMap.LocationMatch = function(in_mapCellDataA, in_mapCellDataB)
+{
+	if ((in_mapCellDataA.x == in_mapCellDataB.x) && 
+	(in_mapCellDataA.y == in_mapCellDataB.y) &&
+	(in_mapCellDataA.z == in_mapCellDataB.z))
+	{
+		return true; //coincident, or same
+	}
+	return false;
+}
+
+DSC.MovementMap.IsLink = function(in_mapCellDataA, in_mapCellDataB)
+{
+	var match = false;
+	in_mapCellDataA.linkArrayMapLocation.forEach(function(item){
+		if (DSC.MovementMap.LocationMatch(item, in_mapCellDataB))
+		{
+			match = true;
+		}
+	});
+	in_mapCellDataB.linkArrayMapLocation.forEach(function(item){
+		if (DSC.MovementMap.LocationMatch(item, in_mapCellDataA))
+		{
+			match = true;
+		}
+	});
+	return match;
+}
+
+/*
+(0,0) (1,0) (2,0) (3,0)
+   (0,1) (1,1) (2,1) (3,1)
+(0,2) (1,2) (2,2) (3,2)
+   (0,3) (1,3) (2,3) (3,3)
+*/
+DSC.MovementMap.IsNeibour = function(in_mapCellDataA, in_mapCellDataB)
+{
+	if (true === DSC.MovementMap.LocationMatch(in_mapCellDataA, in_mapCellDataB))
+	{
+		return false;
+	}
+	if ((in_mapCellDataA.y == in_mapCellDataB.y) &&
+		((in_mapCellDataA.x + 1 == in_mapCellDataB.x) || (in_mapCellDataA.x - 1 == in_mapCellDataB.x)))
+	{
+		return true;
+	}
+	if ((in_mapCellDataA.y + 1 == in_mapCellDataB.y) || (in_mapCellDataA.y - 1 == in_mapCellDataB.y))
+	{
+		if (0 === (in_mapCellDataA.y & 1))
+		{
+			if ((in_mapCellDataA.x - 1 == in_mapCellDataB.x) || (in_mapCellDataA.x == in_mapCellDataB.x))
+			{
+				return true;
+			}
+		}
+		else
+		{
+			if ((in_mapCellDataA.x == in_mapCellDataB.x) || (in_mapCellDataA.x + 1 == in_mapCellDataB.x))
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+DSC.MovementMap.Factory = function(in_arrayMapCellData)
+{
+	const mapMovementData = {};
+	in_arrayMapCellData.forEach(function(item)
+	{
+		const key = DSC.MovementMap.HashLocation(item.x, item.y, item.z);
+
+		var linkNodes = [];
+		var neigbourNodes = [];
+		in_arrayMapCellData.forEach(function(subItem)
+		{
+			if (true == DSC.MovementMap.IsLink(item, subItem))
+			{
+				var subItemHash = DSC.MovementMap.HashLocation(subItem.x, subItem.y, subItem.z);
+				linkNodes.push(subItemHash);
+			}
+
+			if (true == DSC.MovementMap.IsNeibour(item, subItem))
+			{
+				var subItemHash = DSC.MovementMap.HashLocation(subItem.x, subItem.y, subItem.z);
+				neigbourNodes.push(subItemHash);
+			}
+		});
+		const location = DSC.MapLocationFactoryFromMapCellData(item);
+		mapMovementData[key] = DSC.MovementMapDataFactory(location, linkNodes, neigbourNodes, item.x, item.y, item.z);
+	});
+
+	return new DSC.MovementMap(mapMovementData);
+}
+
+DSC.SimpleHash = function(in_value, _hash)
+{
+	const hash = (_hash !== undefined) ? _hash : 0;
+	const result = ((hash * 31) + in_value) | 0;
+	return result;
+}
+
 //==================================================================
 //=============================== troup
 //==================================================================
-DSC.Troup = function(in_troupData, in_location, in_gridX, in_gridY, in_gridZ)
+DSC.Troup = function(in_troupData, in_location, in_gridX, in_gridY, in_gridZ, in_movementMap)
 {
 	if ( !(this instanceof DSC.Troup) )
 		alert("DSC.Troup: call constuctor with new keyword");
@@ -1250,11 +1484,79 @@ DSC.Troup = function(in_troupData, in_location, in_gridX, in_gridY, in_gridZ)
 	this.m_gridX = in_gridX;
 	this.m_gridY = in_gridY;
 	this.m_gridZ = in_gridZ;
+	this.m_movementMap = in_movementMap;
+
+	this.m_moveTimeAccumulation = 0.0;
+	this.m_moveTimeTotal = 0.0;
+	this.m_moveLocationStart = DSC.MapLocationFactory(0, 0, 0);
+	this.m_moveLocationEnd = DSC.MapLocationFactory(0, 0, 0);
+	this.m_moveStack = undefined;
+
 	return;
 }
 
+/*
+DSC.MapMoveHistoryDataFactory = function(in_stepCost, in_locationHash)
+		"stepCost" : in_stepCost,
+		"locationHash" : in_locationHash
+*/
 DSC.Troup.prototype.Run = function(in_timeDelta, in_input)
 {
+	if (undefined === this.m_moveStack)
+	{
+		return;
+	}
+	this.m_moveTimeAccumulation += in_timeDelta;
+	while(true)
+	{
+		if (0 == this.m_moveStack.length)
+		{
+			break;
+		}
+		if (this.m_moveTimeAccumulation < this.m_moveTimeTotal)
+		{
+			break;
+		}
+		this.m_moveTimeAccumulation -= this.m_moveTimeTotal;
+		this.m_moveLocationStart.x = this.m_moveLocationEnd.x;
+		this.m_moveLocationStart.y = this.m_moveLocationEnd.y;
+		this.m_moveLocationStart.z = this.m_moveLocationEnd.z;
+
+		const data = this.m_moveStack.pop();
+		this.m_moveTimeTotal = data.stepCost;
+		const cellData = this.m_movementMap.GetCellData(data.locationHash);
+		this.m_moveLocationEnd.x = cellData.location.x;
+		this.m_moveLocationEnd.y = cellData.location.y;
+		this.m_moveLocationEnd.z = cellData.location.z;
+
+		this.m_gridX = cellData.gridX;
+		this.m_gridY = cellData.gridY;
+		this.m_gridZ = cellData.gridZ;
+	} // [dest, start]
+
+	if (0 == this.m_moveStack.length)
+	{
+		this.m_location.x = this.m_moveLocationEnd.x;
+		this.m_location.y = this.m_moveLocationEnd.y;
+		this.m_location.z = this.m_moveLocationEnd.z;
+	}
+	else
+	{
+		if (0.0 !== this.m_moveTimeTotal)
+		{
+			const ratio = this.m_moveTimeAccumulation / this.m_moveTimeTotal;
+			this.m_location.x = DSC.Lerp(this.m_moveLocationStart.x, this.m_moveLocationEnd.x, ratio);
+			this.m_location.y = DSC.Lerp(this.m_moveLocationStart.y, this.m_moveLocationEnd.y, ratio);
+			this.m_location.z = DSC.Lerp(this.m_moveLocationStart.z, this.m_moveLocationEnd.z, ratio);
+		}
+	}
+
+	return;
+}
+
+DSC.Lerp = function(in_valueA, in_valueB, in_ratio)
+{
+	return in_valueA + ((in_valueB - in_valueA) * in_ratio);
 }
 
 DSC.Troup.prototype.Draw = function(in_canvas, in_context)
@@ -1266,13 +1568,36 @@ DSC.Troup.prototype.GetCurrentLocationHash = function()
 	return DSC.MovementMap.HashLocation(this.m_gridX, this.m_gridY, this.m_gridZ);
 }
 
-DSC.Troup.prototype.SetMoveQueue = function(in_movementData)
+DSC.Troup.prototype.GetTimeToStart = function()
 {
+	if (undefined === this.m_moveStack)
+	{
+		return 0.0;
+	}
+	return Math.max(0.0, this.m_moveTimeTotal - this.m_moveTimeAccumulation);
 }
 
-DSC.Troup.Factory = function(in_troupData, in_location, in_gridX, in_gridY, in_gridZ)
+DSC.Troup.prototype.SetMoveQueue = function(in_movementData)
 {
-	return new DSC.Troup(in_troupData, in_location, in_gridX, in_gridY, in_gridZ);
+	this.m_moveStack = in_movementData;
+	if (undefined === this.m_moveStack)
+	{
+		return;
+	}
+	this.m_moveTimeTotal = 0;
+	this.m_moveTimeAccumulation = 0;
+	this.m_moveLocationEnd.x = this.m_location.x;
+	this.m_moveLocationEnd.y = this.m_location.y;
+	this.m_moveLocationEnd.z = this.m_location.z;
+	this.m_moveLocationStart.x = this.m_location.x;
+	this.m_moveLocationStart.y = this.m_location.y;
+	this.m_moveLocationStart.z = this.m_location.z;
+	return;
+}
+
+DSC.Troup.Factory = function(in_troupData, in_location, in_gridX, in_gridY, in_gridZ, in_movementMap)
+{
+	return new DSC.Troup(in_troupData, in_location, in_gridX, in_gridY, in_gridZ, in_movementMap);
 }
 
 //==================================================================
@@ -1438,7 +1763,6 @@ DSC.StateGame = function(in_mapViewportData, in_arrayMapCellData)
 							return false;
 						};
 					})(item),
-					//						that.m_selectedTroup = item;
 					"CallbackUp" :  (function(in_item){
 						const hashKey = DSC.MovementMap.HashLocation(in_item.x, in_item.y, in_item.z);
 						return function(in_x, in_y, in_button){
@@ -1448,7 +1772,7 @@ DSC.StateGame = function(in_mapViewportData, in_arrayMapCellData)
 									(undefined !== that.m_selectedTroup))
 								{
 									const movementData = that.m_movementMapResults[hashKey];
-									that.m_selectedTroup.SetMoveQueue(movementData);
+									that.m_selectedTroup.SetMoveQueue(movementData.history);
 									that.m_selectedTroup = undefined;
 									that.m_state = DSC.StateGame.s_state.TSelectTroups;
 								}
@@ -1522,6 +1846,11 @@ DSC.StateGame.prototype.Run = function(in_timeDelta, in_input)
 			));
 	}
 
+	this.m_arrayTroups.forEach(function(item)
+	{
+		item.Run(in_timeDelta, in_input);
+	});
+
 	this.m_arrayDraw.forEach(function(item)
 	{
 		item.Run(in_timeDelta, in_input);
@@ -1556,7 +1885,8 @@ DSC.StateGame.prototype.SetArrayTroups = function(in_arrayTroups)
 		trace += 1;
 		//for now, just put a map button
 		const location = DSC.MapLocationFactoryFromMapCellData(sortData, 0.3);
-		const troup = DSC.Troup.Factory(item, location, sortData.x, sortData.y, sortData.z);
+		const troup = DSC.Troup.Factory(item, location, sortData.x, sortData.y, sortData.z, that.m_movementMap);
+		that.m_arrayTroups.push(troup);
 		that.m_arrayDraw.push(
 			DSC.MapButton.Factory(
 				item.name, 
@@ -1568,8 +1898,9 @@ DSC.StateGame.prototype.SetArrayTroups = function(in_arrayTroups)
 					},
 					"CallbackUp" : function(in_x, in_y, in_button){
 						const start = troup.GetCurrentLocationHash();
-						that.m_selectedTroup = item;
-						that.m_movementMapResults = that.m_movementMap.GetAvaliableMove(item, start);
+						const timeToStart = troup.GetTimeToStart();
+						that.m_selectedTroup = troup;
+						that.m_movementMapResults = that.m_movementMap.GetAvaliableMove(item, start, timeToStart);
 						that.m_state = DSC.StateGame.s_state.TSelectDestination;
 						return;
 					}
@@ -1698,246 +2029,6 @@ DSC.StateSelectTroups.Factory = function(in_stateGame)
 }
 
 //==================================================================
-//=============================== MovementMap
-//==================================================================
-DSC.MovementMap = function(in_mapMovementData)
-{
-	if ( !(this instanceof DSC.MovementMap) )
-		alert("DSC.MovementMap: call constuctor with new keyword");
-	this.m_mapMovementData = in_mapMovementData;
-}
-
-//return the map of locations we can move to
-DSC.MovementMap.prototype.GetAvaliableMove = function(in_troupData, in_locationStart)
-{
-	var flowMap = {};
-
-	this.MovementFlow(in_troupData, flowMap, in_locationStart, [], 0);
-
-	return flowMap;
-}
-
-DSC.MovementMap.prototype.GetCellData = function(in_key)
-{
-	if (in_key in this.m_mapMovementData)
-	{
-		return this.m_mapMovementData[in_key];
-	}
-	return undefined;
-}
-
-DSC.MovementMap.prototype.MovementFlow = function(in_troupData, in_flowMap, in_locationHash, in_history, in_cost)
-{
-	const mapMoveData = this.GetCellData(in_locationHash);
-	if (undefined === mapMoveData)
-	{
-		return;
-	}
-
-	const localHistory = in_history.concat([in_locationHash]);
-
-	//does the flow map already contain an entry for this cell
-	if (in_locationHash in in_flowMap)
-	{	
-		if (in_flowMap[in_locationHash].cost <= in_cost)
-		{
-			return;
-		}
-	}
-
-	in_flowMap[in_locationHash] = DSC.MapPotentialMovementDataFactory(in_cost, localHistory);
-
-	const that = this;
-	mapMoveData.linkNodes.forEach(function(item){
-		const localCost = that.EvalueCost(in_troupData, in_locationHash, item, true);
-		if (undefined == localCost)
-		{
-			return;
-		}
-		that.MovementFlow(in_troupData, in_flowMap, item, localHistory, localCost + in_cost);
-	});
-
-	mapMoveData.neigbourNodes.forEach(function(item){
-		const localCost = that.EvalueCost(in_troupData, in_locationHash, item, false);
-		if (undefined == localCost)
-		{
-			return;
-		}
-		that.MovementFlow(in_troupData, in_flowMap, item, localHistory, localCost + in_cost);
-	});
-
-	return;
-}
-
-DSC.MovementMap.prototype.EvalueCost = function(in_troupData, in_start, in_end, in_isLink)
-{
-	const mapMoveDataStart = this.GetCellData(in_start);
-	if (undefined === mapMoveDataStart)
-	{
-		return undefined;
-	}
-	const mapMoveDataEnd = this.GetCellData(in_end);
-	if (undefined === mapMoveDataEnd)
-	{
-		return undefined;
-	}
-
-	const xDelta = mapMoveDataEnd.location.x - mapMoveDataStart.location.x;
-	const yDelta = mapMoveDataEnd.location.y - mapMoveDataStart.location.y;
-	const heightDelta = mapMoveDataEnd.location.z - mapMoveDataStart.location.z;
-	var cost = 0;
-	// troups can only move a certain step up or down when it is not a link
-	if (false === in_isLink)
-	{
-		if ((heightDelta < -(in_troupData.maxDropHeight)) ||
-			(in_troupData.maxStepUp < heightDelta))
-		{
-			return undefined;
-		}
-
-		if (heightDelta < -(in_troupData.maxDropHeightWithoutCost))
-		{
-			const costDropPerUnit = ((-heightDelta) - in_troupData.maxDropHeightWithoutCost) / (in_troupData.maxDropHeight - in_troupData.maxDropHeightWithoutCost);
-			cost += costDropPerUnit * (-heightDelta);
-		}
-		else if (in_troupData.maxStepUpWithoutCost < heightDelta)
-		{
-			const costDropPerUnit = ((-heightDelta) - in_troupData.maxDropHeightWithoutCost) / (in_troupData.maxDropHeight - in_troupData.maxDropHeightWithoutCost);
-			cost += costDropPerUnit * (-heightDelta);
-		}
-		cost += in_troupData.moveCost;
-	}
-	else
-	{
-		const dist = Math.sqrt((xDelta * xDelta) + (yDelta * yDelta) + (heightDelta * heightDelta));
-		cost += (dist * in_troupData.moveCost);
-	}
-
-	return cost;
-}
-
-DSC.MovementMap.HashLocation = function(in_gridX, in_gridY, in_gridZ)
-{
-	var hash = DSC.SimpleHash(in_gridX);
-	hash = DSC.SimpleHash(in_gridY, hash);
-	hash = DSC.SimpleHash(in_gridZ, hash);
-	return hash;
-}
-
-/*
-	"x" : in_x, //grid index x
-	"y" : in_y, //grid index y
-	"z" : in_z,
-	"zLow" : in_zLow,
-	"placementPriority" : (undefined === _placementPriority) ? 0 : _placementPriority,
-	"cauldron" : (undefined === _cauldron) ? 0 : _cauldron, //int cauldron size?
-	"linkArrayMapLocation" : (undefined === _linkArrayMapLocation) ? [] : _linkArrayMapLocation,
-*/
-DSC.MovementMap.LocationMatch = function(in_mapCellDataA, in_mapCellDataB)
-{
-	if ((in_mapCellDataA.x == in_mapCellDataB.x) && 
-	(in_mapCellDataA.y == in_mapCellDataB.y) &&
-	(in_mapCellDataA.z == in_mapCellDataB.z))
-	{
-		return true; //coincident, or same
-	}
-	return false;
-}
-
-DSC.MovementMap.IsLink = function(in_mapCellDataA, in_mapCellDataB)
-{
-	var match = false;
-	in_mapCellDataA.linkArrayMapLocation.forEach(function(item){
-		if (DSC.MovementMap.LocationMatch(item, in_mapCellDataB))
-		{
-			match = true;
-		}
-	});
-	in_mapCellDataB.linkArrayMapLocation.forEach(function(item){
-		if (DSC.MovementMap.LocationMatch(item, in_mapCellDataA))
-		{
-			match = true;
-		}
-	});
-	return match;
-}
-
-/*
-(0,0) (1,0) (2,0) (3,0)
-   (0,1) (1,1) (2,1) (3,1)
-(0,2) (1,2) (2,2) (3,2)
-   (0,3) (1,3) (2,3) (3,3)
-*/
-DSC.MovementMap.IsNeibour = function(in_mapCellDataA, in_mapCellDataB)
-{
-	if (true === DSC.MovementMap.LocationMatch(in_mapCellDataA, in_mapCellDataB))
-	{
-		return false;
-	}
-	if ((in_mapCellDataA.y == in_mapCellDataB.y) &&
-		((in_mapCellDataA.x + 1 == in_mapCellDataB.x) || (in_mapCellDataA.x - 1 == in_mapCellDataB.x)))
-	{
-		return true;
-	}
-	if ((in_mapCellDataA.y + 1 == in_mapCellDataB.y) || (in_mapCellDataA.y - 1 == in_mapCellDataB.y))
-	{
-		if (0 === (in_mapCellDataA.y & 1))
-		{
-			if ((in_mapCellDataA.x - 1 == in_mapCellDataB.x) || (in_mapCellDataA.x == in_mapCellDataB.x))
-			{
-				return true;
-			}
-		}
-		else
-		{
-			if ((in_mapCellDataA.x == in_mapCellDataB.x) || (in_mapCellDataA.x + 1 == in_mapCellDataB.x))
-			{
-				return true;
-			}
-		}
-	}
-
-	return false;
-}
-
-DSC.MovementMap.Factory = function(in_arrayMapCellData)
-{
-	const mapMovementData = {};
-	in_arrayMapCellData.forEach(function(item)
-	{
-		const key = DSC.MovementMap.HashLocation(item.x, item.y, item.z);
-
-		var linkNodes = [];
-		var neigbourNodes = [];
-		in_arrayMapCellData.forEach(function(subItem)
-		{
-			if (true == DSC.MovementMap.IsLink(item, subItem))
-			{
-				var subItemHash = DSC.MovementMap.HashLocation(subItem.x, subItem.y, subItem.z);
-				linkNodes.push(subItemHash);
-			}
-
-			if (true == DSC.MovementMap.IsNeibour(item, subItem))
-			{
-				var subItemHash = DSC.MovementMap.HashLocation(subItem.x, subItem.y, subItem.z);
-				neigbourNodes.push(subItemHash);
-			}
-		});
-		const location = DSC.MapLocationFactoryFromMapCellData(item);
-		mapMovementData[key] = DSC.MovementMapDataFactory(location, linkNodes, neigbourNodes);
-	});
-
-	return new DSC.MovementMap(mapMovementData);
-}
-
-DSC.SimpleHash = function(in_value, _hash)
-{
-	const hash = (_hash !== undefined) ? _hash : 0;
-	const result = ((hash * 31) + in_value) | 0;
-	return result;
-}
-
-//==================================================================
 //=============================== data factories
 //==================================================================
 DSC.MapViewportDataFactory = function(in_x, in_y, in_width, in_height)
@@ -2017,12 +2108,15 @@ DSC.TroupDataFactory = function(
 	};
 }
 
-DSC.MovementMapDataFactory = function(in_location, in_linkNodes, in_neigbourNodes)
+DSC.MovementMapDataFactory = function(in_location, in_linkNodes, in_neigbourNodes, in_gridX, in_gridY, in_gridZ)
 {
 	return {
 		"location" : in_location,
 		"linkNodes" : in_linkNodes,
-		"neigbourNodes" : in_neigbourNodes
+		"neigbourNodes" : in_neigbourNodes,
+		"gridX" : in_gridX, //grid index x
+		"gridY" : in_gridY, //grid index y
+		"gridZ" : in_gridZ,
 	};
 }
 
@@ -2034,6 +2128,13 @@ DSC.MapPotentialMovementDataFactory = function(in_cost, in_history)
 	};
 }
 
+DSC.MapMoveHistoryDataFactory = function(in_stepCost, in_locationHash)
+{
+	return {
+		"stepCost" : in_stepCost,
+		"locationHash" : in_locationHash
+	};
+}
 
 			// -->
 		</script>
