@@ -1275,10 +1275,6 @@ DSC.MovementMap.prototype.MovementFlow = function(in_troupData, in_flowMap, in_l
 		return;
 	}
 
-	const moveHistory = DSC.MapMoveHistoryDataFactory(in_costStep, in_locationHash);
-	//const localHistory = in_history.concat([moveHistory]);
-	const localHistory = [moveHistory].concat(in_history);
-
 	//does the flow map already contain an entry for this cell
 	if (in_locationHash in in_flowMap)
 	{	
@@ -1287,6 +1283,9 @@ DSC.MovementMap.prototype.MovementFlow = function(in_troupData, in_flowMap, in_l
 			return;
 		}
 	}
+
+	const moveHistory = DSC.MapMoveHistoryDataFactory(in_costStep, in_locationHash);
+	const localHistory = [moveHistory].concat(in_history);
 
 	in_flowMap[in_locationHash] = DSC.MapPotentialMovementDataFactory(in_cost, localHistory);
 
@@ -1345,8 +1344,9 @@ DSC.MovementMap.prototype.EvalueCost = function(in_troupData, in_start, in_end, 
 		}
 		else if (in_troupData.maxStepUpWithoutCost < heightDelta)
 		{
-			const costDropPerUnit = ((-heightDelta) - in_troupData.maxDropHeightWithoutCost) / (in_troupData.maxDropHeight - in_troupData.maxDropHeightWithoutCost);
-			cost += costDropPerUnit * (-heightDelta);
+			//stup up 1m
+			const costDropPerUnit = (heightDelta - in_troupData.maxDropHeightWithoutCost) / (in_troupData.maxDropHeight - in_troupData.maxDropHeightWithoutCost);
+			cost += costDropPerUnit * heightDelta;
 		}
 		cost += in_troupData.moveCost;
 	}
@@ -1509,10 +1509,6 @@ DSC.Troup.prototype.Run = function(in_timeDelta, in_input)
 	this.m_moveTimeAccumulation += in_timeDelta;
 	while(true)
 	{
-		if (0 == this.m_moveStack.length)
-		{
-			break;
-		}
 		if (this.m_moveTimeAccumulation < this.m_moveTimeTotal)
 		{
 			break;
@@ -1521,6 +1517,17 @@ DSC.Troup.prototype.Run = function(in_timeDelta, in_input)
 		this.m_moveLocationStart.x = this.m_moveLocationEnd.x;
 		this.m_moveLocationStart.y = this.m_moveLocationEnd.y;
 		this.m_moveLocationStart.z = this.m_moveLocationEnd.z;
+
+		if (0 == this.m_moveStack.length)
+		{
+			this.m_moveTimeAccumulation = 0.0;
+			this.m_moveStack = undefined;
+			this.m_moveTimeTotal = 0.0;
+			this.m_location.x = this.m_moveLocationEnd.x;
+			this.m_location.y = this.m_moveLocationEnd.y;
+			this.m_location.z = this.m_moveLocationEnd.z;
+			return;
+		}
 
 		const data = this.m_moveStack.pop();
 		this.m_moveTimeTotal = data.stepCost;
@@ -1534,21 +1541,12 @@ DSC.Troup.prototype.Run = function(in_timeDelta, in_input)
 		this.m_gridZ = cellData.gridZ;
 	} // [dest, start]
 
-	if (0 == this.m_moveStack.length)
+	if (0.0 !== this.m_moveTimeTotal)
 	{
-		this.m_location.x = this.m_moveLocationEnd.x;
-		this.m_location.y = this.m_moveLocationEnd.y;
-		this.m_location.z = this.m_moveLocationEnd.z;
-	}
-	else
-	{
-		if (0.0 !== this.m_moveTimeTotal)
-		{
-			const ratio = this.m_moveTimeAccumulation / this.m_moveTimeTotal;
-			this.m_location.x = DSC.Lerp(this.m_moveLocationStart.x, this.m_moveLocationEnd.x, ratio);
-			this.m_location.y = DSC.Lerp(this.m_moveLocationStart.y, this.m_moveLocationEnd.y, ratio);
-			this.m_location.z = DSC.Lerp(this.m_moveLocationStart.z, this.m_moveLocationEnd.z, ratio);
-		}
+		const ratio = this.m_moveTimeAccumulation / this.m_moveTimeTotal;
+		this.m_location.x = DSC.Lerp(this.m_moveLocationStart.x, this.m_moveLocationEnd.x, ratio);
+		this.m_location.y = DSC.Lerp(this.m_moveLocationStart.y, this.m_moveLocationEnd.y, ratio);
+		this.m_location.z = DSC.Lerp(this.m_moveLocationStart.z, this.m_moveLocationEnd.z, ratio);
 	}
 
 	return;
@@ -1611,44 +1609,83 @@ DSC.StateMain = function()
 	this.m_keepGoing = true;
 	this.m_arrayDraw = [];
 	const that = this;
-	this.m_arrayDraw.push(DSC.Button.Factory(
-		"map 0", 
-		20, 20, 128, 32, 
-		{
-			CallbackUp : function(x, y, in_button)
+	this.m_arrayDraw.push(
+		DSC.Button.Factory(
+			"map 0", 
+			20, 20, 128, 32, 
 			{
-				in_button.ResetState();
-				DSC.PushState(DSC.StateGame.Factory(
-					DSC.MapViewportDataFactory(-6, -3, DSC.m_canvas.width / 40.0, DSC.m_canvas.height / 40.0),
-					[
-						DSC.MapCellDataFactory(1, 0, 1, -1),
-						DSC.MapCellDataFactory(2, 0, 1.5, -1),
-						DSC.MapCellDataFactory(3, 0, 2, -1),
+				CallbackUp : function(x, y, in_button)
+				{
+					in_button.ResetState();
+					DSC.PushState(DSC.StateGame.Factory(
+						DSC.MapViewportDataFactory(-6, -3, DSC.m_canvas.width / 40.0, DSC.m_canvas.height / 40.0),
+						[
+							DSC.MapCellDataFactory(1, 0, 1, -1),
+							DSC.MapCellDataFactory(2, 0, 1, -1),
+							DSC.MapCellDataFactory(3, 0, 1, -1),
 
-						DSC.MapCellDataFactory(0, 1, 6.5, -1, 4),
-						DSC.MapCellDataFactory(1, 1, 7, -1, 5),
-						DSC.MapCellDataFactory(2, 1, 7.5, -1, 6),
-						DSC.MapCellDataFactory(3, 1, 2.5, -1),
+							DSC.MapCellDataFactory(0, 1, 2.5, -1, 4),
+							DSC.MapCellDataFactory(1, 1, 3, -1, 5),
+							DSC.MapCellDataFactory(2, 1, 3, -1, 6),
+							DSC.MapCellDataFactory(3, 1, 1.5, -1),
 
-						DSC.MapCellDataFactory(0, 2, 6, -1, 3),
-						DSC.MapCellDataFactory(1, 2, 20, -1, 0),
-						DSC.MapCellDataFactory(2, 2, 10, -1, 0, 1),
-						DSC.MapCellDataFactory(3, 2, 8, -1, 7),
-						DSC.MapCellDataFactory(4, 2, 3, -1),
+							DSC.MapCellDataFactory(0, 2, 2.5, -1, 3),
+							DSC.MapCellDataFactory(1, 2, 3.5, -1, 0),
+							DSC.MapCellDataFactory(2, 2, 5, -1, 0, 1),
+							DSC.MapCellDataFactory(3, 2, 3, -1, 7),
+							DSC.MapCellDataFactory(4, 2, 1.5, -1),
 
-						DSC.MapCellDataFactory(0, 3, 5.5, -1, 2),
-						DSC.MapCellDataFactory(1, 3, 9, -1, 9),
-						DSC.MapCellDataFactory(2, 3, 8.5, -1, 8),
-						DSC.MapCellDataFactory(3, 3, 3.5, -1),
+							DSC.MapCellDataFactory(0, 3, 2.5, -1, 2),
+							DSC.MapCellDataFactory(1, 3, 3.5, -1, 9),
+							DSC.MapCellDataFactory(2, 3, 3.5, -1, 8),
+							DSC.MapCellDataFactory(3, 3, 1.5, -1),
 
-						DSC.MapCellDataFactory(1, 4, 5, -1, 1),
-						DSC.MapCellDataFactory(2, 4, 4.5, -1),
-						DSC.MapCellDataFactory(3, 4, 4, -1),
-					]
-					));
-			}
-		} //_functor
-		));
+							DSC.MapCellDataFactory(1, 4, 2, -1, 1),
+							DSC.MapCellDataFactory(2, 4, 2, -1),
+							DSC.MapCellDataFactory(3, 4, 2, -1),
+						]
+						));
+				}
+			} //_functor
+		),
+		DSC.Button.Factory(
+			"map 1", 
+			20, 60, 128, 32, 
+			{
+				CallbackUp : function(x, y, in_button)
+				{
+					in_button.ResetState();
+					DSC.PushState(DSC.StateGame.Factory(
+						DSC.MapViewportDataFactory(-6, -3, DSC.m_canvas.width / 40.0, DSC.m_canvas.height / 40.0),
+						[
+							DSC.MapCellDataFactory(0, 0, 1, -1),
+							DSC.MapCellDataFactory(5, 0, 1, -1),
+
+							DSC.MapCellDataFactory(0, 1, 1, -1, 1),
+							DSC.MapCellDataFactory(1, 1, 1, -1, 2),
+							DSC.MapCellDataFactory(2, 1, 1, -1, 3),
+							DSC.MapCellDataFactory(3, 1, 1, -1, 4),
+							DSC.MapCellDataFactory(4, 1, 1, -1, 5),
+
+							DSC.MapCellDataFactory(1, 2, 1, -1, 2),//1024
+							DSC.MapCellDataFactory(2, 2, 1, -1, 3),//1985
+							DSC.MapCellDataFactory(3, 2, 1, -1, 4),//2946
+							DSC.MapCellDataFactory(4, 2, 1, -1, 5),
+
+							DSC.MapCellDataFactory(0, 3, 1, -1, 1),
+							DSC.MapCellDataFactory(1, 3, 1, -1, 2),
+							DSC.MapCellDataFactory(2, 3, 1, -1, 3),
+							DSC.MapCellDataFactory(3, 3, 1, -1, 4),
+							DSC.MapCellDataFactory(4, 3, 1, -1, 5),
+
+							DSC.MapCellDataFactory(0, 4, 1, -1),
+							DSC.MapCellDataFactory(5, 4, 1, -1),
+						]
+						));
+				}
+			} //_functor
+		),
+		);
 
 	this.m_arrayDraw.push(DSC.Button.Factory(
 		"exit", 
@@ -1713,6 +1750,10 @@ DSC.StateGame = function(in_mapViewportData, in_arrayMapCellData)
 					return true;
 				},
 				"CallbackDrag" : function(in_x, in_y, in_button){
+					if (that.m_state !== DSC.StateGame.s_state.TSelectTroups)
+					{
+						return;
+					}
 					const x = DSC.CalcScreenToViewportX(in_x, DSC.m_canvas, that.m_mapViewportData);
 					const y = DSC.CalcScreenToViewportY(in_y, DSC.m_canvas, that.m_mapViewportData);
 					//console.log("CallbackDrag x:" + x.toString() + " y:" + y.toString());
@@ -1932,6 +1973,7 @@ DSC.StateSelectTroups = function(in_stateGame, in_troupDataArray)
 	in_troupDataArray.forEach(function(item)
 	{
 		const deploy = (trace < 2);
+		//const deploy = (trace < 1);
 		that.m_arrayDraw.push(
 			DSC.ToggleButton.Factory(
 				item.name,
@@ -2104,7 +2146,7 @@ DSC.TroupDataFactory = function(
 		"maxStepUp" : (undefined === _maxStepUp) ? 3.0 : _maxStepUp,
 		"maxStepUpWithoutCost" : (undefined === _maxStepUpWithoutCost) ? 0.5 : _maxStepUpWithoutCost,
 		"stepUpCost" : (undefined === _stepUpCost) ? 3.0 : _stepUpCost,
-		"moveCost" : (undefined === _moveCost) ? 0.3 : _moveCost
+		"moveCost" : (undefined === _moveCost) ? 0.5 : _moveCost
 	};
 }
 
