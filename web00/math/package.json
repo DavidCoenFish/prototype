@@ -1,0 +1,19 @@
+{
+	"author": "David Coen",
+	"version": "0.0.0",
+	"scripts": {
+		"unittest": "node bin/unittest",
+		"unittest_vsc": "node --nolazy --inspect-brk=5858 bin/unittest"
+	},
+	"dependencies": {},
+	"description": "geometric math classes",
+	"devDependencies": {
+		"q": "^1.5.1"
+	},
+	"keywords": [],
+	"license": "UNLICENSED",
+	"main": "inde.js",
+	"name": "math",
+	"scope": "dsc",
+	"private": true
+}

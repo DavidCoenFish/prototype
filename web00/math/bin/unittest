@@ -1,0 +1,61 @@
+#!/usr/bin/env node
+
+const FileSystem = require("fs");
+const Path = require("path");
+const Q = require("q");
+
+main();
+
+function main(){
+	var promiseFactoryArray = [];
+	//gatherUnitTestPromises(promiseFactoryArray);
+	require("./../unittest/vector2.js")(promiseFactoryArray);
+
+	console.log("unittest promiseArray.length:" + promiseFactoryArray.length);
+
+	var exitCode = 0;
+	var passCount = 0;
+	const promise = promiseFactoryArray.reduce(function(input, factory){
+		return input.then(function(){
+			return factory();
+		}).then(function(input){
+			passCount += 1;
+		}).catch(function(error){
+			exitCode = 1;
+			console.log("test threw:" + error + " " + JSON.stringify(error));
+		});
+	}, Q.resolve());
+
+	promise.done(function(){
+		console.log("PASS:" + passCount);
+		process.exit(exitCode);
+	},function(error){
+		console.log("FAILED 2:" + error);
+		exitCode = 1; //error
+		process.exit(exitCode);
+	});
+}
+
+const walkSync = function (currentDirPath, callback) {
+	FileSystem.readdirSync(currentDirPath).forEach(function (name) {
+		var filePath = Path.join(currentDirPath, name);
+		var stat = FileSystem.statSync(filePath);
+		if (stat.isFile()) {
+			callback(filePath, stat, name);
+		}
+	});
+}
+
+const gatherUnitTestPromises = function(promiseFactoryArray) {
+	const unittestPath = Path.join(__dirname, "./../unittest/");
+	walkSync(unittestPath, function(filePath, stat, name){
+		var testPath = "./" + Path.relative(__dirname, filePath).replace(/\\/g, "/");
+		try{
+			require(testPath)(promiseFactoryArray);
+		}catch (err){
+			promiseFactoryArray.push(function(){ return q.reject("unittestPath:" + testPath + " threw:" + err)});
+		}
+	});
+	return;
+}
+
