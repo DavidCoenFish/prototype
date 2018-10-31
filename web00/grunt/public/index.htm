@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="Content-Style-Type" content="text/css"/>
+		<title>template</title>
+	</head>
+	<body style='background-color: #000000'>
+		<canvas id='canvasId' style = 'background-color: #000000; width: 512px; height: 256px;' >
+			This text is displayed if your browser does not support HTML5 Canvas.
+		</canvas>
+
+		<script type='text/JavaScript' SRC="script/bundle.min.js" ></script>
+
+		<!--hook events-->
+		<script type='text/javascript'>
+			//<!-- 
+
+OnPageLoad = function() {
+	console.info("OnPageLoad");
+	console.info(vector.getX());
+	//var canvas = document.getElementById('canvasId');	
+}
+
+window.addEventListener('load', OnPageLoad, true);
+
+			// -->
+		</script>
+	</body>
+</html>
