@@ -3,7 +3,7 @@ Float32Array
  */
 const Vector = require("./vector.js");
 
-module.exports.factory = function(in_x, in_y, in_baseArrayClass){
+const factory = function(in_x, in_y, in_baseArrayClass){
 	const data = new in_baseArrayClass([in_x, in_y]);
 	const result = Object.create({
 		"getX" : function(){
@@ -38,8 +38,13 @@ module.exports.factory = function(in_x, in_y, in_baseArrayClass){
 	return result;
 }
 
-module.exports.factoryFloat32 = function(in_xOrUndefined, in_yOrUndefined){
+const factoryFloat32 = function(in_xOrUndefined, in_yOrUndefined){
 	const x = (undefined === in_xOrUndefined) ? 0.0 : in_xOrUndefined;
 	const y = (undefined === in_yOrUndefined) ? 0.0 : in_yOrUndefined;
-	return module.exports.factory(x, y, Float32Array);
+	return factory(x, y, Float32Array);
+}
+
+module.exports = {
+	"factory" : factory,
+	"factoryFloat32" : factoryFloat32
 }

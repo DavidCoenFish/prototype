@@ -1,3 +1,7 @@
+/*
+common properties for the vector class
+ */
+
 module.exports.prototype = {
 	"dotProduct" : function(in_vector){
 		const dataLhs = this.getRaw();

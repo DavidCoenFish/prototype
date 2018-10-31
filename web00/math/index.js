@@ -1,2 +1,3 @@
-module.eports.Vector2D = require("./source/vector2")
-
+module.exports = {
+	"Vector2" : require("./vector2")
+};

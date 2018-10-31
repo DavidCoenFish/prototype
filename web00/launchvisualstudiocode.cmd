@@ -1,2 +1,2 @@
-start code . 
-exit
+START /b code . 
+

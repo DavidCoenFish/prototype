@@ -2,17 +2,20 @@
 	"author": "David Coen",
 	"version": "0.0.0",
 	"scripts": {
-		"unittest": "node bin/unittest",
-		"unittest_vsc": "node --nolazy --inspect-brk=5858 bin/unittest"
+		"unittest": "node unittest.js",
+		"unittestvsc": "node --nolazy --inspect-brk=5858 unittest.js",
+		"unittestcontinuous": "nodemon unittest.js"
 	},
 	"dependencies": {},
 	"description": "geometric math classes",
 	"devDependencies": {
-		"q": "^1.5.1"
+		"q": "^1.5.1",
+		"nodemon": "^1.18.5",
+		"unittest": "file:../unittest"
 	},
 	"keywords": [],
 	"license": "UNLICENSED",
-	"main": "inde.js",
+	"main": "index.js",
 	"name": "math",
 	"scope": "dsc",
 	"private": true
