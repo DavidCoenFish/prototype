@@ -1,0 +1,20 @@
+{
+	"name": "core",
+	"version": "0.0.0",
+	"description": "",
+	"devDependencies": {
+		"q": "^1.5.1",
+		"nodemon": "^1.18.5",
+		"unittest": "file:../unittest"
+	},
+	"main": "index.js",
+	"scripts": {
+		"unittest": "node unittest.js",
+		"unittestvsc": "node --nolazy --inspect-brk=5858 unittest.js",
+		"unittestcontinuous": "nodemon unittest.js"
+	},
+	"keywords": [],
+	"author": "",
+	"private": true,
+	"license": "ISC"
+}

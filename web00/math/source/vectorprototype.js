@@ -2,7 +2,7 @@
 common properties for the vector class
  */
 
-module.exports.prototype = {
+module.exports = {
 	"dotProduct" : function(in_vector){
 		const dataLhs = this.getRaw();
 		const dataRhs = in_vector.getRaw();

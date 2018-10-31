@@ -12,10 +12,7 @@ const walkSync = function (currentDirPath, callback) {
 	});
 }
 
-//__dirname
 const gatherUnitTestPromises = function(promiseFactoryArray, in_path) {
-	//const unittestPath = Path.join(in_dirName, in_path);
-	//console.log("gatherUnitTestPromises unittestPath:" + unittestPath);
 	walkSync(in_path, function(filePath, stat, name){
 		try{
 			require(filePath)(promiseFactoryArray);

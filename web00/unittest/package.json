@@ -1,15 +1,14 @@
 {
   "name": "unittest",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "dependencies": {
     "q": "^1.5.1"
   },
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "scripts": {},
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "private": true
 }

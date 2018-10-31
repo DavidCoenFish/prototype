@@ -46,12 +46,23 @@ const factory = function(in_html5CanvasElement, in_paramObjectOrUndefined){
 	var webGLContext = getWebGLContext(in_html5CanvasElement, in_paramObjectOrUndefined);
 	const result = Object.create({
 		"ContextLostCallback" : function(in_event){
+			webGLContext = undefined;
+			this.triggerEvent("webglcontextlost", this);
 		},
 		"ContextRestoredCallback" : function(in_event){
+			webGLContext = undefined;
+			in_event.preventDefault();
+			webGLContext = getWebGLContext(in_html5CanvasElement, in_paramObjectOrUndefined);
+			this.triggerEvent("webglcontextrestored", this);
 		}
+		//create/destroy shader
+		//create/destroy teture
+		//create/destroy/activate material
+		//create/destroy/activate render target
+		//create/destroy/draw model
 	});
 
-	//Object.assign(result, Vector.eventDispatcher);
+	Core.EventDispatcherDecorate(result);
 
 	in_html5CanvasElement.addEventListener("webglcontextlost", function(in_event){ result.ContextLostCallback(in_event); }, false);
 	in_html5CanvasElement.addEventListener("webglcontextrestored", function(in_event){ result.ContextRestoredCallback(in_event); }, false);

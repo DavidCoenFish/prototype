@@ -1,7 +1,7 @@
 /*
 Float32Array
  */
-const Vector = require("./vector.js");
+const VectorPrototype = require("./vectorprototype.js");
 
 const factory = function(in_x, in_y, in_z, in_baseArrayClass){
 	const data = new in_baseArrayClass([in_x, in_y, in_z]);
@@ -41,7 +41,7 @@ const factory = function(in_x, in_y, in_z, in_baseArrayClass){
 		}
 	});
 
-	Object.assign(result, Vector.prototype);
+	Object.assign(result, VectorPrototype);
 	
 	return result;
 }
