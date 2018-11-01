@@ -42,19 +42,93 @@ const makeParamObject = function(in_alphaOrUndefined, in_depthOrUndefined, in_an
 		};
 }
 
+const sTokenWebglContextLost = "webglcontextlost";
+const sTokenWebglContextRestored = "webglcontextrestored";
+
 const factory = function(in_html5CanvasElement, in_paramObjectOrUndefined){
 	var webGLContext = getWebGLContext(in_html5CanvasElement, in_paramObjectOrUndefined);
 	const result = Object.create({
-		"ContextLostCallback" : function(in_event){
+		"contextLostCallback" : function(in_event){
 			webGLContext = undefined;
-			this.triggerEvent("webglcontextlost", this);
+			this.triggerEvent(sTokenWebglContextLost, this);
 		},
-		"ContextRestoredCallback" : function(in_event){
+		"contextRestoredCallback" : function(in_event){
 			webGLContext = undefined;
 			in_event.preventDefault();
 			webGLContext = getWebGLContext(in_html5CanvasElement, in_paramObjectOrUndefined);
-			this.triggerEvent("webglcontextrestored", this);
-		}
+			this.triggerEvent(sTokenWebglContextRestored, this);
+		},
+		"getError" : function(){
+			if (undefined === webGLContext){
+				return;
+			}
+			var error = webGLContext.getError();
+			var message;
+			switch (error){
+			default:
+				message = "WebGLContetWrapper.GetError:unknown:" + error;
+				break;
+			case webGLContext.NO_ERROR: // 0: //NO_ERROR:
+				return;
+			case webGLContext.INVALID_ENUM: // 0x0500: //INVALID_ENUM:
+				message = "WebGLContetWrapper.GetError:INVALID_ENUM";
+				break;
+			case webGLContext.INVALID_VALUE: // 0x0501: //INVALID_VALUE:
+				message = "WebGLContetWrapper.GetError:INVALID_VALUE";
+				break;
+			case webGLContext.INVALID_OPERATION: //0x0502: //INVALID_OPERATION:
+				message = "WebGLContetWrapper.GetError:INVALID_OPERATION";
+				break;
+			case webGLContext.OUT_OF_MEMORY: //0x0505: //OUT_OF_MEMORY:
+				message = "WebGLContetWrapper.GetError:OUT_OF_MEMORY";
+				break;
+			case webGLContext.CONTEXT_LOST_WEBGL:// 0x9242: //CONTEXT_LOST_WEBGL:
+				webGLContext = undefined;
+				console.info("WebGLContetWrapper.GetError:CONTEXT_LOST_WEBGL");
+				return;
+			}
+			webGLContext = undefined;
+			console.info(message);
+			alert(message);
+			return;
+		},
+		"clear" : function(in_colourOrUndefined, in_depthOrUndefined, in_stencilOrUndefined){
+			var clearFlag = 0;
+
+			if ((undefined !== in_colourOrUndefined) &&
+				(undefined !== webGLContext)){
+				clearFlag |= webGLContext.COLOR_BUFFER_BIT;
+				webGLContext.clearColor(
+					in_colourOrUndefined.getRed(),
+					in_colourOrUndefined.getGreen(),
+					in_colourOrUndefined.getBlue(),
+					in_colourOrUndefined.getAlpha()
+					);
+				this.getError();
+			}
+
+			if ((undefined !== in_depthOrUndefined) &&
+				(undefined !== webGLContext)){
+				clearFlag |= webGLContext.DEPTH_BUFFER_BIT;
+				webGLContext.clearDepth(in_depthOrUndefined);
+				this.getError();
+			}
+
+			if ((undefined !== in_stencilOrUndefined) &&
+				(undefined !== webGLContext)){
+				clearFlag |= webGLContext.STENCIL_BUFFER_BIT;
+				webGLContext.clearStencil(in_stencilOrUndefined);
+				this.getError();
+			}
+
+			if (undefined !== webGLContext){
+				webGLContext.clear(clearFlag);
+				this.getError();
+			}
+
+			return;
+		},
+
 		//create/destroy shader
 		//create/destroy teture
 		//create/destroy/activate material
@@ -64,8 +138,8 @@ const factory = function(in_html5CanvasElement, in_paramObjectOrUndefined){
 
 	Core.EventDispatcherDecorate(result);
 
-	in_html5CanvasElement.addEventListener("webglcontextlost", function(in_event){ result.ContextLostCallback(in_event); }, false);
-	in_html5CanvasElement.addEventListener("webglcontextrestored", function(in_event){ result.ContextRestoredCallback(in_event); }, false);
+	in_html5CanvasElement.addEventListener("webglcontextlost", function(in_event){ result.contextLostCallback(in_event); }, false);
+	in_html5CanvasElement.addEventListener("webglcontextrestored", function(in_event){ result.contextRestoredCallback(in_event); }, false);
 	
 	return result;
 }
