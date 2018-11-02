@@ -1,20 +1,25 @@
 {
-  "name": "package",
-  "version": "1.0.0",
-  "description": "",
-  "dependencies": {
-  },
-  "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-stage-2": "^6.24.1",
-  },
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+	"name": "package",
+	"version": "0.0.0",
+	"description": "",
+	"dependencies": {
+		"webgl": "file:../webgl",
+		"math": "file:../math"
+	},
+	"devDependencies": {
+		"babelify": "^10.0.0",
+		"@babel/core": "^7.1.2",
+		"@babel/preset-env": "^7.1.0",
+		"browserify": "^16.2.3"
+	},
+	"main": "index.js",
+	"scripts": {
+		"package": "node index.js",
+		"packagevsc": "node --nolazy --inspect-brk=5858 index.js",
+		"build": "browserify input.js --debug -o output.js"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
 	"private": true
 }

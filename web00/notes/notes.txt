@@ -19,3 +19,17 @@ Uint32Array
 for (var i = 0; i < cars.length; i++) { 
     text += cars[i] + "<br>";
 }
+
+
+{
+	"comments": false,
+	"presets": ["@babel/preset-env"]
+}
+
+	"browserify": {
+		"transform": [ "babelify" ]
+	},
+	"babelify": {
+		"minified": true,
+		"presets": ["@babel/preset-env"]
+	},

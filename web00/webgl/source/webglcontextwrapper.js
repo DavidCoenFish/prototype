@@ -3,25 +3,30 @@ wrap the webgl context out of a html5 canvas dom element
 manage context lost and restored
 manage creation and destruction of resources (which may need context lost and restored)
  */
+const Core = require("core");
 
 const getWebGLContext = function(in_html5CanvasElement, in_paramObjectOrUndefined){
 	var webGL = undefined;
 
-	if (!window.WebGLRenderingContext) {
-		throw(" Webgl not supported");
+	if (undefined === in_html5CanvasElement) {
+		throw("Canvas element not found");
 	} 
 
-	webGL = in_html5CanvasElement.getContext("webgl", in_paramObjectOrUndefined);
+	if (!window.WebGLRenderingContext) {
+		throw("Webgl not supported");
+	} 
 
-	if (undefined == webGL) {
-		webGL = in_html5CanvasElement.getContext("experimental-webgl", in_paramObjectOrUndefined);
+	webGLContext = in_html5CanvasElement.getContext("webgl", in_paramObjectOrUndefined);
+
+	if (undefined === webGLContext) {
+		webGLContext = in_html5CanvasElement.getContext("experimental-webgl", in_paramObjectOrUndefined);
 	}
 
-	if (undefined == webGL) {
-		throw(" Unable to get webgl Context");
+	if (undefined === webGLContext) {
+		throw("Unable to get webgl Context");
 	}
 
-	return webGL;
+	return webGLContext;
 }
 
 	
