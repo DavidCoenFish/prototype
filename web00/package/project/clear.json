@@ -1,7 +1,7 @@
 {
-	"source" : "source/clear.js",
+	"source" : "clear.js",
 	"sourceInpoint" : "main",
-	"template" : "template/simple.htm",
+	"template" : "template/simple.htm.template",
 	"templateParam" : {
 		"title" : "clear",
 		"canvasWidth" : "512px",

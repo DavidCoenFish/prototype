@@ -6,8 +6,6 @@ manage creation and destruction of resources (which may need context lost and re
 const Core = require("core");
 
 const getWebGLContext = function(in_html5CanvasElement, in_paramObjectOrUndefined){
-	var webGL = undefined;
-
 	if (undefined === in_html5CanvasElement) {
 		throw("Canvas element not found");
 	} 
@@ -16,7 +14,7 @@ const getWebGLContext = function(in_html5CanvasElement, in_paramObjectOrUndefine
 		throw("Webgl not supported");
 	} 
 
-	webGLContext = in_html5CanvasElement.getContext("webgl", in_paramObjectOrUndefined);
+	var webGLContext = in_html5CanvasElement.getContext("webgl", in_paramObjectOrUndefined);
 
 	if (undefined === webGLContext) {
 		webGLContext = in_html5CanvasElement.getContext("experimental-webgl", in_paramObjectOrUndefined);

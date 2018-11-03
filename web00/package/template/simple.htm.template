@@ -10,5 +10,4 @@
 		</canvas>
 	</body>
 	<script type='text/JavaScript' SRC="$(bundleFilePath)" ></script>
-	<script type='text/javascript'>main(document);</script>
 </html>
