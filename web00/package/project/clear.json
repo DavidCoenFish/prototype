@@ -1,13 +1,12 @@
 {
+	"name" : "clear",
 	"source" : "clear.js",
-	"sourceInpoint" : "main",
-	"template" : "template/simple.htm.template",
+	"template" : "template/simplecanvas.htm.template",
 	"templateParam" : {
 		"title" : "clear",
 		"canvasWidth" : "512px",
 		"canvasHeight" : "256px",
 		"bundleFilePath" : "js/clearbundle.js"
 	},
-	"output" : "output/clear.htm",
-	"outputBundle" : "output/js/clearbundle.js"
+	"outputRootDir": "output"
 }

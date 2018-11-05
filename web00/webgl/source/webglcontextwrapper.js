@@ -27,14 +27,6 @@ const getWebGLContext = function(in_html5CanvasElement, in_paramObjectOrUndefine
 	return webGLContext;
 }
 
-	
-//var _paramObject = {
-//	alpha : false,
-//	depth : true,
-//	antialias : true,
-//	//premultipliedAlpha : false,
-//	extentions : ["", ""...]
-//};
 const makeParamObject = function(in_alphaOrUndefined, in_depthOrUndefined, in_antialiasOrUndefined, in_extentionsOrUndefined){
 	return {
 		"alpha" : in_alphaOrUndefined,

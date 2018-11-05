@@ -1,0 +1,10 @@
+{
+	"name" : "properties",
+	"source" : "properties.js",
+	"template" : "template/simplediv.htm.template",
+	"templateParam" : {
+		"title" : "properties",
+		"bundleFilePath" : "js/propertiesbundle.js"
+	},
+	"outputRootDir": "output"
+}

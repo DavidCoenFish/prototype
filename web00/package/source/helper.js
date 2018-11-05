@@ -56,14 +56,16 @@ const runProjectArray = function(in_projectArray){
 }
 
 const makePromice = function(in_item){
+	const htmlPath = Path.join(in_item.outputRootDir, in_item.name + ".htm");
+	const bundlePath = Path.join(in_item.outputRootDir, in_item.templateParam.bundleFilePath);
 	return Q(true).then(function(){
-		makeDirectory(in_item.output);
+		makeDirectory(htmlPath);
 	}).then(function(){
-		makeDirectory(in_item.outputBundle);
+		makeDirectory(bundlePath);
 	}).then(function(){
-		return makeTemplate(in_item);
+		return makeTemplate(in_item, htmlPath);
 	}).then(function(){
-		return doBrowserify(in_item);
+		return doBrowserify(in_item, bundlePath);
 	});
 }
 const makeDirectory = function(in_filePath){
@@ -77,12 +79,12 @@ const makeDirectory = function(in_filePath){
 	return deferred.promise;
 }
 
-const makeTemplate = function(in_item){
+const makeTemplate = function(in_item, in_htmlPath){
 	var deferred = Q.defer();
 	FileSystem.readFile(in_item.template, "utf8", function(error, data) {
 		if (error) throw error;
 		const newData = templateReplaceTokens(data, in_item.templateParam);
-		FileSystem.writeFile(in_item.output, newData, function(error){
+		FileSystem.writeFile(in_htmlPath, newData, function(error){
 			deferred.resolve(true);
 		}); 
 	});
@@ -100,7 +102,7 @@ const templateReplaceTokens = function(in_sourcedata, in_param){
 }
 
 
-const doBrowserify = function(in_item){
+const doBrowserify = function(in_item, in_bundlePath){
 	var deferred = Q.defer();
 	Browserify(in_item.source, {
 		basedir: __dirname,
@@ -120,7 +122,7 @@ const doBrowserify = function(in_item){
 			//console.log("Error: " + err.message); 
 			deferred.reject(new Error(error.message));
 			})
-		.pipe(FileSystem.createWriteStream(in_item.outputBundle));
+		.pipe(FileSystem.createWriteStream(in_bundlePath));
 	return deferred.promise;
 }
 
