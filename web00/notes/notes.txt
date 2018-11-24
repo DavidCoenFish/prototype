@@ -1,6 +1,7 @@
 todo:
 x	webclear html
-_	get webgl properties html
+x	get webgl properties html
+	deal lost context
 	draw triangle
 	draw textured triangle 
 

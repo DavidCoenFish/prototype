@@ -1,1 +1,1 @@
-START /b code .
+code .

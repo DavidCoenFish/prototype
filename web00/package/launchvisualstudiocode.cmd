@@ -1,2 +1,2 @@
-START /b code . 
-EXIT /b
+code . 
+
