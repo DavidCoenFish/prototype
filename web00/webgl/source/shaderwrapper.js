@@ -3,10 +3,13 @@ wrap the webgl handle, and everything required to recreate it
  */
 const Core = require("core");
 
-const factory = function(in_webGLContextWrapper, in_getWebGLContext, in_getWebGLError, in_vertexShaderSource, in_fragmentShaderSource, in_uniformServerOrUndefined){
+const factory = function(in_webGLContextWrapper, in_webGLContextMethod, in_vertexShaderSource, in_fragmentShaderSource, in_uniformServerOrUndefined, in_vertexAttributeNameArrayOrUndefined, in_uniformNameArrayOrUndefined){
 	const m_vertexShaderSource = Core.StringUtil.deepCopyString(in_vertexShaderSource);
 	const m_fragmentShaderSource = Core.StringUtil.deepCopyString(in_fragmentShaderSource);
+	const m_vertexAttributeNameArray = (undefined === in_vertexAttributeNameArrayOrUndefined) ? [] : in_vertexAttributeNameArrayOrUndefined.slice();
+	const m_uniformNameArray = (undefined === in_uniformNameArrayOrUndefined) ? [] : in_uniformNameArrayOrUndefined.slice();
 	const m_uniformServerOrUndefined = in_uniformServerOrUndefined;
+
 	var m_shaderProgramObject = undefined;
 	var m_vertexWebGLShader = undefined;
 	var m_fragmentWebGLShader = undefined;
@@ -16,211 +19,114 @@ const factory = function(in_webGLContextWrapper, in_getWebGLContext, in_getWebGL
 	//public methods ==========================
 	const result = Object.create({
 		"apply" : function(){
-			const webGLContext = in_getWebGLContext();
-			if ((undefined === shaderHandle) || (undefined === webGLContext)){
-				return;
+			if (undefined !== m_shaderProgramObject){
+				in_webGLContextApplyMethod("useProgram", m_shaderProgramObject);
 			}
-			webGLContext.useProgram(shaderHandle);
-			in_getWebGLError();
+			//set uniforms?
 			return;
+		},
+		"destroy" : function(){
+			releaseWebGLResources();
+			in_webGLContextWrapper.removeEventListener(in_webGLContextWrapper.sTokenWebglContextLost, aquireWebGLResources);
+			in_webGLContextWrapper.removeEventListener(in_webGLContextWrapper.sTokenWebglContextRestored, releaseWebGLResources);
 		},
 	});
 
 	//private methods ==========================
 	const aquireWebGLResources = function(){
-		var webGLContext = undefined;
-		webGLContext = in_getWebGLContext();
-		if (undefined === webGLContext){
-			return;
-		}
-		m_vertexWebGLShader = loadShader(m_vertexShaderSource, webGLContext.VERTEX_SHADER);
-
-		webGLContext = in_getWebGLContext();
-		if (undefined === webGLContext){
-			return;
-		}
-		m_fragmentWebGLShader = loadShader(m_fragmentShaderSource, webGLContext.FRAGMENT_SHADER);
-
-		m_shaderProgramObject = linkProgram(m_mapVertexAttribute, m_mapUniform, m_vertexWebGLShader, m_fragmentWebGLShader);
+		const vertexShaderEnum = in_webGLContextWrapper.getEnum("VERTEX_SHADER");
+		m_vertexWebGLShader = loadShader(m_vertexShaderSource, vertexShaderEnum);
+		const fragmentShaderEnum = in_webGLContextWrapper.getEnum("FRAGMENT_SHADER");
+		m_fragmentWebGLShader = loadShader(m_fragmentShaderSource, fragmentShaderEnum);
+		m_shaderProgramObject = linkProgram(m_mapVertexAttribute, m_mapUniform, m_vertexWebGLShader, m_fragmentWebGLShader, m_mapVertexAttribute, m_mapUniform);
 
 		return;
 	}
 
 	// if we still have a webgl context, mark the resources for delete, else clear the resource references
 	const releaseWebGLResources = function(){
-		var webGLContext = undefined;
-
-		if ( undefined !== m_shaderProgramObject)
-		{
-			webGLContext = in_getWebGLContext();
-			if (undefined !== webGLContext){
-				webGLContext.deleteProgram(m_shaderProgramObject);
-				in_getWebGLError();
-			}
-			m_shaderProgramObject = undefined;
-		}
-		if ( undefined !== m_vertexWebGLShader)
-		{
-			webGLContext = in_getWebGLContext();
-			if (undefined !== webGLContext){
-				webGLContext.deleteShader(m_vertexWebGLShader);
-				in_getWebGLError();
-			}
+		m_mapVertexAttribute = undefined;
+		m_mapUniform = undefined;
+		if ( undefined !== m_vertexWebGLShader){
+			in_webGLContextApplyMethod("deleteShader", m_vertexWebGLShader);
 			m_vertexWebGLShader = undefined;
 		}
-		if ( undefined !== m_fragmentWebGLShader)
-		{
-			webGLContext = in_getWebGLContext();
-			if (undefined !== webGLContext){
-				webGLContext.deleteShader(m_fragmentWebGLShader);
-				in_getWebGLError();
-			}
+		if ( undefined !== m_fragmentWebGLShader){
+			in_webGLContextApplyMethod("deleteShader", m_fragmentWebGLShader);
 			m_fragmentWebGLShader = undefined;
+		}
+		if ( undefined !== m_shaderProgramObject){
+			in_webGLContextApplyMethod("deleteProgram", m_shaderProgramObject);
+			m_shaderProgramObject = undefined;
 		}
 
 		return;
 	}
 
-	const linkProgram = function(in_mapVertexAttribute, in_mapUniform, in_vertexWebGLShader, in_fragmentWebGLShader){
-		// Create a program object and store the handle to it.
-		var webGLContext = undefined;
-		webGLContext = in_getWebGLContext();
-		if (undefined === webGLContext){
-			return undefined;
-		}
-		const programHandle = webGLContext.createProgram();
-		in_getWebGLError();
+	const linkProgram = function(in_mapVertexAttribute, in_mapUniform, in_vertexWebGLShader, in_fragmentWebGLShader, inout_attributeMap, inout_uniformMap){
+		const programHandle = in_webGLContextApplyMethod("createProgram");
 		if ((0 === programHandle) || (undefined === programHandle)){
 			return undefined;
 		}
 
-		webGLContext = in_getWebGLContext();
-		if (undefined === webGLContext){
-			return undefined;
-		}
-		webGLContext.attachShader(programHandle, in_vertexShaderHandle);
-		in_getWebGLError();
-
-		webGLContext = in_getWebGLContext();
-		if (undefined === webGLContext){
-			return undefined;
-		}
-		webGLContext.attachShader(programHandle, in_fragmentShaderHandle);
-		in_getWebGLError();
+		in_webGLContextApplyMethod("attachShader", programHandle, in_vertexShaderHandle);
+		in_webGLContextApplyMethod("attachShader", programHandle, in_fragmentShaderHandle);
 		
 		var attributeKeyArray = Object.keys(inout_attributeMap);
 		for (var index = 0; index < attributeKeyArray.length; ++index)
 		{
 			var key = attributeKeyArray[key];
-			if (this.m_webGL)
-				this.m_webGL.bindAttribLocation(programHandle, index, key);
-			in_getWebGLError();
+			in_webGLContextApplyMethod("bindAttribLocation", programHandle, index, key);
 		}		
 			
-		webGLContext = in_getWebGLContext();
-		if (undefined === webGLContext){
-			return undefined;
-		}
-		webGLContext.linkProgram(programHandle);
-		in_getWebGLError();
+		in_webGLContextApplyMethod("linkProgram", programHandle);
 
-		// Get the link status.
-		if (this.m_webGL)
-			var linked = this.m_webGL.getProgramParameter(programHandle, this.m_webGL.LINK_STATUS);
-		in_getWebGLError();
+		const linkStatusEnum = in_webGLContextWrapper.getEnum("LINK_STATUS");
+		const linked = in_webGLContextApplyMethod("getProgramParameter", programHandle, linkStatusEnum);
 
-		if (!linked) 
-		{				
-			if (this.m_webGL)
-				this.m_webGL.deleteProgram(programHandle);
-			in_getWebGLError();
+		if (!linked) {				
+			in_webGLContextApplyMethod("deleteProgram", programHandle);
 			return undefined
 		}
 
-		//inout_attributeMap
-		for (var index = 0; index < attributeKeyArray.length; ++index)
-		{
-			var key = attributeKeyArray[index];
-			var location = undefined;
-			if (this.m_webGL)
-				inout_attributeMap[key] = this.m_webGL.getAttribLocation(programHandle, key);
-			in_getWebGLError();
+		inout_attributeMap = {};
+		for (var index = 0; index < m_vertexAttributeNameArray.length; ++index){
+			var key = m_vertexAttributeNameArray[index];
+			inout_attributeMap[key] = in_webGLContextApplyMethod("getAttribLocation", programHandle, key);
 		}
 
-		//inout_uniformMap
-		if (undefined != inout_uniformMap)
-		{
-			var uniformKeyArray = Object.keys(inout_uniformMap);
-			for (var index = 0; index < uniformKeyArray.length; ++index)
-			{
-				var key = uniformKeyArray[index];
-				var uniform = inout_uniformMap[key];
-				if (this.m_webGL)
-					uniform.m_location = this.m_webGL.getUniformLocation(programHandle, key);
-				in_getWebGLError();
-			}
-		}	
+		inout_uniformMap = {};
+		for (var index = 0; index < m_uniformNameArray.length; ++index){
+			var key = m_uniformNameArray[index];
+			inout_uniformMap[key] = in_webGLContextApplyMethod("getUniformLocation", programHandle, key);
+		}
 			
 		return programHandle;
 
 	}
 
 	const loadShader = function(in_type, in_shaderText){
-		var webGLContext = undefined;
-		webGLContext = in_getWebGLContext();
-		if (undefined === webGLContext){
-			return undefined;
-		}
-		shaderHandle = webGLContext.createShader(in_type);
-		in_getWebGLError();
+		const shaderHandle = in_webGLContextApplyMethod("createShader", in_type);
 		if (0 === shaderHandle){
 			return undefined;
 		}
 
-		webGLContext = in_getWebGLContext();
-		if (undefined === webGLContext){
-			return undefined;
-		}
-		webGLContext.shaderSource(shaderHandle, in_shaderText);
-		in_getWebGLError();
+		in_webGLContextApplyMethod("shaderSource", shaderHandle, in_shaderText);
+		in_webGLContextApplyMethod("compileShader", shaderHandle);
 
-		webGLContext = in_getWebGLContext();
-		if (undefined === webGLContext){
-			return undefined;
-		}
-		webGLContext.compileShader(shaderHandle);
-		in_getWebGLError();
-
-		webGLContext = in_getWebGLContext();
-		if (undefined === webGLContext){
-			return undefined;
-		}
-		const compiled = webGLContext.getShaderParameter(shaderHandle, in_webGLContextWrapper.getEnum("COMPILE_STATUS"));
-		in_getWebGLError();
+		const compileStatusEnum = in_webGLContextWrapper.getEnum("COMPILE_STATUS");
+		const compiled = in_webGLContextApplyMethod("getShaderParameter", shaderHandle, compileStatusEnum);
 
 		var errorInfo = "";
 		// If the compilation failed, delete the shader.
-		if (!compiled) 
-		{				
-			webGLContext = in_getWebGLContext();
-			if (undefined === webGLContext){
-				return undefined;
-			}
-			errorInfo = webGLContext.getShaderInfoLog(shaderHandle);
-			in_getWebGLError();
+		if (!compiled){
 
-			webGLContext = in_getWebGLContext();
-			if (undefined === webGLContext){
-				return undefined;
-			}
-			webGLContext.deleteShader(shaderHandle);
-			in_getWebGLError();
-
+			errorInfo = in_webGLContextApplyMethod("getShaderInfoLog", shaderHandle);
+			in_webGLContextApplyMethod("deleteShader", shaderHandle);
 			shaderHandle = undefined;
 		}
 
-		if (undefined === shaderHandle)
-		{
+		if (undefined === shaderHandle){
 			alert("Error creating shader: " + errorInfo);
 		}
 		
@@ -232,3 +138,8 @@ const factory = function(in_webGLContextWrapper, in_getWebGLContext, in_getWebGL
 
 	return result;
 }
+
+
+module.exports = {
+	"factory" : factory
+};

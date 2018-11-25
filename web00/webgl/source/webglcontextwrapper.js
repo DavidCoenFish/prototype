@@ -4,6 +4,7 @@ manage context lost and restored
 manage creation and destruction of resources (which may need context lost and restored)
  */
 const Core = require("core");
+const ShaderWrapper = require("./shaderwrapper.js");
 
 const getWebGLContext = function(in_html5CanvasElement, in_paramObjectOrUndefined){
 	if (undefined === in_html5CanvasElement) {
@@ -103,9 +104,12 @@ const factory = function(in_html5CanvasElement, in_paramObjectOrUndefined, in_ca
 			return;
 		},
 
-		"createShader" : function(in_vertexShader, in_fragmentShader, in_uniformContainer){
+		"createShader" : function(in_vertexShaderSource, in_fragmentShaderSource, in_uniformServerOrUndefined, in_vertexAttributeNameArrayOrUndefined, in_uniformNameArrayOrUndefined){
+			const shader = ShaderWrapper.factory(result, webGLContextApplyMethod, in_vertexShaderSource, in_fragmentShaderSource, in_uniformServerOrUndefined, in_vertexAttributeNameArrayOrUndefined, in_uniformNameArrayOrUndefined);
+			return shader;
 		},
 		"destroyShader" : function(in_shader){
+			in_shader.destroy(); 
 		},
 		"createTexture" : function(in_width, in_height, in_dataOrUndefined){
 		},
@@ -191,9 +195,18 @@ const factory = function(in_html5CanvasElement, in_paramObjectOrUndefined, in_ca
 		}
 	};
 
-	const getWebGLContext = function(){
-		return m_webGLContext;
-	};
+	//const getWebGLContext = function(){
+	//	return m_webGLContext;
+	//};
+	const webGLContextApplyMethod = function(in_functionName){
+		var result = undefined;
+		if (undefined !== m_webGLContext){
+			const param = arguments.slice(1)
+			result = m_webGLContext[in_functionName].apply(null, param);
+			getError();
+		}
+		return result;
+	}
 
 	//these event names are matching the webgl canvas contract, internally we just use sTokenWebglContextLost...
 	in_html5CanvasElement.addEventListener("webglcontextlost", contextLostCallback, false);

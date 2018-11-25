@@ -26,8 +26,8 @@ Int32Array
 Uint32Array
 
 
-for (var i = 0; i < cars.length; i++) { 
-    text += cars[i] + "<br>";
+for (var index = 0; index < cars.length; index++) { 
+    text += cars[index] + "<br>";
 }
 
 
