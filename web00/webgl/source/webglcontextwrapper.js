@@ -56,14 +56,19 @@ const factory = function(in_html5CanvasElement, in_paramObjectOrUndefined, in_ca
 		},
 		
 		"getSupportedExtensions" : function(){
+			if (undefined === m_webGLContext){
+				return undefined;
+			}
 			const supportedExtensions = m_webGLContext.getSupportedExtensions();
 			getError();
 			return supportedExtensions;
 		},
 
 		"getEnum" : function(in_keySoftBind){
+			if (undefined === m_webGLContext){
+				return undefined;
+			}
 			const value = m_webGLContext[in_keySoftBind];
-			getError();
 			return value;
 		},
 
@@ -105,8 +110,7 @@ const factory = function(in_html5CanvasElement, in_paramObjectOrUndefined, in_ca
 		},
 
 		"createShader" : function(in_vertexShaderSource, in_fragmentShaderSource, in_uniformServerOrUndefined, in_vertexAttributeNameArrayOrUndefined, in_uniformNameArrayOrUndefined){
-			const shader = ShaderWrapper.factory(result, webGLContextApplyMethod, in_vertexShaderSource, in_fragmentShaderSource, in_uniformServerOrUndefined, in_vertexAttributeNameArrayOrUndefined, in_uniformNameArrayOrUndefined);
-			return shader;
+			return ShaderWrapper.factory(result, webGLContextApplyMethod, in_vertexShaderSource, in_fragmentShaderSource, in_uniformServerOrUndefined, in_vertexAttributeNameArrayOrUndefined, in_uniformNameArrayOrUndefined);
 		},
 		"destroyShader" : function(in_shader){
 			in_shader.destroy(); 

@@ -1,5 +1,5 @@
 /*
-wrap the webgl handle, and everything required to recreate it
+wrap the shader webgl program object, 
  */
 const Core = require("core");
 
