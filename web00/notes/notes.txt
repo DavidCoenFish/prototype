@@ -43,3 +43,6 @@ for (var index = 0; index < cars.length; index++) {
 		"minified": true,
 		"presets": ["@babel/preset-env"]
 	},
+
+
+move "shader wrapper" to be a data container that is "hydrated" by events passing 

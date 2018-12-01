@@ -72,75 +72,28 @@ const factory = function(in_html5CanvasElement, in_paramObjectOrUndefined, in_ca
 			return value;
 		},
 
-		"clear" : function(in_colourOrUndefined, in_depthOrUndefined, in_stencilOrUndefined){
-			var clearFlag = 0;
-
-			if ((undefined !== in_colourOrUndefined) &&
-				(undefined !== m_webGLContext)){
-				clearFlag |= m_webGLContext.COLOR_BUFFER_BIT;
-				m_webGLContext.clearColor(
-					in_colourOrUndefined.getRed(),
-					in_colourOrUndefined.getGreen(),
-					in_colourOrUndefined.getBlue(),
-					in_colourOrUndefined.getAlpha()
-					);
-				getError();
-			}
-
-			if ((undefined !== in_depthOrUndefined) &&
-				(undefined !== m_webGLContext)){
-				clearFlag |= m_webGLContext.DEPTH_BUFFER_BIT;
-				m_webGLContext.clearDepth(in_depthOrUndefined);
-				getError();
-			}
-
-			if ((undefined !== in_stencilOrUndefined) &&
-				(undefined !== m_webGLContext)){
-				clearFlag |= m_webGLContext.STENCIL_BUFFER_BIT;
-				m_webGLContext.clearStencil(in_stencilOrUndefined);
-				getError();
-			}
-
+		"callMethod" : function(in_functionName){
+			var result = undefined;
 			if (undefined !== m_webGLContext){
-				m_webGLContext.clear(clearFlag);
+				const param = arguments.slice(1);
+				const method = m_webGLContext[in_functionName];
+				result = method.apply(method, param);
 				getError();
 			}
-
-			return;
+			return result;
 		},
 
-		"createShader" : function(in_vertexShaderSource, in_fragmentShaderSource, in_uniformServerOrUndefined, in_vertexAttributeNameArrayOrUndefined, in_uniformNameArrayOrUndefined){
-			return ShaderWrapper.factory(result, webGLContextApplyMethod, in_vertexShaderSource, in_fragmentShaderSource, in_uniformServerOrUndefined, in_vertexAttributeNameArrayOrUndefined, in_uniformNameArrayOrUndefined);
-		},
-		"destroyShader" : function(in_shader){
-			in_shader.destroy(); 
-		},
-		"createTexture" : function(in_width, in_height, in_dataOrUndefined){
-		},
-		"destroyTexture" : function(in_texture){
-		},
-		"createMaterial" : function(){
-		},
-		"setMaterial" : function(in_material){
-		},
-		"destroyMaterial" : function(in_material){
-		},
-		"createRenderTarget" : function(){
-		},
-		"setRenderTarget" : function(in_renderTarget){
-		},
-		"destroyRenderTarget" : function(in_renderTarget){
-		},
-		"createModel" : function(){
-		},
-		"drawModel" : function(in_model){
-		},
-		"destroyModel" : function(in_model){
+		"addResourceContextCallbacks" : function(in_contextLostCallback, in_contextRestoredCallback){
+			result.addEventListener(sTokenWebglContextLost, in_contextLostCallback);
+			result.addEventListener(sTokenWebglContextRestored, in_contextRestoredCallback);
+			in_contextRestoredCallback(result);
 		},
 
-		"sTokenWebglContextLost" : sTokenWebglContextLost,
-		"sTokenWebglContextRestored" : sTokenWebglContextRestored,
-
+		"removeResourceContextCallbacks" : function(in_contextLostCallback, in_contextRestoredCallback){
+			in_contextLostCallback(result);
+			result.removeEventListener(sTokenWebglContextLost, in_contextLostCallback);
+			result.removeEventListener(sTokenWebglContextRestored, in_contextRestoredCallback);
+		}
 	});
 
 	Core.EventDispatcherDecorate(result);
@@ -198,19 +151,6 @@ const factory = function(in_html5CanvasElement, in_paramObjectOrUndefined, in_ca
 			in_callbackContextRestoredOrUndefined(result);
 		}
 	};
-
-	//const getWebGLContext = function(){
-	//	return m_webGLContext;
-	//};
-	const webGLContextApplyMethod = function(in_functionName){
-		var result = undefined;
-		if (undefined !== m_webGLContext){
-			const param = arguments.slice(1)
-			result = m_webGLContext[in_functionName].apply(null, param);
-			getError();
-		}
-		return result;
-	}
 
 	//these event names are matching the webgl canvas contract, internally we just use sTokenWebglContextLost...
 	in_html5CanvasElement.addEventListener("webglcontextlost", contextLostCallback, false);

@@ -20,11 +20,12 @@ module.exports = function(in_targetObject){
 			return;
 		},
 		// if you can pass in a closure, why have the in_param, pass in the thing emitting the event?
-		"triggerEvent" : function(in_name, in_param){
+		"triggerEvent" : function(in_name){
 			if (in_name in eventMap){
+				const param = arguments.slice(1)
 				const dataArray = eventMap[in_name];
 				dataArray.forEach(function(in_element){
-					in_element(in_param);
+					in_element.apply(in_element, param);
 				});
 			}
 			return;
