@@ -44,8 +44,30 @@ function runSanity(){
 	});
 }
 
+function runCallbackWithMultipleParam(){
+	return Q(true).then(function(){
+		const result = Object.create(null);
+		EventDispatcherDecorate(result);
+
+		var countA = 0;
+		var countB = 0;
+		const callbackIncrement = function(in_a, in_b){
+			countA += in_a;
+			countB += in_b;
+		};
+		result.addEventListener("a", callbackIncrement);
+
+		result.triggerEvent("a", 1, 2, 3);
+		result.triggerEvent("a", 1, 2, 3);
+
+		Unittest.dealTest("EventDispatcherDecorate::runCallbackWithMultipleParam::0", countA, 2);
+		Unittest.dealTest("EventDispatcherDecorate::runCallbackWithMultipleParam::1", countB, 4);
+	});
+}
+
 module.exports = function(in_promiseArray) {
 	in_promiseArray.push(runSanity);
+	in_promiseArray.push(runCallbackWithMultipleParam);
 
 	return;
 }
