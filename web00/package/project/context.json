@@ -1,0 +1,10 @@
+{
+	"name" : "context",
+	"source" : "context.js",
+	"template" : "template/simplediv.htm.template",
+	"templateParam" : {
+		"title" : "context",
+		"bundleFilePath" : "js/contextbundle.js"
+	},
+	"outputRootDir": "output"
+}

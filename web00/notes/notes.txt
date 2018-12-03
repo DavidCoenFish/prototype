@@ -24,6 +24,7 @@ Int16Array
 Uint16Array
 Int32Array
 Uint32Array
+	//"ShaderWrapper" : require("./source/shaderwrapper.js"),
 
 
 for (var index = 0; index < cars.length; index++) { 

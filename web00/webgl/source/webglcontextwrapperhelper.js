@@ -33,18 +33,19 @@ const clear = function(in_webGLContextWrapper, in_colourOrUndefined, in_depthOrU
 	return;
 }
 
-const setMaterial = function(in_material){
-}
+// const setMaterial = function(in_material){
+// }
 
-const setRenderTarget = function(in_renderTarget){
-}
+// const setRenderTarget = function(in_renderTarget){
+// }
 
-const drawModel = function(in_model){
-}
+// const drawModel = function(in_model){
+// }
 
 module.exports = {
-	"clear" : clear,
-	"setMaterial" : setMaterial,
-	"setRenderTarget" : setRenderTarget,
-	"drawModel" : drawModel
+	"clear" : clear
+	//"clear" : clear,
+	//"setMaterial" : setMaterial,
+	//"setRenderTarget" : setRenderTarget,
+	//"drawModel" : drawModel
 }

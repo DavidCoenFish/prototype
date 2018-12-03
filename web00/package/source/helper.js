@@ -17,6 +17,7 @@ const walkSync = function (currentDirPath, callback) {
 const gatherProjectArray = function(in_projectArray, in_path) {
 	walkSync(in_path, function(filePath, stat, name){
 		try{
+			console.log("push:" + filePath);
 			in_projectArray.push(require(filePath));
 		}catch (error){
 			console.log("exception thrown while loading:" + filePath + " error:" + error);

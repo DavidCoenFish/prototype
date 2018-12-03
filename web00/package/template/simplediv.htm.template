@@ -1,11 +1,11 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE html>
 <html>
 	<head>
 		<title>$(title)</title>
 		<meta http-equiv="Content-Style-Type" content="text/css"/>
 	</head>
 	<body>
-		<div id='divElement'/>
+		<div id='divElement'></div>
+		<script src="$(bundleFilePath)" ></script>
 	</body>
-	<script type='text/JavaScript' SRC="$(bundleFilePath)" ></script>
 </html>

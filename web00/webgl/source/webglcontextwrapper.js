@@ -4,7 +4,7 @@ manage context lost and restored
 manage creation and destruction of resources (which may need context lost and restored)
  */
 const Core = require("core");
-const ShaderWrapper = require("./shaderwrapper.js");
+//const ShaderWrapper = require("./shaderwrapper.js");
 
 const getWebGLContext = function(in_html5CanvasElement, in_paramObjectOrUndefined){
 	if (undefined === in_html5CanvasElement) {
@@ -73,14 +73,14 @@ const factory = function(in_html5CanvasElement, in_paramObjectOrUndefined, in_ca
 		},
 
 		"callMethod" : function(in_functionName){
-			var result = undefined;
+			var output = undefined;
 			if (undefined !== m_webGLContext){
-				const param = arguments.slice(1);
+				const param = Array.prototype.slice.call(arguments, 1);
 				const method = m_webGLContext[in_functionName];
-				result = method.apply(method, param);
+				output = method.apply(m_webGLContext, param);
 				getError();
 			}
-			return result;
+			return output;
 		},
 
 		"addResourceContextCallbacks" : function(in_contextLostCallback, in_contextRestoredCallback){

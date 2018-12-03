@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE html>
 <html>
 	<head>
 		<title>$(title)</title>
@@ -8,6 +8,6 @@
 		<canvas id='html5CanvasElement' style = 'background-color: #000000; width: $(canvasWidth); height: $(canvasHeight);' >
 			This text is displayed if your browser does not support HTML5 Canvas.
 		</canvas>
+		<script src="$(bundleFilePath)" ></script>
 	</body>
-	<script type='text/JavaScript' SRC="$(bundleFilePath)" ></script>
 </html>

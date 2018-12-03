@@ -1,13 +1,15 @@
 /*
-wrap the shader webgl program object, 
+collect the data to represent a shader. 
+when we have a webGLContext 
  */
-const Core = require("core");
+//const Core = require("core");
 
-const factory = function(in_vertexShaderSource, in_fragmentShaderSource, in_uniformServerOrUndefined, in_vertexAttributeNameArrayOrUndefined, in_uniformNameArrayOrUndefined){
-	const m_vertexShaderSource = Core.StringUtil.deepCopyString(in_vertexShaderSource);
-	const m_fragmentShaderSource = Core.StringUtil.deepCopyString(in_fragmentShaderSource);
-	const m_vertexAttributeNameArray = (undefined === in_vertexAttributeNameArrayOrUndefined) ? [] : in_vertexAttributeNameArrayOrUndefined.slice();
-	const m_uniformNameArray = (undefined === in_uniformNameArrayOrUndefined) ? [] : in_uniformNameArrayOrUndefined.slice();
+const factory = function(in_webGLContextWrapper, in_vertexShaderSource, in_fragmentShaderSource, in_uniformServerOrUndefined, in_vertexAttributeNameArrayOrUndefined, in_uniformNameArrayOrUndefined){
+	const m_vertexShaderSource = in_vertexShaderSource; //Core.StringUtil.deepCopyString(in_vertexShaderSource);
+	const m_fragmentShaderSource = in_fragmentShaderSource; //Core.StringUtil.deepCopyString(in_fragmentShaderSource);
+	const m_vertexAttributeNameArray = (undefined === in_vertexAttributeNameArrayOrUndefined) ? [] : Array.prototype.slice.call(in_vertexAttributeNameArrayOrUndefined);
+	const m_uniformNameArray = (undefined === in_uniformNameArrayOrUndefined) ? [] : Array.prototype.slice.call(in_uniformNameArrayOrUndefined);
+
 	const m_uniformServerOrUndefined = in_uniformServerOrUndefined;
 
 	var m_shaderProgramObject = undefined;
@@ -25,11 +27,8 @@ const factory = function(in_vertexShaderSource, in_fragmentShaderSource, in_unif
 			//set uniforms?
 			return;
 		},
-		"attachContextCallback" : function(in_webGLContextWrapper){
-			in_webGLContextWrapper.addResourceContextCallbacks(restoredCallback, lostCallback);
-		},
-		"detachContextCallback" : function(in_webGLContextWrapper){
-			in_webGLContextWrapper.addResourceContextCallbacks(restoredCallback, lostCallback);
+		"destroy" : function(){
+			in_webGLContextWrapper.removeResourceContextCallbacks(restoredCallback, lostCallback);
 		},
 	});
 
@@ -133,6 +132,8 @@ const factory = function(in_vertexShaderSource, in_fragmentShaderSource, in_unif
 		return programHandle;
 
 	}
+
+	in_webGLContextWrapper.addResourceContextCallbacks(restoredCallback, lostCallback);
 
 	return result;
 }

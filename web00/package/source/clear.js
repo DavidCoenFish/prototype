@@ -8,9 +8,9 @@ const onPageLoad = function(){
 	const webGLContextWrapperParam = WebGL.WebGLContextWrapper.makeParamObject(false, false, false, []);
 
 	const webGLContextWrapper = WebGL.WebGLContextWrapper.factory(html5CanvasElement, webGLContextWrapperParam);
-	const colour = Math.Colour4.factoryFloat32(1.0, 0.0, 0.0, 1.0);
 
-	webGLContextWrapper.clear(colour);
+	const colour = Math.Colour4.factoryFloat32(1.0, 0.0, 0.0, 1.0);
+	WebGL.WebGLContextWrapperHelper.clear(webGLContextWrapper, colour);
 
 	return;
 }

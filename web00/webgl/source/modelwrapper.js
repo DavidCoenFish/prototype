@@ -4,6 +4,7 @@ wrap the shader webgl program object,
 const Core = require("core");
 
 const factory = function(
+		in_webGLContextWrapper,
 		in_modeName,
 		in_elementCount,
 		in_mapDataStream,
@@ -41,11 +42,8 @@ const factory = function(
 
 			return;
 		},
-		"attachContextCallback" : function(in_webGLContextWrapper){
-			in_webGLContextWrapper.addResourceContextCallbacks(aquireWebGLResources, releaseWebGLResources);
-		},
-		"detachContextCallback" : function(in_webGLContextWrapper){
-			in_webGLContextWrapper.addResourceContextCallbacks(aquireWebGLResources, releaseWebGLResources);
+		"destroy" : function(in_webGLContextWrapper){
+			in_webGLContextWrapper.removeResourceContextCallbacks(restoredCallback, lostCallback);
 		},
 	});
 
@@ -98,6 +96,8 @@ const factory = function(
 
 		return;
 	}
+
+	in_webGLContextWrapper.addResourceContextCallbacks(aquireWebGLResources, releaseWebGLResources);
 
 	return result;
 }

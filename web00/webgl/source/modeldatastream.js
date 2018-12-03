@@ -16,16 +16,7 @@ const factory = function(
 
 	//public methods ==========================
 	const result = Object.create({
-		"apply" : function(){
-			if (undefined !== m_shaderProgramObject){
-				in_webGLContextApplyMethod("useProgram", m_shaderProgramObject);
-			}
-			return;
-		},
 		"destroy" : function(){
-			releaseWebGLResources();
-			in_webGLContextWrapper.removeEventListener(in_webGLContextWrapper.sTokenWebglContextLost, aquireWebGLResources);
-			in_webGLContextWrapper.removeEventListener(in_webGLContextWrapper.sTokenWebglContextRestored, releaseWebGLResources);
 		},
 	});
 
