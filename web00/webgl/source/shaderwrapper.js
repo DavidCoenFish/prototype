@@ -40,6 +40,9 @@ const factory = function(in_webGLContextWrapper, in_vertexShaderSource, in_fragm
 		m_fragmentWebGLShader = loadShader(in_webGLContextWrapper, m_fragmentShaderSource, fragmentShaderEnum);
 		m_shaderProgramObject = linkProgram(in_webGLContextWrapper, m_mapVertexAttribute, m_mapUniform, m_vertexWebGLShader, m_fragmentWebGLShader, m_mapVertexAttribute, m_mapUniform);
 
+		if (undefined === m_shaderProgramObject){
+			alert("Error creating shader Program");
+		}
 		return;
 	}
 
@@ -63,8 +66,8 @@ const factory = function(in_webGLContextWrapper, in_vertexShaderSource, in_fragm
 		return;
 	}
 
-	const loadShader = function(in_webGLContextWrapper, in_type, in_shaderText){
-		const shaderHandle = in_webGLContextWrapper.callMethod("createShader", in_type);
+	const loadShader = function(in_webGLContextWrapper, in_shaderText, in_type){
+		var shaderHandle = in_webGLContextWrapper.callMethod("createShader", in_type);
 		if (0 === shaderHandle){
 			return undefined;
 		}
@@ -91,19 +94,17 @@ const factory = function(in_webGLContextWrapper, in_vertexShaderSource, in_fragm
 		return shaderHandle;
 	}
 
-	const linkProgram = function(in_webGLContextWrapper, in_mapVertexAttribute, in_mapUniform, in_vertexWebGLShader, in_fragmentWebGLShader, inout_attributeMap, inout_uniformMap){
-		const programHandle = in_webGLContextWrapper.callMethod("createProgram");
+	const linkProgram = function(in_webGLContextWrapper, in_mapVertexAttribute, in_mapUniform, in_vertexWebGLShader, in_fragmentWebGLShader){
+		var programHandle = in_webGLContextWrapper.callMethod("createProgram");
 		if ((0 === programHandle) || (undefined === programHandle)){
 			return undefined;
 		}
 
-		in_webGLContextWrapper.callMethod("attachShader", programHandle, in_vertexShaderHandle);
-		in_webGLContextWrapper.callMethod("attachShader", programHandle, in_fragmentShaderHandle);
+		in_webGLContextWrapper.callMethod("attachShader", programHandle, in_vertexWebGLShader);
+		in_webGLContextWrapper.callMethod("attachShader", programHandle, in_fragmentWebGLShader);
 		
-		var attributeKeyArray = Object.keys(inout_attributeMap);
-		for (var index = 0; index < attributeKeyArray.length; ++index)
-		{
-			var key = attributeKeyArray[key];
+		for (var index = 0; index < m_vertexAttributeNameArray.length; ++index){
+			var key = m_vertexAttributeNameArray[key];
 			in_webGLContextWrapper.callMethod("bindAttribLocation", programHandle, index, key);
 		}		
 			
@@ -117,20 +118,19 @@ const factory = function(in_webGLContextWrapper, in_vertexShaderSource, in_fragm
 			return undefined
 		}
 
-		inout_attributeMap = {};
+		m_mapVertexAttribute = {};
 		for (var index = 0; index < m_vertexAttributeNameArray.length; ++index){
 			var key = m_vertexAttributeNameArray[index];
-			inout_attributeMap[key] = in_webGLContextWrapper.callMethod("getAttribLocation", programHandle, key);
+			m_mapVertexAttribute[key] = in_webGLContextWrapper.callMethod("getAttribLocation", programHandle, key);
 		}
 
-		inout_uniformMap = {};
+		m_mapUniform = {};
 		for (var index = 0; index < m_uniformNameArray.length; ++index){
 			var key = m_uniformNameArray[index];
-			inout_uniformMap[key] = in_webGLContextWrapper.callMethod("getUniformLocation", programHandle, key);
+			m_mapUniform[key] = in_webGLContextWrapper.callMethod("getUniformLocation", programHandle, key);
 		}
 			
 		return programHandle;
-
 	}
 
 	in_webGLContextWrapper.addResourceContextCallbacks(restoredCallback, lostCallback);

@@ -108,22 +108,22 @@ const doBrowserify = function(in_item, in_bundlePath){
 	Browserify(in_item.source, {
 		basedir: __dirname,
 		debug: true
-		})
-		.transform(Babelify, {
+	})
+	.transform(Babelify, {
 		"comments": false,
 		"global": true,
 		"minified": true,
 		"presets": ["@babel/preset-env"]
-		})
-		.bundle(function(){
-			//console.log("done");process.exit(0);
-			deferred.resolve(true);
-			})
-		.on("error", function (error) { 
-			//console.log("Error: " + err.message); 
-			deferred.reject(new Error(error.message));
-			})
-		.pipe(FileSystem.createWriteStream(in_bundlePath));
+	})
+	.bundle(function(){
+		//console.log("done");process.exit(0);
+		deferred.resolve(true);
+	})
+	.on("error", function (error) { 
+		//console.log("Error: " + err.message); 
+		deferred.reject(new Error(error.message));
+	})
+	.pipe(FileSystem.createWriteStream(in_bundlePath));
 	return deferred.promise;
 }
 
