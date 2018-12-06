@@ -4,7 +4,7 @@ const Path = require("path");
 const Helper = require("./source/helper.js");
 
 const projectArray = [];
-const normal = true; //false; //true;
+const normal = false; //true;
 if (true === normal){
 	const projectPath = Path.join(__dirname, "/project");
 	Helper.gatherProjectArray(projectArray, projectPath);

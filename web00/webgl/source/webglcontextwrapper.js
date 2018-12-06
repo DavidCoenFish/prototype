@@ -85,11 +85,15 @@ const factory = function(in_html5CanvasElement, in_paramObjectOrUndefined, in_ca
 		"addResourceContextCallbacks" : function(in_contextRestoredCallback, in_contextLostCallback){
 			result.addEventListener(sTokenWebglContextLost, in_contextLostCallback);
 			result.addEventListener(sTokenWebglContextRestored, in_contextRestoredCallback);
-			in_contextRestoredCallback(result);
+			if (m_webGLContext !== undefined){
+				in_contextRestoredCallback(result);
+			}
 		},
 
 		"removeResourceContextCallbacks" : function(in_contextRestoredCallback, in_contextLostCallback){
-			in_contextLostCallback(result);
+			if (m_webGLContext === undefined){
+				in_contextLostCallback(result);
+			}
 			result.removeEventListener(sTokenWebglContextLost, in_contextLostCallback);
 			result.removeEventListener(sTokenWebglContextRestored, in_contextRestoredCallback);
 		}

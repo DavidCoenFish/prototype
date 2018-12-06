@@ -4,7 +4,13 @@ when we have a webGLContext
  */
 //const Core = require("core");
 
-const factory = function(in_webGLContextWrapper, in_vertexShaderSource, in_fragmentShaderSource, in_uniformServerOrUndefined, in_vertexAttributeNameArrayOrUndefined, in_uniformNameArrayOrUndefined){
+const factory = function(
+	in_webGLContextWrapper, 
+	in_vertexShaderSource, 
+	in_fragmentShaderSource, 
+	in_uniformServerOrUndefined, 
+	in_vertexAttributeNameArrayOrUndefined, 
+	in_uniformNameArrayOrUndefined){
 	const m_vertexShaderSource = in_vertexShaderSource; //Core.StringUtil.deepCopyString(in_vertexShaderSource);
 	const m_fragmentShaderSource = in_fragmentShaderSource; //Core.StringUtil.deepCopyString(in_fragmentShaderSource);
 	const m_vertexAttributeNameArray = (undefined === in_vertexAttributeNameArrayOrUndefined) ? [] : Array.prototype.slice.call(in_vertexAttributeNameArrayOrUndefined);

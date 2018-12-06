@@ -2,6 +2,7 @@
 wrap the shader webgl program object, 
  */
 const Core = require("core");
+const WebGLContextWrapperHelper = require("./webglcontextwrapperhelper.js");
 
 const factory = function(
 		in_webGLContextWrapper,
@@ -22,28 +23,14 @@ const factory = function(
 	//public methods ==========================
 	const result = Object.create({
 		"draw" : function(in_webGLContextWrapper, in_mapVertexAttribute, in_firstOrUndefined, in_countOrUndefined){
-
-			for (var key in in_mapVertexAttribute){
-				var position = in_mapVertexAttribute[key];
-				if (!(key in m_mapDataStream))
-					continue;
-
-				var dataStream = m_mapDataStream[key];
-				dataStream.preDraw(in_webGLContextWrapper, position);
-				//webGL.BindBuffer(dataStream.m_bufferHandle, DSC.Framework.Context.WebGL.ARRAY_BUFFER);
-				//webGL.EnableVertexAttribArray(position, dataStream.m_elementsPerVertex, dataStream.m_type, dataStream.m_normalise);
-			};
-
-			if (undefined !== m_elementIndexHandle){
-				const elementArrayBufferEnum = in_webGLContextWrapper.
-				in_webGLContextWrapper.callMethod("BindBuffer", );
-				webGL.BindBuffer(in_model.m_elementIndexHandle, DSC.Framework.Context.WebGL.ELEMENT_ARRAY_BUFFER);
-			}
+			setupDraw(in_webGLContextWrapper, in_mapVertexAttribute);
+			internalDraw(in_webGLContextWrapper, in_firstOrUndefined, in_countOrUndefined);
+			tearDownDraw(in_webGLContextWrapper, in_mapVertexAttribute);
 
 			return;
 		},
 		"destroy" : function(in_webGLContextWrapper){
-			in_webGLContextWrapper.removeResourceContextCallbacks(restoredCallback, lostCallback);
+			in_webGLContextWrapper.removeResourceContextCallbacks(aquireWebGLResources, releaseWebGLResources);
 		},
 	});
 
@@ -64,11 +51,12 @@ const factory = function(
 		}
 
 		if (undefined !== m_elementIndexOrUndefined) {
-			m_elementIndexHandle = in_webGLContextMethod("createBuffer");
-			const bufferObjectType = in_webGLContextWrapper.getEnum("ELEMENT_ARRAY_BUFFER");
-			in_webGLContextMethod("bindBuffer", bufferObjectType, m_elementIndexHandle);
-			const usage = in_webGLContextWrapper.getEnum("STATIC_DRAW");
-			in_webGLContextMethod("bufferData", bufferObjectType, m_elementIndexOrUndefined, usage);
+			m_elementIndexHandle = WebGLContextWrapperHelper.createBuffer(
+				in_webGLContextWrapper, 
+				m_elementIndexOrUndefined,
+				"ELEMENT_ARRAY_BUFFER",
+				"STATIC_DRAW"
+				);
 		}
 
 		//free the data in the data streams
@@ -82,7 +70,7 @@ const factory = function(
 
 	const releaseWebGLResources = function(in_webGLContextWrapper){
 		if (undefined !== m_elementIndexOrUndefined){
-			in_webGLContextMethod("deleteBuffer", m_elementIndexHandle);
+			WebGLContextWrapperHelper.deleteBuffer(in_webGLContextMethod, m_elementIndexHandle);
 			m_elementIndexHandle = undefined;
 		}
 		m_elementByteSize = undefined;
@@ -95,6 +83,44 @@ const factory = function(
 		}
 
 		return;
+	}
+
+	const setupDraw = function(in_webGLContextWrapper, in_mapVertexAttribute){
+		for (var key in in_mapVertexAttribute){
+			var position = in_mapVertexAttribute[key];
+			if (!(key in m_mapDataStream))
+				continue;
+
+			var dataStream = m_mapDataStream[key];
+			dataStream.setupDraw(in_webGLContextWrapper, position);
+		};
+
+		if (undefined !== m_elementIndexHandle){
+			const bufferObjectType = in_webGLContextWrapper.getEnum("ELEMENT_ARRAY_BUFFER");
+			in_webGLContextWrapper.callMethod("BindBuffer", m_elementIndexHandle, bufferObjectType);
+		}
+	}
+
+	const internalDraw = function(in_webGLContextWrapper, in_firstOrUndefined, in_countOrUndefined){
+		const first = (undefined == in_firstOrUndefined) ? 0 : in_firstOrUndefined; 
+		const count = (undefined == in_countOrUndefined) ? m_elementCount : in_countOrUndefined; 
+		const mode = in_webGLContextWrapper.getEnum(m_modeName);
+
+		if (undefined === m_elementIndexHandle){
+			in_webGLContextWrapper.callMethod("DrawArrays", mode, first, count);
+		} else {
+			in_webGLContextWrapper.callMethod("DrawElements", mode, count, m_elementType, first * m_elementByteSize);
+		}
+	}
+
+	const tearDownDraw = function(in_webGLContextWrapper, in_mapVertexAttribute){
+		for (var key in in_mapVertexAttribute){
+			var position = in_mapVertexAttribute[key];
+			if (!(key in m_mapDataStream))
+				continue;
+			var dataStream = m_mapDataStream[key];
+			dataStream.tearDownDraw(in_webGLContextWrapper, position);
+		};
 	}
 
 	in_webGLContextWrapper.addResourceContextCallbacks(aquireWebGLResources, releaseWebGLResources);

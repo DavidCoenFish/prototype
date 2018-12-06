@@ -47,3 +47,6 @@ for (var index = 0; index < cars.length; index++) {
 
 
 move "shader wrapper" to be a data container that is "hydrated" by events passing 
+
+add a webgl state, hold current material settings, active shader.... 
+
