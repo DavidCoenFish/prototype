@@ -10,7 +10,8 @@ const factory = function(
 	in_fragmentShaderSource, 
 	in_uniformServerOrUndefined, 
 	in_vertexAttributeNameArrayOrUndefined, 
-	in_uniformNameArrayOrUndefined){
+	in_uniformNameArrayOrUndefined
+	){
 	const m_vertexShaderSource = in_vertexShaderSource; //Core.StringUtil.deepCopyString(in_vertexShaderSource);
 	const m_fragmentShaderSource = in_fragmentShaderSource; //Core.StringUtil.deepCopyString(in_fragmentShaderSource);
 	const m_vertexAttributeNameArray = (undefined === in_vertexAttributeNameArrayOrUndefined) ? [] : Array.prototype.slice.call(in_vertexAttributeNameArrayOrUndefined);
@@ -30,8 +31,18 @@ const factory = function(
 			if (undefined !== m_shaderProgramObject){
 				in_webGLContextWrapper.callMethod("useProgram", m_shaderProgramObject);
 			}
-			//set uniforms?
+
+			if (undefined !== m_uniformServerOrUndefined){
+				for (var key in m_mapUniform){
+					var position = m_mapUniform[key];
+					m_uniformServerOrUndefined.setUniform(in_webGLContextWrapper, key, position);
+				}
+			}
+ 
 			return;
+		},
+		"getMapVertexAttribute" : function(){
+			return m_mapVertexAttribute;
 		},
 		"destroy" : function(){
 			in_webGLContextWrapper.removeResourceContextCallbacks(restoredCallback, lostCallback);

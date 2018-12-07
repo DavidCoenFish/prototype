@@ -51,7 +51,41 @@ const createBuffer = function(in_webGLContextWrapper, in_arrayData, in_bufferObj
 
 const deleteBuffer = function(in_webGLContextWrapper, in_bufferHandle){
 	in_webGLContextMethod("deleteBuffer", in_bufferHandle);
+	return;
 }
+
+const setUniformFloat = function(in_webGLContextWrapper, in_uniformHandle, in_float){
+	in_webGLContextMethod("uniform1f", in_uniformHandle, in_float);
+	return;
+}
+
+const setUniformFloat2 = function(in_webGLContextWrapper, in_uniformHandle, in_floatArray){
+	in_webGLContextMethod("uniform2fv", in_uniformHandle, in_floatArray);
+	return;
+}
+
+const setUniformFloat3 = function(in_webGLContextWrapper, in_uniformHandle, in_floatArray){
+	in_webGLContextMethod("uniform3fv", in_uniformHandle, in_floatArray);
+	return;
+}
+
+// if uniform in shader is a vec4[3], then float array should be 12 floats?
+const setUniformFloat4 = function(in_webGLContextWrapper, in_uniformHandle, in_floatArray){
+	in_webGLContextMethod("uniform4fv", in_uniformHandle, in_floatArray);
+	return;
+}
+
+const setUniformFloat16 = function(in_webGLContextWrapper, in_uniformHandle, in_floatArray, in_transposeOrUndefined){
+	const transpose = (undefined == in_transposeOrUndefined) ? false : in_transposeOrUndefined;
+	in_webGLContextMethod("uniformMatrix4fv", in_uniformHandle, transpose, in_floatArray);
+	return;
+}
+
+const setUniformInteger = function(in_webGLContextWrapper, in_uniformHandle, in_value){
+	in_webGLContextMethod("uniform1i", in_uniformHandle, in_value);
+	return;
+}
+
 
 // const setMaterial = function(in_material){
 // }
@@ -219,68 +253,6 @@ DSC.Framework.Context.WebGL.prototype.SetViewport = function(in_lowX, in_lowY, i
 		return;
 	this.m_webGL.viewport(in_lowX, in_lowY, in_highX - in_lowX, in_highY - in_lowY);
 	this.GetError();
-}
-
-DSC.Framework.Context.WebGL.prototype.SetUniformFloat = function(in_uniformHandle, in_float)
-{
-	if (!this.m_webGL)
-		return;
-	this.m_webGL.uniform1f(in_uniformHandle, in_float);
-	this.GetError();
-
-	return;
-}
-
-DSC.Framework.Context.WebGL.prototype.SetUniformFloat2 = function(in_uniformHandle, in_floatArray)
-{
-	if (!this.m_webGL)
-		return;
-	this.m_webGL.uniform2fv(in_uniformHandle, in_floatArray);
-	this.GetError();
-
-	return;
-}
-
-DSC.Framework.Context.WebGL.prototype.SetUniformFloat3 = function(in_uniformHandle, in_floatArray)
-{
-	if (!this.m_webGL)
-		return;
-	this.m_webGL.uniform3fv(in_uniformHandle, in_floatArray);
-	this.GetError();
-
-	return;
-}
-
-// if uniform in shader is a vec4[3], then float array should be 12 floats?
-DSC.Framework.Context.WebGL.prototype.SetUniformFloat4 = function(in_uniformHandle, in_floatArray)
-{
-	if (!this.m_webGL)
-		return;
-	this.m_webGL.uniform4fv(in_uniformHandle, in_floatArray);
-	this.GetError();
-
-	return;
-}
-
-DSC.Framework.Context.WebGL.prototype.SetUniformFloat16 = function(in_uniformHandle, in_floatArray, _transpose)
-{
-	if (!this.m_webGL)
-		return;
-	var transpose = (undefined == _transpose) ? false : _transpose;
-	this.m_webGL.uniformMatrix4fv(in_uniformHandle, transpose, in_floatArray);
-	this.GetError();
-
-	return;
-}
-
-DSC.Framework.Context.WebGL.prototype.SetUniformInteger = function(in_uniformHandle, in_value)
-{
-	if (!this.m_webGL)
-		return;
-	this.m_webGL.uniform1i(in_uniformHandle, in_value);
-	this.GetError();
-
-	return;
 }
 
 DSC.Framework.Context.WebGL.prototype.ActivateTexture = function(in_textureHandle, in_index)
@@ -462,7 +434,14 @@ module.exports = {
 	"flush" : flush,
 	"clear" : clear,
 	"createBuffer" : createBuffer,
-	"deleteBuffer" : deleteBuffer
+	"deleteBuffer" : deleteBuffer,
+	"setUniformFloat" : setUniformFloat,
+	"setUniformFloat2" : setUniformFloat2,
+	"setUniformFloat3" : setUniformFloat3,
+	"setUniformFloat4" : setUniformFloat4,
+	"setUniformFloat16" : setUniformFloat16,
+	"setUniformInteger" : setUniformInteger
+
 	//"setMaterial" : setMaterial,
 	//"setRenderTarget" : setRenderTarget,
 	//"drawModel" : drawModel

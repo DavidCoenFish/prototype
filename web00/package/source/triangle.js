@@ -1,8 +1,21 @@
 const WebGL = require("webgl");
 const Math = require("math");
 
-const sVertexShader = "";
-const sFragmentShader = "";
+const sVertexShader = `
+attribute vec2 a_position;
+void main() {
+	gl_Position = vec4(a_position, 0.0, 1.0);
+}
+`;
+const sFragmentShader = `
+precision mediump float;
+uniform vec4 u_colour;
+void main() {
+	gl_FragColor = u_colour;
+}
+`;
+const sVertexAttributeNameArray = ["a_position"];
+const sUniformNameArray = ["u_colour"];
 
 const onPageLoad = function(){
 	console.info("onPageLoad");
@@ -11,20 +24,38 @@ const onPageLoad = function(){
 	const webGLContextWrapperParam = WebGL.WebGLContextWrapper.makeParamObject(false, false, false, []);
 
 	const webGLContextWrapper = WebGL.WebGLContextWrapper.factory(html5CanvasElement, webGLContextWrapperParam, draw);
-
 	const colour = Math.Colour4.factoryFloat32(1.0, 0.0, 0.0, 1.0);
-	const shader = webGLContextWrapper.createShader(sVertexShader, sFragmentShader);
-	const material = webGLContextWrapper.createMaterial(shader);
-	const model = webGLContextWrapper.createModel({"pos" : sPosStream}, "TRIANGLES");
-	const draw = function(in_webGLContextWrapper)
-	{
-		in_webGLContextWrapper.clear(colour);
-		in_webGLContextWrapper.setMaterial(shader);
-		in_webGLContextWrapper.drawModel(model);
-		return;
-	}
+	const uniformServer = {
+		"setUniform" : function(in_webGLContextWrapper, in_key, in_position){
+			if (in_key === "u_colour"){
+				WebGL.WebGLContextWrapperHelper.setUniformFloat4(in_webGLContextWrapper, in_position, colour.getRaw());
+			}
+		}
+	};
+	const shader = WebGL.ShaderWrapper.factory(webGLContextWrapper, sVertexShader, sFragmentShader, uniformServer, sVertexAttributeNameArray, sUniformNameArray);
+	
+	const model = WebGL.ModelWrapper.factory(webGLContextWrapper, "TRIANGLES", 6, {
+		"pos" : WebGL.ModelDataStream.factory(
+			"BYTE",
+			2,
+			new Int8Array([
+				-1, -1,
+				-1, 1,
+				1, -1,
 
-	draw(webGLContextWrapper);
+				1, 1, 
+				1, -1,
+				-1, 1
+				]),
+			"STATIC_DRAW"
+			)
+		});
+
+	const clearColour = Math.Colour4.factoryFloat32(1.0, 0.0, 0.0, 1.0);
+	WebGL.WebGLContextWrapperHelper.clear(webGLContextWrapper, clearColour);
+
+	shader.apply(webGLContextWrapper);
+	model.draw(webGLContextWrapper, shader.getMapVertexAttribute());
 
 	return;
 }
