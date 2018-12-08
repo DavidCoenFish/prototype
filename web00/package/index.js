@@ -9,7 +9,7 @@ if (true === normal){
 	const projectPath = Path.join(__dirname, "/project");
 	Helper.gatherProjectArray(projectArray, projectPath);
 } else {
-	projectArray.push(require("./project/context.json"));
+	projectArray.push(require("./project/triangle.json"));
 }
 
 Helper.runProjectArray(projectArray);

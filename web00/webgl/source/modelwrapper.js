@@ -70,7 +70,7 @@ const factory = function(
 
 	const releaseWebGLResources = function(in_webGLContextWrapper){
 		if (undefined !== m_elementIndexOrUndefined){
-			WebGLContextWrapperHelper.deleteBuffer(in_webGLContextMethod, m_elementIndexHandle);
+			WebGLContextWrapperHelper.deleteBuffer(in_webGLContextWrapper, m_elementIndexHandle);
 			m_elementIndexHandle = undefined;
 		}
 		m_elementByteSize = undefined;
@@ -86,7 +86,9 @@ const factory = function(
 	}
 
 	const setupDraw = function(in_webGLContextWrapper, in_mapVertexAttribute){
+		console.log("setupDraw");
 		for (var key in in_mapVertexAttribute){
+			console.log("mapVertexAttribute:" + key);
 			var position = in_mapVertexAttribute[key];
 			if (!(key in m_mapDataStream))
 				continue;
@@ -97,7 +99,7 @@ const factory = function(
 
 		if (undefined !== m_elementIndexHandle){
 			const bufferObjectType = in_webGLContextWrapper.getEnum("ELEMENT_ARRAY_BUFFER");
-			in_webGLContextWrapper.callMethod("BindBuffer", m_elementIndexHandle, bufferObjectType);
+			in_webGLContextWrapper.callMethod("bindBuffer", m_elementIndexHandle, bufferObjectType);
 		}
 	}
 
@@ -107,14 +109,16 @@ const factory = function(
 		const mode = in_webGLContextWrapper.getEnum(m_modeName);
 
 		if (undefined === m_elementIndexHandle){
-			in_webGLContextWrapper.callMethod("DrawArrays", mode, first, count);
+			in_webGLContextWrapper.callMethod("drawArrays", mode, first, count);
 		} else {
-			in_webGLContextWrapper.callMethod("DrawElements", mode, count, m_elementType, first * m_elementByteSize);
+			in_webGLContextWrapper.callMethod("drawElements", mode, count, m_elementType, first * m_elementByteSize);
 		}
 	}
 
 	const tearDownDraw = function(in_webGLContextWrapper, in_mapVertexAttribute){
+		console.log("tearDownDraw");
 		for (var key in in_mapVertexAttribute){
+			console.log("mapVertexAttribute:" + key);
 			var position = in_mapVertexAttribute[key];
 			if (!(key in m_mapDataStream))
 				continue;

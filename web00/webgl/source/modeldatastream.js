@@ -1,5 +1,5 @@
 
-const WebGLContextWrapperHelper = require(".\webglcontextwrapperhelper.js")
+const WebGLContextWrapperHelper = require("./webglcontextwrapperhelper.js")
 
 /*
 the data needed to construct a model data stream buffer object
@@ -17,7 +17,7 @@ const factory = function(
 	const m_usageName = in_usageName;
 	const m_normalise = in_normalise;
 
-	m_bufferObject = undefined;
+	var m_bufferObject = undefined;
 
 	//public methods ==========================
 	const result = Object.create({
@@ -30,15 +30,13 @@ const factory = function(
 		},
 		"setupDraw" : function(in_webGLContextWrapper, in_position){
 			const bufferObjectType = in_webGLContextWrapper.getEnum("ARRAY_BUFFER");
-			in_webGLContextWrapper.callMethod("BindBuffer", m_bufferObject, bufferObjectType);
+			in_webGLContextWrapper.callMethod("bindBuffer", m_bufferObject, bufferObjectType);
 			const type = in_webGLContextWrapper.getEnum(m_typeName);
-			in_webGLContextWrapper.callMethod("EnableVertexAttribArray", in_position, m_elementsPerVertex, type, m_normalise);
+			in_webGLContextWrapper.callMethod("enableVertexAttribArray", in_position, m_elementsPerVertex, type, m_normalise);
 		},
 		"tearDownDraw" : function(in_webGLContextWrapper, in_position){
-			in_webGLContextWrapper.callMethod("DisableVertexAttribArray", in_position);
+			in_webGLContextWrapper.callMethod("disableVertexAttribArray", in_position);
 		}
-
-
 	});
 
 	return result;

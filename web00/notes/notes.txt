@@ -50,3 +50,5 @@ move "shader wrapper" to be a data container that is "hydrated" by events passin
 
 add a webgl state, hold current material settings, active shader.... 
 
+uglifyjs
+		//"uglify-js": "^3.4.9",

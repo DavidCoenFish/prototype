@@ -41,48 +41,48 @@ const clear = function(in_webGLContextWrapper, in_colourOrUndefined, in_depthOrU
 //"ELEMENT_ARRAY_BUFFER"
 //"STATIC_DRAW"
 const createBuffer = function(in_webGLContextWrapper, in_arrayData, in_bufferObjectTypeName, in_usageName){
-	const bufferHandle = in_webGLContextMethod("createBuffer");
+	const bufferHandle = in_webGLContextWrapper.callMethod("createBuffer");
 	const bufferObjectType = in_webGLContextWrapper.getEnum(in_bufferObjectTypeName);
-	in_webGLContextMethod("bindBuffer", bufferObjectType, bufferHandle);
+	in_webGLContextWrapper.callMethod("bindBuffer", bufferObjectType, bufferHandle);
 	const usage = in_webGLContextWrapper.getEnum(in_usageName);
-	in_webGLContextMethod("bufferData", bufferObjectType, in_arrayData, usage);
+	in_webGLContextWrapper.callMethod("bufferData", bufferObjectType, in_arrayData, usage);
 	return bufferHandle;
 }
 
 const deleteBuffer = function(in_webGLContextWrapper, in_bufferHandle){
-	in_webGLContextMethod("deleteBuffer", in_bufferHandle);
+	in_webGLContextWrapper.callMethod("deleteBuffer", in_bufferHandle);
 	return;
 }
 
 const setUniformFloat = function(in_webGLContextWrapper, in_uniformHandle, in_float){
-	in_webGLContextMethod("uniform1f", in_uniformHandle, in_float);
+	in_webGLContextWrapper.callMethod("uniform1f", in_uniformHandle, in_float);
 	return;
 }
 
 const setUniformFloat2 = function(in_webGLContextWrapper, in_uniformHandle, in_floatArray){
-	in_webGLContextMethod("uniform2fv", in_uniformHandle, in_floatArray);
+	in_webGLContextWrapper.callMethod("uniform2fv", in_uniformHandle, in_floatArray);
 	return;
 }
 
 const setUniformFloat3 = function(in_webGLContextWrapper, in_uniformHandle, in_floatArray){
-	in_webGLContextMethod("uniform3fv", in_uniformHandle, in_floatArray);
+	in_webGLContextWrapper.callMethod("uniform3fv", in_uniformHandle, in_floatArray);
 	return;
 }
 
 // if uniform in shader is a vec4[3], then float array should be 12 floats?
 const setUniformFloat4 = function(in_webGLContextWrapper, in_uniformHandle, in_floatArray){
-	in_webGLContextMethod("uniform4fv", in_uniformHandle, in_floatArray);
+	in_webGLContextWrapper.callMethod("uniform4fv", in_uniformHandle, in_floatArray);
 	return;
 }
 
 const setUniformFloat16 = function(in_webGLContextWrapper, in_uniformHandle, in_floatArray, in_transposeOrUndefined){
 	const transpose = (undefined == in_transposeOrUndefined) ? false : in_transposeOrUndefined;
-	in_webGLContextMethod("uniformMatrix4fv", in_uniformHandle, transpose, in_floatArray);
+	in_webGLContextWrapper.callMethod("uniformMatrix4fv", in_uniformHandle, transpose, in_floatArray);
 	return;
 }
 
 const setUniformInteger = function(in_webGLContextWrapper, in_uniformHandle, in_value){
-	in_webGLContextMethod("uniform1i", in_uniformHandle, in_value);
+	in_webGLContextWrapper.callMethod("uniform1i", in_uniformHandle, in_value);
 	return;
 }
 

@@ -2,6 +2,7 @@ const FileSystem = require("fs");
 const Path = require("path");
 const Browserify = require("browserify");
 const Babelify = require("babelify");
+//const Uglifyjs = require("uglify-js");
 const Q = require("q");
 
 const walkSync = function (currentDirPath, callback) {
@@ -44,7 +45,11 @@ const runProjectArray = function(in_projectArray){
 		});
 	}, Q.resolve());
 
-	promise.done(function(){
+	promise.catch(function(error){
+		console.log("Catch:" + error);
+		exitCode = 1; //error
+		process.exit(exitCode);
+	}).done(function(){
 		console.log("Done");
 		process.exit(exitCode);
 	},function(error){
@@ -115,15 +120,21 @@ const doBrowserify = function(in_item, in_bundlePath){
 		"minified": true,
 		"presets": ["@babel/preset-env"]
 	})
-	.bundle(function(){
-		//console.log("done");process.exit(0);
-		deferred.resolve(true);
-	})
+	//.transform(Uglifyjs, {
+	//})
+	.bundle()
 	.on("error", function (error) { 
-		//console.log("Error: " + err.message); 
-		deferred.reject(new Error(error.message));
+		console.log("doBrowserify:Error:" + error.message); 
+		//if we reject during error, the pipe doesn't finish? or seeing "done" after bundle
+		//deferred.reject(new Error(error.message));
+		process.exit(0);
 	})
-	.pipe(FileSystem.createWriteStream(in_bundlePath));
+	.pipe(FileSystem.createWriteStream(in_bundlePath))
+	.addListener("finish", function(){
+		//console.log("doBrowserify:finish"); 
+		deferred.resolve(true);
+	});
+
 	return deferred.promise;
 }
 

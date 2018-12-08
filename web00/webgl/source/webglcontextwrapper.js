@@ -74,9 +74,14 @@ const factory = function(in_html5CanvasElement, in_paramObjectOrUndefined, in_ca
 		"callMethod" : function(in_functionName){
 			var output = undefined;
 			if (undefined !== m_webGLContext){
-				const param = Array.prototype.slice.call(arguments, 1);
 				const method = m_webGLContext[in_functionName];
+				if (undefined === method){
+					console.log("callMethod failed to find:" + in_functionName);
+					return output;
+				}
+				const param = Array.prototype.slice.call(arguments, 1);
 				output = method.apply(m_webGLContext, param);
+				console.log("callMethod:" + in_functionName + " param:" + param + " output:" + output);
 				getError();
 			}
 			return output;
