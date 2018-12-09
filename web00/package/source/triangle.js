@@ -21,6 +21,13 @@ const onPageLoad = function(){
 	console.info("onPageLoad");
 
 	const html5CanvasElement = (undefined !== document) ? document.getElementById('html5CanvasElement') : undefined;
+
+	//a canvas width, height is 300,150 by default (coordinate space). lets change that to what size it is
+	if (undefined !== html5CanvasElement){
+		html5CanvasElement.width = html5CanvasElement.clientWidth;
+		html5CanvasElement.height = html5CanvasElement.clientHeight;
+	}
+
 	const webGLContextWrapperParam = WebGL.WebGLContextWrapper.makeParamObject(false, false, false, []);
 
 	const webGLContextWrapper = WebGL.WebGLContextWrapper.factory(html5CanvasElement, webGLContextWrapperParam);
@@ -35,6 +42,8 @@ const onPageLoad = function(){
 	const shader = WebGL.ShaderWrapper.factory(webGLContextWrapper, sVertexShader, sFragmentShader, uniformServer, sVertexAttributeNameArray, sUniformNameArray);
 	const material = WebGL.MaterialWrapper.factoryDefault(shader);
 	const webGLState = WebGL.WebGLState.factory(webGLContextWrapper);
+
+	//webGLState.setViewport(0, 0, );
 
 	const posDataStream = WebGL.ModelDataStream.factory(
 			"BYTE",

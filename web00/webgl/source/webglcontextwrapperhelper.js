@@ -38,6 +38,11 @@ const clear = function(in_webGLContextWrapper, in_colourOrUndefined, in_depthOrU
 	return;
 }
 
+// const setViewport = function(in_webGLContextWrapper, in_lowX, in_lowY, in_highX, in_highY){
+// 	in_webGLContextWrapper.callMethod("setViewport", in_lowX, in_lowY, in_highX, in_highY);
+// 	return;
+// }
+
 //"ELEMENT_ARRAY_BUFFER"
 //"STATIC_DRAW"
 const createBuffer = function(in_webGLContextWrapper, in_arrayData, in_bufferObjectTypeName, in_usageName){
@@ -433,6 +438,7 @@ DSC.Framework.Context.WebGL.prototype.DepthFunc = function(in_mode)
 module.exports = {
 	"flush" : flush,
 	"clear" : clear,
+//	"setViewport" : setViewport,
 	"createBuffer" : createBuffer,
 	"deleteBuffer" : deleteBuffer,
 	"setUniformFloat" : setUniformFloat,
