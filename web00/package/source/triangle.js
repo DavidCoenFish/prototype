@@ -14,6 +14,9 @@ void main() {
 	gl_FragColor = u_colour;
 }
 `;
+//	gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);;
+//	gl_FragColor = u_colour;
+
 const sVertexAttributeNameArray = ["a_position"];
 const sUniformNameArray = ["u_colour"];
 
@@ -31,10 +34,11 @@ const onPageLoad = function(){
 	const webGLContextWrapperParam = WebGL.WebGLContextWrapper.makeParamObject(false, false, false, []);
 
 	const webGLContextWrapper = WebGL.WebGLContextWrapper.factory(html5CanvasElement, webGLContextWrapperParam);
-	const colour = CoreTypes.Colour4.factoryFloat32(1.0, 0.0, 0.0, 1.0);
+	const colour = CoreTypes.Colour4.factoryFloat32(0.0, 0.0, 1.0, 1.0);
 	const uniformServer = {
 		"setUniform" : function(in_webGLContextWrapper, in_key, in_position){
 			if (in_key === "u_colour"){
+				console.log("uniformServer:u_colour");
 				WebGL.WebGLContextWrapperHelper.setUniformFloat4(in_webGLContextWrapper, in_position, colour.getRaw());
 			}
 		}
@@ -43,23 +47,13 @@ const onPageLoad = function(){
 	const material = WebGL.MaterialWrapper.factoryDefault(shader);
 	const webGLState = WebGL.WebGLState.factory(webGLContextWrapper);
 
-	//webGLState.setViewport(0, 0, );
-
 	const posDataStream = WebGL.ModelDataStream.factory(
 			"BYTE",
 			2,
 			new Int8Array([
 				-1, -1,
-				1, -1,
 				-1, 1,
-
-				//-1, -1,
-				//-1, 1,
-				//1, -1,
-
-				1, 1, 
-				1, -1,
-				-1, 1
+				1, -1
 				]),
 			"STATIC_DRAW",
 			false
@@ -69,13 +63,13 @@ const onPageLoad = function(){
 	const model = WebGL.ModelWrapper.factory(
 		webGLContextWrapper, 
 		"TRIANGLES",
-		6, //6
+		3,
 		{
 			"a_position" : posDataStream
 		}
 		);
 
-	const clearColour = CoreTypes.Colour4.factoryFloat32(1.0, 0.0, 0.0, 1.0);
+	const clearColour = CoreTypes.Colour4.factoryFloat32(0.1, 0.1, 0.1, 1.0);
 	WebGL.WebGLContextWrapperHelper.clear(webGLContextWrapper, clearColour);
 
 	material.apply(webGLContextWrapper, webGLState);

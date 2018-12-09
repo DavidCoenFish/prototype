@@ -56,9 +56,9 @@ const factoryDefault = function(in_shaderWrapperOrUndefined){
 		in_shaderWrapperOrUndefined,
 		true,
 		"BACK",
-		true,
-		"ZERO",
-		"ONE",
+		false,
+		undefined, //"ZERO",
+		undefined, //"ONE",
 		false,
 		undefined,
 		);
