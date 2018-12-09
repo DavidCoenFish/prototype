@@ -10,12 +10,12 @@
 	"description": "",
 	"devDependencies": {
 		"q": "^1.5.1",
-		"nodemon": "^1.18.5",
+		"nodemon": "^1.18.7",
 		"unittest": "file:../unittest"
 	},
 	"keywords": [],
 	"license": "UNLICENSED",
 	"main": "index.js",
-	"name": "math",
+	"name": "coretypes",
 	"private": true
 }

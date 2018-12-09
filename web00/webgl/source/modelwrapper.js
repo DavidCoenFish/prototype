@@ -99,7 +99,7 @@ const factory = function(
 
 		if (undefined !== m_elementIndexHandle){
 			const bufferObjectType = in_webGLContextWrapper.getEnum("ELEMENT_ARRAY_BUFFER");
-			in_webGLContextWrapper.callMethod("bindBuffer", m_elementIndexHandle, bufferObjectType);
+			in_webGLContextWrapper.callMethod("bindBuffer", bufferObjectType, m_elementIndexHandle);
 		}
 	}
 

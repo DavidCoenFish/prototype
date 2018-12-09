@@ -1,5 +1,5 @@
+const CoreTypes = require("coretypes");
 const WebGL = require("webgl");
-const Math = require("math");
 
 const sVertexShader = `
 attribute vec2 a_position;
@@ -24,7 +24,7 @@ const onPageLoad = function(){
 	const webGLContextWrapperParam = WebGL.WebGLContextWrapper.makeParamObject(false, false, false, []);
 
 	const webGLContextWrapper = WebGL.WebGLContextWrapper.factory(html5CanvasElement, webGLContextWrapperParam);
-	const colour = Math.Colour4.factoryFloat32(1.0, 0.0, 0.0, 1.0);
+	const colour = CoreTypes.Colour4.factoryFloat32(1.0, 0.0, 0.0, 1.0);
 	const uniformServer = {
 		"setUniform" : function(in_webGLContextWrapper, in_key, in_position){
 			if (in_key === "u_colour"){
@@ -33,6 +33,8 @@ const onPageLoad = function(){
 		}
 	};
 	const shader = WebGL.ShaderWrapper.factory(webGLContextWrapper, sVertexShader, sFragmentShader, uniformServer, sVertexAttributeNameArray, sUniformNameArray);
+	const material = WebGL.MaterialWrapper.factoryDefault(shader);
+	const webGLState = WebGL.WebGLState.factory(webGLContextWrapper);
 
 	const posDataStream = WebGL.ModelDataStream.factory(
 			"BYTE",
@@ -64,10 +66,10 @@ const onPageLoad = function(){
 		}
 		);
 
-	const clearColour = Math.Colour4.factoryFloat32(1.0, 0.0, 0.0, 1.0);
+	const clearColour = CoreTypes.Colour4.factoryFloat32(1.0, 0.0, 0.0, 1.0);
 	WebGL.WebGLContextWrapperHelper.clear(webGLContextWrapper, clearColour);
 
-	shader.apply(webGLContextWrapper);
+	material.apply(webGLContextWrapper, webGLState);
 	model.draw(webGLContextWrapper, shader.getMapVertexAttribute());
 
 	return;

@@ -3,8 +3,8 @@
 	"version": "0.0.0",
 	"description": "",
 	"dependencies": {
-		"webgl": "file:../webgl",
-		"math": "file:../math"
+		"webgl": "file:./../webgl",
+		"coretypes": "file:./../coretypes"
 	},
 	"devDependencies": {
 		"babelify": "^10.0.0",

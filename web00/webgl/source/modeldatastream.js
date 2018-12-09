@@ -30,9 +30,13 @@ const factory = function(
 		},
 		"setupDraw" : function(in_webGLContextWrapper, in_position){
 			const bufferObjectType = in_webGLContextWrapper.getEnum("ARRAY_BUFFER");
-			in_webGLContextWrapper.callMethod("bindBuffer", m_bufferObject, bufferObjectType);
+			in_webGLContextWrapper.callMethod("bindBuffer", bufferObjectType, m_bufferObject);
 			const type = in_webGLContextWrapper.getEnum(m_typeName);
-			in_webGLContextWrapper.callMethod("enableVertexAttribArray", in_position, m_elementsPerVertex, type, m_normalise);
+			const stride = 0;
+			const offset = 0;
+			in_webGLContextWrapper.callMethod("vertexAttribPointer", in_position, m_elementsPerVertex, type, m_normalise, stride, offset);
+			in_webGLContextWrapper.callMethod("enableVertexAttribArray", in_position );
+
 		},
 		"tearDownDraw" : function(in_webGLContextWrapper, in_position){
 			in_webGLContextWrapper.callMethod("disableVertexAttribArray", in_position);
