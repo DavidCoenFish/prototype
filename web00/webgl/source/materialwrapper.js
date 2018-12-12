@@ -2,6 +2,7 @@
 
 const factory = function(
 		in_shaderWrapperOrUndefined, 
+		in_textureArrayOrUndefined,
 		in_triangleCullEnabledOrUndefined,
 		in_triangleCullEnumNameOrUndefined,
 		in_blendModeEnabledOrUndefined,
@@ -11,6 +12,7 @@ const factory = function(
 		in_depthFuncEnumNameOrUndefined,
 		){
 	var m_shaderWrapper = in_shaderWrapperOrUndefined;
+	var m_textureArray = (undefined === in_textureArrayOrUndefined) ? [] : in_textureArrayOrUndefined;
 	var m_triangleCullEnabled = (undefined === in_triangleCullEnabledOrUndefined) ? false : in_triangleCullEnabledOrUndefined;
 	var m_triangleCullEnumName = in_triangleCullEnumNameOrUndefined;
 	var m_frontFaceEnumName = "CW";
@@ -29,6 +31,14 @@ const factory = function(
 			if (undefined !== m_shaderWrapper){
 				m_shaderWrapper.apply(in_webGLContextWrapper);
 			}
+
+			//for (var index = 0; index < Math.max(8, m_textureArrayOrUndefined.length); ++index){
+			for (var index = 0; index < m_textureArrayOrUndefined.length; ++index){
+				var texture = m_textureArray[index];
+				in_webGLState.setTextureOrUndefined(texture, index);
+				//in_material.m_shader.ApplyUniform(webGL, DSC.Framework.Context.Uniform.Collection.s_sampler + index, index);
+			}
+
 			in_webGLState.setMaterialOrUndefined(result);
 			in_webGLState.setMapVertexAttributeOrUndefined((undefined !== m_shaderWrapper)? m_shaderWrapper.getMapVertexAttribute():undefined);
 

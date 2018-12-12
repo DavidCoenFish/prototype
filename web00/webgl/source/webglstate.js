@@ -13,6 +13,7 @@ const factory = function(in_webGLContextWrapper){
 	var m_destinationBlendEnum;
 	var m_depthFlagEnabled;
 	var m_depthFuncEnum;
+	var m_mapIndexTexture;
 
 
 	const result = Object.create({
@@ -26,6 +27,19 @@ const factory = function(in_webGLContextWrapper){
 		"getMapVertexAttribute" : function(){
 			return m_mapVertexAttributeOrUndefined;
 		},
+
+		"setTextureOrUndefined" : function(in_webGLContextWrapper, in_index, in_texture){
+			if ((in_index in m_mapIndexTexture) && (in_texture === m_mapIndexTexture[in_index])){
+				return;
+			}
+			m_mapIndexTexture[in_index] = in_texture;
+			if (undefined !== in_texture){
+				in_texture.apply(in_webGLContextWrapper, in_index);
+			} else {
+				in_webGLContextWrapper.callMethod("deactivateTexture", in_index);
+			}
+		},
+		
 		//FRONT, BACK, FRONT_AND_BACK
 		"setTriangleCull" : function(in_webGLContextWrapper, in_enabled, in_cullFaceEnum){
 			if (m_cullFaceEnabled !== in_enabled){
@@ -102,6 +116,7 @@ const factory = function(in_webGLContextWrapper){
 
 	//private methods ==========================
 	const aquireWebGLResources = function(in_webGLContextWrapper){
+		m_mapIndexTexture = {};
 		if (undefined !== m_materialOrUndefined){
 			m_materialOrUndefined.apply(in_webGLContextWrapper, this);
 		}
@@ -110,6 +125,7 @@ const factory = function(in_webGLContextWrapper){
 
 	const releaseWebGLResources = function(in_webGLContextWrapper){
 		m_mapVertexAttributeOrUndefined = undefined;
+		m_mapIndexTexture = undefined;
 		m_cullFaceEnabled = undefined;
 		m_cullFaceEnum = undefined;
 		m_frontFaceEnum = undefined;
