@@ -24,6 +24,8 @@ language:
 	{
 		console.log(key, value);
 	}
+	for(count = 0; count < 10; count++) {
+
 
 design:
 lust		

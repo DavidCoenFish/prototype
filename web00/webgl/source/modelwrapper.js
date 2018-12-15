@@ -86,9 +86,9 @@ const factory = function(
 	}
 
 	const setupDraw = function(in_webGLContextWrapper, in_mapVertexAttribute){
-		console.log("setupDraw");
+		//console.log("setupDraw");
 		for (var key in in_mapVertexAttribute){
-			console.log("mapVertexAttribute:" + key);
+			//console.log("mapVertexAttribute:" + key);
 			var position = in_mapVertexAttribute[key];
 			if (!(key in m_mapDataStream))
 				continue;
@@ -116,9 +116,9 @@ const factory = function(
 	}
 
 	const tearDownDraw = function(in_webGLContextWrapper, in_mapVertexAttribute){
-		console.log("tearDownDraw");
+		//console.log("tearDownDraw");
 		for (var key in in_mapVertexAttribute){
-			console.log("mapVertexAttribute:" + key);
+			//console.log("mapVertexAttribute:" + key);
 			var position = in_mapVertexAttribute[key];
 			if (!(key in m_mapDataStream))
 				continue;

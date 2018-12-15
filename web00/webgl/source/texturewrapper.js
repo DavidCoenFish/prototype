@@ -25,6 +25,28 @@ const factoryByteRGBA = function(
 	);
 }
 
+const factoryByteRGB = function(
+	in_webGLContextWrapper,
+	in_width, 
+	in_height,
+	in_dataOrUndefined
+	){
+	return factory(
+		in_webGLContextWrapper,
+		in_width, 
+		in_height,
+		in_dataOrUndefined,
+		false,
+		"RGB",
+		"RGB",
+		"UNSIGNED_BYTE",
+		"LINEAR",
+		"LINEAR",
+		"CLAMP_TO_EDGE",
+		"CLAMP_TO_EDGE"
+	);
+}
+
 const factory = function(
 	in_webGLContextWrapper, 
 	in_width, 
@@ -57,8 +79,12 @@ const factory = function(
 	//public methods ==========================
 	const result = Object.create({
 		"apply" : function(in_webGLContextWrapper, in_index){
-			in_webGL.ActivateTexture(m_textureHandle, in_index);
- 
+			if (undefined !== m_webglTexture){
+				const textureEnum = in_webGLContextWrapper.getEnum("TEXTURE0") + in_index;
+				in_webGLContextWrapper.callMethod("activeTexture", textureEnum);
+				const targetEnum = in_webGLContextWrapper.getEnum("TEXTURE_2D");
+				in_webGLContextWrapper.callMethod("bindTexture", targetEnum, m_webglTexture);
+			}
 			return;
 		},
 		"destroy" : function(){
@@ -114,5 +140,6 @@ const factory = function(
 
 module.exports = {
 	"factory" : factory,
-	"factoryByteRGBA" : factoryByteRGBA
+	"factoryByteRGBA" : factoryByteRGBA,
+	"factoryByteRGB" : factoryByteRGB
 };

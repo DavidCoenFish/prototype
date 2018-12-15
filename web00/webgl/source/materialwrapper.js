@@ -28,19 +28,19 @@ const factory = function(
 		// 	return m_shaderWrapper;
 		// },
 		"apply" : function(in_webGLContextWrapper, in_webGLState){
+
+			in_webGLState.setMaterialOrUndefined(result);
+			in_webGLState.setMapVertexAttributeOrUndefined((undefined !== m_shaderWrapper)? m_shaderWrapper.getMapVertexAttribute():undefined);
+
 			if (undefined !== m_shaderWrapper){
 				m_shaderWrapper.apply(in_webGLContextWrapper);
 			}
 
-			//for (var index = 0; index < Math.max(8, m_textureArrayOrUndefined.length); ++index){
-			for (var index = 0; index < m_textureArrayOrUndefined.length; ++index){
+			for (var index = 0; index < m_textureArray.length; ++index){
 				var texture = m_textureArray[index];
-				in_webGLState.setTextureOrUndefined(texture, index);
+				in_webGLState.setTextureOrUndefined(in_webGLContextWrapper, index, texture);
 				//in_material.m_shader.ApplyUniform(webGL, DSC.Framework.Context.Uniform.Collection.s_sampler + index, index);
 			}
-
-			in_webGLState.setMaterialOrUndefined(result);
-			in_webGLState.setMapVertexAttributeOrUndefined((undefined !== m_shaderWrapper)? m_shaderWrapper.getMapVertexAttribute():undefined);
 
 			const triangleCullEnum = in_webGLContextWrapper.getEnum(m_triangleCullEnumName);
 			in_webGLState.setTriangleCull(in_webGLContextWrapper, m_triangleCullEnabled, triangleCullEnum);
@@ -61,16 +61,16 @@ const factory = function(
 	return result;
 }
 
-const factoryDefault = function(in_shaderWrapperOrUndefined){
+const factoryDefault = function(in_shaderWrapperOrUndefined, in_textureArrayOrUndefined){
 	return factory(
 		in_shaderWrapperOrUndefined,
+		in_textureArrayOrUndefined,
 		true,
 		"BACK",
 		false,
 		undefined, //"ZERO",
 		undefined, //"ONE",
 		false,
-		undefined,
 		);
 }
 

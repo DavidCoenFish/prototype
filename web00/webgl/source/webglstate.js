@@ -17,6 +17,7 @@ const factory = function(in_webGLContextWrapper){
 
 
 	const result = Object.create({
+		// material is just a reference to the last "applied" material, if context is restored, we all apply on is again....
 		"setMaterialOrUndefined" : function(in_materialOrUndefined){
 			m_materialOrUndefined = in_materialOrUndefined;
 			return;
