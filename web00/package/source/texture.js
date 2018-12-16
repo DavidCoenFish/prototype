@@ -1,4 +1,4 @@
-const CoreTypes = require("coretypes");
+const Core = require("core");
 const WebGL = require("webgl");
 
 const sVertexShader = `
@@ -104,7 +104,7 @@ const onPageLoad = function(){
 		}
 		);
 
-	const clearColour = CoreTypes.Colour4.factoryFloat32(0.1, 0.1, 0.1, 1.0);
+	const clearColour = Core.Colour4.factoryFloat32(0.1, 0.1, 0.1, 1.0);
 	WebGL.WebGLContextWrapperHelper.clear(webGLContextWrapper, clearColour);
 
 	material.apply(webGLContextWrapper, webGLState);

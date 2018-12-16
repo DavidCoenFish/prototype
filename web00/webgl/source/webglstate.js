@@ -1,7 +1,6 @@
 /*
  */
 const Core = require("core");
-const CoreTypes = require("coretypes");
 
 const factory = function(in_webGLContextWrapper){
 	var m_materialOrUndefined;
@@ -137,7 +136,7 @@ const factory = function(in_webGLContextWrapper){
 			const param = in_webGLContextWrapper.callMethod("getParameter", viewportEnum);
 			var result;
 			if (undefined === param){
-				result = CoreTypes.Vector4.factoryInt32(param[0], param[1], param[2], param[3]);
+				result = Core.Vector4.factoryInt32(param[0], param[1], param[2], param[3]);
 				m_viewportX = param[0];
 				m_viewportY = param[1];
 				m_viewportWidth = param[2];
@@ -168,6 +167,11 @@ const factory = function(in_webGLContextWrapper){
 		m_destinationBlendEnum = undefined;
 		m_depthFlagEnabled = undefined;
 		m_depthFuncEnum = undefined;
+		m_viewportX = undefined;
+		m_viewportY = undefined; 
+		m_viewportWidth = undefined;
+		m_viewportHeight = undefined;
+
 		return;
 	}
 

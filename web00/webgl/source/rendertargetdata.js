@@ -30,7 +30,7 @@ const factory = function(
 		},
 	});
 
-	return;
+	return result;
 }
 
 module.exports = {

@@ -1,4 +1,4 @@
-const CoreTypes = require("coretypes");
+const Core = require("core");
 const WebGL = require("webgl");
 
 const sVertexShader = `
@@ -34,7 +34,7 @@ const onPageLoad = function(){
 	const webGLContextWrapperParam = WebGL.WebGLContextWrapper.makeParamObject(false, false, false, []);
 
 	const webGLContextWrapper = WebGL.WebGLContextWrapper.factory(html5CanvasElement, webGLContextWrapperParam);
-	const colour = CoreTypes.Colour4.factoryFloat32(0.0, 0.0, 1.0, 1.0);
+	const colour = Core.Colour4.factoryFloat32(0.0, 0.0, 1.0, 1.0);
 	const uniformServer = {
 		"setUniform" : function(in_webGLContextWrapper, in_key, in_position){
 			if (in_key === "u_colour"){
@@ -69,7 +69,7 @@ const onPageLoad = function(){
 		}
 		);
 
-	const clearColour = CoreTypes.Colour4.factoryFloat32(0.1, 0.1, 0.1, 1.0);
+	const clearColour = Core.Colour4.factoryFloat32(0.1, 0.1, 0.1, 1.0);
 	WebGL.WebGLContextWrapperHelper.clear(webGLContextWrapper, clearColour);
 
 	material.apply(webGLContextWrapper, webGLState);

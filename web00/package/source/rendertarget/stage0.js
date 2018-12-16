@@ -1,4 +1,4 @@
-const CoreTypes = require("coretypes");
+const Core = require("core");
 const WebGL = require("webgl");
 
 const sVertexShader = `
@@ -19,7 +19,7 @@ const sVertexAttributeNameArray = ["a_position"];
 const sUniformNameArray = ["u_colour"];
 
 const factory = function(in_webGLContextWrapper){
-	const m_colour = CoreTypes.Colour4.factoryFloat32(0.0, 0.0, 1.0, 1.0);
+	const m_colour = Core.Colour4.factoryFloat32(0.0, 0.0, 1.0, 1.0);
 	const m_uniformServer = {
 		"setUniform" : function(localWebGLContextWrapper, in_key, in_position){
 			if (in_key === "u_colour"){
@@ -27,7 +27,7 @@ const factory = function(in_webGLContextWrapper){
 			}
 		}
 	};
-	const m_shader = WebGL.ShaderWrapper.factory(in_webGLContextWrapper, sVertexShader, sFragmentShader, uniformServer, sVertexAttributeNameArray, sUniformNameArray);
+	const m_shader = WebGL.ShaderWrapper.factory(in_webGLContextWrapper, sVertexShader, sFragmentShader, m_uniformServer, sVertexAttributeNameArray, sUniformNameArray);
 	const m_material = WebGL.MaterialWrapper.factoryDefault(m_shader);
 
 	const m_posDataStream = WebGL.ModelDataStream.factory(
@@ -60,7 +60,7 @@ const factory = function(in_webGLContextWrapper){
 		"draw" : function(localWebGLContextWrapper, localWebGLState){
 			m_renderTarget.apply(localWebGLContextWrapper);
 
-			const clearColour = CoreTypes.Colour4.factoryFloat32(0.1, 0.1, 0.1, 1.0);
+			const clearColour = Core.Colour4.factoryFloat32(0.1, 0.1, 0.1, 1.0);
 			WebGL.WebGLContextWrapperHelper.clear(localWebGLContextWrapper, clearColour);
 
 			m_material.apply(localWebGLContextWrapper, localWebGLState);

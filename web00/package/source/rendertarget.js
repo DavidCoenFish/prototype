@@ -1,4 +1,3 @@
-const CoreTypes = require("coretypes");
 const WebGL = require("webgl");
 const Stage0 = require("./rendertarget/stage0.js");
 const Stage1 = require("./rendertarget/stage1.js");

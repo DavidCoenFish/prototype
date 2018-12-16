@@ -1,4 +1,4 @@
-const CoreTypes = require("coretypes");
+const Core = require("core");
 const WebGL = require("webgl");
 
 const sVertexShader = `
@@ -6,7 +6,7 @@ attribute vec2 a_position;
 attribute vec2 a_uv;
 varying vec2 v_uv;
 void main() {
-	gl_Position = vec4(a_position, 0.0, 1.0);
+	gl_Position = vec4(a_position * 0.5, 0.0, 1.0);
 	v_uv = a_uv;
 }
 `;
@@ -31,7 +31,7 @@ const factory = function(in_webGLContextWrapper, in_textureWrapper){
 			}
 		}
 	};
-	const m_shader = WebGL.ShaderWrapper.factory(in_webGLContextWrapper, sVertexShader, sFragmentShader, uniformServer, sVertexAttributeNameArray, sUniformNameArray);
+	const m_shader = WebGL.ShaderWrapper.factory(in_webGLContextWrapper, sVertexShader, sFragmentShader, m_uniformServer, sVertexAttributeNameArray, sUniformNameArray);
 	const m_material = WebGL.MaterialWrapper.factoryDefault(m_shader, [in_textureWrapper]);
 
 	const m_posDataStream = WebGL.ModelDataStream.factory(
@@ -67,8 +67,8 @@ const factory = function(in_webGLContextWrapper, in_textureWrapper){
 			false
 			);
 
-	const model = WebGL.ModelWrapper.factory(
-		webGLContextWrapper, 
+	const m_model = WebGL.ModelWrapper.factory(
+		in_webGLContextWrapper, 
 		"TRIANGLES",
 		6,
 		{
@@ -81,7 +81,7 @@ const factory = function(in_webGLContextWrapper, in_textureWrapper){
 		"draw" : function(localWebGLContextWrapper, localWebGLState){
 			WebGL.WebGLContextWrapperHelper.resetRenderTarget(localWebGLContextWrapper);
 
-			const clearColour = CoreTypes.Colour4.factoryFloat32(0.0, 0.0, 0.0, 1.0);
+			const clearColour = Core.Colour4.factoryFloat32(0.0, 0.0, 0.0, 1.0);
 			WebGL.WebGLContextWrapperHelper.clear(localWebGLContextWrapper, clearColour);
 
 			m_material.apply(localWebGLContextWrapper, localWebGLState);
