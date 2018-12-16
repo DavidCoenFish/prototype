@@ -46,7 +46,6 @@ const factory = function(
 	return result;
 }
 
-
 module.exports = {
 	"factory" : factory
 };

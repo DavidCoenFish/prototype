@@ -1,9 +1,12 @@
 todo:
 x	webclear html
 x	get webgl properties html
-	deal lost context
-	draw triangle
-	draw textured triangle 
+x	deal lost context
+x	draw triangle
+x	draw textured triangle 
+_	render textured
+	celtic knot background
+	performance test sphere octree
 
 x done
 _ underway

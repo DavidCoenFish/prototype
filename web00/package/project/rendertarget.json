@@ -1,0 +1,12 @@
+{
+	"name" : "rendertarget",
+	"source" : "rendertarget.js",
+	"template" : "template/simplecanvas.htm.template",
+	"templateParam" : {
+		"title" : "rendertarget",
+		"canvasWidth" : "512px",
+		"canvasHeight" : "512px",
+		"bundleFilePath" : "js/rendertargetbundle.js"
+	},
+	"outputRootDir": "output"
+}

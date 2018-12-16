@@ -87,6 +87,9 @@ const factory = function(
 			}
 			return;
 		},
+		"getWebGLTexture" : function(){
+			return m_webglTexture;
+		},
 		"destroy" : function(){
 			in_webGLContextWrapper.removeResourceContextCallbacks(restoredCallback, lostCallback);
 		},

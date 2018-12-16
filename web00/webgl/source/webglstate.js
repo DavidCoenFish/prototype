@@ -1,6 +1,7 @@
 /*
  */
 const Core = require("core");
+const CoreTypes = require("coretypes");
 
 const factory = function(in_webGLContextWrapper){
 	var m_materialOrUndefined;
@@ -15,6 +16,10 @@ const factory = function(in_webGLContextWrapper){
 	var m_depthFuncEnum;
 	var m_mapIndexTexture;
 
+	var m_viewportX;
+	var m_viewportY; 
+	var m_viewportWidth;
+	var m_viewportHeight;
 
 	const result = Object.create({
 		// material is just a reference to the last "applied" material, if context is restored, we all apply on is again....
@@ -111,7 +116,35 @@ const factory = function(in_webGLContextWrapper){
 				}
 			}
 			return;
-		}
+		},
+
+		"setViewport" : function(in_webGLContextWrapper, in_x, in_y, in_width, in_height){
+			if ((m_viewportX !== in_x) ||
+				(m_viewportY !== in_y) ||
+				(m_viewportWidth !== in_width) ||
+				(m_viewportHeight !== in_height)) {
+				in_webGLContextWrapper.callMethod("viewport", in_x, in_y, in_width, in_height);
+				m_viewportX = in_x;
+				m_viewportY = in_y;
+				m_viewportWidth = in_width;
+				m_viewportHeight = in_height;
+			}
+
+			return;
+		},
+
+		"getViewport" : function(in_webGLContextWrapper){
+			const param = in_webGLContextWrapper.callMethod("getParameter", viewportEnum);
+			var result;
+			if (undefined === param){
+				result = CoreTypes.Vector4.factoryInt32(param[0], param[1], param[2], param[3]);
+				m_viewportX = param[0];
+				m_viewportY = param[1];
+				m_viewportWidth = param[2];
+				m_viewportHeight = param[3];
+			}
+			return result;
+		},
 
 	});
 
