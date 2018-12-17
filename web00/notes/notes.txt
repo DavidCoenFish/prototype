@@ -30,6 +30,9 @@ Uint32Array
 	//"ShaderWrapper" : require("./source/shaderwrapper.js"),
 
 
+moe
+0G8006T10600
+
 for (var index = 0; index < cars.length; index++) { 
     text += cars[index] + "<br>";
 }

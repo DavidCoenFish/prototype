@@ -107,7 +107,6 @@ const factory = function(
 		if (true === m_flip) {
 			in_webGLContextWrapper.callMethod("pixelStorei", paramFlipYEnum, true);
 		}
-
 		in_webGLContextWrapper.callMethod(
 			"texImage2D",
 			targetEnum,		//GLenum target, 

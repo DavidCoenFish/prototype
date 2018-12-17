@@ -52,9 +52,12 @@ const factory = function(
 			m_renderTargetDataArray[index].apply(in_webGLContextWrapper);
 		}
 
+		//glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 		const status = in_webGLContextWrapper.callMethod("checkFramebufferStatus", targetEnum);
 		if (status !== in_webGLContextWrapper.getEnum("FRAMEBUFFER_COMPLETE")){
-			alert("Could not create FBO");
+			console.log("Could not create FBO:" + status);
+			//alert("Could not create FBO");
+			//36054 //0x8CD6
 		}
 
 		in_webGLContextWrapper.callMethod("bindFramebuffer", targetEnum, null);

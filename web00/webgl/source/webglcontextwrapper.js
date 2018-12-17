@@ -24,6 +24,20 @@ const getWebGLContext = function(in_html5CanvasElement, in_paramObjectOrUndefine
 		throw("Unable to get webgl Context");
 	}
 
+	if (undefined === webGLContext) {
+		throw("Unable to get webgl Context");
+	}
+
+	if ((undefined !== in_paramObjectOrUndefined) && (undefined !== in_paramObjectOrUndefined.extentions)){
+		for (var index = 0; index < in_paramObjectOrUndefined.extentions.length; index++) { 
+			const extentionName = in_paramObjectOrUndefined.extentions[index];
+			var extention = webGLContext.getExtension(extentionName);
+			if (null === extention){
+				throw("failed to get extention:" + extentionName);
+			}
+		}
+	}
+
 	return webGLContext;
 }
 
@@ -136,6 +150,7 @@ const factory = function(in_html5CanvasElement, in_paramObjectOrUndefined, in_ca
 		case m_webGLContext.OUT_OF_MEMORY: //0x0505: //OUT_OF_MEMORY:
 			message = "WebGLContetWrapper.GetError:OUT_OF_MEMORY";
 			break;
+			//0x0506: //1286
 		case m_webGLContext.CONTEXT_LOST_WEBGL:// 0x9242: //CONTEXT_LOST_WEBGL:
 			assert = false;
 			message = "WebGLContetWrapper.GetError:CONTEXT_LOST_WEBGL";
