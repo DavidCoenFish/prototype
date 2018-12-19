@@ -1,6 +1,6 @@
-/*
-input height map to normal map
- */
+/* 
+take a normal map, add a env map, and generate a texture
+*/
 
 const Core = require("core");
 const WebGL = require("webgl");

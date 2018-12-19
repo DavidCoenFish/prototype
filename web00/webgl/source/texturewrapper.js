@@ -59,7 +59,7 @@ const factory = function(
 	in_magFilterEnumName,
 	in_minFilterEnumName,
 	in_wrapSEnumName,
-	in_wrapTEnumName
+	in_wrapTEnumName,
 	){
 	const m_width = in_width; 
 	const m_height = in_height;

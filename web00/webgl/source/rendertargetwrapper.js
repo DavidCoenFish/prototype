@@ -62,6 +62,12 @@ const factory = function(
 
 		in_webGLContextWrapper.callMethod("bindFramebuffer", targetEnum, null);
 
+		const isFrameBuffer = in_webGLContextWrapper.callMethod("isFramebuffer", m_frameBufferObject);
+		if (true !== isFrameBuffer){
+			console.log("isFrameBuffer:" + isFrameBuffer);
+		}
+
+
 		return;
 	}
 

@@ -14,6 +14,12 @@ const factory = function(in_webGLContextWrapper){
 	var m_depthFlagEnabled;
 	var m_depthFuncEnum;
 	var m_mapIndexTexture;
+	var m_colorMaskRed;
+	var m_colorMaskGreen;
+	var m_colorMaskBlue;
+	var m_colorMaskAlpha;
+	var m_depthMask;
+	var m_stencilMask;
 
 	var m_viewportX;
 	var m_viewportY; 
@@ -117,6 +123,33 @@ const factory = function(in_webGLContextWrapper){
 			return;
 		},
 
+		"setColorMask" : function(in_webGLContextWrapper, in_red, in_green, in_blue, in_alpha){
+			if ((in_red !== m_colorMaskRed) ||
+				(in_green !== m_colorMaskGreen) ||
+				(in_blue !== m_colorMaskBlue) ||
+				(in_alpha !== m_colorMaskAlpha)){
+				in_webGLContextWrapper.callMethod("colorMask", in_red, in_green, in_blue, in_alpha);
+				m_colorMaskRed = in_red;
+				m_colorMaskGreen = in_green;
+				m_colorMaskBlue = in_blue;
+				m_colorMaskAlpha = in_alpha;
+			}
+		},
+
+		"setDepthMask" : function(in_webGLContextWrapper, in_depthMask){
+			if (in_depthMask !== m_depthMask){
+				in_webGLContextWrapper.callMethod("depthMask", in_depthMask);
+				m_depthMask = in_depthMask;
+			}
+		},
+
+		"setStencilMask" : function(in_webGLContextWrapper, in_stencilMask){
+			if (in_stencilMask !== m_stencilMask){
+				in_webGLContextWrapper.callMethod("stencilMask", in_stencilMask);
+				m_stencilMask = in_stencilMask;
+			}
+		},
+
 		"setViewport" : function(in_webGLContextWrapper, in_x, in_y, in_width, in_height){
 			if ((m_viewportX !== in_x) ||
 				(m_viewportY !== in_y) ||
@@ -167,6 +200,14 @@ const factory = function(in_webGLContextWrapper){
 		m_destinationBlendEnum = undefined;
 		m_depthFlagEnabled = undefined;
 		m_depthFuncEnum = undefined;
+
+		m_colorMaskRed = undefined;
+		m_colorMaskGreen = undefined;
+		m_colorMaskBlue = undefined;
+		m_colorMaskAlpha = undefined;
+		m_depthMask = undefined;
+		m_stencilMask = undefined;
+
 		m_viewportX = undefined;
 		m_viewportY = undefined; 
 		m_viewportWidth = undefined;

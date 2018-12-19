@@ -1,6 +1,6 @@
-/*
-input height map to normal map
- */
+/* 
+	present a texture to screen
+*/
 
 const Core = require("core");
 const WebGL = require("webgl");
@@ -23,8 +23,6 @@ void main() {
 	gl_FragColor = texel;
 }
 `;
-//vec4(texel.x, 0.0, 0.0, 1.0);
-//	gl_FragColor = texture2D(u_sampler0, v_uv);
 
 const sVertexAttributeNameArray = ["a_position", "a_uv"];
 const sUniformNameArray = ["u_sampler0"];
@@ -87,9 +85,6 @@ const factory = function(in_webGLContextWrapper, in_textureWrapper){
 	const result = Object.create({
 		"draw" : function(localWebGLContextWrapper, localWebGLState){
 			WebGL.WebGLContextWrapperHelper.resetRenderTarget(localWebGLContextWrapper);
-
-			const clearColour = Core.Colour4.factoryFloat32(0.0, 0.0, 0.0, 1.0);
-			WebGL.WebGLContextWrapperHelper.clear(localWebGLContextWrapper, clearColour);
 
 			m_material.apply(localWebGLContextWrapper, localWebGLState);
 			m_model.draw(localWebGLContextWrapper, m_shader.getMapVertexAttribute());

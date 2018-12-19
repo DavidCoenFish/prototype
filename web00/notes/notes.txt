@@ -1,11 +1,10 @@
 todo:
-x	webclear html
-x	get webgl properties html
-x	deal lost context
-x	draw triangle
-x	draw textured triangle 
-_	render textured
-	celtic knot background
+_	heightmap float test
+	celtic knot tiles
+	heightmap & envmap
+	heightmap & light, shadows
+	fade in/out, drop shadows
+	blend over time
 	performance test sphere octree
 
 x done

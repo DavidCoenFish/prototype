@@ -1,3 +1,6 @@
+/* 
+generate a height map
+*/
 const Core = require("core");
 const WebGL = require("webgl");
 
@@ -14,25 +17,29 @@ const sFragmentShader = `
 precision mediump float;
 varying vec2 v_data;
 void main() {
-	float value = ((cos(radians(v_data.x * 360.0)) * cos(radians(v_data.y * 360.0))) * 0.5) + 0.5;
-	gl_FragColor = vec4(value, 0.0, 0.0, 1.0);;
+	float value0 = (cos(radians(v_data.x * 720.0)) * 0.5) + 0.5;
+	float value1 = (cos(radians(v_data.y * 720.0)) * 0.5) + 0.5;
+	float value2 = value0 * value1;
+	gl_FragColor = vec4(value2, value2, value2, 1.0);
 }
 `;
+/*
+	float value = ((cos(radians(v_data.x * 360.0)) * cos(radians(v_data.y * 360.0))) * 0.5) + 0.5;
+	float value0 = v_data.x;
+	float value2 = ((cos(radians(v_data.x * 360.0)) * cos(radians(v_data.y * 360.0))) * 0.5) + 0.5;
 
-const sVertexAttributeNameArray = ["a_position"];
-const sUniformNameArray = ["u_colour"];
+ */
+
+//	float value = ((cos(radians(v_data.x * 360.0)) * cos(radians(v_data.y * 360.0))) * 0.5) + 0.5;
+
+const sVertexAttributeNameArray = ["a_position", "a_data"];
+const sUniformNameArray = [];
 
 const factory = function(in_webGLContextWrapper){
-	const m_colour = Core.Colour4.factoryFloat32(0.0, 0.0, 1.0, 1.0);
-	const m_uniformServer = {
-		"setUniform" : function(localWebGLContextWrapper, in_key, in_position){
-			if (in_key === "u_colour"){
-				WebGL.WebGLContextWrapperHelper.setUniformFloat4(localWebGLContextWrapper, in_position, m_colour.getRaw());
-			}
-		}
-	};
+	const m_uniformServer = undefined;
 	const m_shader = WebGL.ShaderWrapper.factory(in_webGLContextWrapper, sVertexShader, sFragmentShader, m_uniformServer, sVertexAttributeNameArray, sUniformNameArray);
 	const m_material = WebGL.MaterialWrapper.factoryDefault(m_shader);
+	m_material.setColorMask(true, false, false, false);
 
 	const m_posDataStream = WebGL.ModelDataStream.factory(
 			"BYTE",
@@ -81,14 +88,15 @@ const factory = function(in_webGLContextWrapper){
 		512,
 		undefined,
 		false, //in_flip,
-		"LUMINANCE",
-		"LUMINANCE",
-		"FLOAT",
-		"LINEAR",
-		"LINEAR",
+		"RGB",
+		"RGB",
+		"FLOAT", //"HALF_FLOAT", //"FLOAT", //"UNSIGNED_BYTE", //"FLOAT",
+		"NEAREST", //"LINEAR",//
+		"NEAREST", //"LINEAR",
 		"CLAMP_TO_EDGE",
 		"CLAMP_TO_EDGE"
 	);
+	//RGBAHalfFloat
 
 	var m_renderTarget = WebGL.RenderTargetWrapper.factory(in_webGLContextWrapper,
 		[ WebGL.RenderTargetData.factory(m_texture, "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D") ]
