@@ -13,12 +13,6 @@ _ underway
 npm init -y
 npm pack
 
-		"start": "nodemon --exec babel-node source/index.js",
-		"babel-cli": "^6.26.0",
-		"babel-preset-env": "^1.7.0",
-		"babel-preset-stage-2": "^6.24.1",
-
-
 Float32Array
 Int8Array
 Uint8Array
@@ -26,8 +20,6 @@ Int16Array
 Uint16Array
 Int32Array
 Uint32Array
-	//"ShaderWrapper" : require("./source/shaderwrapper.js"),
-
 
 moe
 0G8006T10600
@@ -36,24 +28,6 @@ for (var index = 0; index < cars.length; index++) {
     text += cars[index] + "<br>";
 }
 
-
-{
-	"comments": false,
-	"presets": ["@babel/preset-env"]
+for (var key in object) {
+	if (object.hasOwnProperty(key)) callback(key, object[key]);
 }
-
-	"browserify": {
-		"transform": [ "babelify" ]
-	},
-	"babelify": {
-		"minified": true,
-		"presets": ["@babel/preset-env"]
-	},
-
-
-move "shader wrapper" to be a data container that is "hydrated" by events passing 
-
-add a webgl state, hold current material settings, active shader.... 
-
-uglifyjs
-		//"uglify-js": "^3.4.9",
