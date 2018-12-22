@@ -2,23 +2,23 @@
  */
 const Core = require("core");
 
-const factory = function(in_uvOrigin, in_radius, in_startDegrees, in_endDegrees, in_distanceFunction){
-	const m_distanceFunction = in_distanceFunction;
+const factory = function(in_uvOrigin, in_radius, in_startRadians, in_endRadians, in_distanceFunction){
 	const m_uvOrigin = in_uvOrigin;
-	const m_normal = Core.Vector2.factorySubtract(in_uvEnd, in_uvStart);
-	const m_normalCross = Core.Vector2.factory(m_normal.getY(), -(m_normals.getX()));
-	const m_length = m_normal.normaliseSelf();
+	const m_radius = in_radius;
+	const m_startRadians = in_startRadians;
+	const m_endRadians = in_endRadians;
+	const m_distanceFunction = in_distanceFunction;
 
 	const result = Object.create({
 		"sampleHeight" : function(in_accumulator, in_uv){
-			const uvRelativeToStart = Core.Vector2.factorySubtract(in_uv, m_start);
-			const projectedOnNormal = m_normal.dotProduct(uvRelativeToStart);
-			if ((projectedOnNormal < 0.0) || (m_length <= projectedOnNormal)){
+			const uvRelativeToStart = Core.Vector2.factorySubtract(in_uv, m_uvOrigin);
+			const distance = Math.abs(uvRelativeToStart.length() - m_radius);
+			const angle = Math.atan2(uvRelativeToStart.getY(), uvRelativeToStart.getX());
+			if ((angle < m_startRadians) || (m_endRadians <= angle)){
 				return;
 			}
-			const distance = Math.abs(m_normalCross.dotProduct(uvRelativeToStart));
 
-			m_distanceFunction.call(in_accumulator, distance);
+			m_distanceFunction.call(null, in_accumulator, distance);
 
 			return;
 		},

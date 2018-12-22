@@ -1,5 +1,5 @@
 /* 
-	render to screen
+	render to screen the given texture
 */
 
 const Core = require("core");
@@ -53,7 +53,7 @@ const factory = function(in_webGLContextWrapper, in_textureWrapper){
 				]),
 			"STATIC_DRAW",
 			false
-			);
+		);
 			//in_typeName,in_elementsPerVertex,in_arrayData,in_usageName,in_normalise
 
 	const m_uvDataStream = WebGL.ModelDataStream.factory(
@@ -70,7 +70,7 @@ const factory = function(in_webGLContextWrapper, in_textureWrapper){
 				]),
 			"STATIC_DRAW",
 			false
-			);
+		);
 
 	const m_model = WebGL.ModelWrapper.factory(
 		in_webGLContextWrapper, 
@@ -80,7 +80,7 @@ const factory = function(in_webGLContextWrapper, in_textureWrapper){
 			"a_position" : m_posDataStream,
 			"a_uv" : m_uvDataStream
 		}
-		);
+	);
 
 	const result = Object.create({
 		"draw" : function(localWebGLContextWrapper, localWebGLState){

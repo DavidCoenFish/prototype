@@ -4,24 +4,20 @@
  */
 
 const factory = function(){
-	var m_noSubtractHeight = 0.0; //zero to positive
-	var m_canSubtractHeight = 0.0; //zero to positive
+	var m_height = 0.0; //zero to positive
 	var m_subtractHeight = 0.0; //zero to negative
 
 	const result = Object.create({
-		"setNoSubtractHeight" : function(in_height){
-			m_noSubtractHeight = Math.max(m_noSubtractHeight, in_height);
-			return;
-		},
-		"setCanSubtractHeight" : function(in_height){
-			m_canSubtractHeight = Math.max(m_canSubtractHeight, in_height);
+		"setHeight" : function(in_height){
+			m_height = Math.max(m_height, in_height);
 			return;
 		},
 		"setSubtractHeight" : function(in_height){
-			m_subtractHeight = Math.min(m_subtractHeight, in_height);
+			m_subtractHeight = Math.max(m_subtractHeight, in_height);
 		},
 		"getHeight" : function(){
-			var value = Math.max(m_noSubtractHeight, (m_canSubtractHeight + m_subtractHeight));
+			var value = m_height - m_subtractHeight;
+			return value;
 		},
 	});
 
