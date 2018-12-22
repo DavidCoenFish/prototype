@@ -2,6 +2,7 @@ const WebGL = require("webgl");
 const Stage0 = require("./heightmap/stage0.js");
 const Stage1 = require("./heightmap/stage1.js");
 const Stage2 = require("./heightmap/stage2.js");
+const CelticKnotTile = require("./heightmap/resource/celticknottile.js");
 
 const onPageLoad = function(){
 	console.info("onPageLoad");
@@ -18,16 +19,17 @@ const onPageLoad = function(){
 		height = html5CanvasElement.height;
 	}
 
-	const webGLContextWrapperParam = WebGL.WebGLContextWrapper.makeParamObject(false, false, false, 
-		[
-			//"EXT_color_buffer_float",
-			//"OES_texture_half_float",
-			"OES_texture_float"
-		]);
+	const webGLContextWrapperParam = WebGL.WebGLContextWrapper.makeParamObject(false, false, false, [
+		"OES_texture_float"
+	]);
 	const webGLContextWrapper = WebGL.WebGLContextWrapper.factory(html5CanvasElement, webGLContextWrapperParam);
 	const webGLState = WebGL.WebGLState.factory(webGLContextWrapper);
 
-	const stage0 = Stage0.factory(webGLContextWrapper);
+	const resourceManager = Core.ResourceManager.factory({
+		"celticTile" : CelticKnotTile.factory
+	});
+
+	const stage0 = Stage0.factory(webGLContextWrapper, resourceManager);
 	//const stage1 = Stage1.factory(webGLContextWrapper, stage0.getTexture(), width, height);
 	const stage2 = Stage2.factory(webGLContextWrapper, stage0.getTexture());
 

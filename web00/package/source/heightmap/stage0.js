@@ -1,23 +1,17 @@
 /* 
 generate a height map
 */
-const Core = require("core");
 const WebGL = require("webgl");
-const CelticSampler = require("./celticknotheightsample/sampler.js");
 
-const factory = function(in_webGLContextWrapper){
-	
-	const celticSampler = CelticSampler.factory();
-	const dataArray = celticSampler.debugGenerateTile(15, 128, 128, 1);
-
-	const m_texture = WebGL.TextureWrapper.factory(
+const factory = function(in_webGLContextWrapper, in_width, in_height, in_resourceManager){
+	const m_targetTexture = WebGL.TextureWrapper.factory(
 		in_webGLContextWrapper, 
-		128, 
-		128,
+		in_width + 2, 
+		in_height + 2,
 		dataArray,
 		false, //in_flip,
-		"RGBA",
-		"RGBA",
+		"RGB",
+		"RGB",
 		"FLOAT", //"HALF_FLOAT", //"FLOAT", //"UNSIGNED_BYTE", //"FLOAT",
 		"NEAREST", //"LINEAR",//
 		"NEAREST", //"LINEAR",
@@ -29,7 +23,7 @@ const factory = function(in_webGLContextWrapper){
 		"draw" : function(localWebGLContextWrapper, localWebGLState){
 		},
 		"getTexture" : function(){
-			return m_texture;
+			return m_targetTexture;
 		}
 	});
 

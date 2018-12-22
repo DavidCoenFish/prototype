@@ -37,7 +37,7 @@ const factory = function(){
 				sampleTile(in_accumulator, m_tileOneCorner, rotateUv270(uv));
 				break;
 			case 3://0011
-				sampleTile(m_tileTwoCorner, m_tileTwoCorner, uv);
+				sampleTile(in_accumulator, m_tileTwoCorner, uv);
 				break;
 			case 4://0100
 				sampleTile(in_accumulator, m_tileOneCorner, rotateUv180(uv));
@@ -129,7 +129,7 @@ const factory = function(){
 	const m_tileTwoCorner = [
 		CelticKnotLine.factory(Core.Vector2.factoryFloat32(0.375, 0.875), Core.Vector2.factoryFloat32(-0.25, 0.25), distanceFunction),		
 		CelticKnotLine.factory(rotateUv90(Core.Vector2.factoryFloat32(0.375, 0.875)), rotateUv90(Core.Vector2.factoryFloat32(-0.25, 0.25)), distanceFunction),
-		
+
 		CelticKnotCircle.factory(Core.Vector2.factoryFloat32(0.5, 0.75), m_halfWidth * 3.0, Core.Radians.fromDegrees(-135.0), Core.Radians.fromDegrees(-45.0), distanceFunction),
 		CelticKnotLine.factory(Core.Vector2.factoryFloat32(0.875, 0.375), Core.Vector2.factoryFloat32(1.25, 0.75), distanceFunction),
 	];
