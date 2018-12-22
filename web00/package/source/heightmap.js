@@ -1,3 +1,4 @@
+const Core = require("core");
 const WebGL = require("webgl");
 const Stage0 = require("./heightmap/stage0.js");
 const Stage1 = require("./heightmap/stage1.js");
@@ -29,7 +30,7 @@ const onPageLoad = function(){
 		"celticTile" : CelticKnotTile.factory
 	});
 
-	const stage0 = Stage0.factory(webGLContextWrapper, resourceManager);
+	const stage0 = Stage0.factory(webGLContextWrapper, width, height, resourceManager);
 	//const stage1 = Stage1.factory(webGLContextWrapper, stage0.getTexture(), width, height);
 	const stage2 = Stage2.factory(webGLContextWrapper, stage0.getTexture());
 

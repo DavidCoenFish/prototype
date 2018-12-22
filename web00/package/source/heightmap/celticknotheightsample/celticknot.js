@@ -34,7 +34,7 @@ const factory = function(){
 				sampleTile(in_accumulator, m_tileOneCorner, uv);
 				break;
 			case 2://0010
-				sampleTile(in_accumulator, m_tileOneCorner, rotateUv270(uv));
+				sampleTile(in_accumulator, m_tileOneCorner, rotateUv90(uv));
 				break;
 			case 3://0011
 				sampleTile(in_accumulator, m_tileTwoCorner, uv);
@@ -43,7 +43,7 @@ const factory = function(){
 				sampleTile(in_accumulator, m_tileOneCorner, rotateUv180(uv));
 				break;
 			case 5://0101
-				sampleTile(in_accumulator, m_tileTwoCorner, rotateUv90(uv));
+				sampleTile(in_accumulator, m_tileTwoCorner, rotateUv270(uv));
 				break;
 			case 6://0110
 				sampleTile(in_accumulator, m_tileSolid, uv);
@@ -51,8 +51,8 @@ const factory = function(){
 			case 7://0111
 				sampleTile(in_accumulator, m_tileSolid, uv);
 				break;
-			case 8:
-				sampleTile(in_accumulator, m_tileOneCorner, rotate90(uv));
+			case 8://1000
+				sampleTile(in_accumulator, m_tileOneCorner, rotate180(uv));
 				break;
 			case 9://1001
 				sampleTile(in_accumulator, m_tileSolid, uv);

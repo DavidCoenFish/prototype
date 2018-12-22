@@ -21,18 +21,20 @@ const factory = function(in_mapNameFactoryOrUndefined){
 		},
 
 		//getDynamicReference/ unmanaged, can be edited, don't need to tell resource manager about release
-		"getUniqueReference" : function(in_name, ...in_param){
+		"getUniqueReference" : function(in_name){ //...
 			if (false === in_name in m_dataMap){
 				return undefined;
 			}
-			return m_dataMap[in_name].callFactoryUnmanaged(in_param);
+			const param = Array.prototype.slice.call(arguments, 1);
+			return m_dataMap[in_name].callFactoryUnmanaged(param);
 		},
 		//getStaticReference/ ref counted, need to release. do not edit, as useage of resource is shared
-		"getCommonReference" : function(in_name, ...in_param){
+		"getCommonReference" : function(in_name){ //...
 			if (false === in_name in m_dataMap){
 				return undefined;
 			}
-			return m_dataMap[in_name].callFactoryRefCounted(in_param);
+			const param = Array.prototype.slice.call(arguments, 1);
+			return m_dataMap[in_name].callFactoryRefCounted(param);
 		},
 		"releaseCommonReference" : function(in_name){
 			if (false === in_name in m_dataMap){

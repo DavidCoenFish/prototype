@@ -90,6 +90,12 @@ const factory = function(
 		"getWebGLTexture" : function(){
 			return m_webglTexture;
 		},
+		"getWidth" : function(){
+			return m_width;
+		},
+		"getHeight" : function(){
+			return m_height;
+		},
 		"destroy" : function(){
 			in_webGLContextWrapper.removeResourceContextCallbacks(restoredCallback, lostCallback);
 		},

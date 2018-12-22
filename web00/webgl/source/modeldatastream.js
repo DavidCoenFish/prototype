@@ -3,6 +3,15 @@ const WebGLContextWrapperHelper = require("./webglcontextwrapperhelper.js")
 
 /*
 the data needed to construct a model data stream buffer object
+
+in_typeName
+BYTE: signed 8-bit integer, with values in [-128, 127]
+SHORT: signed 16-bit integer, with values in [-32768, 32767]
+UNSIGNED_BYTE: unsigned 8-bit integer, with values in [0, 255]
+UNSIGNED_SHORT: unsigned 16-bit integer, with values in [0, 65535]
+FLOAT
+HALF_FLOAT
+
  */
 const factory = function(
 	in_typeName, //string

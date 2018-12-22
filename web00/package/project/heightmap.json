@@ -4,8 +4,8 @@
 	"template" : "template/simplecanvas.htm.template",
 	"templateParam" : {
 		"title" : "heightmap",
-		"canvasWidth" : "128px",
-		"canvasHeight" : "128px",
+		"canvasWidth" : "256px",
+		"canvasHeight" : "256px",
 		"bundleFilePath" : "js/heightmapbundle.js"
 	},
 	"outputRootDir": "output"

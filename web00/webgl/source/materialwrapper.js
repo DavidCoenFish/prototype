@@ -90,8 +90,8 @@ const factoryDefault = function(in_shaderWrapperOrUndefined, in_textureArrayOrUn
 	return factory(
 		in_shaderWrapperOrUndefined,
 		in_textureArrayOrUndefined,
-		true,
-		"BACK",
+		false, //true,
+		undefined, //"BACK",
 		false,
 		undefined, //"ZERO",
 		undefined, //"ONE",
