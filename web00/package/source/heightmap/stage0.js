@@ -23,7 +23,7 @@ varying vec2 v_uv;
 varying vec3 v_colorMask;
 void main() {
 	vec4 texel = texture2D(u_sampler0, v_uv);
-	float value = dot(texel.rga, v_colorMask);
+	float value = dot(texel.rgb, v_colorMask);
 	gl_FragColor = vec4(value, 0, 0, 1);
 }
 `;
@@ -51,11 +51,19 @@ const factory = function(in_webGLContextWrapper, in_width, in_height, in_resourc
 	const tileHeightCount = Math.ceil(in_height / m_tileHeight);
 
 	const cellData = [];
-	var debugTileIndex = 0; //((tileWidthCount + 1) * 2) + 2;
-	var debugTileIndex2 = 0; //((tileWidthCount + 1) * 2) + 1;
+	// var debugTileIndex = 0; //((tileWidthCount + 1) * 2) + 2;
+	// var debugTileIndex2 = 1; //((tileWidthCount + 1) * 2) + 1;
+	// var debugTileIndex3 = 20;
+	// var debugTileIndex4 = 21;
+	// var debugTileIndex5 = 0;
 	for (var index = 0; index < ((tileWidthCount + 1) * (tileHeightCount + 1)); ++index){
-		//cellData.push(Math.random() < 0.25);
-		cellData.push((index === debugTileIndex) || (index === debugTileIndex2));
+		cellData.push(Math.random() < 0.33);
+		// cellData.push((index === debugTileIndex) || 
+		// 	(index === debugTileIndex2) ||
+		// 	(index === debugTileIndex3) ||
+		// 	(index === debugTileIndex4) ||
+		// 	(index === debugTileIndex5)
+		// 	);
 	}
 
 	const addVertex = function(inout_posDataArray, inout_uvDataArray, inout_colorMaskDataArray, in_posX, in_posY, in_uvX, in_uvY, in_colorMaskX, in_colorMaskY, in_colorMaskZ){
@@ -82,23 +90,17 @@ const factory = function(in_webGLContextWrapper, in_width, in_height, in_resourc
 		var uv2x, uv2y;
 		var uv3x, uv3y;
 		var uv4x, uv4y;
+		var rot = 0;
 		var colorMaskX, colorMaskY, colorMaskZ;
 
-		//in_width, in_height
-		//in_indexWidth, in_indexHeight
-		pos1x = (((in_indexWidth + 0) * m_tileWidth) / m_targetWidth) * 2.0 - 0.5;
-		pos1y = (((in_indexHeight + 0) * m_tileHeight) / m_targetHeight) * 2.0 - 0.5;
-		pos2x = (((in_indexWidth + 1) * m_tileWidth) / m_targetWidth) * 2.0 - 0.5;
-		pos2y = (((in_indexHeight + 0) * m_tileHeight) / m_targetHeight) * 2.0 - 0.5;
-		pos3x = (((in_indexWidth + 0) * m_tileWidth) / m_targetWidth) * 2.0 - 0.5;
-		pos3y = (((in_indexHeight + 1) * m_tileHeight) / m_targetHeight) * 2.0 - 0.5;
-		pos4x = (((in_indexWidth + 1) * m_tileWidth) / m_targetWidth) * 2.0 - 0.5;
-		pos4y = (((in_indexHeight + 1) * m_tileHeight) / m_targetHeight) * 2.0 - 0.5;
-
-		uv1x = 0; uv1y = 1;
-		uv2x = 1; uv2y = 1;
-		uv3x = 0; uv3y = 0;
-		uv4x = 1; uv4y = 0;
+		pos1x = (((in_indexWidth + 0) * m_tileWidth) / m_targetWidth) * 2.0 - 1.0;
+		pos1y = (((in_indexHeight + 0) * m_tileHeight) / m_targetHeight) * 2.0 - 1.0;
+		pos2x = (((in_indexWidth + 1) * m_tileWidth) / m_targetWidth) * 2.0 - 1.0;
+		pos2y = (((in_indexHeight + 0) * m_tileHeight) / m_targetHeight) * 2.0 - 1.0;
+		pos3x = (((in_indexWidth + 0) * m_tileWidth) / m_targetWidth) * 2.0 - 1.0;
+		pos3y = (((in_indexHeight + 1) * m_tileHeight) / m_targetHeight) * 2.0 - 1.0;
+		pos4x = (((in_indexWidth + 1) * m_tileWidth) / m_targetWidth) * 2.0 - 1.0;
+		pos4y = (((in_indexHeight + 1) * m_tileHeight) / m_targetHeight) * 2.0 - 1.0;
 
 		switch (in_tile){
 			default:
@@ -109,27 +111,18 @@ const factory = function(in_webGLContextWrapper, in_width, in_height, in_resourc
 				break;
 			case 2://0010 //m_tileOneCorner //rotateUv90
 				colorMaskX = 1; colorMaskY = 0; colorMaskZ = 0;
-				uv1x = 0; uv1y = 0;
-				uv2x = 0; uv2y = 1;
-				uv3x = 1; uv3y = 0;
-				uv4x = 1; uv4y = 1;
+				rot = 90;
 				break;
 			case 3://0011 //m_tileTwoCorner
 				colorMaskX = 0; colorMaskY = 1; colorMaskZ = 0;
 				break;
 			case 4://0100 //m_tileOneCorner //rotateUv270
 				colorMaskX = 1; colorMaskY = 0; colorMaskZ = 0;
-				uv1x = 1; uv1y = 1;
-				uv2x = 1; uv2y = 0;
-				uv3x = 0; uv3y = 1;
-				uv4x = 0; uv4y = 0;
+				rot = 270;
 				break;
 			case 5://0101 //m_tileTwoCorner //rotateUv90
 				colorMaskX = 0; colorMaskY = 1; colorMaskZ = 0;
-				uv1x = 1; uv1y = 1;
-				uv2x = 1; uv2y = 0;
-				uv3x = 0; uv3y = 1;
-				uv4x = 0; uv4y = 0;
+				rot = 270;
 				break;
 			case 6://0110 //m_tileSolid
 				colorMaskX = 0; colorMaskY = 0; colorMaskZ = 1;
@@ -139,30 +132,21 @@ const factory = function(in_webGLContextWrapper, in_width, in_height, in_resourc
 				break;
 			case 8: //1000 //m_tileOneCorner //rotate180
 				colorMaskX = 1; colorMaskY = 0; colorMaskZ = 0;
-				uv1x = 1; uv1y = 0;
-				uv2x = 0; uv2y = 0;
-				uv3x = 1; uv3y = 1;
-				uv4x = 0; uv4y = 1;
+				rot = 180;
 				break;
 			case 9://1001 //m_tileSolid
 				colorMaskX = 0; colorMaskY = 0; colorMaskZ = 1;
 				break;
 			case 10://1010 //m_tileTwoCorner //rotate270
 				colorMaskX = 0; colorMaskY = 1; colorMaskZ = 0;
-				uv1x = 0; uv1y = 0;
-				uv2x = 0; uv2y = 1;
-				uv3x = 1; uv3y = 0;
-				uv4x = 1; uv4y = 1;
+				rot = 90;
 				break;
 			case 11://1011 //m_tileSolid
 				colorMaskX = 0; colorMaskY = 0; colorMaskZ = 1;
 				break;
 			case 12://1100 //m_tileTwoCorner //rotate180
 				colorMaskX = 0; colorMaskY = 1; colorMaskZ = 0;
-				uv1x = 1; uv1y = 0;
-				uv2x = 0; uv2y = 0;
-				uv3x = 1; uv3y = 1;
-				uv4x = 0; uv4y = 1;
+				rot = 180;
 				break;
 			case 13://1101 //m_tileSolid
 				colorMaskX = 0; colorMaskY = 0; colorMaskZ = 1;
@@ -173,6 +157,34 @@ const factory = function(in_webGLContextWrapper, in_width, in_height, in_resourc
 			case 15://1111 //m_tileSolid
 				colorMaskX = 0; colorMaskY = 0; colorMaskZ = 1;
 				break;
+		}
+
+		switch (rot){
+		default:
+		case 0:
+			uv1x = 0; uv1y = 0;
+			uv2x = 1; uv2y = 0;
+			uv3x = 0; uv3y = 1;
+			uv4x = 1; uv4y = 1;
+			break;
+		case 90:
+			uv1x = 1; uv1y = 0;
+			uv2x = 1; uv2y = 1;
+			uv3x = 0; uv3y = 0;
+			uv4x = 0; uv4y = 1;
+			break;
+		case 180:
+			uv1x = 1; uv1y = 1;
+			uv2x = 0; uv2y = 1;
+			uv3x = 1; uv3y = 0;
+			uv4x = 0; uv4y = 0;
+			break;
+		case 270:
+			uv1x = 0; uv1y = 1;
+			uv2x = 0; uv2y = 0;
+			uv3x = 1; uv3y = 1;
+			uv4x = 1; uv4y = 0;
+			break;
 		}
 
 		addVertex(inout_posDataArray, inout_uvDataArray, inout_colorMaskDataArray, pos1x, pos1y, uv1x, uv1y, colorMaskX, colorMaskY, colorMaskZ);
@@ -192,10 +204,16 @@ const factory = function(in_webGLContextWrapper, in_width, in_height, in_resourc
 	for (var indexHeight = 0; indexHeight < tileHeightCount; ++indexHeight){
 		for (var indexWidth = 0; indexWidth < tileWidthCount; ++indexWidth){
 			var tile = 0;
-			tile += (cellData[(indexWidth + 0) + (indexHeight * (tileWidthCount + 1))]) ? 1 : 0;
-			tile += (cellData[(indexWidth + 1) + (indexHeight * (tileWidthCount + 1))]) ? 2 : 0;
-			tile += (cellData[(indexWidth + 0) + ((indexHeight + 1) * (tileWidthCount + 1))]) ? 4 : 0;
-			tile += (cellData[(indexWidth + 1) + ((indexHeight + 1) * (tileWidthCount + 1))]) ? 8 : 0;
+
+			//	1 ---- 2
+			//	|	   |
+			//	|	   |
+			//	3 ---- 4
+			// cell data is from bottom left
+			tile += (cellData[(indexWidth + 0) + (indexHeight * (tileWidthCount + 1))]) ? 4 : 0;
+			tile += (cellData[(indexWidth + 1) + (indexHeight * (tileWidthCount + 1))]) ? 8 : 0;
+			tile += (cellData[(indexWidth + 0) + ((indexHeight + 1) * (tileWidthCount + 1))]) ? 1 : 0;
+			tile += (cellData[(indexWidth + 1) + ((indexHeight + 1) * (tileWidthCount + 1))]) ? 2 : 0;
 			if (true === addTile(posDataArray, uvDataArray, colorMaskDataArray, indexWidth, indexHeight, tile)){
 				elementCount += 6;
 			}

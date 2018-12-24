@@ -17,27 +17,66 @@ void main() {
 const sFragmentShader = `
 precision mediump float;
 uniform sampler2D u_sampler0;
+uniform sampler2D u_sampler1;
+uniform vec2 u_widthHeight;
 varying vec2 v_uv;
 void main() {
-	vec4 texel = texture2D(u_sampler0, v_uv);
-	gl_FragColor = texel;
+	vec2 uvStep = vec2(1.0 / u_widthHeight.x, 1.0 / u_widthHeight.y);
+	float height0 = texture2D(u_sampler0, v_uv).x;
+	float height1 = texture2D(u_sampler0, v_uv - vec2(uvStep.x, 0.0)).x - height0;
+	float height2 = texture2D(u_sampler0, v_uv - vec2(0.0, uvStep.y)).x - height0;
+	float height3 = texture2D(u_sampler0, v_uv + vec2(uvStep.x, 0.0)).x - height0;
+	float height4 = texture2D(u_sampler0, v_uv + vec2(0.0, uvStep.y)).x - height0;
+	float offset = 0.25;
+	vec3 cross1 = cross(vec3(offset, 0, height1), vec3(0, offset, height2));
+	vec3 cross2 = cross(vec3(offset, 0, -height3), vec3(0, offset, -height4));
+	vec3 normal = normalize(cross1 + cross2);
+	vec2 envMapUV = (normal.xy * 0.5) + 0.5;
+
+	gl_FragColor = texture2D(u_sampler1, envMapUV);
 }
 `;
 
-const sVertexAttributeNameArray = ["a_position", "a_uv"];
-const sUniformNameArray = ["u_sampler0"];
+/*
+	const vec2 uvStep = vec2(1.0 / u_widthHeight.x, 1.0 / u_widthHeight.y);
+	float height0 = texture2D(u_sampler0, v_uv).x;
+	float height1 = texture2D(u_sampler0, v_uv - vec2(uvStep.x))).x - height0;
+	float height2 = texture2D(u_sampler0, v_uv - vec2(uvStep.y))).x - height0;
+	float height3 = texture2D(u_sampler0, v_uv + vec2(uvStep.x))).x - height0;
+	float height4 = texture2D(u_sampler0, v_uv + vec2(uvStep.y))).x - height0;
 
-const factory = function(in_webGLContextWrapper, in_textureWrapper){
+	vec3 normal = normalise(cross(vec3(1.0/255.0, 0, height1), vec3(0, 1.0/255.0, height2)) + cross(vec3(0, 1.0/255.0, height4), vec3(1.0/255.0, 0, height3)));
+	vec3 envMapUV = (normal.xy * 0.5) + 0.5;
+
+	gl_FragColor = vec4(envMapUV.x, envMapUV.y, 0.0, 1.0);
+
+ */
+
+//	gl_FragColor = texture2D(u_sampler1, envMapUV);
+
+const sVertexAttributeNameArray = ["a_position", "a_uv"];
+const sUniformNameArray = ["u_sampler0", "u_sampler1", "u_widthHeight"];
+
+const factory = function(in_webGLContextWrapper, in_textureWrapper, in_width, in_height, in_resourceManager){
+	const m_widthHeight = Core.Vector2.factoryFloat32(in_width, in_height);
 	const m_uniformServer = {
 		"setUniform" : function(localWebGLContextWrapper, in_key, in_position){
 			if (in_key === "u_sampler0"){
 				//console.log("uniformServer:u_sampler0");
 				WebGL.WebGLContextWrapperHelper.setUniformInteger(localWebGLContextWrapper, in_position, 0);
+			} else if (in_key === "u_sampler1"){
+				//console.log("uniformServer:u_sampler1");
+				WebGL.WebGLContextWrapperHelper.setUniformInteger(localWebGLContextWrapper, in_position, 1);
+			} else if (in_key === "u_widthHeight"){
+				//console.log("uniformServer:u_widthHeight");
+				WebGL.WebGLContextWrapperHelper.setUniformFloat2(localWebGLContextWrapper, in_position, m_widthHeight.getRaw());
 			}
+			return;
 		}
 	};
 	const m_shader = WebGL.ShaderWrapper.factory(in_webGLContextWrapper, sVertexShader, sFragmentShader, m_uniformServer, sVertexAttributeNameArray, sUniformNameArray);
-	const m_material = WebGL.MaterialWrapper.factoryDefault(m_shader, [in_textureWrapper]);
+	const m_envMapTexture = in_resourceManager.getCommonReference("envMap", in_webGLContextWrapper);
+	const m_material = WebGL.MaterialWrapper.factoryDefault(m_shader, [in_textureWrapper, m_envMapTexture]);
 
 	const m_posDataStream = WebGL.ModelDataStream.factory(
 			"BYTE",
