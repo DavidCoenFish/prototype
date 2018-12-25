@@ -50,8 +50,6 @@ varying vec2 v_uv;
 // Creative Commons Attribution-ShareAlike 4.0 International Public License
 // Created by David Hoskins.
 // https://www.shadertoy.com/view/4djSRW
-// * Note. It still goes wrong eventually!
-// * Try full-screen paused to see details.
 #define HASHSCALE3 vec3(443.897, 441.423, 437.195)
 vec2 hash22(vec2 in_input){
 	vec3 p3 = fract(vec3(in_input.xyx) * HASHSCALE3);
@@ -63,6 +61,7 @@ float cellNoise(vec2 in_uv){
 	vec2 sample = vec2(in_uv.x * 1.1547005383792515290182975610039, in_uv.y);
 	vec2 sampleFloor = floor(sample);
 
+	// based on concept from inigo quilez <http://iquilezles.org/www/articles/voronoise/voronoise.htm>
 	float minDistance = 1000.0;
 	for (int yOffset = -2; yOffset <= 2; ++yOffset){
 		for (int xOffset = -2; xOffset <= 2; ++xOffset){
