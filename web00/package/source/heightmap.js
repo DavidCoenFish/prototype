@@ -6,21 +6,6 @@ const Stage2 = require("./heightmap/stage2.js");
 const CelticKnotTile = require("./heightmap/resource/celticknottile.js");
 const EnvMap = require("./heightmap/resource/envmap.js");
 
-/* */
-const CelticSampler = require("./heightmap/celticknotheightsample/sampler.js");
-const generateCelticKnotTile = function(in_width, in_height, in_subSampleLevel){
-	const celticSampler = CelticSampler.factory();
-	const dataArray = celticSampler.generateTile(in_width, in_height, in_subSampleLevel);
-	var message = "";
-	for (var index = 0; index < dataArray.length; ++index){
-		message += dataArray[index] + ",";
-		if (((index + 1) % 3) == 0){
-			message += "\n";
-		}
-	}
-	console.log(message);
-	return;
-}
 
 /* */
 const loadImageFile = function(in_source){

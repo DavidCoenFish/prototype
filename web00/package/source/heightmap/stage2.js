@@ -20,13 +20,18 @@ uniform sampler2D u_sampler0;
 uniform sampler2D u_sampler1;
 uniform vec2 u_widthHeight;
 varying vec2 v_uv;
+
+float sampleHeight0(vec2 in_uv){
+	return texture2D(u_sampler0, in_uv).x;
+}
+
 void main() {
 	vec2 uvStep = vec2(1.0 / u_widthHeight.x, 1.0 / u_widthHeight.y);
-	float height0 = texture2D(u_sampler0, v_uv).x;
-	float height1 = texture2D(u_sampler0, v_uv - vec2(uvStep.x, 0.0)).x - height0;
-	float height2 = texture2D(u_sampler0, v_uv - vec2(0.0, uvStep.y)).x - height0;
-	float height3 = texture2D(u_sampler0, v_uv + vec2(uvStep.x, 0.0)).x - height0;
-	float height4 = texture2D(u_sampler0, v_uv + vec2(0.0, uvStep.y)).x - height0;
+	float height0 = sampleHeight(v_uv);
+	float height1 = sampleHeight(v_uv - vec2(uvStep.x, 0.0)) - height0;
+	float height2 = sampleHeight(v_uv - vec2(0.0, uvStep.y)) - height0;
+	float height3 = sampleHeight(v_uv + vec2(uvStep.x, 0.0)) - height0;
+	float height4 = sampleHeight(v_uv + vec2(0.0, uvStep.y)) - height0;
 	float offset = 0.25;
 	vec3 cross1 = cross(vec3(offset, 0, height1), vec3(0, offset, height2));
 	vec3 cross2 = cross(vec3(offset, 0, -height3), vec3(0, offset, -height4));
@@ -36,6 +41,8 @@ void main() {
 	gl_FragColor = texture2D(u_sampler1, envMapUV);
 }
 `;
+
+
 
 /*
 	const vec2 uvStep = vec2(1.0 / u_widthHeight.x, 1.0 / u_widthHeight.y);

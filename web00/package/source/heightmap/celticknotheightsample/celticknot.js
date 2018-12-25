@@ -104,14 +104,14 @@ const factory = function(){
 	const distanceFunction = function(in_accumulator, in_distance){
 		if (in_distance < (m_halfWidth - 0.0001)){
 			var temp = in_distance / m_halfWidth;
-			temp = (temp * temp * temp);
+			temp = (temp * temp);
 			var height = 1.0 - (0.5 * temp);
 			in_accumulator.setHeight(height);
 		} else if (in_distance < (m_halfWidth * 2.0)){
 			//"shadow" case
 			var temp = in_distance - m_halfWidth;
 			temp = (m_halfWidth - temp) / m_halfWidth;
-			temp = (temp * temp * temp * temp);
+			temp = (temp * temp * temp);
 			var height = temp * 0.5;
 			in_accumulator.setSubtractHeight(height);
 		}
