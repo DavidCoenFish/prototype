@@ -1,11 +1,11 @@
 todo:
-_	heightmap float test
-	celtic knot tiles
-	heightmap & envmap
+X	heightmap float test
+X	celtic knot tiles
+X	heightmap & envmap
 	heightmap & light, shadows
 	fade in/out, drop shadows
 	blend over time
-	performance test sphere octree
+_	performance test sphere octree
 
 x done
 _ underway

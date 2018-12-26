@@ -44,6 +44,12 @@ const factoryFloat32 = function(in_xOrUndefined, in_yOrUndefined){
 	return factory(x, y, Float32Array);
 }
 
+const factoryInt32 = function(in_xOrUndefined, in_yOrUndefined){
+	const x = (undefined === in_xOrUndefined) ? 0.0 : in_xOrUndefined;
+	const y = (undefined === in_yOrUndefined) ? 0.0 : in_yOrUndefined;
+	return factory(x, y, Int32Array);
+}
+
 const factorySubtract = function(in_lhs, in_rhs){
 	return factory(in_lhs.getX() - in_rhs.getX(), in_lhs.getY() - in_rhs.getY(), in_lhs.getRawClass());
 }
@@ -51,5 +57,6 @@ const factorySubtract = function(in_lhs, in_rhs){
 module.exports = {
 	"factory" : factory,
 	"factoryFloat32" : factoryFloat32,
+	"factoryInt32" : factoryInt32,
 	"factorySubtract" : factorySubtract
 }

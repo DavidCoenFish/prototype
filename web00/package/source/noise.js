@@ -62,17 +62,17 @@ float cellNoise(vec2 in_uv){
 	vec2 sampleFloor = floor(sample);
 
 	// based on concept from inigo quilez <http://iquilezles.org/www/articles/voronoise/voronoise.htm>
-	float minDistance = 1000.0;
+	float minDistance = 10000.0;
 	for (int yOffset = -2; yOffset <= 2; ++yOffset){
 		for (int xOffset = -2; xOffset <= 2; ++xOffset){
 			vec2 rawGrid = vec2(sampleFloor.x + float(xOffset), sampleFloor.y + float(yOffset));
-			vec2 noiseOffset = hash22(rawGrid);
-			vec2 grid = vec2(rawGrid.x, rawGrid.y + (mod(float(xOffset) + sampleFloor.x, 2.0) * 0.5)) + noiseOffset;
-			float dist = length(sample - grid);
-			minDistance = min(minDistance, dist);
+			vec2 noiseOffset = (hash22(rawGrid) - 0.5) * 1.5;
+			vec2 offset = sample - (vec2(rawGrid.x, rawGrid.y + (mod(float(xOffset) + sampleFloor.x, 2.0) * 0.5)) + noiseOffset);
+			float distSquared = dot(offset, offset);
+			minDistance = min(minDistance, distSquared);
 		}
 	}
-	return minDistance;
+	return sqrt(minDistance);
 }
 
 void main() {
