@@ -85,24 +85,20 @@ function nextPowerOfTwo (n) {
 }
 
 const calculateTextureDim = function(in_nodeCount){
-	if (in_nodeCount <=4 ){
-		return Core.Vector2.factoryInt32(16, 4);
+	if (in_nodeCount <=8 ){
+		return Core.Vector2.factoryInt32(8, 8);
 	}
-	else if (in_nodeCount <=8 ){
-		return Core.Vector2.factoryInt32(16, 8);
-	}
-	else if (in_nodeCount <=16 ){
-		return Core.Vector2.factoryInt32(16, 16);
-	}
-	var dataPoints = in_nodeCount * 16;
+	var dataPoints = in_nodeCount * 8;
 	var temp = Math.ceil(Math.sqrt(dataPoints));
 	temp = nextPowerOfTwo(temp);
 	return Core.Vector2.factoryInt32(temp, temp);
 }
 
+const gFloatsPerPixel = 4;
+
 const flatPack = function(in_rootNode, in_textureDim){
-	const m_nodeSizeInArray = 3 + 3 + (8 * 3);
-	const m_widthOfArray = in_textureDim.getX() * 3;
+	const m_nodeSizeInArray = 4 + (3 * 8);
+	const m_widthOfArray = in_textureDim.getX() * gFloatsPerPixel;
 	const m_count = m_widthOfArray * in_textureDim.getY();
 	const m_dataArrayRaw = new Array(m_count);
 	const m_halfUVStepX = 0.5 / in_textureDim.getX();
@@ -137,6 +133,7 @@ const flatPack = function(in_rootNode, in_textureDim){
 	m_trace = pushValue(m_trace, 1.0 / in_textureDim.getX());
 	m_trace = pushValue(m_trace, 1.0 / in_textureDim.getY());
 	m_trace = pushValue(m_trace, 0.0);
+	m_trace = pushValue(m_trace, 0.0);
 
 	var m_pendingReferenceArray = []; //{"trace":<number>,"node":<node>}
 	const dealPendingReferenceArray = function(in_uv, in_node){
@@ -164,6 +161,14 @@ const flatPack = function(in_rootNode, in_textureDim){
 		return;
 	}
 
+	//node 
+	// x, y, z, radius,
+	// w0, w1, w2, w3
+	// w4, w5, w6, w7
+	// uv0, uv0, uv1, uv1,
+	// uv2, uv2, uv3, uv3,
+	// uv4, uv4, uv5, uv5,
+	// uv6, uv6, uv7, uv7,
 	const visitorFlatPack = function(in_visitor, in_pos, in_radius, in_childArrayOrUndefined, in_node){
 		//do we have enough space for a new line
 		m_trace = roundTraceForWidth(m_trace);
@@ -173,19 +178,27 @@ const flatPack = function(in_rootNode, in_textureDim){
 		m_trace = pushValue(m_trace, in_pos.getX());
 		m_trace = pushValue(m_trace, in_pos.getY());
 		m_trace = pushValue(m_trace, in_pos.getZ());
-
 		m_trace = pushValue(m_trace, in_radius);
-		m_trace = pushValue(m_trace, 0.0);
-		m_trace = pushValue(m_trace, 0.0);
+
+		//children weight
+		for (var index = 0; index < 8; ++index){
+			if ((undefined === in_childArrayOrUndefined) ||
+				(undefined === in_childArrayOrUndefined[index])){
+				m_trace = pushValue(m_trace, 0.0);
+			} else {
+				var child = in_childArrayOrUndefined[index];
+				m_trace = pushValue(m_trace, 1.0);
+			}
+		}
+
+		//children uv
 		for (var index = 0; index < 8; ++index){
 			if ((undefined === in_childArrayOrUndefined) ||
 				(undefined === in_childArrayOrUndefined[index])){
 				m_trace = pushValue(m_trace, 0.0);
 				m_trace = pushValue(m_trace, 0.0);
-				m_trace = pushValue(m_trace, 0.0);
 			} else {
 				var child = in_childArrayOrUndefined[index];
-				m_trace = pushValue(m_trace, 1.0);
 				appendPending(m_trace, child);
 				m_trace = pushValue(m_trace, 0.0);
 				m_trace = pushValue(m_trace, 0.0);
@@ -214,19 +227,21 @@ const factory = function(in_webGLContextWrapper){
 	console.log("textureDim:" + textureDim.getX() + " " + textureDim.getY());
 
 	const dataArray = flatPack(rootNode, textureDim);
+	console.log("dataArray count:" + dataArray.length);
+
 	var message = "";
-	for (var index = 0; index < textureDim.getX() * textureDim.getY() * 3; index += 3){
-		console.log(" " + dataArray[index + 0] + " " + dataArray[index + 1] + " " + dataArray[index + 2]);
+	for (var index = 0; index < textureDim.getX() * textureDim.getY() * 4; index += 4){
+		console.log(" " + dataArray[index + 0] + " " + dataArray[index + 1] + " " + dataArray[index + 2] + " " + dataArray[index + 3]);
 	}
-	//const dataArray = undefined; //new Float32Array(dataArrayRaw);
+
 	return WebGL.TextureWrapper.factory(
 		in_webGLContextWrapper, 
 		textureDim.getX(), 
 		textureDim.getY(),
 		dataArray,
 		false,
-		"RGB",
-		"RGB",
+		"RGBA",
+		"RGBA",
 		"FLOAT",
 		"NEAREST",
 		"NEAREST",
