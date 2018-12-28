@@ -262,8 +262,8 @@ const flatPack = function(in_rootNode, in_textureDim){
 	return new Float32Array(m_dataArrayRaw);
 }
 
-const factory = function(in_webGLContextWrapper){
-	const rootNode = makeDebugOctTree(4);
+const factory = function(in_webGLContextWrapper, in_depth){
+	const rootNode = makeDebugOctTree(in_depth);
 	const nodeCount = rootNode.visit(visitorNodeCount);
 	console.log("nodeCount:" + nodeCount);
 
