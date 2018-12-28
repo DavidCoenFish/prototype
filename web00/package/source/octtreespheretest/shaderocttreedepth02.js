@@ -152,7 +152,6 @@ void main() {
 	}
 
 	value = mix(getValue0(u_cameraPos, viewRayNormal), 1.0, DRAW_VALUE);
-	//value = mix(getValue1(u_cameraPos, viewRayNormal, 7.0), 1.0, DRAW_VALUE);
 
 	gl_FragColor = vec4(value, value, value, 1.0);
 }
