@@ -33,7 +33,7 @@ const onPageLoad = function(){
 	const m_cameraAt = Core.Vector3.factoryFloat32(0.0, 1.0, 0.0);
 	const m_cameraUp = Core.Vector3.factoryFloat32(0.0, 0.0, 1.0);
 	const m_cameraRight = Core.Vector3.factoryFloat32(1.0, 0.0, 0.0);
-	const m_cameraPos = Core.Vector3.factoryFloat32(0.0, 0.0, -5.0);
+	const m_cameraPos = Core.Vector3.factoryFloat32(0.0, 0.0, -1.5);
 	const m_uniformServer = {
 		"setUniform" : function(localWebGLContextWrapper, in_key, in_position){
 			if (in_key === "u_samplerOctTreeData"){
@@ -57,8 +57,24 @@ const onPageLoad = function(){
 	const m_model = resourceManager.getCommonReference("modelScreenQuad", webGLContextWrapper);
 
 	const m_webGLState = WebGL.WebGLState.factory(webGLContextWrapper);
-	m_material.apply(webGLContextWrapper, m_webGLState);
-	m_model.draw(webGLContextWrapper, m_webGLState.getMapVertexAttribute());
+
+	var m_requestId;
+	var frameTrace = 0;
+	var frameMax = 100;
+	const animationFrameCallback = function(in_timestamp){
+		m_material.apply(webGLContextWrapper, m_webGLState);
+		console.time('draw');
+		m_model.draw(webGLContextWrapper, m_webGLState.getMapVertexAttribute());
+		console.timeEnd('draw');
+
+		frameTrace += 1;
+		if (frameTrace < frameMax){
+			m_requestId = requestAnimationFrame(animationFrameCallback);
+		}
+	}
+
+	m_requestId = requestAnimationFrame(animationFrameCallback);
+
 
 	return;
 }

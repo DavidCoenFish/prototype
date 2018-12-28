@@ -184,7 +184,7 @@ const factory = function(in_webGLContextWrapper){
 	const aquireWebGLResources = function(in_webGLContextWrapper){
 		m_mapIndexTexture = {};
 		if (undefined !== m_materialOrUndefined){
-			m_materialOrUndefined.apply(in_webGLContextWrapper, this);
+			m_materialOrUndefined.apply(in_webGLContextWrapper, result);
 		}
 		return;
 	}

@@ -34,7 +34,7 @@ const factory = function(
 			m_bufferObject = WebGLContextWrapperHelper.createBuffer(in_webGLContextWrapper, m_arrayData, "ARRAY_BUFFER", m_usageName);
 		},
 		"releaseWebGLResources" : function(in_webGLContextWrapper){
-			WebGLContextWrapperHelper.deleteBuffer(m_bufferObject);
+			WebGLContextWrapperHelper.deleteBuffer(in_webGLContextWrapper, m_bufferObject);
 			m_bufferObject = undefined;
 		},
 		"setupDraw" : function(in_webGLContextWrapper, in_position){

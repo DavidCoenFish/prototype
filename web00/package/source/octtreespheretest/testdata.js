@@ -84,10 +84,10 @@ const makeDebugOctTreeChildren = function(in_recusionCountdown, in_parentPos, in
 	return childArray;
 }
 
-const makeDebugOctTree = function(){
+const makeDebugOctTree = function(in_depth){
 	const pos = Core.Vector3.factoryFloat32(0.0, 0.0, 0.0);
 	const radius = 1.0;
-	var children = makeDebugOctTreeChildren(1, pos, radius);
+	var children = makeDebugOctTreeChildren(in_depth, pos, radius);
 	return nodeFactory(pos, radius, children);
 }
 
@@ -145,24 +145,26 @@ const calculateTextureDim = function(in_nodeCount, in_maxChildCount, in_predicte
 
 const gFloatsPerPixel = 4;
 
+const getUvFromTrace = function(in_trace, in_textureDim){
+	const m_widthOfArray = in_textureDim.getX() * gFloatsPerPixel
+	const m_halfUVStepX = 0.5 / in_textureDim.getX();
+	const m_halfUVStepY = 0.5 / in_textureDim.getY();
+	const mod = Math.floor((in_trace) / m_widthOfArray);
+	const remainder = Math.floor((in_trace - (mod * m_widthOfArray)) / gFloatsPerPixel);
+	const u = (remainder / in_textureDim.getX()) + m_halfUVStepX;
+	const v = (mod / in_textureDim.getY()) + m_halfUVStepY;
+	return Core.Vector2.factoryFloat32(u, v);
+}
+
+
 const flatPack = function(in_rootNode, in_textureDim){
 	const m_widthOfArray = in_textureDim.getX() * gFloatsPerPixel
 	const m_count = m_widthOfArray * in_textureDim.getY();
 	const m_dataArrayRaw = new Array(m_count);
-	const m_halfUVStepX = 0.5 / in_textureDim.getX();
-	const m_halfUVStepY = 0.5 / in_textureDim.getY();
-
-	const getUvFromTrace = function(in_trace){
-		const mod = Math.floor((in_trace) / m_widthOfArray);
-		const remainder = Math.floor((in_trace - (mod * m_widthOfArray)) / gFloatsPerPixel);
-		const u = (remainder / in_textureDim.getX()) + m_halfUVStepX;
-		const v = (mod / in_textureDim.getY()) + m_halfUVStepY;
-		return Core.Vector2.factoryFloat32(u, v);
-	}
 
 	for (var index = 0; index < m_count; ++index){
 		m_dataArrayRaw[index] = 0.0;
-		//var uv = getUvFromTrace(index);
+		//var uv = getUvFromTrace(index, in_textureDim);
 		//console.log("index:" + index + " getUvFromTrace:" + uv.getX() + " " + uv.getY());
 	}
 
@@ -202,8 +204,8 @@ const flatPack = function(in_rootNode, in_textureDim){
 		if (0 === m_trace){
 			m_trace = pushValue(m_trace, 1.0 / in_textureDim.getX());
 			m_trace = pushValue(m_trace, 1.0 / in_textureDim.getY());
-			m_trace = pushValue(m_trace, 0.0);
-			m_trace = pushValue(m_trace, 0.0);
+			m_trace = pushValue(m_trace, 0.0); //pad0
+			m_trace = pushValue(m_trace, 0.0); //pad1
 
 			m_trace = pushValue(m_trace, in_pos.getX());
 			m_trace = pushValue(m_trace, in_pos.getY());
@@ -211,7 +213,7 @@ const flatPack = function(in_rootNode, in_textureDim){
 			m_trace = pushValue(m_trace, in_radius);
 		}
 
-		const currentUV = getUvFromTrace(m_trace);
+		const currentUV = getUvFromTrace(m_trace, in_textureDim);
 		dealPendingReferenceArray(currentUV, in_node);
 
 		if (undefined !== in_childArrayOrUndefined) {
@@ -229,17 +231,28 @@ const flatPack = function(in_rootNode, in_textureDim){
 				if (undefined !== childArrayOrUndefined){
 					appendPending(m_trace, child);
 				}
+				//empty uv data
 				m_trace = pushValue(m_trace, 0.0);
 				m_trace = pushValue(m_trace, 0.0);
-				m_trace = pushValue(m_trace, 0.0);
-				m_trace = pushValue(m_trace, 0.0);
+				m_trace = pushValue(m_trace, 0.0); //pad0
+				m_trace = pushValue(m_trace, 0.0); //pad1
 			}
 		}
+
+		//null terminate [node/ child stream]
+		m_trace = pushValue(m_trace, 0.0);
+		m_trace = pushValue(m_trace, 0.0);
+		m_trace = pushValue(m_trace, 0.0); 
+		m_trace = pushValue(m_trace, 0.0); //zero radius null terminate
 
 		if (undefined !== in_childArrayOrUndefined) {
 			for (var index = 0; index < in_childArrayOrUndefined.length; ++index){
 				var child = in_childArrayOrUndefined[index];
-				child.visit(in_visitor);
+				//we only travers to the child if it has children...
+				var childArrayOrUndefined = child.getChildArrayOrUndefined();
+				if (undefined !== childArrayOrUndefined){
+					child.visit(in_visitor);
+				}
 			}
 		}
 	}
@@ -249,9 +262,8 @@ const flatPack = function(in_rootNode, in_textureDim){
 	return new Float32Array(m_dataArrayRaw);
 }
 
-
 const factory = function(in_webGLContextWrapper){
-	const rootNode = makeDebugOctTree();
+	const rootNode = makeDebugOctTree(5);
 	const nodeCount = rootNode.visit(visitorNodeCount);
 	console.log("nodeCount:" + nodeCount);
 
@@ -267,10 +279,17 @@ const factory = function(in_webGLContextWrapper){
 	const dataArray = flatPack(rootNode, textureDim);
 	console.log("dataArray count:" + dataArray.length);
 
-	var message = "";
-	for (var index = 0; index < textureDim.getX() * textureDim.getY() * 4; index += 4){
-		console.log(" " + dataArray[index + 0] + " " + dataArray[index + 1] + " " + dataArray[index + 2] + " " + dataArray[index + 3]);
-	}
+	// var message = "";
+	// var trace = 0;
+	// for (var y = 0; y < textureDim.getY(); ++y){
+	// 	for (var x = 0; x < textureDim.getX(); ++x){
+	// 		message +=  "[" + x + "," + y + "]:" + dataArray[trace + 0] + " " + dataArray[trace + 1] + " " + dataArray[trace + 2] + " " + dataArray[trace + 3] + "\n";
+	// 		const currentUV = getUvFromTrace(trace, textureDim);
+	// 		message += " uv:" + currentUV.getX() + " " + currentUV.getY() + "\n";
+	// 		trace += 4;
+	// 	}
+	// }
+	// console.log(message);
 
 	return WebGL.TextureWrapper.factory(
 		in_webGLContextWrapper, 
