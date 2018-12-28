@@ -60,7 +60,7 @@ const onPageLoad = function(){
 
 	var m_requestId;
 	var frameTrace = 0;
-	var frameMax = 100;
+	var frameMax = 10;
 	const animationFrameCallback = function(in_timestamp){
 		m_material.apply(webGLContextWrapper, m_webGLState);
 		console.time('draw');

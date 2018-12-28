@@ -263,7 +263,7 @@ const flatPack = function(in_rootNode, in_textureDim){
 }
 
 const factory = function(in_webGLContextWrapper){
-	const rootNode = makeDebugOctTree(5);
+	const rootNode = makeDebugOctTree(4);
 	const nodeCount = rootNode.visit(visitorNodeCount);
 	console.log("nodeCount:" + nodeCount);
 
