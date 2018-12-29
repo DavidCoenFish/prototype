@@ -17,7 +17,7 @@ const TestData = require("./octtreespheretest/testdata02.js");
 // depth 3: avg: 
 // depth 4: avg: 155.1
 /** */
-const gDepth = 2;
+const gDepth = 4;
 
 const onPageLoad = function(){
 	console.info("onPageLoad");
@@ -43,11 +43,12 @@ const onPageLoad = function(){
 
 	const m_testData = resourceManager.getCommonReference("testData", webGLContextWrapper, gDepth);
 
-	const m_fovNormScaleXY = Core.Vector2.factoryFloat32(0.70710678118654752440084436210485, 0.70710678118654752440084436210485);
-	const m_cameraAt = Core.Vector3.factoryFloat32(0.0, 1.0, 0.0);
-	const m_cameraUp = Core.Vector3.factoryFloat32(0.0, 0.0, 1.0);
-	const m_cameraRight = Core.Vector3.factoryFloat32(1.0, 0.0, 0.0);
-	const m_cameraPos = Core.Vector3.factoryFloat32(0.0, 0.0, -2.5);
+	//const m_fovNormScaleXY = Core.Vector2.factoryFloat32(0.70710678118654752440084436210485, 0.70710678118654752440084436210485);
+	const m_fovNormScaleXY = Core.Vector2.factoryFloat32(0.5, 0.5);
+	var m_cameraAt = Core.Vector3.factoryFloat32(0.0, 0.0, 1.0);
+	var m_cameraUp = Core.Vector3.factoryFloat32(0.0, 1.0, 0.0);
+	var m_cameraRight = Core.Vector3.factoryFloat32(1.0, 0.0, 0.0);
+	var m_cameraPos = Core.Vector3.factoryFloat32(0.0, 0.0, -2.0);
 	const m_textureDim = Core.Vector2.factoryFloat32(m_testData.getWidth(), m_testData.getHeight());
 	const m_uniformServer = {
 		"setUniform" : function(localWebGLContextWrapper, in_key, in_position){
@@ -77,23 +78,66 @@ const onPageLoad = function(){
 
 	var m_requestId;
 	var frameTrace = 0;
-	var frameMax = 100;
+	var frameMax = 50;
 	var m_startTime = undefined;
+
+	function pad(num, size) {
+		var s = num+"";
+		while (s.length < size) s = "0" + s;
+		return s;
+	}
+
+	const saveFile = function(in_urlEncodedData, in_trace){
+		var element = document.createElement('a');
+		element.setAttribute('href', in_urlEncodedData);
+		const fileName = "img_" + pad(in_trace, 3) + ".png";
+		element.setAttribute('download', fileName);
+		element.innerText = fileName;
+
+		document.body.appendChild(element);
+
+		element.click();
+	}
+
+	const advanceParam = function(in_ratio){
+		m_cameraPos.setZ(((1.0 - in_ratio) * -2.0) + (in_ratio * -2.0));
+		m_cameraPos.setX(((1.0 - in_ratio) * 0.0) + (in_ratio * -2.0));
+		m_cameraAt = Core.Vector3.factoryFloat32(
+			((1.0 - in_ratio) * 0.0) + (in_ratio * -0.7071),
+			((1.0 - in_ratio) * 0.0) + (in_ratio * 0),
+			((1.0 - in_ratio) * 1.0) + (in_ratio * 0.7071),
+		);
+		m_cameraAt.normaliseSelf();
+		m_cameraRight = Core.Vector3.factoryFloat32(
+			((1.0 - in_ratio) * 1.0) + (in_ratio * 0.7071),
+			((1.0 - in_ratio) * 0.0) + (in_ratio * 0),
+			((1.0 - in_ratio) * 0.0) + (in_ratio * 0.7071),
+		);
+		m_cameraRight.normaliseSelf();
+	}
+
+
+	document.body.appendChild(document.createElement("br"));
+
 	const animationFrameCallback = function(in_timestamp){
 		if (undefined === m_startTime){
 			m_startTime = in_timestamp;
 		} 
 		m_material.apply(webGLContextWrapper, m_webGLState);
 		m_model.draw(webGLContextWrapper, m_webGLState.getMapVertexAttribute());
-		m_cameraPos.setZ(m_cameraPos.getZ() + 0.01);
+
+		const capturedImage = html5CanvasElement.toDataURL("image/png");
+		saveFile(capturedImage, frameTrace);
 
 		frameTrace += 1;
+		advanceParam(frameTrace / frameMax);
+
 		if (frameTrace < frameMax){
 			m_requestId = requestAnimationFrame(animationFrameCallback);
 		} else {
-			const duration = in_timestamp - m_startTime;
-			const avr = duration / frameMax;
-			console.log("average:" + avr);
+			//const duration = in_timestamp - m_startTime;
+			//const avr = duration / frameMax;
+			//console.log("average:" + avr);
 		}
 	}
 

@@ -108,15 +108,15 @@ const factory = function(in_webGLContextWrapper, in_depth){
 
 	console.log("textureDim:" + textureDim.getX() + " " + textureDim.getY());
 
-	var message = "";
-	var trace = 0;
-	for (var y = 0; y < textureDim.getY(); ++y){
-		for (var x = 0; x < textureDim.getX(); ++x){
-			message +=  "[" + x + "," + y + "]:" + dataArray[trace + 0] + " " + dataArray[trace + 1] + " " + dataArray[trace + 2] + " " + dataArray[trace + 3] + "\n";
-			trace += 4;
-		}
-	}
-	console.log(message);
+	// var message = "";
+	// var trace = 0;
+	// for (var y = 0; y < textureDim.getY(); ++y){
+	// 	for (var x = 0; x < textureDim.getX(); ++x){
+	// 		message +=  "[" + x + "," + y + "]:" + dataArray[trace + 0] + " " + dataArray[trace + 1] + " " + dataArray[trace + 2] + " " + dataArray[trace + 3] + "\n";
+	// 		trace += 4;
+	// 	}
+	// }
+	// console.log(message);
 
 	return WebGL.TextureWrapper.factory(
 		in_webGLContextWrapper, 

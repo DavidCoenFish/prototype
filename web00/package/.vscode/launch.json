@@ -18,6 +18,7 @@
 				"packagevsc"
 			],
 			"port": 5858,
+			"timeout": 100000
 			//"console": "externalTerminal"
 		}
 	]

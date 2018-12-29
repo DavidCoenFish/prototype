@@ -21,6 +21,9 @@ void main() {
 	v_position = a_position;
 }
 `;
+
+//#define DRAW_VALUE 0.125
+
 const sFragmentShader = `
 precision mediump float;
 varying vec2 v_position;
@@ -31,20 +34,20 @@ uniform vec3 u_cameraUp;
 uniform vec3 u_cameraRight;
 uniform vec3 u_cameraPos;
 uniform vec2 u_textureDim;
-#define DRAW_VALUE 0.125
+#define DRAW_VALUE 0.05
 
 vec3 getViewRayNormal() {
 	vec2 scaledXY = v_position.xy * u_fovNormScaleXY.xy;
 	float distSquared = clamp(dot(scaledXY, scaledXY), 0.0, 1.0);
 	float viewZ = sqrt(1.0 - distSquared);
 	vec3 viewNorm = vec3(scaledXY.x, scaledXY.y, viewZ);
-	return viewNorm;
-	// vec3 worldNorm = vec3(
-	// 	dot(u_cameraRight, viewNorm),
-	// 	dot(u_cameraAt, viewNorm),
-	// 	dot(u_cameraUp, viewNorm)
-	// 	);
-	// return worldNorm;
+	//return viewNorm;
+	vec3 worldNorm = vec3(
+		dot(u_cameraRight, viewNorm),
+		dot(u_cameraUp, viewNorm),
+		dot(u_cameraAt, viewNorm)
+		);
+	return worldNorm;
 }
 
 //http://www.iquilezles.org/www/articles/spheredensity/spheredensity.htm
