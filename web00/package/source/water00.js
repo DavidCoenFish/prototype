@@ -1,7 +1,10 @@
 const Core = require("core");
 const WebGL = require("webgl");
 const ModelScreenQuad = require("./water00/modelscreenquad.js");
+const ShaderHeight = require("./water00/shaderheight.js");
 const ShaderWater = require("./water00/shaderwater.js");
+const Stage0 = require("./water00/stage0.js");
+const Stage1 = require("./water00/stage1.js");
 
 const onPageLoad = function(){
 	console.info("onPageLoad");
@@ -19,26 +22,13 @@ const onPageLoad = function(){
 
 	const resourceManager = Core.ResourceManager.factory({
 		"modelScreenQuad" : ModelScreenQuad.factory,
+		"shaderHeight" : ShaderHeight.factory,
 		"shaderWater" : ShaderWater.factory
 	});
 
-	const m_sunLatLong = Core.Vector2.factoryFloat32(0.5, 0.5);
-	var m_ratio = 0.0;
-	const m_uniformServer = {
-		"setUniform" : function(localWebGLContextWrapper, in_key, in_position){
-			if (in_key === "u_sunLatLong"){
-				WebGL.WebGLContextWrapperHelper.setUniformFloat2(localWebGLContextWrapper, in_position, m_sunLatLong.getRaw());
-			} else if (in_key === "u_ratio"){
-				WebGL.WebGLContextWrapperHelper.setUniformFloat(localWebGLContextWrapper, in_position, m_ratio);
-			}
-			return;
-		}
-	};
-	const m_shaderWater = resourceManager.getCommonReference("shaderWater", webGLContextWrapper, m_uniformServer);
-	const m_materialWater = WebGL.MaterialWrapper.factoryDefault(m_shaderWater, []);
-	const m_model = resourceManager.getCommonReference("modelScreenQuad", webGLContextWrapper);
-
 	const m_webGLState = WebGL.WebGLState.factory(webGLContextWrapper);
+	const m_stage0 = Stage0.factory(webGLContextWrapper, resourceManager);
+	const m_stage1 = Stage1.factory(webGLContextWrapper, resourceManager, m_stage0.getTexture());
 
 	const pad = function(num, size) {
 		var s = num+"";
@@ -59,10 +49,6 @@ const onPageLoad = function(){
 		document.body.removeChild(element);
 	}
 
-	const advanceParam = function(in_frameTrace){
-		m_ratio = in_frameTrace / 50.0;
-	}
-
 	var frameTrace = 0;
 	var frameMax = 200;
 	var m_startTime = undefined;
@@ -70,15 +56,11 @@ const onPageLoad = function(){
 		if (undefined === m_startTime){
 			m_startTime = in_timestamp;
 		} 
-		m_materialWater.apply(webGLContextWrapper, m_webGLState);
-		m_model.draw(webGLContextWrapper, m_webGLState.getMapVertexAttribute());
 
-		//const capturedImage = html5CanvasElement.toDataURL("image/png");
-		//saveFile(capturedImage, frameTrace);
+		m_stage0.draw(webGLContextWrapper, m_webGLState, frameTrace);
+		m_stage1.draw(webGLContextWrapper, m_webGLState);
 
 		frameTrace += 1;
-		advanceParam(frameTrace);
-
 		if (frameTrace <= frameMax){
 			m_requestId = requestAnimationFrame(animationFrameCallback);
 		} else {

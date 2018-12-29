@@ -10,66 +10,53 @@ void main() {
 }
 `;
 
-//#define DRAW_VALUE 0.125
+/*
+	float value = 0.0;
+	float length = 0.1; //u_height * cosTilt;
+	float prev_height = 0.0;
+	for (int index = 0; index <= DIVISIONS; ++index){
+		float ratio = float(index) / float(DIVISIONS);
+		vec2 sampleUv = uv + vec2(0.0, length * ratio);
+		vec4 sample = texture2D(u_samplerHeight, sampleUv);
+		float calcHeight = (1.0 - ratio);
+		if (calcHeight < sample.x){
+			value = sample.x;
+			break;
+		}
+	}
+ */
 
 const sFragmentShader = `
 precision mediump float;
 varying vec2 v_position;
-uniform float u_ratio;
-
-// Hash without Sine
-// Creative Commons Attribution-ShareAlike 4.0 International Public License
-// Created by David Hoskins.
-// https://www.shadertoy.com/view/4djSRW
-#define HASHSCALE3 vec3(443.897, 441.423, 437.195)
-vec2 hash22(vec2 in_input){
-	vec3 p3 = fract(vec3(in_input.xyx) * HASHSCALE3);
-	p3 += dot(p3, p3.yzx+19.19);
-	return fract((p3.xx+p3.yz)*p3.zy);
-}
-
-//return the minium distance to a point of interest (grid with hash offset)
-float cellNoise(vec2 in_uv){
-	vec2 sample = vec2(in_uv.x, in_uv.y) * 10.0;
-	vec2 sampleFloor = floor(sample);
-
-	// based on concept from inigo quilez <http://iquilezles.org/www/articles/voronoise/voronoise.htm>
-	float minDistanceSquared = 1000.0;
-	for (int yOffset = -2; yOffset <= 2; ++yOffset){
-		for (int xOffset = -2; xOffset <= 2; ++xOffset){
-			vec2 rawGrid = vec2(sampleFloor.x + float(xOffset), sampleFloor.y + float(yOffset));
-			vec2 noiseOffset = hash22(rawGrid);
-			vec2 gridPoint = rawGrid + noiseOffset;
-			vec2 offset = sample - gridPoint;
-			float dist = dot(offset, offset);
-			minDistanceSquared = min(minDistanceSquared, dist);
-		}
-	}
-	return minDistanceSquared;
-}
-
-vec2 moveRotateUv(vec2 in_uv){
-	return vec2(
-		dot(in_uv + vec2(10.0), vec2(0.70710678118654752440084436210485, 0.70710678118654752440084436210485)),
-		dot(in_uv + vec2(10.0), vec2(0.70710678118654752440084436210485, -0.70710678118654752440084436210485))
-		);
-}
+uniform float u_tilt;
+uniform float u_height;
+uniform sampler2D u_samplerHeight;
+#define DIVISIONS 16
 
 void main() {
-	float rad = 3.141592653589793 * u_ratio;
-	float offSin = sin(rad) * 0.1;
-	float offCos = cos(rad) * 0.1;
-	vec2 uvA = v_position + vec2(u_ratio / 10.0, 0.0); //vec2(offSin, offCos); 
-	vec2 uvB = moveRotateUv(v_position) + vec2(0.0, u_ratio / 10.0); //vec2(offCos, offSin);
-	float minDistance = sqrt(min(cellNoise(uvA), cellNoise(uvB)));
+	vec2 uv = (v_position * 0.5) + 0.5;
 
-	gl_FragColor = vec4(minDistance, minDistance, minDistance, 1.0);
+	float value = 0.0;
+	for (int index = 0; index <= DIVISIONS; ++index){
+		vec2 sampleUv = uv + vec2(0.0, float(index) * (1.0 / 512.0));
+		vec4 sample = texture2D(u_samplerHeight, sampleUv);
+		float tempValue = sample.x;
+		tempValue = tempValue * tempValue;
+		float rayHeight = 1.0 - (float(index) / float(DIVISIONS));
+		if (rayHeight < tempValue){
+			value = tempValue;
+			break;
+		}
+	}
+	//vec4 sample0 = texture2D(u_samplerHeight, uv);
+	//float value = sample0.x * sample0.x;
+	gl_FragColor = vec4(value, value, value, uv);
+
 }
 `;
 const sVertexAttributeNameArray = ["a_position"];
-//u_fovNormScaleXY = vec2(sin(horizontal fov / 2), sin(vertical fov / 2))
-// we use this to scale the current shader v_position into a view ray normal
-const sUniformNameArray = ["u_ratio"];
+const sUniformNameArray = ["u_tilt", "u_height", "u_samplerHeight"];
 
 const factory = function(in_webGLContextWrapper, in_uniformServer){
 	return WebGL.ShaderWrapper.factory(
