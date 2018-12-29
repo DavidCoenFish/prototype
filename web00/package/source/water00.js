@@ -50,7 +50,7 @@ const onPageLoad = function(){
 	}
 
 	var frameTrace = 0;
-	var frameMax = 200;
+	var frameMax = 500;
 	var m_startTime = undefined;
 	const animationFrameCallback = function(in_timestamp){
 		if (undefined === m_startTime){

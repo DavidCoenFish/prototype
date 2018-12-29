@@ -16,6 +16,7 @@ const sFragmentShader = `
 precision mediump float;
 varying vec2 v_position;
 uniform float u_ratio;
+#define DIVISIONS 8
 
 // Hash without Sine
 // Creative Commons Attribution-ShareAlike 4.0 International Public License
@@ -30,7 +31,7 @@ vec2 hash22(vec2 in_input){
 
 //return the minium distance to a point of interest (grid with hash offset)
 float cellNoise(vec2 in_uv){
-	vec2 sample = vec2(in_uv.x, in_uv.y) * 10.0;
+	vec2 sample = vec2(in_uv.x * 7.07, in_uv.y * 10.0);
 	vec2 sampleFloor = floor(sample);
 
 	// based on concept from inigo quilez <http://iquilezles.org/www/articles/voronoise/voronoise.htm>
@@ -48,12 +49,34 @@ float cellNoise(vec2 in_uv){
 	return minDistanceSquared;
 }
 
-void main() {
-	vec2 uvA = v_position + vec2(u_ratio / 20.0, -u_ratio / 20.0); //vec2(offSin, offCos); 
-	vec2 uvB = v_position + vec2(10.0) + vec2(-u_ratio / 20.0, -u_ratio / 20.0); //vec2(offCos, offSin);
-	float minDistance = sqrt(min(cellNoise(uvA), cellNoise(uvB)));
+//hard code 45deg for now
+float projectIntersection(float in_rayHeight, float in_sampleHeight, float in_prevSampleHeight, float in_uvSampleStep){
+	float portionAbove = (in_sampleHeight - in_rayHeight) * 0.70710678118654752440084436210485;
+	float portionBellow = -(in_prevSampleHeight - (in_rayHeight + in_uvSampleStep)) * 0.70710678118654752440084436210485;
+	//float portionBellow = dot(vec2(-in_uvSampleStep, in_rayHeight - in_prevSampleHeight), vec2(0.7071, 0.7071));
+	float ratio = portionBellow / (portionAbove + portionBellow);
+	return ((1.0 - ratio) * in_prevSampleHeight) + (ratio * in_sampleHeight);
+}
 
-	gl_FragColor = vec4(minDistance, minDistance, minDistance, 1.0);
+
+void main() {
+	float value = 0.0;
+	float prevSampleHeight = 1.0;
+	float raySampleStep = 1.0 / float(DIVISIONS);
+	for (int index = 0; index <= DIVISIONS; ++index){
+		vec2 uv = v_position + vec2(0.0, float(index) * (1.0 / 512.0));
+		vec2 uvA = uv + vec2(u_ratio / 20.0, -u_ratio / 20.0); 
+		vec2 uvB = uv + vec2(10.0) + vec2(-u_ratio / 20.0, -u_ratio / 20.0);
+		float sampleHeight = min(cellNoise(uvA), cellNoise(uvB));
+		float rayHeight = 1.0 - (float(index) / float(DIVISIONS));
+		if (rayHeight < sampleHeight){
+			value = projectIntersection(rayHeight, sampleHeight, prevSampleHeight, raySampleStep);
+			break;
+		}
+		prevSampleHeight = sampleHeight;
+	}
+
+	gl_FragColor = vec4(value, value, value, 1.0);
 }
 `;
 const sVertexAttributeNameArray = ["a_position"];

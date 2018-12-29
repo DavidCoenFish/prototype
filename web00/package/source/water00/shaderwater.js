@@ -29,34 +29,18 @@ void main() {
 const sFragmentShader = `
 precision mediump float;
 varying vec2 v_position;
-uniform float u_tilt;
-uniform float u_height;
 uniform sampler2D u_samplerHeight;
-#define DIVISIONS 16
 
 void main() {
 	vec2 uv = (v_position * 0.5) + 0.5;
-
-	float value = 0.0;
-	for (int index = 0; index <= DIVISIONS; ++index){
-		vec2 sampleUv = uv + vec2(0.0, float(index) * (1.0 / 512.0));
-		vec4 sample = texture2D(u_samplerHeight, sampleUv);
-		float tempValue = sample.x;
-		tempValue = tempValue * tempValue;
-		float rayHeight = 1.0 - (float(index) / float(DIVISIONS));
-		if (rayHeight < tempValue){
-			value = tempValue;
-			break;
-		}
-	}
-	//vec4 sample0 = texture2D(u_samplerHeight, uv);
+	vec4 sample0 = texture2D(u_samplerHeight, uv);
 	//float value = sample0.x * sample0.x;
-	gl_FragColor = vec4(value, value, value, uv);
-
+	//gl_FragColor = vec4(value, value, value, 1.0);
+	gl_FragColor = sample0;
 }
 `;
 const sVertexAttributeNameArray = ["a_position"];
-const sUniformNameArray = ["u_tilt", "u_height", "u_samplerHeight"];
+const sUniformNameArray = ["u_samplerHeight"];
 
 const factory = function(in_webGLContextWrapper, in_uniformServer){
 	return WebGL.ShaderWrapper.factory(
