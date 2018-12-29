@@ -39,7 +39,7 @@ const factory = function(in_webGLContextWrapper, in_resourceManager){
 
 	const result = Object.create({
 		"draw" : function(localWebGLContextWrapper, localWebGLState, localFrameIndex){
-			m_ratio = localFrameIndex / 50.0;
+			m_ratio = localFrameIndex / 25.0;
 
 			m_renderTarget.apply(localWebGLContextWrapper);
 			m_materialWater.apply(localWebGLContextWrapper, localWebGLState);

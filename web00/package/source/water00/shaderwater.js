@@ -30,17 +30,30 @@ const sFragmentShader = `
 precision mediump float;
 varying vec2 v_position;
 uniform sampler2D u_samplerHeight;
+uniform sampler2D u_samplerEnvMap;
 
 void main() {
 	vec2 uv = (v_position * 0.5) + 0.5;
-	vec4 sample0 = texture2D(u_samplerHeight, uv);
-	//float value = sample0.x * sample0.x;
-	//gl_FragColor = vec4(value, value, value, 1.0);
-	gl_FragColor = sample0;
+
+	vec2 uvStep = vec2(1.0 / 512.0, 1.0 / 512.0);
+	float height0 = texture2D(u_samplerHeight, uv).x;
+	float height1 = texture2D(u_samplerHeight, uv - vec2(uvStep.x, 0.0)).x - height0;
+	float height2 = texture2D(u_samplerHeight, uv - vec2(0.0, uvStep.y)).x - height0;
+	float height3 = texture2D(u_samplerHeight, uv + vec2(uvStep.x, 0.0)).x - height0;
+	float height4 = texture2D(u_samplerHeight, uv + vec2(0.0, uvStep.y)).x - height0;
+	float offset = 0.25;
+	vec3 cross1 = cross(vec3(offset, 0, height1), vec3(0, offset, height2));
+	vec3 cross2 = cross(vec3(offset, 0, -height3), vec3(0, offset, -height4));
+	vec3 normal = normalize(cross1 + cross2);
+	vec2 envMapUV = (normal.xy * 0.5) + 0.5;
+
+	vec4 texel = texture2D(u_samplerEnvMap, envMapUV);
+
+	gl_FragColor = texel + (height0 * 0.25);
 }
 `;
 const sVertexAttributeNameArray = ["a_position"];
-const sUniformNameArray = ["u_samplerHeight"];
+const sUniformNameArray = ["u_samplerHeight", "u_samplerEnvMap"];
 
 const factory = function(in_webGLContextWrapper, in_uniformServer){
 	return WebGL.ShaderWrapper.factory(

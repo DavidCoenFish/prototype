@@ -3,8 +3,10 @@ const WebGL = require("webgl");
 const ModelScreenQuad = require("./water00/modelscreenquad.js");
 const ShaderHeight = require("./water00/shaderheight.js");
 const ShaderWater = require("./water00/shaderwater.js");
+const ShaderEnvMap = require("./water00/shaderenvmap.js");
 const Stage0 = require("./water00/stage0.js");
 const Stage1 = require("./water00/stage1.js");
+const StageEnvMap = require("./water00/stageenvmap.js");
 
 const onPageLoad = function(){
 	console.info("onPageLoad");
@@ -23,12 +25,15 @@ const onPageLoad = function(){
 	const resourceManager = Core.ResourceManager.factory({
 		"modelScreenQuad" : ModelScreenQuad.factory,
 		"shaderHeight" : ShaderHeight.factory,
-		"shaderWater" : ShaderWater.factory
+		"shaderWater" : ShaderWater.factory,
+		"shaderEnvMap" : ShaderEnvMap.factory
 	});
 
 	const m_webGLState = WebGL.WebGLState.factory(webGLContextWrapper);
 	const m_stage0 = Stage0.factory(webGLContextWrapper, resourceManager);
-	const m_stage1 = Stage1.factory(webGLContextWrapper, resourceManager, m_stage0.getTexture());
+	const m_stageEnvMap = StageEnvMap.factory(webGLContextWrapper, resourceManager);
+	m_stageEnvMap.draw(webGLContextWrapper, m_webGLState);
+	const m_stage1 = Stage1.factory(webGLContextWrapper, resourceManager, m_stage0.getTexture(), m_stageEnvMap.getTexture());
 
 	const pad = function(num, size) {
 		var s = num+"";
@@ -50,7 +55,7 @@ const onPageLoad = function(){
 	}
 
 	var frameTrace = 0;
-	var frameMax = 500;
+	var frameMax = 100;
 	var m_startTime = undefined;
 	const animationFrameCallback = function(in_timestamp){
 		if (undefined === m_startTime){
@@ -59,6 +64,9 @@ const onPageLoad = function(){
 
 		m_stage0.draw(webGLContextWrapper, m_webGLState, frameTrace);
 		m_stage1.draw(webGLContextWrapper, m_webGLState);
+
+		//const capturedImage = html5CanvasElement.toDataURL("image/png");
+		//saveFile(capturedImage, frameTrace);
 
 		frameTrace += 1;
 		if (frameTrace <= frameMax){
