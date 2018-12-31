@@ -1,0 +1,12 @@
+{
+	"name" : "water01",
+	"source" : "water01.js",
+	"template" : "template/simplecanvas.htm.template",
+	"templateParam" : {
+		"title" : "water01",
+		"canvasWidth" : "512px",
+		"canvasHeight" : "512px",
+		"bundleFilePath" : "js/water01bundle.js"
+	},
+	"outputRootDir": "output"
+}
