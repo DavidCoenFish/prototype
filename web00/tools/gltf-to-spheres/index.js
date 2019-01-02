@@ -1,5 +1,8 @@
 const GltfPipeline = require("gltf-pipeline");
 const GltfToRawTriangle = require("./source/gltf-to-raw-triangle.js");
+const RawTriangleCenter = require("./source/raw-triangle-center.js");
+const RawTriangleScale = require("./source/raw-triangle-scale.js");
+
 const Path = require("path");
 const FsExtra = require("fs-extra");
 
@@ -20,6 +23,10 @@ const loadGltr = function(in_outputFile, in_rootDir, in_fileName, in_targetMaxDi
 	return GltfPipeline.processGltf(fileData, options)
 		.then(function(in_gltfWrapper) {
 			return GltfToRawTriangle(in_gltfWrapper.gltf);
+		}).then(function(in_rawTriangleArray) {
+			return RawTriangleCenter(in_rawTriangleArray);
+		}).then(function(in_rawTriangleArray) {
+			return RawTriangleScale(in_rawTriangleArray, in_targetMaxDim);
 		}).then(function(in_rawTriangleArray) {
 			console.log(JSON.stringify(in_rawTriangleArray));
 		}).catch(function(in_reason){
