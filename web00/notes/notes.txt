@@ -31,3 +31,5 @@ for (var index = 0; index < cars.length; index++) {
 for (var key in object) {
 	if (object.hasOwnProperty(key)) callback(key, object[key]);
 }
+
+gltf-loader-ts
