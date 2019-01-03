@@ -2,6 +2,7 @@ const GltfPipeline = require("gltf-pipeline");
 const GltfToRawTriangle = require("./source/gltf-to-raw-triangle.js");
 const RawTriangleCenter = require("./source/raw-triangle-center.js");
 const RawTriangleScale = require("./source/raw-triangle-scale.js");
+const RawTriangleToSphere = require("./source/raw-triangle-to-sphere.js");
 
 const Path = require("path");
 const FsExtra = require("fs-extra");
@@ -22,14 +23,18 @@ const loadGltr = function(in_outputFile, in_rootDir, in_fileName, in_targetMaxDi
 	const fileData = FsExtra.readJsonSync(localFilePath);
 	return GltfPipeline.processGltf(fileData, options)
 		.then(function(in_gltfWrapper) {
-			return GltfToRawTriangle(in_gltfWrapper.gltf);
+			return GltfToRawTriangle.gltfToRawTriangleArray(in_gltfWrapper.gltf);
 		}).then(function(in_rawTriangleArray) {
-			return RawTriangleCenter(in_rawTriangleArray);
+			return RawTriangleCenter.rawTriangleCenter(in_rawTriangleArray);
 		}).then(function(in_rawTriangleArray) {
-			return RawTriangleScale(in_rawTriangleArray, in_targetMaxDim);
+			return RawTriangleScale.rawTriangleScale(in_rawTriangleArray, in_targetMaxDim);
 		}).then(function(in_rawTriangleArray) {
-			console.log(JSON.stringify(in_rawTriangleArray));
+			return RawTriangleToSphere.rawTriangleToSphere(in_rawTriangleArray, in_sphereDiameter);
+		}).then(function(in_sphereArray) {
+			//console.log(JSON.stringify(in_sphereArray));
+			console.log("in_sphereArray.length:" + in_sphereArray.length);
 		}).catch(function(in_reason){
+
 			console.log("promise.catch:" + in_reason);
 		});
 }

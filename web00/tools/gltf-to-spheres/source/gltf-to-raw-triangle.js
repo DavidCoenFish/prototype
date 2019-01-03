@@ -198,5 +198,7 @@ const gltfToRawTriangleArray = function(in_gltf){
 	return result;
 }
 
-module.exports = gltfToRawTriangleArray;
+module.exports = {
+ "gltfToRawTriangleArray" : gltfToRawTriangleArray
+}
 

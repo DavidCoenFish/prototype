@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "node --nolazy --inspect-brk=5858 index.js",
-    "box": "node --nolazy --inspect-brk=5858 index.js output\\box.js input\\box\\ Box.gltf 1.75 0.05",
-    "female_anatomy": "node --nolazy --inspect-brk=5858 index.js output\\female_anatomy.js input\\female_anatomy\\ scene.gltf 1.75 0.05",
+    "box": "node --nolazy --inspect-brk=5858 index.js output\\box.js input\\box\\ Box.gltf 1.75 0.25",
+    "female_anatomy": "node --nolazy --inspect-brk=5858 index.js output\\female_anatomy.js input\\female_anatomy\\ scene.gltf 1.75 0.1",
     "male_anatomy": "node --nolazy --inspect-brk=5858 index.js output\\male_anatomy.js input\\male_anatomy\\ scene.gltf 1.75 0.05"
   },
   "dependencies": {

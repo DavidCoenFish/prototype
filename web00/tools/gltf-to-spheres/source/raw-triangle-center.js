@@ -29,5 +29,7 @@ const rawTriangleCenter = function(in_rawTriangleArray){
 	return applyOffset(offset, in_rawTriangleArray);
 }
 
-module.exports = rawTriangleCenter;
+module.exports = {
+	"rawTriangleCenter": rawTriangleCenter
+}
 
