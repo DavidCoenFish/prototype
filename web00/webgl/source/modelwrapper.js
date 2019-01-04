@@ -1,5 +1,15 @@
 /*
 wrap the shader webgl program object, 
+
+mode name
+	POINTS: Draws a single dot.
+	LINE_STRIP: Draws a straight line to the next vertex.
+	LINE_LOOP: Draws a straight line to the next vertex, and connects the last vertex back to the first.
+	LINES: Draws a line between a pair of vertices.
+	TRIANGLE_STRIP
+	TRIANGLE_FAN
+	TRIANGLES: Draws a triangle for a group of three vertices
+
  */
 const Core = require("core");
 const WebGLContextWrapperHelper = require("./webglcontextwrapperhelper.js");

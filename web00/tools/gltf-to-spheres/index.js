@@ -31,10 +31,9 @@ const loadGltr = function(in_outputFile, in_rootDir, in_fileName, in_targetMaxDi
 		}).then(function(in_rawTriangleArray) {
 			return RawTriangleToSphere.rawTriangleToSphere(in_rawTriangleArray, in_sphereDiameter);
 		}).then(function(in_sphereArray) {
-			//console.log(JSON.stringify(in_sphereArray));
 			console.log("in_sphereArray.length:" + in_sphereArray.length);
+			FsExtra.writeJSONSync(in_outputFile, in_sphereArray);
 		}).catch(function(in_reason){
-
 			console.log("promise.catch:" + in_reason);
 		});
 }

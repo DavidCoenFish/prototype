@@ -1,0 +1,12 @@
+{
+	"name" : "spheretest00",
+	"source" : "spheretest00.js",
+	"template" : "template/simplecanvas.htm.template",
+	"templateParam" : {
+		"title" : "spheretest00",
+		"canvasWidth" : "512px",
+		"canvasHeight" : "512px",
+		"bundleFilePath" : "js/spheretest00bundle.js"
+	},
+	"outputRootDir": "output"
+}

@@ -36,21 +36,20 @@ const calcScale = function(in_rawTiangleArray, in_targetDim){
 		return [1.0, 1.0, 1.0];
 	}
 	var scale = in_targetDim / maxDim;
-	return [dim[0] * scale, dim[1] * scale, dim[2] * scale];
+	return scale;
 }
 
 const applyScale = function(in_scale, in_rawTiangleArray){
-	for (var index = 0; index < in_rawTiangleArray.length; index += 3){
-		for (var subIndex = 0; subIndex < 3; ++subIndex){
-			in_rawTiangleArray[index + subIndex] *= in_scale[subIndex];
-		}
+	for (var index = 0; index < in_rawTiangleArray.length; ++index){
+		in_rawTiangleArray[index] *= in_scale;
 	}
 	return in_rawTiangleArray;
 }
 
 const rawTriangleScale = function(in_rawTriangleArray, in_targetDim){
 	const scale = calcScale(in_rawTriangleArray, in_targetDim);
-	return applyScale(scale, in_rawTriangleArray);
+	in_rawTriangleArray = applyScale(scale, in_rawTriangleArray);
+	return in_rawTriangleArray;
 }
 
 module.exports = {

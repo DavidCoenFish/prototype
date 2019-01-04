@@ -30,15 +30,15 @@ const makeBarycentricTriangleArray = function(in_rawTriangle) {
 };
 
 const rawTriangleToSphere = function(in_rawTriangle, in_sphereDiameter){
-	//const barycentricTriangleArray = makeBarycentricTriangleArray(in_rawTriangle);
+	const barycentricTriangleArray = makeBarycentricTriangleArray(in_rawTriangle);
 	const dim = RawTriangleScale.getRawTiangleArrayDim(in_rawTriangle);
 	const min = RawTriangleScale.getRawTiangleArrayMin(in_rawTriangle);
 
-	//const spaceInvestigator = SpaceInvestigator.factory(barycentricTriangleArray);
-	//const arraySphereInside = SampleGenerator.visit(spaceInvestigator, in_sphereDiameter, min, dim);
+	const spaceInvestigator = SpaceInvestigator.factory(barycentricTriangleArray);
+	const arraySphereInside = SampleGenerator.visit(spaceInvestigator, in_sphereDiameter, min, dim);
 
-	//return arraySphereInside;
-	return [];
+	return arraySphereInside;
+	//return [];
 }
 
 module.exports = {

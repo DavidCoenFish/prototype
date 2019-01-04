@@ -11,8 +11,7 @@ const factory = function(in_webGLContextWrapper, in_resourceManager){
 			}
 			return;
 		}
-
- 	};
+	};
 	const m_shader = in_resourceManager.getCommonReference("shader0", in_webGLContextWrapper, m_uniformServer);
 	const m_material = WebGL.MaterialWrapper.factoryDefault(m_shader, []);
 	const m_model = in_resourceManager.getCommonReference("modelScreenQuad", in_webGLContextWrapper);

@@ -3,8 +3,9 @@
 	"version": "0.0.0",
 	"description": "",
 	"dependencies": {
-		"webgl": "file:./../webgl",
-		"core": "file:./../core"
+		"core": "file:./../core",
+		"manipulatedom": "file:./../manipulatedom",
+		"webgl": "file:./../webgl"
 	},
 	"devDependencies": {
 		"babelify": "^10.0.0",

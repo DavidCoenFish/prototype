@@ -26,7 +26,8 @@ const applyOffset = function(in_offset, in_triangle){
 
 const rawTriangleCenter = function(in_rawTriangleArray){
 	const offset = calcOffset(in_rawTriangleArray);
-	return applyOffset(offset, in_rawTriangleArray);
+	in_rawTriangleArray = applyOffset(offset, in_rawTriangleArray);
+	return in_rawTriangleArray;
 }
 
 module.exports = {
