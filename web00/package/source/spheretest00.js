@@ -9,7 +9,7 @@ const Material = require("./spheretest00/material.js");
 const onPageLoad = function(){
 	console.info("onPageLoad");
 
-	const html5CanvasElement = (undefined !== document) ? document.getElementById('html5CanvasElement') : undefined;
+	const html5CanvasElement = (undefined !== document) ? document.getElementById("html5CanvasElement") : undefined;
 
 	//a canvas width, height is 300,150 by default (coordinate space). lets change that to what size it is
 	var m_width;
@@ -65,16 +65,13 @@ const onPageLoad = function(){
 	const m_model = resourceManager.getCommonReference("model", webGLContextWrapper);
 
 	const m_webGLState = WebGL.WebGLState.factory(webGLContextWrapper);
-	var frameTrace = 0;
-	var frameMax = 100;
 	const animationFrameCallback = function(in_timestamp){
+		m_fpsElement.update(in_timestamp);
+
 		m_material.apply(webGLContextWrapper, m_webGLState);
 		m_model.draw(webGLContextWrapper, m_webGLState.getMapVertexAttribute());
 
-		frameTrace += 1;
-		if (frameTrace <= frameMax){
-			m_requestId = requestAnimationFrame(animationFrameCallback);
-		}
+		m_requestId = requestAnimationFrame(animationFrameCallback);
 	}
 
 	var m_requestId = requestAnimationFrame(animationFrameCallback);
@@ -83,11 +80,70 @@ const onPageLoad = function(){
 	ManipulateDom.Button.addSimpleButton(document, document.body, "stop", function(in_event){
 		cancelAnimationFrame(m_requestId);
 		m_requestId = undefined;
+		console.log("end");
 		return;
 	});
+	const m_fpsElement = ManipulateDom.ComponentFps.factory(document);
+	document.body.appendChild(m_fpsElement.getElement());
+
+	var m_float = 3.5;
+	const m_editFloat = ManipulateDom.ComponentEditFloat.factory(
+		document,
+		"test", 
+		function(){return m_float; }, 
+		function(in_value){ m_float = in_value; return; }, 
+		-180.0, 
+		180.0
+		);
+	document.body.appendChild(m_editFloat.getElement());
+
+	const m_editCameraPos = ManipulateDom.ComponentEditVec3.factory(
+		document,
+		"camera pos",
+		function(){return m_cameraPos.getX(); }, 
+		function(in_value){ m_cameraPos.setX(in_value); return; }, 
+		function(){return m_cameraPos.getY(); }, 
+		function(in_value){ m_cameraPos.setY(in_value); return; }, 
+		function(){return m_cameraPos.getZ(); }, 
+		function(in_value){ m_cameraPos.setZ(in_value); return; }, 
+		undefined, 
+		undefined,
+		0.1
+		);
+	document.body.appendChild(m_editCameraPos.getElement());
+
+	const m_editFovhFovvFar = ManipulateDom.ComponentEditVec3.factory(
+		document,
+		"fov h, fov v, far",
+		function(){return m_cameraFovhFovvFar.getX(); }, 
+		function(in_value){ m_cameraFovhFovvFar.setX(in_value); return; }, 
+		function(){return m_cameraFovhFovvFar.getY(); }, 
+		function(in_value){ m_cameraFovhFovvFar.setY(in_value); return; }, 
+		function(){return m_cameraFovhFovvFar.getZ(); }, 
+		function(in_value){ m_cameraFovhFovvFar.setZ(in_value); return; }, 
+		undefined, 
+		undefined,
+		0.1
+		);
+	document.body.appendChild(m_editFovhFovvFar.getElement());
+
+	var m_lat = 0.0;
+	var m_long = 0.0;
+	const m_editLatLong = ManipulateDom.ComponentEditVec2.factory(
+		document,
+		"fov h, fov v, far",
+		function(){return m_lat; }, 
+		function(in_value){ m_lat = in_value; return; }, 
+		function(){return m_long; }, 
+		function(in_value){ m_long = in_value; return; }, 
+		-180.0, 
+		180.0,
+		0.1
+		);
+	document.body.appendChild(m_editFovhFovvFar.getElement());
 
 	return;
 }
 
 
-window.addEventListener('load', onPageLoad, true);
+window.addEventListener("load", onPageLoad, true);
