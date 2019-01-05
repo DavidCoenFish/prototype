@@ -95,10 +95,10 @@ const factoryMatrix33 = function(in_matrix33){
 }
 
 const quaternionToYawPitchRoll = function(in_quaternion){
-	const w = q.getW();
-	const x = q.getX();
-	const y = q.getY();
-	const z = q.getZ();
+	const w = in_quaternion.getW();
+	const x = in_quaternion.getX();
+	const y = in_quaternion.getY();
+	const z = in_quaternion.getZ();
 
 	// roll (x-axis rotation)
 	const sinr_cosp = +2.0 * (w * x + y * z);
@@ -125,5 +125,6 @@ module.exports = {
 	"factory" : factory,
 	"factoryFloat32" : factoryFloat32,
 	"factoryYawPitchRoll" : factoryYawPitchRoll,
-	"factoryMatrix33" : factoryMatrix33
+	"factoryMatrix33" : factoryMatrix33,
+	"quaternionToYawPitchRoll" : quaternionToYawPitchRoll
 }

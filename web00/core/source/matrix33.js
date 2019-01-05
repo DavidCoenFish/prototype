@@ -78,10 +78,10 @@ const factoryFloat32 = function(
 
 //http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToMatrix/index.htm
 const factoryQuaternion = function(in_quaternion){
-	const w = q.getW();
-	const x = q.getX();
-	const y = q.getY();
-	const z = q.getZ();
+	const w = in_quaternion.getW();
+	const x = in_quaternion.getX();
+	const y = in_quaternion.getY();
+	const z = in_quaternion.getZ();
 
 	const xx      = x * x;
 	const xy      = x * y;

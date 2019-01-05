@@ -16,7 +16,8 @@
 				"run-script",
 				"unittestvsc"
 			],
-			"port": 5858
+			"port": 5858,
+			"timeout": 10000
 		}
 	]
 }
