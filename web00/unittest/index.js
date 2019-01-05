@@ -105,6 +105,7 @@ module.exports = {
 	"dealTest" : dealTest,
 	"dealTestNot" : dealTestNot,
 	"dealTest" : dealTest,
+	"dealTestAlmost" : dealTestAlmost,
 	"dealTestRange" : dealTestRange,
 	"dealTestFail" : dealTestFail,
 };

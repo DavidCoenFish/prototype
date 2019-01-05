@@ -27,12 +27,6 @@ const factory = function(in_x, in_y, in_z, in_baseArrayClass){
 			data[2] = in_value;
 			return;
 		},
-		"crossProduct" : function(in_rhs) {
-			const x = (this.getY() * in_rhs.getZ()) - (this.getZ() * in_rhs.getY());
-			const y = (this.getZ() * in_rhs.getX()) - (this.getX() * in_rhs.getZ());
-			const z = (this.getX() * in_rhs.getY()) - (this.getY() * in_rhs.getX());
-			return module.exports.factory(x, y, z, in_baseArrayClass);
-		},
 		"getRaw" : function(){
 			return data;
 		},
@@ -52,7 +46,20 @@ const factoryFloat32 = function(in_xOrUndefined, in_yOrUndefined, in_zOrUndefine
 	const z = (undefined === in_zOrUndefined) ? 0.0 : in_zOrUndefined;
 	return factory(x, y, z, Float32Array);
 }
+
+const crossProduct = function(in_vecA, in_vecB){
+	const dataA = in_vecA.getRaw();
+	const dataB = in_vecB.getRaw();
+	return factory(
+		(dataA[1] * dataB[2]) - (dataA[2] * dataB[1]),
+		(dataA[2] * dataB[0]) - (dataA[0] * dataB[2]),
+		(dataA[0] * dataB[1]) - (dataA[1] * dataB[0]),
+		in_vecA.getRawClass()
+	);
+}
+
 module.exports = {
 	"factory" : factory,
-	"factoryFloat32" : factoryFloat32
+	"factoryFloat32" : factoryFloat32,
+	"crossProduct" : crossProduct
 }

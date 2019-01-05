@@ -131,7 +131,7 @@ const onPageLoad = function(){
 	var m_long = 0.0;
 	const m_editLatLong = ManipulateDom.ComponentEditVec2.factory(
 		document,
-		"fov h, fov v, far",
+		"lat long",
 		function(){return m_lat; }, 
 		function(in_value){ m_lat = in_value; return; }, 
 		function(){return m_long; }, 
