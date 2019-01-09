@@ -15,6 +15,12 @@ const factory = function(in_x, in_y, in_z, in_baseArrayClass){
 		"getZ" : function(){
 			return data[2];
 		},
+		"set" : function(in_x, in_y, in_z){
+			data[0] = in_x;
+			data[1] = in_y;
+			data[2] = in_z;
+			return;
+		},
 		"setX" : function(in_value){
 			data[0] = in_value;
 			return;

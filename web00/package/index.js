@@ -3,6 +3,8 @@
 const Path = require("path");
 const Helper = require("./source/helper.js");
 
+console.log(new Date().toLocaleTimeString());
+
 const projectArray = [];
 const normal = false; //true;
 if (true === normal){

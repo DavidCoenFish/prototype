@@ -1,11 +1,14 @@
 {
-  "name": "manipulatedom",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "David Coen",
-  "license": "ISC"
+	"name": "manipulatedom",
+	"version": "1.0.0",
+	"description": "",
+	"dependencies": {
+		"core": "file:./../core"
+	},
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "David Coen",
+	"license": "ISC"
 }

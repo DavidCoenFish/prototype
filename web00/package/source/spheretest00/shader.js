@@ -10,17 +10,17 @@ varying vec2 v_minorAxis;
 uniform vec4 u_viewportWidthHeightWidthhalfHeighthalf;
 uniform float u_sphereRadius;
 uniform vec3 u_cameraAt;
+uniform vec3 u_cameraLeft;
 uniform vec3 u_cameraUp;
-uniform vec3 u_cameraRight;
 uniform vec3 u_cameraPos;
 uniform vec3 u_cameraFovhFovvFar;
 
 void main() {
 	vec3 cameraToAtom = a_position - u_cameraPos;
 
-	float cameraSpaceX = dot(cameraToAtom, u_cameraRight);
-	float cameraSpaceY = dot(cameraToAtom, u_cameraUp);
-	float cameraSpaceZ = dot(cameraToAtom, u_cameraAt);
+	float cameraSpaceX = dot(cameraToAtom, u_cameraAt);
+	float cameraSpaceY = dot(cameraToAtom, u_cameraLeft);
+	float cameraSpaceZ = dot(cameraToAtom, u_cameraUp);
 	float cameraSpaceXYLengthSquared = ((cameraSpaceX * cameraSpaceX) + (cameraSpaceY* cameraSpaceY));
 	float cameraSpaceLength = sqrt(cameraSpaceXYLengthSquared + (cameraSpaceZ * cameraSpaceZ));
 	float cameraSpaceXYLength = sqrt(cameraSpaceXYLengthSquared);
@@ -91,7 +91,7 @@ void main() {
 `;
 
 const sVertexAttributeNameArray = ["a_position"];
-const sUniformNameArray = ["u_viewportWidthHeightWidthhalfHeighthalf", "u_sphereRadius", "u_cameraAt", "u_cameraUp", "u_cameraRight", "u_cameraPos", "u_cameraFovhFovvFar"];
+const sUniformNameArray = ["u_viewportWidthHeightWidthhalfHeighthalf", "u_sphereRadius", "u_cameraAt", "u_cameraUp", "u_cameraLeft", "u_cameraPos", "u_cameraFovhFovvFar"];
 
 const factory = function(in_webGLContextWrapper, in_uniformServer){
 	return WebGL.ShaderWrapper.factory(

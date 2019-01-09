@@ -1,5 +1,16 @@
 //const Core = require("core");
+/*
+		in_depthFuncEnumNameOrUndefined
+NEVER (never pass)
+LESS (pass if the incoming value is less than the depth buffer value)
+EQUAL (pass if the incoming value equals the the depth buffer value)
+LEQUAL (pass if the incoming value is less than or equal to the depth buffer value)
+GREATER (pass if the incoming value is greater than the depth buffer value)
+NOTEQUAL (pass if the incoming value is not equal to the depth buffer value)
+GEQUAL (pass if the incoming value is greater than or equal to the depth buffer value)
+ALWAYS (always pass)
 
+ */
 const factory = function(
 		in_shaderWrapperOrUndefined, 
 		in_textureArrayOrUndefined,
