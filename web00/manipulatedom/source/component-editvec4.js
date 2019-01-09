@@ -24,7 +24,26 @@ const factory = function(in_document, in_text, in_callbackGetX, in_callbackSetX,
 	return result;
 }
 
+const factoryVec4 = function(in_document, in_text, in_vec4, in_minOrUndefined, in_maxOrUndefined, in_stepOrUndefined){
+	return factory(
+		in_document, 
+		in_text, 
+		function(){ return in_vec4.getX(); },
+		function(in_value){ in_vec4.setX(in_value); },
+		function(){ return in_vec4.getY(); },
+		function(in_value){ in_vec4.setY(in_value); },
+		function(){ return in_vec4.getZ(); },
+		function(in_value){ in_vec4.setZ(in_value); },
+		function(){ return in_vec4.getW(); },
+		function(in_value){ in_vec4.setW(in_value); },
+		in_minOrUndefined, 
+		in_maxOrUndefined, 
+		in_stepOrUndefined
+	);
+}
+
 
 module.exports = {
-	"factory" : factory
+	"factory" : factory,
+	"factoryVec4" : factoryVec4
 };

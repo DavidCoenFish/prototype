@@ -108,7 +108,7 @@ const quaternionToYawPitchRoll = function(in_quaternion){
 	// pitch (y-axis rotation)
 	const sinp = +2.0 * (w * y - z * x);
 	var pitch;
-	if (fabs(sinp) >= 1){
+	if (Math.abs(sinp) >= 1){
 		pitch = Math.PI / 2.0 * Math.sign(sinp); // use 90 degrees if out of range
 	} else {
 		pitch = Math.asin(sinp);

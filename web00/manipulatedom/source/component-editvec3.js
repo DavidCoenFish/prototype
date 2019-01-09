@@ -22,7 +22,23 @@ const factory = function(in_document, in_text, in_callbackGetX, in_callbackSetX,
 	return result;
 }
 
+const factoryVec3 = function(in_document, in_text, in_vec3, in_minOrUndefined, in_maxOrUndefined, in_stepOrUndefined){
+	return factory(
+		in_document, 
+		in_text, 
+		function(){ return in_vec3.getX(); },
+		function(in_value){ in_vec3.setX(in_value); },
+		function(){ return in_vec3.getY(); },
+		function(in_value){ in_vec3.setY(in_value); },
+		function(){ return in_vec3.getZ(); },
+		function(in_value){ in_vec3.setZ(in_value); },
+		in_minOrUndefined, 
+		in_maxOrUndefined, 
+		in_stepOrUndefined
+	);
+}
 
 module.exports = {
-	"factory" : factory
+	"factory" : factory,
+	"factoryVec3" : factoryVec3
 };

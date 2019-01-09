@@ -20,7 +20,21 @@ const factory = function(in_document, in_text, in_callbackGetX, in_callbackSetX,
 	return result;
 }
 
+const factoryVec2 = function(in_document, in_text, in_vec2, in_minOrUndefined, in_maxOrUndefined, in_stepOrUndefined){
+	return factory(
+		in_document, 
+		in_text, 
+		function(){ return in_vec2.getX(); },
+		function(in_value){ in_vec2.setX(in_value); },
+		function(){ return in_vec2.getY(); },
+		function(in_value){ in_vec2.setY(in_value); },
+		in_minOrUndefined, 
+		in_maxOrUndefined, 
+		in_stepOrUndefined
+	);
+}
 
 module.exports = {
-	"factory" : factory
+	"factory" : factory,
+	"factoryVec2" : factoryVec2
 };

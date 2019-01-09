@@ -2,6 +2,7 @@
 Float32Array
  */
 const VectorPrototype = require("./vectorprototype.js");
+const Vector3 = require("./vector3.js");
 
 const factory = function(
 	in_00, in_10, in_20, 
@@ -40,6 +41,15 @@ const factory = function(
 
 		"get22" : function(){ return data[8]; return; },
 		"set22" : function(in_value){ data[8] = in_value; return; },
+
+		"getAt" : function(){ return Vector3.factory(data[0], data[1], data[2], in_baseArrayClass); },
+		"setAt" : function(in_vec){ data[0] = in_vec.getX(); data[1] = in_vec.getY(); data[2] = in_vec.getY(); return; },
+
+		"getLeft" : function(){ return Vector3.factory(data[3], data[4], data[5], in_baseArrayClass); },
+		"setLeft" : function(in_vec){ data[3] = in_vec.getX(); data[4] = in_vec.getY(); data[5] = in_vec.getY(); return; },
+
+		"getUp" : function(){ return Vector3.factory(data[6], data[7], data[8], in_baseArrayClass); },
+		"setUp" : function(in_vec){ data[6] = in_vec.getX(); data[7] = in_vec.getY(); data[8] = in_vec.getY(); return; },
 
 		"getRaw" : function(){
 			return data;
@@ -106,6 +116,12 @@ const factoryQuaternion = function(in_quaternion){
 	const m20  =     2 * ( xz - yw );
 	const m21  =     2 * ( yz + xw );
 	const m22 = 1 - 2 * ( xx + yy );
+
+	return factory(
+		m00, m10, m20, 
+		m01, m11, m21, 
+		m02, m12, m22, 
+		Float32Array);
 }
 
 module.exports = {
