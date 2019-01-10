@@ -88,7 +88,6 @@ const factoryDistancePosAtLeftUp = function(
 	var m_pitch = 0.0;
 	var m_roll = 0.0;
 	const update = function(){
-		
 		var quat = Core.Quaternion.factoryYawPitchRoll(
 			Core.Radians.fromDegrees(m_yaw), 
 			Core.Radians.fromDegrees(m_pitch), 
@@ -104,7 +103,7 @@ const factoryDistancePosAtLeftUp = function(
 		in_pos.set(at.getX() * (-m_distance), at.getY() * (-m_distance), at.getZ() * (-m_distance));
 		return;
 	}
-	return factory(
+	const camera = factory(
 		in_document,
 		function(){ return m_distance; },
 		function(in_value){ m_distance = in_value; update(); return; },
@@ -118,6 +117,10 @@ const factoryDistancePosAtLeftUp = function(
 		in_distanceMaxOrUndefined,
 		in_distanceStepOrUndefined
 	);
+
+	update();
+
+	return camera;
 }
 
 module.exports = {

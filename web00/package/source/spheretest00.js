@@ -2,6 +2,7 @@ const Core = require("core");
 const WebGL = require("webgl");
 const ManipulateDom = require("manipulatedom");
 const Model = require("./spheretest00/model.js");
+//const Model = require("./spheretest00/debugmodel.js");
 const Shader = require("./spheretest00/shader.js");
 const Material = require("./spheretest00/material.js");
 
@@ -65,7 +66,7 @@ const onPageLoad = function(){
 	const m_model = resourceManager.getCommonReference("model", webGLContextWrapper);
 
 	var m_timestamp;
-	const m_clearColor = Core.Colour4.factoryFloat32(0.5, 0.5, 0.5, 1.0);
+	const m_clearColor = Core.Colour4.factoryFloat32(0.1, 0.1, 0.1, 1.0);
 	const m_webGLState = WebGL.WebGLState.factory(webGLContextWrapper);
 	const animationFrameCallback = function(in_timestamp){
 		var tick = 0.0; 
@@ -75,7 +76,7 @@ const onPageLoad = function(){
 		m_timestamp = in_timestamp;
 		m_fpsElement.update(in_timestamp);
 
-		m_editCamera.orbit(tick);
+		//m_editCamera.orbit(tick);
 
 		WebGL.WebGLContextWrapperHelper.clear(webGLContextWrapper, m_clearColor, 1.0);
 		m_material.apply(webGLContextWrapper, m_webGLState);

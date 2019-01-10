@@ -18,9 +18,9 @@ uniform vec3 u_cameraFovhFovvFar;
 void main() {
 	vec3 cameraToAtom = a_position - u_cameraPos;
 
-	float cameraSpaceX = dot(cameraToAtom, u_cameraAt);
-	float cameraSpaceY = dot(cameraToAtom, u_cameraLeft);
-	float cameraSpaceZ = dot(cameraToAtom, u_cameraUp);
+	float cameraSpaceX = -dot(cameraToAtom, u_cameraLeft);
+	float cameraSpaceY = dot(cameraToAtom, u_cameraUp);
+	float cameraSpaceZ = dot(cameraToAtom, u_cameraAt);
 	float cameraSpaceXYLengthSquared = ((cameraSpaceX * cameraSpaceX) + (cameraSpaceY* cameraSpaceY));
 	float cameraSpaceLength = sqrt(cameraSpaceXYLengthSquared + (cameraSpaceZ * cameraSpaceZ));
 	float cameraSpaceXYLength = sqrt(cameraSpaceXYLengthSquared);
