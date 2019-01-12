@@ -3,9 +3,18 @@ const GltfToRawTriangle = require("./source/gltf-to-raw-triangle.js");
 const RawTriangleCenter = require("./source/raw-triangle-center.js");
 const RawTriangleScale = require("./source/raw-triangle-scale.js");
 const RawTriangleToSphere = require("./source/raw-triangle-to-sphere.js");
+const Test = require("./source/test.js");
 
 const Path = require("path");
 const FsExtra = require("fs-extra");
+
+console.log(new Date().toLocaleTimeString());
+
+if ((3 == process.argv.length) && ("test" === process.argv[2])){
+	console.log("test");
+	Test.run();
+	process.exit(0);
+}
 
 if (7 != process.argv.length){
 	console.log("usage");

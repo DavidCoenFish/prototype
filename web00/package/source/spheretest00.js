@@ -32,7 +32,7 @@ const onPageLoad = function(){
 	});
 
 	const m_viewportWidthHeightWidthhalfHeighthalf = Core.Vector4.factoryFloat32(m_width, m_height, m_width / 2.0, m_height / 2.0);
-	var m_sphereRadius = 0.1;
+	var m_sphereRadius = 0.01;
 	const m_cameraAt = Core.Vector3.factoryFloat32(0.0, 1.0, 0.0);
 	const m_cameraUp = Core.Vector3.factoryFloat32(0.0, 0.0, 1.0);
 	const m_cameraLeft = Core.Vector3.factoryFloat32(1.0, 0.0, 0.0);
