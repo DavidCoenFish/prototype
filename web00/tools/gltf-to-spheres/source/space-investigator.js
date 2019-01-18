@@ -30,14 +30,17 @@ const factory = function(in_barycentricTriangleArray){
 				if (t < 0.0){
 					continue;
 				}
-				var infront = triangle.infrontOrBehind(in_pos3);
-				if (true === infront){
+				var rayDistanceRelativeToTriangle = triangle.getDistanceToTrianglePlane(in_pos3);
+				if (0.0 < rayDistanceRelativeToTriangle){
 					triangle.addIfNotTouching(arrayFacesInfront);
-				} else {
+				} else if (rayDistanceRelativeToTriangle < 0.0){
 					triangle.addIfNotTouching(arrayFacesBehind);
 				}
 			}
 			const inside = (arrayFacesInfront.length !== arrayFacesBehind.length);
+			if (true === inside){
+				console.log("inside");
+			}
 			return inside;
 		}
 

@@ -69,6 +69,8 @@ const makePromice = function(in_item){
 	}).then(function(){
 		makeDirectory(bundlePath);
 	}).then(function(){
+		return copyFiles(in_item);
+	}).then(function(){
 		return makeTemplate(in_item, htmlPath);
 	}).then(function(){
 		return doBrowserify(in_item, bundlePath);
@@ -82,6 +84,14 @@ const makeDirectory = function(in_filePath){
 		}
 		deferred.resolve(true);
 	});
+	return deferred.promise;
+}
+
+const copyFiles = function(in_item){
+	var deferred = Q.defer();
+
+	
+
 	return deferred.promise;
 }
 

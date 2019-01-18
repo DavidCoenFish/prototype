@@ -8,6 +8,7 @@
 		<canvas id='html5CanvasElement' style = 'background-color: #000000; width: $(canvasWidth); height: $(canvasHeight);' >
 			This text is displayed if your browser does not support HTML5 Canvas.
 		</canvas>
+		"$(copyFilePathArray)"
 		<script src="$(bundleFilePath)" ></script>
 	</body>
 </html>

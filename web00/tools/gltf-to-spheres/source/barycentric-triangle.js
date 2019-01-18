@@ -26,11 +26,10 @@ const factory = function(in_pos3PointA, in_pos3PointB, in_pos3PointC){
 	var m_trianglePlaneNorm = Geometry.vec3LengthReturnNormal(Geometry.vec3CrossProduct(m_normAtoB, m_normAtoC));
 
 	const result = Object.create({
-		"infrontOrBehind" : function(in_point){
+		"getDistanceToTrianglePlane" : function(in_point){
 			const offset = Geometry.vec3Minus(in_point, m_point3[0]);
 			const dotOffset = Geometry.vec3DotProduct(offset, m_trianglePlaneNorm);
-			const infront = (0.0 <= dotOffset);
-			return infront;
+			return dotOffset;
 		},
 		//can return undefined
 		"projectRayOntoTrianglePlane" : function(in_rayOrigin, in_rayNormal){
