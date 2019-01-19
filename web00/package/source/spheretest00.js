@@ -42,8 +42,9 @@ const onPageLoad = function(){
 	const m_cameraAt = Core.Vector3.factoryFloat32(0.0, 1.0, 0.0);
 	const m_cameraUp = Core.Vector3.factoryFloat32(0.0, 0.0, 1.0);
 	const m_cameraLeft = Core.Vector3.factoryFloat32(1.0, 0.0, 0.0);
-	const m_cameraPos = Core.Vector3.factoryFloat32(0.0, -5.0, 0.0);
-	const m_cameraFovhFovvFar = Core.Vector3.factoryFloat32(185.0, 185.0, 10.0);
+	//const m_cameraPos = Core.Vector3.factoryFloat32(0.0, -5.0, 0.0);
+	const m_cameraPos = Core.Vector3.factoryFloat32(0.04571287365044965, -0.1294732246360698, -0.8690733764450884);
+	const m_cameraFovhFovvFar = Core.Vector3.factoryFloat32(120.0, 120.0, 10.0);
 
 	const m_uniformServer = {
 		"setUniform" : function(localWebGLContextWrapper, in_key, in_position){
@@ -91,8 +92,8 @@ const onPageLoad = function(){
 
 		WebGL.WebGLContextWrapperHelper.clear(webGLContextWrapper, m_clearColor, 1.0);
 
-		m_materialEdge.apply(webGLContextWrapper, m_webGLState);
-		m_modelEdge.draw(webGLContextWrapper, m_webGLState.getMapVertexAttribute());
+		//m_materialEdge.apply(webGLContextWrapper, m_webGLState);
+		//m_modelEdge.draw(webGLContextWrapper, m_webGLState.getMapVertexAttribute());
 
 		m_material.apply(webGLContextWrapper, m_webGLState);
 		m_model.draw(webGLContextWrapper, m_webGLState.getMapVertexAttribute());
@@ -129,7 +130,8 @@ const onPageLoad = function(){
 		m_cameraPos,
 		m_cameraAt,
 		m_cameraLeft,
-		m_cameraUp
+		m_cameraUp,
+		undefined, undefined, 0.01
 	);
 	document.body.appendChild(m_editCamera.getElement());
 

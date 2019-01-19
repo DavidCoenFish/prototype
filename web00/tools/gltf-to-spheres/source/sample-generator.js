@@ -1,13 +1,46 @@
+const FsExtra = require("fs-extra");
+
 const gSqrt0_75 = 0.86602540378443864676372317075294;
 const gSqrt0_5 = 0.70710678118654752440084436210485;
 const gSqrt0_33333 = 0.57735026918962576450914878050196;
 const gSqrt0_08333 = 0.28867513459481288225457439025098;
 
+
+const debugPointPair = function(in_pointA, in_pointB){
+	var message = "";
+	message += `	${in_pointA[0]}, ${in_pointA[1]}, ${in_pointA[2]},\n`;
+	message += `	${in_pointB[0]}, ${in_pointB[1]}, ${in_pointB[2]},\n`;
+	return message;
+}
+
+//dataOfInterestOnRayX
+//result.push({ "triangle" : triangle, "point" : [projectedPointOnPlane[0], projectedPointOnPlane[1], projectedPointOnPlane[2]] });
+const debugDataOfInterestOnRayX = function(in_dataOfInterestOnRayX){
+	var message = "const gDataOfInterest = [\n";
+	for (var index = 0; index < in_dataOfInterestOnRayX.length; ++index){
+		var triangle = in_dataOfInterestOnRayX[index]["triangle"];
+		var trianglePointArray = triangle.getPointArray();
+		var intersectPoint = in_dataOfInterestOnRayX[index]["point"];
+
+		message += debugPointPair(trianglePointArray[0], trianglePointArray[1]);
+		message += debugPointPair(trianglePointArray[1], trianglePointArray[2]);
+		message += debugPointPair(trianglePointArray[2], trianglePointArray[0]);
+		message += debugPointPair(trianglePointArray[0], intersectPoint);
+
+		break;
+	}
+	message += "];";
+	//console.log(message);
+
+	FsExtra.writeFileSync("debug.js", message);
+
+	return;
+}
+
+
 	// float x = a_position.x + (mod(a_position.y, 2.0) * 0.5) - (mod(a_position.z, 2.0) * 0.5);
 	// float y = (a_position.y * 0.86602540378443864676372317075294) + (mod(a_position.z, 2.0) * 0.28867513459481288225457439025098);
 	// float z = 	a_position.z * 0.81649658092772603273242802490196;
-
-
 const calculateX = function(in_min, in_xIndex, in_yIndex, in_zIndex, in_sphereDiameter){
 	const yEven = (0 === (in_yIndex & 1));
 	const zEven = (0 === (in_zIndex & 1));
@@ -62,7 +95,6 @@ const visit = function(in_spaceInvestigator, in_sphereDiameter, in_min, in_dim){
 				}
 			}
 		}
-		break;
 	}
 	return floatArray;
 }

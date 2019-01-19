@@ -64,6 +64,11 @@ const testGeometryRayPlaneIntersect = function(){
 	dealTestAlmost("GeometryRayPlaneIntersect4:", intersect1[1], 2.0, 0.000001);
 	dealTestAlmost("GeometryRayPlaneIntersect5:", intersect1[2], 1.0, 0.000001);
 
+	const intersect2 = Geometry.rayPlaneIntersection([0,-0.13541964238048396,-0.875], [1,0,0], [0.04571287365044965,-0.1294732246360698,-0.8690733764450884], [-0.8905572216506746,-0.42512798849394023,0.16178389402201765]);
+	dealTestAlmost("GeometryRayPlaneIntersect3:", intersect2[0], 0.04747486753378796, 0.000001);
+	dealTestAlmost("GeometryRayPlaneIntersect4:", intersect2[1], -0.13541964238048396, 0.000001);
+	dealTestAlmost("GeometryRayPlaneIntersect5:", intersect2[2], -0.875, 0.000001);
+
 	return;
 }
 
@@ -77,8 +82,18 @@ const testBarycentricTriangle0 = function(){
 	dealTestAlmost("BarycentricTriangle0.1:", point0[1], 0.5, 0.000001);
 	dealTestAlmost("BarycentricTriangle0.2:", point0[2], 0.5, 0.000001);
 
-	const inTriangle = triangle0.testPointInTriangle(point0);
-	dealTest("BarycentricTriangle0.3:", inTriangle, true);
+	const inTriangle0 = triangle0.testPointInTriangle(point0);
+	dealTest("BarycentricTriangle0.3:", inTriangle0, true);
+
+	const triangle1 = BarycentricTriangle.factory([0.04571287365044965,-0.1294732246360698,-0.8690733764450884], [0.04987445147157945,-0.1383984275030379,-0.8696187357974481], [0.050585965535185046,-0.13814822257883855,-0.8650446519044901]);
+	const point1 = triangle1.projectRayOntoTrianglePlane([0,-0.13541964238048396,-0.875], [1.0, 0.0, 0.0]);
+
+	dealTestAlmost("BarycentricTriangle1.0:", point1[0], 0.04747486753378796, 0.000001);
+	dealTestAlmost("BarycentricTriangle1.1:", point1[1], -0.13541964238048396, 0.000001);
+	dealTestAlmost("BarycentricTriangle1.2:", point1[2], -0.875, 0.000001);
+
+	const inTriangle1 = triangle1.testPointInTriangle(point1);
+	dealTest("BarycentricTriangle1.3:", inTriangle1, false);
 
 	return;
 }
@@ -112,10 +127,10 @@ const testInside = function(){
 	const inside0 = spaceInvestigator.isPointInsideOnRayX([-0.1, 0.5, 0.1], dataOfInterest0);
 	dealTest("testInside.0:", inside0, false);
 
-	const inside1 = spaceInvestigator.isPointInsideOnRayX([0.0, 0.5, 0.1], dataOfInterest0);
+	const inside1 = spaceInvestigator.isPointInsideOnRayX([-0.001, 0.5, 0.1], dataOfInterest0);
 	dealTest("testInside.1:", inside1, false);
 
-	const inside1b = spaceInvestigator.isPointInsideOnRayX([0.001, 0.5, 0.1], dataOfInterest0);
+	const inside1b = spaceInvestigator.isPointInsideOnRayX([0.0, 0.5, 0.1], dataOfInterest0);
 	dealTest("testInside.1b:", inside1b, true);
 
 	const inside2 = spaceInvestigator.isPointInsideOnRayX([0.25, 0.5, 0.1], dataOfInterest0);

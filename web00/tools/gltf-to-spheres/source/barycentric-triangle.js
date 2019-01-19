@@ -7,6 +7,21 @@ https://en.wikipedia.org/wiki/Barycentric_coordinate_system
 
 \lambda_3=1 - lambda_0 - lambda_1
 
+https://gamedev.stackexchange.com/questions/23743/whats-the-most-efficient-way-to-find-barycentric-coordinates
+void Barycentric(Point p, Point a, Point b, Point c, float &u, float &v, float &w)
+{
+    Vector v0 = b - a, v1 = c - a, v2 = p - a;
+    float d00 = Dot(v0, v0);
+    float d01 = Dot(v0, v1);
+    float d11 = Dot(v1, v1);
+    float d20 = Dot(v2, v0);
+    float d21 = Dot(v2, v1);
+    float denom = d00 * d11 - d01 * d01;
+    v = (d11 * d20 - d01 * d21) / denom;
+    w = (d00 * d21 - d01 * d20) / denom;
+    u = 1.0f - v - w;
+}
+
  */
 
 //if the intersection is this close to a edge by threshold, treat it as touching
@@ -21,11 +36,23 @@ const factory = function(in_pos3PointA, in_pos3PointB, in_pos3PointC){
 	}
 
 	var m_point3 = [in_pos3PointA, in_pos3PointB, in_pos3PointC];
-	var m_normAtoB = Geometry.vec3LengthReturnNormal(Geometry.vec3Minus(in_pos3PointB, in_pos3PointA));
-	var m_normAtoC = Geometry.vec3LengthReturnNormal(Geometry.vec3Minus(in_pos3PointC, in_pos3PointA));
-	var m_trianglePlaneNorm = Geometry.vec3LengthReturnNormal(Geometry.vec3CrossProduct(m_normAtoB, m_normAtoC));
+	var m_v0 = Geometry.vec3Minus(in_pos3PointB, in_pos3PointA);
+	var m_v1 = Geometry.vec3Minus(in_pos3PointC, in_pos3PointA);
+	var m_d00 = Geometry.vec3DotProduct(m_v0, m_v0);
+	var m_d01 = Geometry.vec3DotProduct(m_v0, m_v1);
+	var m_d11 = Geometry.vec3DotProduct(m_v1, m_v1);
+	var m_denom = m_d00 * m_d11 - m_d01 * m_d01;
+
+	var m_trianglePlaneNorm = Geometry.vec3LengthReturnNormal(Geometry.vec3CrossProduct(m_v0, m_v1));
 
 	const result = Object.create({
+		"getPointArray" : function(){
+			return m_point3;
+		},
+		"getTrianglePlaneNorm" : function(){
+			return m_trianglePlaneNorm;
+		},
+
 		"getDistanceToTrianglePlane" : function(in_point){
 			const offset = Geometry.vec3Minus(in_point, m_point3[0]);
 			const dotOffset = Geometry.vec3DotProduct(offset, m_trianglePlaneNorm);
@@ -40,18 +67,23 @@ const factory = function(in_pos3PointA, in_pos3PointB, in_pos3PointC){
 				return false;
 			}
 
-			const pointReleativeToA = Geometry.vec3Minus(in_pointOrUndefined, m_point3[0]);
+			const v2 = Geometry.vec3Minus(in_pointOrUndefined, m_point3[0]);
+			const d20 = Geometry.vec3DotProduct(v2, m_v0);
+			const d21 = Geometry.vec3DotProduct(v2, m_v1);
 
-			const dotAB = Geometry.vec3DotProduct(m_normAtoB, pointReleativeToA) / m_normAtoB[3];
-			if ((dotAB + Number.EPSILON < 0.0) || (1.0 < dotAB - Number.EPSILON)){
+			const v = (m_d11 * d20 - m_d01 * d21) / m_denom;
+			const w = (m_d00 * d21 - m_d01 * d20) / m_denom;
+			const u = 1.0 - v - w;
+
+			if ((v + Number.EPSILON < 0.0) || (1.0 < v - Number.EPSILON)){
 				return false;
 			}
-			const dotAC = Geometry.vec3DotProduct(m_normAtoC, pointReleativeToA) / m_normAtoC[3];
-			if ((dotAC + Number.EPSILON < 0.0) || (1.0 < dotAC - Number.EPSILON)){
+
+			if ((w + Number.EPSILON < 0.0) || (1.0 < w - Number.EPSILON)){
 				return false;
 			}
-			var c = 1 - dotAB - dotAC;
-			if ((c + Number.EPSILON < 0.0) || (1.0 < c - Number.EPSILON)){
+
+			if ((u + Number.EPSILON < 0.0) || (1.0 < u - Number.EPSILON)){
 				return false;
 			}
 

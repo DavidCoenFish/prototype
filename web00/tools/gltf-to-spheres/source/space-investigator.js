@@ -8,6 +8,7 @@ const factory = function(in_barycentricTriangleArray){
 			return false;
 		},
 		"calculateDataOfInterestOnRayX" : function(in_y, in_z){
+			//console.log("calculateDataOfInterestOnRayX");
 			var result = [];
 			const rayOrigin = [0.0, in_y, in_z];
 			for (var index = 0; index < in_barycentricTriangleArray.length; ++index){
@@ -38,9 +39,6 @@ const factory = function(in_barycentricTriangleArray){
 				}
 			}
 			const inside = (arrayFacesInfront.length !== arrayFacesBehind.length);
-			if (true === inside){
-				console.log("inside");
-			}
 			return inside;
 		}
 

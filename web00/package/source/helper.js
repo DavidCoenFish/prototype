@@ -69,6 +69,8 @@ const makePromice = function(in_item){
 	}).then(function(){
 		makeDirectory(bundlePath);
 	}).then(function(){
+		return makeDirForCopyFiles(in_item);
+	}).then(function(){
 		return copyFiles(in_item);
 	}).then(function(){
 		return makeTemplate(in_item, htmlPath);
@@ -78,8 +80,10 @@ const makePromice = function(in_item){
 }
 const makeDirectory = function(in_filePath){
 	var deferred = Q.defer();
+	//console.log("makeDirectory:" + in_filePath + " dirname:" + Path.dirname(in_filePath));
 	FileSystem.mkdir(Path.dirname(in_filePath), { recursive: true }, function(error){
 		if (error && (error.code !== 'EEXIST')){
+			//console.log("error:" + error);
 			throw error;
 		}
 		deferred.resolve(true);
@@ -87,10 +91,46 @@ const makeDirectory = function(in_filePath){
 	return deferred.promise;
 }
 
+const makeDirForCopyFiles = function(in_item){
+	var promiceChain = Q(true);
+
+	const copyFileDest = in_item["copyFileDest"];
+	const copyFileArray = in_item["copyFileArray"];
+	if ((undefined !== copyFileDest) && (undefined !== copyFileArray)){
+		for (var index = 0; index < copyFileArray.length; ++index){
+			var destinationDir = Path.join(in_item.outputRootDir, copyFileDest, "*");
+			promiceChain = promiceChain.then(function(){
+				return makeDirectory(destinationDir);
+			});
+		}
+	}
+
+	return promiceChain;
+}
 const copyFiles = function(in_item){
 	var deferred = Q.defer();
 
-	
+	var copyFilePathArray = "";
+	const copyFileDest = in_item["copyFileDest"];
+	const copyFileArray = in_item["copyFileArray"];
+	if ((undefined !== copyFileDest) && (undefined !== copyFileArray)){
+		for (var index = 0; index < copyFileArray.length; ++index){
+			var source = copyFileArray[index];
+			var baseName = Path.basename(source);
+			var destination = Path.join(in_item.outputRootDir, copyFileDest, baseName);
+			var htmlDestPath = Path.join(copyFileDest, baseName).replace();
+			FileSystem.copyFile(source, destination, function(in_error){
+				if (in_error){
+					 throw in_error;
+				}
+			});
+
+			copyFilePathArray += `		<script src="${htmlDestPath}" ></script>\n`;
+		}
+	}
+
+	deferred.resolve(true);
+	in_item.templateParam["copyFilePathArray"] = copyFilePathArray;
 
 	return deferred.promise;
 }

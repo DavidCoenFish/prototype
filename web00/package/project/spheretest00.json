@@ -8,9 +8,10 @@
 		"canvasHeight" : "512px",
 		"bundleFilePath" : "js/spheretest00bundle.js"
 	},
-	"copyFileDest" : "spheretest00", 
+	"copyFileDest" : "js/spheretest00", 
 	"copyFileArray" :  [
-			"source/spheretest00/data_female_anatomy_edge.js"
+			"source/spheretest00/data_female_anatomy_edge.js",
+			"source/spheretest00/data_female_anatomy.js"
 		],
 	"outputRootDir": "output"
 }

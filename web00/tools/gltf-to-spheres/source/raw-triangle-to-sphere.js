@@ -38,7 +38,6 @@ const rawTriangleToSphere = function(in_rawTriangle, in_sphereDiameter){
 	const arraySphereInside = SampleGenerator.visit(spaceInvestigator, in_sphereDiameter, min, dim);
 
 	return arraySphereInside;
-	//return [];
 }
 
 module.exports = {

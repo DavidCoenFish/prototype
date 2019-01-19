@@ -42,7 +42,7 @@ void main() {
 	float apsectCorrection = (width / height);
 	float screenY = screenR * cameraSpaceYNorm * apsectCorrection;
 
-	float screenZRaw = (cameraSpaceLength + u_sphereRadius) / u_cameraFovhFovvFar.z;
+	float screenZRaw = cameraSpaceLength / u_cameraFovhFovvFar.z;
 	float screenZ = (screenZRaw * 2.0) - 1.0;
 
 	gl_Position = vec4(screenX, screenY, screenZ, 1.0);
