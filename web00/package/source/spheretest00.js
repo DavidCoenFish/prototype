@@ -113,17 +113,6 @@ const onPageLoad = function(){
 	const m_fpsElement = ManipulateDom.ComponentFps.factory(document);
 	document.body.appendChild(m_fpsElement.getElement());
 
-	var m_float = 3.5;
-	const m_editFloat = ManipulateDom.ComponentEditFloat.factory(
-		document,
-		"test", 
-		function(){return m_float; }, 
-		function(in_value){ m_float = in_value; return; }, 
-		-180.0, 
-		180.0
-		);
-	document.body.appendChild(m_editFloat.getElement());
-
 	const m_editCamera = ManipulateDom.ComponentEditOrbitalCamera.factoryDistancePosAtLeftUp(
 		document, 
 		5.0, 0.0, 10.0, 0.1, 

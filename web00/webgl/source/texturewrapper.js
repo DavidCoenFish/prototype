@@ -1,51 +1,13 @@
 /*
 collect the data to represent a texture. 
 https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/texImage2D
+
+TEXTURE_MAG_FILTER	LINEAR (default value), NEAREST.
+TEXTURE_MIN_FILTER	LINEAR, NEAREST, NEAREST_MIPMAP_NEAREST, LINEAR_MIPMAP_NEAREST, NEAREST_MIPMAP_LINEAR (default value), LINEAR_MIPMAP_LINEAR.
+TEXTURE_WRAP_S	REPEAT (default value), CLAMP_TO_EDGE, MIRRORED_REPEAT
+TEXTURE_WRAP_T	REPEAT (default value), CLAMP_TO_EDGE, MIRRORED_REPEAT
+
  */
-
-const factoryByteRGBA = function(
-	in_webGLContextWrapper,
-	in_width, 
-	in_height,
-	in_dataOrUndefined
-	){
-	return factory(
-		in_webGLContextWrapper,
-		in_width, 
-		in_height,
-		in_dataOrUndefined,
-		false,
-		"RGBA",
-		"RGBA",
-		"UNSIGNED_BYTE",
-		"LINEAR",
-		"LINEAR",
-		"CLAMP_TO_EDGE",
-		"CLAMP_TO_EDGE"
-	);
-}
-
-const factoryByteRGB = function(
-	in_webGLContextWrapper,
-	in_width, 
-	in_height,
-	in_dataOrUndefined
-	){
-	return factory(
-		in_webGLContextWrapper,
-		in_width, 
-		in_height,
-		in_dataOrUndefined,
-		false,
-		"RGB",
-		"RGB",
-		"UNSIGNED_BYTE",
-		"LINEAR",
-		"LINEAR",
-		"CLAMP_TO_EDGE",
-		"CLAMP_TO_EDGE"
-	);
-}
 
 const factory = function(
 	in_webGLContextWrapper, 
@@ -146,8 +108,100 @@ const factory = function(
 	return result;
 }
 
+const factoryByteRGBA = function(
+	in_webGLContextWrapper,
+	in_width, 
+	in_height,
+	in_dataOrUndefined
+	){
+	return factory(
+		in_webGLContextWrapper,
+		in_width, 
+		in_height,
+		in_dataOrUndefined,
+		false,
+		"RGBA",
+		"RGBA",
+		"UNSIGNED_BYTE",
+		"LINEAR",
+		"LINEAR",
+		"CLAMP_TO_EDGE",
+		"CLAMP_TO_EDGE"
+	);
+}
+
+const factoryByteRGB = function(
+	in_webGLContextWrapper,
+	in_width, 
+	in_height,
+	in_dataOrUndefined
+	){
+	return factory(
+		in_webGLContextWrapper,
+		in_width, 
+		in_height,
+		in_dataOrUndefined,
+		false,
+		"RGB",
+		"RGB",
+		"UNSIGNED_BYTE",
+		"LINEAR",
+		"LINEAR",
+		"CLAMP_TO_EDGE",
+		"CLAMP_TO_EDGE"
+	);
+}
+
+//gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, rttFramebuffer.width, rttFramebuffer.height, 
+//              0, gl.RGBA, gl.FLOAT, null);
+
+const factoryFloatRGBA = function(
+	in_webGLContextWrapper,
+	in_width, 
+	in_height,
+	in_dataOrUndefined
+	){
+	return factory(
+		in_webGLContextWrapper,
+		in_width, 
+		in_height,
+		in_dataOrUndefined,
+		false,
+		"RGBA",
+		"RGBA",
+		"FLOAT",
+		"NEAREST",
+		"NEAREST",
+		"CLAMP_TO_EDGE",
+		"CLAMP_TO_EDGE"
+	);
+}
+const factoryFloatRGB = function(
+	in_webGLContextWrapper,
+	in_width, 
+	in_height,
+	in_dataOrUndefined
+	){
+	return factory(
+		in_webGLContextWrapper,
+		in_width, 
+		in_height,
+		in_dataOrUndefined,
+		false,
+		"RGB",
+		"RGB",
+		"FLOAT",
+		"NEAREST",
+		"NEAREST",
+		"CLAMP_TO_EDGE",
+		"CLAMP_TO_EDGE"
+	);
+}
+
 module.exports = {
 	"factory" : factory,
 	"factoryByteRGBA" : factoryByteRGBA,
-	"factoryByteRGB" : factoryByteRGB
+	"factoryByteRGB" : factoryByteRGB,
+	"factoryFloatRGBA" : factoryFloatRGBA,
+	"factoryFloatRGB" : factoryFloatRGB,
 };

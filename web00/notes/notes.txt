@@ -1,14 +1,16 @@
 todo:
-X	heightmap float test
-X	celtic knot tiles
-X	heightmap & envmap
-	heightmap & light, shadows
-	fade in/out, drop shadows
-	blend over time
-_	performance test sphere octree
+_	texture sphere humanoid test
+	sphere physics, gravity, ground plane
+	ridgid body
+	joints
+
 
 x done
 _ underway
+
+50k
+
+256*256 = 65536
 
 npm init -y
 npm pack

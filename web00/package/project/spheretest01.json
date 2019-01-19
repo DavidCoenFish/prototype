@@ -1,0 +1,16 @@
+{
+	"name" : "spheretest01",
+	"source" : "spheretest01.js",
+	"template" : "template/simplecanvas.htm.template",
+	"templateParam" : {
+		"title" : "spheretest01",
+		"canvasWidth" : "512px",
+		"canvasHeight" : "512px",
+		"bundleFilePath" : "js/spheretest01bundle.js"
+	},
+	"copyFileDest" : "js/spheretest01", 
+	"copyFileArray" :  [
+		"source/spheretest01/data_female_anatomy.js"
+		],
+	"outputRootDir": "output"
+}
