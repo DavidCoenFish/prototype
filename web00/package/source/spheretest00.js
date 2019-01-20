@@ -2,12 +2,8 @@ const Core = require("core");
 const WebGL = require("webgl");
 const ManipulateDom = require("manipulatedom");
 const Model = require("./spheretest00/model.js");
-//const Model = require("./spheretest00/debugmodel.js");
-const ModelEdge = require("./spheretest00/model_female_anatomy_edge.js");
 const Shader = require("./spheretest00/shader.js");
-const ShaderEdge = require("./spheretest00/shader_edge.js");
 const Material = require("./spheretest00/material.js");
-const MaterialEdge = require("./spheretest00/material_edge.js");
 
 
 const onPageLoad = function(){
@@ -32,9 +28,6 @@ const onPageLoad = function(){
 		"model" : Model.factory,
 		"shader" : Shader.factory,
 		"material" : Material.factory,
-		"modelEdge" : ModelEdge.factory,
-		"shaderEdge" : ShaderEdge.factory,
-		"materialEdge" : MaterialEdge.factory,
 	});
 
 	const m_viewportWidthHeightWidthhalfHeighthalf = Core.Vector4.factoryFloat32(m_width, m_height, m_width / 2.0, m_height / 2.0);
@@ -72,11 +65,6 @@ const onPageLoad = function(){
 	const m_material = resourceManager.getCommonReference("material", m_shader);
 	const m_model = resourceManager.getCommonReference("model", webGLContextWrapper);
 
-
-	const m_shaderEdge = resourceManager.getCommonReference("shaderEdge", webGLContextWrapper, m_uniformServer);
-	const m_materialEdge = resourceManager.getCommonReference("materialEdge", m_shaderEdge);
-	const m_modelEdge = resourceManager.getCommonReference("modelEdge", webGLContextWrapper);
-
 	var m_timestamp;
 	const m_clearColor = Core.Colour4.factoryFloat32(0.1, 0.1, 0.1, 1.0);
 	const m_webGLState = WebGL.WebGLState.factory(webGLContextWrapper);
@@ -91,9 +79,6 @@ const onPageLoad = function(){
 		//m_editCamera.orbit(tick);
 
 		WebGL.WebGLContextWrapperHelper.clear(webGLContextWrapper, m_clearColor, 1.0);
-
-		//m_materialEdge.apply(webGLContextWrapper, m_webGLState);
-		//m_modelEdge.draw(webGLContextWrapper, m_webGLState.getMapVertexAttribute());
 
 		m_material.apply(webGLContextWrapper, m_webGLState);
 		m_model.draw(webGLContextWrapper, m_webGLState.getMapVertexAttribute());

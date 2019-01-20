@@ -8,7 +8,6 @@ const GltfToRawTriangle = require("./source/gltf-to-raw-triangle.js");
 const RawTriangleCenter = require("./source/raw-triangle-center.js");
 const RawTriangleScale = require("./source/raw-triangle-scale.js");
 const RawTriangleToSphere = require("./source/raw-triangle-to-sphere.js");
-const SphereArrayToModel00 = require("./source/sphere-array-to-model00.js");
 const Test = require("./source/test.js");
 
 console.log(new Date().toLocaleTimeString());
@@ -39,16 +38,20 @@ const makeDirectory = function(in_filePath){
 }
 
 const loadGltr = function(in_outputFile, in_rootDir, in_fileName, in_targetMaxDim, in_sphereDiameter){
-	const localFilePath = Path.join(in_rootDir, in_fileName);
-	const options = { 
-		"stats" : false,
-		"resourceDirectory" : in_rootDir
-		};
-	console.log("load file:" + localFilePath);
-	const fileData = FsExtra.readJsonSync(localFilePath);
 
-	return GltfPipeline.processGltf(fileData, options)
-		.then(function(in_gltfWrapper) {
+	return Q(true).then(function(){
+			return makeDirectory(in_outputFile);
+		}).then(function() {	
+			const localFilePath = Path.join(in_rootDir, in_fileName);
+			console.log("load file:" + localFilePath);
+			return FsExtra.readJson(localFilePath);
+		}).then(function(in_fileData) {	
+			const options = { 
+				"stats" : false,
+				"resourceDirectory" : in_rootDir
+				};
+			return GltfPipeline.processGltf(in_fileData, options);
+		}).then(function(in_gltfWrapper) {
 			return GltfToRawTriangle.gltfToRawTriangleArray(in_gltfWrapper.gltf);
 		}).then(function(in_rawTriangleArray) {
 			return RawTriangleCenter.rawTriangleCenter(in_rawTriangleArray);
@@ -56,31 +59,9 @@ const loadGltr = function(in_outputFile, in_rootDir, in_fileName, in_targetMaxDi
 			return RawTriangleScale.rawTriangleScale(in_rawTriangleArray, in_targetMaxDim);
 		}).then(function(in_rawTriangleArray) {
 			return RawTriangleToSphere.rawTriangleToSphere(in_rawTriangleArray, in_sphereDiameter);
-
-		//}).then(function(in_sphereArray) {
-		//	console.log("in_sphereArray.length:" + in_sphereArray.length);
-		//	FsExtra.writeJSONSync(in_outputFile, in_sphereArray);
-	/*
-	return Q(true).then(function(){
-			return true;
-		}).then(function() {
-			const baseName = Path.basename(in_outputFile, ".js");
-			const dirName = Path.dirname(in_outputFile);
-			const outputFilePathAsset = Path.join(dirName, "asset_" + baseName + ".js");
-			return makeDirectory(outputFilePathAsset);
-		}).then(function() {
-			return [
-				0.0, 0.0, 0.0, 
-				1.0, 0.0, 0.0, 
-				2.0, 0.0, 0.0, 
-			];
-	*/
 		}).then(function(in_sphereArray) {
-			const baseName = Path.basename(in_outputFile, ".js");
-			const dirName = Path.dirname(in_outputFile);
-			const outputFilePathAsset = Path.join(dirName, "asset_" + baseName + ".js");
-			const outputFilePathData = Path.join(dirName, "data_" + baseName + ".js");
-			return SphereArrayToModel00.run(in_sphereArray, outputFilePathAsset, outputFilePathData);
+			console.log("in_sphereArray.length:" + in_sphereArray.length);
+			FsExtra.writeJSONSync(in_outputFile, in_sphereArray);
 		}).then(function() {
 			console.log("done:" + new Date().toLocaleTimeString());
 		}).catch(function(in_reason){

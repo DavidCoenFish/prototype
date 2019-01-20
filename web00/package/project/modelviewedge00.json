@@ -1,0 +1,16 @@
+{
+	"name" : "modelviewedge00",
+	"source" : "modelviewedge00.js",
+	"template" : "template/simplecanvas.htm.template",
+	"templateParam" : {
+		"title" : "modelviewedge00",
+		"canvasWidth" : "512px",
+		"canvasHeight" : "512px",
+		"bundleFilePath" : "js/modelviewedge00bundle.js"
+	},
+	"copyFileDest" : "js/modelviewedge00", 
+	"copyFileArray" :  [
+			"source/modelviewedge00/data_edge.js"
+		],
+	"outputRootDir": "output"
+}

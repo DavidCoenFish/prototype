@@ -41,14 +41,46 @@
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "female_anatomy",
+			"name": "female_anatomy_10k",
 			"runtimeExecutable": "npm",
 			"windows": {
 				"runtimeExecutable": "npm.cmd"
 			},
 			"runtimeArgs": [
 				"run-script",
-				"female_anatomy"
+				"female_anatomy_10k"
+			],
+			"port": 5858,
+			"timeout": 100000
+		},
+
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "female_anatomy_50k",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"female_anatomy_50k"
+			],
+			"port": 5858,
+			"timeout": 100000
+		},
+
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "male_anatomy_10k",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"male_anatomy_10k"
 			],
 			"port": 5858,
 			"timeout": 100000
@@ -58,19 +90,53 @@
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "male_anatomy",
+			"name": "male_anatomy_50k",
 			"runtimeExecutable": "npm",
 			"windows": {
 				"runtimeExecutable": "npm.cmd"
 			},
 			"runtimeArgs": [
 				"run-script",
-				"male_anatomy"
+				"male_anatomy_50k"
 			],
 			"port": 5858,
 			"timeout": 100000
 			//"console": "externalTerminal"
-		}
-		
+		},
+
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "skeleton_10k",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"skeleton_10k"
+			],
+			"port": 5858,
+			"timeout": 100000
+			//"console": "externalTerminal"
+		},
+
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "skeleton_50k",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"skeleton_50k"
+			],
+			"port": 5858,
+			"timeout": 100000
+			//"console": "externalTerminal"
+		},
+
 	]
 }

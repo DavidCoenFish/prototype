@@ -5,9 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "node --nolazy --inspect-brk=5858 index.js test",
-    "box": "node --nolazy --inspect-brk=5858 index.js output\\box.js input\\box\\ Box.gltf 1.75 0.25",
-    "female_anatomy": "node --nolazy --inspect-brk=5858 index.js output\\female_anatomy.js input\\female_anatomy\\ scene.gltf 1.75 0.01",
-    "male_anatomy": "node --nolazy --inspect-brk=5858 index.js output\\male_anatomy.js input\\male_anatomy\\ scene.gltf 1.75 0.05"
+    "box": "node --nolazy --inspect-brk=5858 index.js output\\box.json input\\box\\ Box.gltf 1.75 0.25",
+    "female_anatomy_10k": "node --nolazy --inspect-brk=5858 index.js output\\female_anatomy_10k.json input\\female_anatomy\\ scene.gltf 1.75 0.05",
+    "female_anatomy_50k": "node --nolazy --inspect-brk=5858 index.js output\\female_anatomy_50k.json input\\female_anatomy\\ scene.gltf 1.75 0.01",
+    "male_anatomy_10k": "node --nolazy --inspect-brk=5858 index.js output\\male_anatomy_10k.json input\\male_anatomy\\ scene.gltf 1.75 0.05",
+    "male_anatomy_50k": "node --nolazy --inspect-brk=5858 index.js output\\male_anatomy_50k.json input\\male_anatomy\\ scene.gltf 1.75 0.01",
+	"skeleton_10k": "node --nolazy --inspect-brk=5858 index.js output\\skeleton_10k.json input\\skeleton\\ scene.gltf 1.75 0.05",
+	"skeleton_50k": "node --nolazy --inspect-brk=5858 index.js output\\skeleton_50k.json input\\skeleton\\ scene.gltf 1.75 0.01"
   },
   "dependencies": {
     "q": "^1.5.1",

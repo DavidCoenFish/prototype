@@ -1,6 +1,5 @@
 const NodeRfc2397 = require("node-rfc2397");
-
-//const sourceGltf = FsExtra.readJsonSync("input\\female_anatomy\\scene.gltf");
+const GltfHelper = require("./gltf-helper.js");
 
 const getBuffer = function(in_gltf, in_bufferIndex){
 	const buffer = in_gltf.buffers[in_bufferIndex];
@@ -132,6 +131,14 @@ const getDataArray = function(in_gltf, in_accessorIndex){
 	return result;
 }
 
+const addPos = function(inout_rawArray, in_pos, in_matrix){
+	var newPos = GltfHelper.matrixTransformPosition(in_matrix, in_pos);
+	inout_rawArray.push(newPos);
+	inout_rawArray.push(newPos);
+	inout_rawArray.push(newPos);
+	return;
+}
+
 /*
 5120 (BYTE)	1
 5121(UNSIGNED_BYTE)	1
@@ -156,7 +163,7 @@ const getDataArray = function(in_gltf, in_accessorIndex){
 5 TRIANGLE_STRIP
 6 TRIANGLE_FAN
  */
-const primitiveToRawTriangleArray = function (inout_rawArray, in_primitives, in_gltf){
+const primitiveToRawTriangleArray = function (inout_rawArray, in_primitives, in_gltf, in_matrix){
 	console.log(" attributes POSITION:" + in_primitives.attributes.POSITION + " indices:" + in_primitives.indices);
 
 	var indices = in_primitives.indices;
@@ -169,16 +176,12 @@ const primitiveToRawTriangleArray = function (inout_rawArray, in_primitives, in_
 		var posArray = getDataArray(in_gltf, posIndex);
 		for (var index = 0; index < indexArray.length; ++index){
 			var posIndex = indexArray[index] * 3;
-			inout_rawArray.push(posArray[posIndex + 0]);
-			inout_rawArray.push(posArray[posIndex + 1]);
-			inout_rawArray.push(posArray[posIndex + 2]);
+			addPos(inout_rawArray, [posArray[posIndex + 0], posArray[posIndex + 1], posArray[posIndex + 2]], in_matrix);
 		}
 	} else {
 		var posArray = getDataArray(in_gltf, posIndex);
 		for (var index = 0; index < posArray.length; index += 3){
-			inout_rawArray.push(posArray[index + 0]);
-			inout_rawArray.push(posArray[index + 1]);
-			inout_rawArray.push(posArray[index + 2]);
+			addPos(inout_rawArray, [posArray[index + 0], posArray[index + 1], posArray[index + 2]], in_matrix);
 		}
 	}
 
@@ -187,14 +190,18 @@ const primitiveToRawTriangleArray = function (inout_rawArray, in_primitives, in_
 
 const gltfToRawTriangleArray = function(in_gltf){
 	var result = [];
-	for (var index = 0; index < in_gltf.meshes.length; ++index){
-		var mesh = in_gltf.meshes[index];
-		if (("primitives" in mesh) && (undefined != mesh.primitives)){
-			for (var subIndex = 0; subIndex < mesh.primitives.length; ++subIndex){
-				primitiveToRawTriangleArray(result, mesh.primitives[subIndex], in_gltf);
+
+	GltfHelper.visitNodes(in_gltf, function(in_gltf, in_node, in_matrix){
+		if ("mesh" in in_node){
+			var mesh = in_gltf.meshes[in_node.mesh];
+			if (("primitives" in mesh) && (undefined != mesh.primitives)){
+				for (var subIndex = 0; subIndex < mesh.primitives.length; ++subIndex){
+					primitiveToRawTriangleArray(result, mesh.primitives[subIndex], in_gltf, in_matrix);
+				}
 			}
 		}
-	}
+	});
+
 	return result;
 }
 

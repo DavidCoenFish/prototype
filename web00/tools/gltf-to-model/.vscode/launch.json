@@ -24,14 +24,14 @@
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "box",
+			"name": "box_edge",
 			"runtimeExecutable": "npm",
 			"windows": {
 				"runtimeExecutable": "npm.cmd"
 			},
 			"runtimeArgs": [
 				"run-script",
-				"box"
+				"box_edge"
 			],
 			"port": 5858,
 			"timeout": 100000
@@ -41,14 +41,14 @@
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "female_anatomy",
+			"name": "female_anatomy_edge",
 			"runtimeExecutable": "npm",
 			"windows": {
 				"runtimeExecutable": "npm.cmd"
 			},
 			"runtimeArgs": [
 				"run-script",
-				"female_anatomy"
+				"female_anatomy_edge"
 			],
 			"port": 5858,
 			"timeout": 100000
@@ -58,14 +58,31 @@
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "male_anatomy",
+			"name": "male_anatomy_edge",
 			"runtimeExecutable": "npm",
 			"windows": {
 				"runtimeExecutable": "npm.cmd"
 			},
 			"runtimeArgs": [
 				"run-script",
-				"male_anatomy"
+				"male_anatomy_edge"
+			],
+			"port": 5858,
+			"timeout": 100000
+			//"console": "externalTerminal"
+		},
+
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "skeleton_edge",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"skeleton_edge"
 			],
 			"port": 5858,
 			"timeout": 100000

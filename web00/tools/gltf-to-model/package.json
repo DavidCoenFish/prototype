@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "node --nolazy --inspect-brk=5858 index.js test",
-    "box": "node --nolazy --inspect-brk=5858 index.js output\\model_box_edge.js output\\data_box_edge.js input\\box\\ Box.gltf edge",
-    "female_anatomy": "node --nolazy --inspect-brk=5858 index.js output\\model_female_anatomy_edge.js output\\data_female_anatomy_edge.js input\\female_anatomy\\ scene.gltf edge",
-    "male_anatomy": "node --nolazy --inspect-brk=5858 index.js output\\model_male_anatomy_edge.js output\\data_male_anatomy_edge.js input\\male_anatomy\\ scene.gltf edge"
+    "box_edge": "node --nolazy --inspect-brk=5858 index.js output\\model_box_edge.js output\\data_box_edge.js input\\box\\ Box.gltf edge",
+    "female_anatomy_edge": "node --nolazy --inspect-brk=5858 index.js output\\model_female_anatomy_edge.js output\\data_female_anatomy_edge.js input\\female_anatomy\\ scene.gltf edge",
+    "male_anatomy_edge": "node --nolazy --inspect-brk=5858 index.js output\\model_male_anatomy_edge.js output\\data_male_anatomy_edge.js input\\male_anatomy\\ scene.gltf edge",
+    "skeleton_edge": "node --nolazy --inspect-brk=5858 index.js output\\model_skeleton_edge.js output\\data_skeleton_edge.js input\\skeleton\\ scene.gltf edge"
   },
   "dependencies": {
     "gltf-pipeline": "^2.0.1",
