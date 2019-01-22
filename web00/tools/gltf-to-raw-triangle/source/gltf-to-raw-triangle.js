@@ -133,9 +133,9 @@ const getDataArray = function(in_gltf, in_accessorIndex){
 
 const addPos = function(inout_rawArray, in_pos, in_matrix){
 	var newPos = GltfHelper.matrixTransformPosition(in_matrix, in_pos);
-	inout_rawArray.push(newPos);
-	inout_rawArray.push(newPos);
-	inout_rawArray.push(newPos);
+	inout_rawArray.push(newPos[0]);
+	inout_rawArray.push(newPos[1]);
+	inout_rawArray.push(newPos[2]);
 	return;
 }
 

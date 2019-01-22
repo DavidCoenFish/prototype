@@ -1,0 +1,19 @@
+{
+  "name": "gltf-to-raw-triangle",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "box": "node --nolazy --inspect-brk=5858 index.js output\\raw_triangle_box.json input\\box\\Box.gltf",
+    "female_anatomy": "node --nolazy --inspect-brk=5858 index.js output\\raw_triangle_female_anatomy.json input\\female_anatomy\\scene.gltf",
+    "male_anatomy": "node --nolazy --inspect-brk=5858 index.js output\\raw_triangle_male_anatomy.json input\\male_anatomy\\scene.gltf",
+    "skeleton": "node --nolazy --inspect-brk=5858 index.js output\\raw_triangle_skeleton.json input\\skeleton\\scene.gltf"
+  },
+  "dependencies": {
+    "gltf-pipeline": "^2.0.1",
+    "fs-extra": "^7.0.1",
+    "node-rfc2397": "^3.0.1"
+  },
+  "author": "David Coen",
+  "license": "ISC"
+}

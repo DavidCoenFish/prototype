@@ -1,0 +1,25 @@
+{
+	"name": "raw-triangle-to-spheres",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "node --nolazy --inspect-brk=5858 index.js test",
+		"box_10k": "node --nolazy --inspect-brk=5858 index.js output\\spheres_box_10k.json input\\raw_triangle_box.json 1.75 0.5",
+		"box_50k": "node --nolazy --inspect-brk=5858 index.js output\\spheres_box_50k.json input\\raw_triangle_box.json 1.75 0.1",
+		"female_anatomy_10k": "node --nolazy --inspect-brk=5858 index.js output\\spheres_female_anatomy_10k.json input\\raw_triangle_female_anatomy.json 1.75 0.05",
+		"female_anatomy_50k": "node --nolazy --inspect-brk=5858 index.js output\\spheres_female_anatomy_50k.json input\\raw_triangle_female_anatomy.json 1.75 0.01",
+		"male_anatomy_10k": "node --nolazy --inspect-brk=5858 index.js output\\spheres_male_anatomy_10k.json input\\raw_triangle_male_anatomy.json 1.75 0.05",
+		"male_anatomy_50k": "node --nolazy --inspect-brk=5858 index.js output\\spheres_male_anatomy_50k.json input\\raw_triangle_male_anatomy.json 1.75 0.01",
+		"skeleton_10k": "node --nolazy --inspect-brk=5858 index.js output\\spheres_skeleton_10k.json input\\raw_triangle_skeleton.json 1.75 0.05",
+		"skeleton_50k": "node --nolazy --inspect-brk=5858 index.js output\\spheres_skeleton_50k.json input\\raw_triangle_skeleton.json 1.75 0.01"
+	},
+	"dependencies": {
+		"q": "^1.5.1",
+		"gltf-pipeline": "^2.0.1",
+		"fs-extra": "^7.0.1",
+		"node-rfc2397": "^3.0.1"
+	},
+	"author": "David Coen",
+	"license": "ISC"
+}
