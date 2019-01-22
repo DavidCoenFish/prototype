@@ -2,6 +2,8 @@ const GltfPipeline = require("gltf-pipeline");
 const GltfToRawTriangle = require("./source/gltf-to-raw-triangle.js");
 const Path = require("path");
 const FsExtra = require("fs-extra");
+const FileSystem = require("fs");
+const Q = require("q");
 
 console.log(new Date().toLocaleTimeString());
 
@@ -27,7 +29,7 @@ const makeDirectory = function(in_filePath){
 const loadGltr = function(in_outputFilePath, in_inputFilePath){
 	const baseDir = Path.dirname(in_inputFilePath);
 	console.log("load file:" + in_inputFilePath);
-	return Q(True).then(function(){
+	return Q(true).then(function(){
 			return makeDirectory(in_outputFilePath);
 		}).then(function() {
 			return FsExtra.readJson(in_inputFilePath);

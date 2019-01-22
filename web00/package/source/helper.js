@@ -50,6 +50,7 @@ const runProjectArray = function(in_projectArray){
 		exitCode = 1; //error
 		process.exit(exitCode);
 	}).done(function(){
+		console.log(new Date().toLocaleTimeString());
 		console.log("Done");
 		process.exit(exitCode);
 	},function(error){

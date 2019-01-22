@@ -14,4 +14,4 @@ if (true === normal){
 	projectArray.push(require("./project/modelviewedge00.json"));
 }
 
-Helper.runProjectArray(projectArray);
+Helper.runProjectArray(projectArray)
