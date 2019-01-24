@@ -41,7 +41,6 @@ const factory = function(in_clickDragElement, in_dataServer){
 	var m_oldX = undefined;
 	var m_oldY = undefined;
 	var m_origin = in_dataServer.getStartOrigin();
-	var m_boomLength = claculateBoomLength(in_dataServer.getZoom());
 
 	const update = function(in_yawDeltaOrUndefined, in_pitchDeltaOrUndefined, in_rollDeltaOrUndefined,
 		in_posXDeltaOrUndefined, in_posYDeltaOrUndefined, in_posZDeltaOrUndefined){
@@ -100,9 +99,11 @@ const factory = function(in_clickDragElement, in_dataServer){
 		{
 			var at = in_dataServer.getAt();
 			const pos = in_dataServer.getPos();
-			pos.setX(m_origin.getX() - (at.getX() * m_boomLength));
-			pos.setY(m_origin.getY() - (at.getY() * m_boomLength));
-			pos.setZ(m_origin.getZ() - (at.getZ() * m_boomLength));
+			const boomLength = claculateBoomLength(in_dataServer.getZoom());
+
+			pos.setX(m_origin.getX() - (at.getX() * boomLength));
+			pos.setY(m_origin.getY() - (at.getY() * boomLength));
+			pos.setZ(m_origin.getZ() - (at.getZ() * boomLength));
 		}
 	}
 
@@ -141,7 +142,8 @@ const factory = function(in_clickDragElement, in_dataServer){
 			}
 		}
 
-		const moveScale = m_boomLength / innerRadius;
+		const boomLength = claculateBoomLength(in_dataServer.getZoom());
+		const moveScale = boomLength / innerRadius;
 
 		if (true === rmb){ //pan left-right or up-down
 			var cameraDeltaX = deltaX * moveScale;
@@ -159,6 +161,19 @@ const factory = function(in_clickDragElement, in_dataServer){
 		return;
 	}
 
+	const wheelCallback = function(in_event){
+		//console.log(in_event.deltaY);
+		var zoom = in_dataServer.getZoom();
+		if (in_event.deltaY < 0.0){
+			zoom *= 0.75;
+		} else if (0.0 < in_event.deltaY){
+			zoom *= 1.3333333333333;
+		}
+		in_dataServer.setZoom(zoom);
+		//console.log(zoom);
+		update();
+	}
+
 	//public methods ==========================
 	const result = Object.create({
 		"destroy" : function(){
@@ -168,6 +183,7 @@ const factory = function(in_clickDragElement, in_dataServer){
 	});
 
 	in_clickDragElement.addEventListener("mousemove", mouseMoveCallback);
+	in_clickDragElement.addEventListener("wheel", wheelCallback);
 
 	return result;
 }

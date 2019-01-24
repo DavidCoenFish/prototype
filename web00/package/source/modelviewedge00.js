@@ -37,7 +37,7 @@ const onPageLoad = function(){
 	const m_cameraUp = Core.Vector3.factoryFloat32(0.0, 0.0, 1.0);
 	const m_cameraLeft = Core.Vector3.factoryFloat32(1.0, 0.0, 0.0);
 	const m_cameraPos = Core.Vector3.factoryFloat32(0.04571287365044965, -0.1294732246360698, -0.8690733764450884);
-	const m_cameraFovhFovvFar = Core.Vector3.factoryFloat32(120.0, 120.0, 10.0);
+	const m_cameraFovhFovvFar = Core.Vector3.factoryFloat32(120.0, 120.0, 100.0);
 
 	const m_uniformServer = {
 		"setUniform" : function(localWebGLContextWrapper, in_key, in_position){
@@ -113,6 +113,7 @@ const onPageLoad = function(){
 	const m_dragCamera = ManipulateDom.ComponentClickDragCamera.factory(html5CanvasElement, {
 		"getStartOrigin" : function() { return Core.Vector3.factoryFloat32(0.0, 0.0, 0.0); },
 		"getZoom" : function() { return m_zoom; },
+		"setZoom" : function(in_zoom) { m_zoom = in_zoom; return; },
 		"getPos" : function() { return m_cameraPos; },
 		"getAt" : function() { return m_cameraAt; },
 		"getLeft" : function() { return m_cameraLeft; },
