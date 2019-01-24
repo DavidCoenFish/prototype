@@ -56,6 +56,9 @@ const factoryFloat32 = function(in_wOrUndefined, in_xOrUndefined, in_yOrUndefine
 	return factory(w, x, y, z, Float32Array);
 }
 
+const factoryIdentity = function(){
+	return factory(1.0, 0, 0, 0, Float32Array);
+}
 const factoryYawPitchRoll = function(in_yaw, in_pitch, in_roll){
 	const cy = Math.cos(in_yaw * 0.5);
 	const sy = Math.sin(in_yaw * 0.5);
@@ -121,10 +124,40 @@ const quaternionToYawPitchRoll = function(in_quaternion){
 	return Vector3.factoryFloat32(yaw, pitch, roll);
 }
 
+const factoryAxisAngle = function(in_axis, in_angle){
+	const sinAngle = Math.sin(in_angle * 0.5);
+	const cosAngle = Math.cos(in_angle * 0.5);
+	const x = in_axis.getX() * sinAngle;
+	const y = in_axis.getY() * sinAngle;
+	const z = in_axis.getZ() * sinAngle;
+	const w = cosAngle;
+	return factory(w, x, y, z, Float32Array);
+}
+
+const multiplication = function(in_q1, in_q2) {
+	const q1w = in_q1.getW();
+	const q1x = in_q1.getX();
+	const q1y = in_q1.getY();
+	const q1z = in_q1.getZ();
+	const q2w = in_q2.getW();
+	const q2x = in_q2.getX();
+	const q2y = in_q2.getY();
+	const q2z = in_q2.getZ();
+
+	const x =  q1x * q2w + q1y * q2z - q1z * q2y + q1w * q2x;
+	const y = -q1x * q2z + q1y * q2w + q1z * q2x + q1w * q2y;
+	const z =  q1x * q2y - q1y * q2x + q1z * q2w + q1w * q2z;
+	const w = -q1x * q2x - q1y * q2y - q1z * q2z + q1w * q2w;
+	return factory(w, x, y, z, Float32Array);
+}
+
 module.exports = {
 	"factory" : factory,
+	"factoryIdentity" : factoryIdentity,
 	"factoryFloat32" : factoryFloat32,
 	"factoryYawPitchRoll" : factoryYawPitchRoll,
 	"factoryMatrix33" : factoryMatrix33,
-	"quaternionToYawPitchRoll" : quaternionToYawPitchRoll
+	"quaternionToYawPitchRoll" : quaternionToYawPitchRoll,
+	"factoryAxisAngle" : factoryAxisAngle,
+	"multiplication" : multiplication
 }

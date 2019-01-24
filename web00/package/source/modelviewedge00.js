@@ -5,11 +5,11 @@ const ModelEdge = require("./modelviewedge00/model_edge.js");
 const ShaderEdge = require("./modelviewedge00/shader_edge.js");
 const MaterialEdge = require("./modelviewedge00/material_edge.js");
 
-
 const onPageLoad = function(){
 	console.info("onPageLoad");
 
 	const html5CanvasElement = (undefined !== document) ? document.getElementById("html5CanvasElement") : undefined;
+	html5CanvasElement.oncontextmenu = function(){ return false; }
 
 	//a canvas width, height is 300,150 by default (coordinate space). lets change that to what size it is
 	var m_width;
@@ -32,6 +32,7 @@ const onPageLoad = function(){
 
 	const m_viewportWidthHeightWidthhalfHeighthalf = Core.Vector4.factoryFloat32(m_width, m_height, m_width / 2.0, m_height / 2.0);
 	var m_sphereRadius = 0.01;
+	var m_zoom = 1.0;
 	const m_cameraAt = Core.Vector3.factoryFloat32(0.0, 1.0, 0.0);
 	const m_cameraUp = Core.Vector3.factoryFloat32(0.0, 0.0, 1.0);
 	const m_cameraLeft = Core.Vector3.factoryFloat32(1.0, 0.0, 0.0);
@@ -91,22 +92,32 @@ const onPageLoad = function(){
 	ManipulateDom.Button.addSimpleButton(document, document.body, "stop", function(in_event){
 		cancelAnimationFrame(m_requestId);
 		m_requestId = undefined;
+		m_dragCamera.destroy();
 		console.log("end");
 		return;
 	});
 	const m_fpsElement = ManipulateDom.ComponentFps.factory(document);
 	document.body.appendChild(m_fpsElement.getElement());
 
-	const m_editCamera = ManipulateDom.ComponentEditOrbitalCamera.factoryDistancePosAtLeftUp(
-		document, 
-		5.0, 0.0, 10.0, 0.1, 
-		m_cameraPos,
-		m_cameraAt,
-		m_cameraLeft,
-		m_cameraUp,
-		undefined, undefined, 0.01
-	);
-	document.body.appendChild(m_editCamera.getElement());
+	// const m_editCamera = ManipulateDom.ComponentEditOrbitalCamera.factoryDistancePosAtLeftUp(
+	// 	document, 
+	// 	5.0, 0.0, 10.0, 0.1, 
+	// 	m_cameraPos,
+	// 	m_cameraAt,
+	// 	m_cameraLeft,
+	// 	m_cameraUp,
+	// 	undefined, undefined, 0.01
+	// );
+	// document.body.appendChild(m_editCamera.getElement());
+
+	const m_dragCamera = ManipulateDom.ComponentClickDragCamera.factory(html5CanvasElement, {
+		"getStartOrigin" : function() { return Core.Vector3.factoryFloat32(0.0, 0.0, 0.0); },
+		"getZoom" : function() { return m_zoom; },
+		"getPos" : function() { return m_cameraPos; },
+		"getAt" : function() { return m_cameraAt; },
+		"getLeft" : function() { return m_cameraLeft; },
+		"getUp" : function() { return m_cameraUp; },
+	});
 
 	return;
 }

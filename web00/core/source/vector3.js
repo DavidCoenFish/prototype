@@ -67,5 +67,6 @@ const crossProduct = function(in_vecA, in_vecB){
 module.exports = {
 	"factory" : factory,
 	"factoryFloat32" : factoryFloat32,
-	"crossProduct" : crossProduct
+	"crossProduct" : crossProduct//,
+//	"addition" : addition
 }
