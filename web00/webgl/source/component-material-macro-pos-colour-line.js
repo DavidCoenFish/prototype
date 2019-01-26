@@ -6,6 +6,7 @@ const sVertexShader = `
 attribute vec3 a_position;
 attribute vec4 a_colour;
 
+uniform vec3 u_modelOrigin;
 uniform vec4 u_viewportWidthHeightWidthhalfHeighthalf;
 uniform vec3 u_cameraAt;
 uniform vec3 u_cameraLeft;
@@ -16,7 +17,7 @@ uniform vec3 u_cameraFovhFovvFar;
 varying vec4 v_colour;
 
 void main() {
-	vec3 cameraToAtom = a_position - u_cameraPos;
+	vec3 cameraToAtom = a_position + u_modelOrigin - u_cameraPos;
 
 	float cameraSpaceX = -dot(cameraToAtom, u_cameraLeft);
 	float cameraSpaceY = dot(cameraToAtom, u_cameraUp);
@@ -93,40 +94,51 @@ const materialFactory = function(in_shader){
 	return material;
 }
 
+const sShaderName = "componentShaderMacroPosColourLine";
+const sMaterialName = "componentMaterialMacroPosColourLine";
+
 const factory = function(in_resourceManager, in_webGLContextWrapper, in_dataServer){
-	if (false === in_resourceManager.hasFactory("componentShaderMacroAlphaEdge")){
-		in_resourceManager.addFactory("componentShaderMacroAlphaEdge", shaderFactory);
+	if (false === in_resourceManager.hasFactory(sShaderName)){
+		in_resourceManager.addFactory(sShaderName, shaderFactory);
 	}
 
-	if (false === in_resourceManager.hasFactory("componentMaterialMacroAlphaEdge")){
-		in_resourceManager.addFactory("componentMaterialMacroAlphaEdge", materialFactory);
+	if (false === in_resourceManager.hasFactory(sMaterialName)){
+		in_resourceManager.addFactory(sMaterialName, materialFactory);
 	}
 
 	const m_mapValues = {
 		"u_viewportWidthHeightWidthhalfHeighthalf" : function(localWebGLContextWrapper, in_position){
-			var viewportWidthHeightWidthhalfHeighthalf = in_dataServer.getValue("viewportWidthHeightWidthhalfHeighthalf");
+			var viewportWidthHeightWidthhalfHeighthalf = in_dataServer.getViewportWidthHeightWidthhalfHeighthalf();
 			WebGLContextWrapperHelper.setUniformFloat4(localWebGLContextWrapper, in_position, viewportWidthHeightWidthhalfHeighthalf.getRaw());
 		},
 		"u_cameraAt" : function(localWebGLContextWrapper, in_position){
-			var cameraAt = in_dataServer.getValue("cameraAt");
+			var cameraAt = in_dataServer.getCameraAt();
 			WebGLContextWrapperHelper.setUniformFloat3(localWebGLContextWrapper, in_position, cameraAt.getRaw());
 		},
 		"u_cameraUp" : function(localWebGLContextWrapper, in_position){
-			var cameraUp = in_dataServer.getValue("cameraUp");
+			var cameraUp = in_dataServer.getCameraUp();
 			WebGLContextWrapperHelper.setUniformFloat3(localWebGLContextWrapper, in_position, cameraUp.getRaw());
 		},
 		"u_cameraLeft" : function(localWebGLContextWrapper, in_position){
-			var cameraLeft = in_dataServer.getValue("cameraLeft");
+			var cameraLeft = in_dataServer.getCameraLeft();
 			WebGLContextWrapperHelper.setUniformFloat3(localWebGLContextWrapper, in_position, cameraLeft.getRaw());
 		},
 		"u_cameraPos" : function(localWebGLContextWrapper, in_position){
-			var cameraPos = in_dataServer.getValue("cameraPos");
+			var cameraPos = in_dataServer.getCameraPos();
 			WebGLContextWrapperHelper.setUniformFloat3(localWebGLContextWrapper, in_position, cameraPos.getRaw());
 		},
 		"u_cameraFovhFovvFar" : function(localWebGLContextWrapper, in_position){
-			var cameraFovhFovvFar = in_dataServer.getValue("cameraFovhFovvFar");
+			var cameraFovhFovvFar = in_dataServer.getCameraFovhFovvFar();
 			WebGLContextWrapperHelper.setUniformFloat3(localWebGLContextWrapper, in_position, cameraFovhFovvFar.getRaw());
-		}
+		},
+		"u_cameraFovhFovvFar" : function(localWebGLContextWrapper, in_position){
+			var cameraFovhFovvFar = in_dataServer.getCameraFovhFovvFar();
+			WebGLContextWrapperHelper.setUniformFloat3(localWebGLContextWrapper, in_position, cameraFovhFovvFar.getRaw());
+		},
+		"u_modelOrigin" : function(localWebGLContextWrapper, in_position){
+			var modelOrigin = in_dataServer.getModelOrigin();
+			WebGLContextWrapperHelper.setUniformFloat3(localWebGLContextWrapper, in_position, modelOrigin.getRaw());
+		},
 	};
 	const m_uniformServer = {
 		"setUniform" : function(localWebGLContextWrapper, in_key, in_position){
@@ -135,14 +147,19 @@ const factory = function(in_resourceManager, in_webGLContextWrapper, in_dataServ
 			}
 		}
 	}
-	const m_shader = in_resourceManager.getCommonReference("componentShaderMacroAlphaEdge", in_webGLContextWrapper, m_uniformServer);
-	const m_material = in_resourceManager.getCommonReference("componentMaterialMacroAlphaEdge", m_shader);
+	var m_shader = in_resourceManager.getCommonReference(sShaderName, in_webGLContextWrapper, m_uniformServer);
+	var m_material = in_resourceManager.getCommonReference(sMaterialName, m_shader);
 
 	//public methods ==========================
 	const result = Object.create({
 		"getMaterial" : function(){
 			return m_material;
 		},
+		"destroy" : function(){
+			m_shader = undefined;
+			m_material = undefined;
+			in_resourceManager.releaseCommonReference(sShaderName);
+		}
 	})
 
 	return result;

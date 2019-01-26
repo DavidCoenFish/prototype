@@ -1,5 +1,7 @@
 module.exports = {
-	"ComponentMaterialMacroAlphaEdge" : require("./source/component-material-macro-alpha-edge.js"),
+	"ComponentMaterialMacroPosColourLine" : require("./source/component-material-macro-pos-colour-line.js"),
+	"ComponentMaterialMacroPosLine" : require("./source/component-material-macro-pos-line.js"),
+	"ComponentModelLine" : require("./source/component-model-line.js"),
 	"ComponentWorldGrid" : require("./source/component-world-grid.js"),
 	"MaterialWrapper" : require("./source/materialwrapper.js"),
 	"ModelDataStream" : require("./source/modeldatastream.js"),

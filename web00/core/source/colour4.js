@@ -69,5 +69,9 @@ const factoryUnsignedByte = function(in_redOrUndefined, in_greenOrUndefined, in_
 module.exports = {
 	"factory" : factory,
 	"factoryFloat32" : factoryFloat32,
-	"factoryUnsignedByte" : factoryUnsignedByte
+	"factoryUnsignedByte" : factoryUnsignedByte,
+	"sRed" : factoryFloat32(1.0, 0.0, 0.0, 1.0),
+	"sGreen" : factoryFloat32(0.0, 1.0, 0.0, 1.0),
+	"sBlue" : factoryFloat32(0.0, 0.0, 1.0, 1.0),
+	"sBlack" : factoryFloat32(0.0, 0.0, 0.0, 1.0),
 }

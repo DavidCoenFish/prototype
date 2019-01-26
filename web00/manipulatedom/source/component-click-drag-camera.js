@@ -30,16 +30,15 @@ const calculateYawPitch = function(in_delta){
 
 /*
 in_dataServer
-	getValue
-		cameraOrigin
-		cameraZoom
-		cameraPos
-		cameraAt
-		cameraLeft
-		cameraUp
-		cameraZoom
+	getCameraOrigin
+	getCameraZoom
+	getCameraPos
+	getCameraAt
+	getCameraLeft
+	getCameraUp
+	getCameraZoom
 	setValue
-		cameraZoom
+	setCameraZoom
  */
 const factory = function(in_clickDragElement, in_dataServer){
 	var m_oldX = undefined;
@@ -54,56 +53,56 @@ const factory = function(in_clickDragElement, in_dataServer){
 		var rotation = Core.Quaternion.factoryIdentity();
 		if (undefined !== in_yawDeltaOrUndefined){
 			doRot = true;
-			const quat = Core.Quaternion.factoryAxisAngle(in_dataServer.getValue("cameraUp"), in_yawDeltaOrUndefined);
+			const quat = Core.Quaternion.factoryAxisAngle(in_dataServer.getCameraUp(), in_yawDeltaOrUndefined);
 			rotation = Core.Quaternion.multiplication(rotation, quat);
 		}
 		if (undefined !== in_pitchDeltaOrUndefined){
 			doRot = true;
-			const quat = Core.Quaternion.factoryAxisAngle(in_dataServer.getValue("cameraLeft"), -in_pitchDeltaOrUndefined);
+			const quat = Core.Quaternion.factoryAxisAngle(in_dataServer.getCameraLeft(), -in_pitchDeltaOrUndefined);
 			rotation = Core.Quaternion.multiplication(rotation, quat);
 		}
 		if (undefined !== in_rollDeltaOrUndefined){
 			doRot = true;
-			const quat = Core.Quaternion.factoryAxisAngle(in_dataServer.getValue("cameraAt"), in_rollDeltaOrUndefined);
+			const quat = Core.Quaternion.factoryAxisAngle(in_dataServer.getCameraAt(), in_rollDeltaOrUndefined);
 			rotation = Core.Quaternion.multiplication(rotation, quat);
 		}
 
 		if (true === doRot){
 			const matrix = Core.Matrix33.factoryQuaternion(rotation);
-			const localAt = Core.Matrix33.transformVector3(matrix, in_dataServer.getValue("cameraAt"));
-			in_dataServer.getValue("cameraAt").set(localAt.getX(), localAt.getY(), localAt.getZ());
-			const localUp = Core.Matrix33.transformVector3(matrix, in_dataServer.getValue("cameraUp"));
-			in_dataServer.getValue("cameraUp").set(localUp.getX(), localUp.getY(), localUp.getZ());
-			const localLeft = Core.Matrix33.transformVector3(matrix, in_dataServer.getValue("cameraLeft"));
-			in_dataServer.getValue("cameraLeft").set(localLeft.getX(), localLeft.getY(), localLeft.getZ());
+			const localAt = Core.Matrix33.transformVector3(matrix, in_dataServer.getCameraAt());
+			in_dataServer.getCameraAt().set(localAt.getX(), localAt.getY(), localAt.getZ());
+			const localUp = Core.Matrix33.transformVector3(matrix, in_dataServer.getCameraUp());
+			in_dataServer.getCameraUp().set(localUp.getX(), localUp.getY(), localUp.getZ());
+			const localLeft = Core.Matrix33.transformVector3(matrix, in_dataServer.getCameraLeft());
+			in_dataServer.getCameraLeft().set(localLeft.getX(), localLeft.getY(), localLeft.getZ());
 		}
 
-		const origin = in_dataServer.getValue("cameraOrigin");
+		const origin = in_dataServer.getCameraOrigin();
 		if (undefined !== in_posXDeltaOrUndefined){
-			var left = in_dataServer.getValue("cameraLeft");
+			var left = in_dataServer.getCameraLeft();
 			origin.setX(origin.getX() + (left.getX() * in_posXDeltaOrUndefined));
 			origin.setY(origin.getY() + (left.getY() * in_posXDeltaOrUndefined));
 			origin.setZ(origin.getZ() + (left.getZ() * in_posXDeltaOrUndefined));
 		}
 		
 		if (undefined !== in_posYDeltaOrUndefined){
-			var up = in_dataServer.getValue("cameraUp");
+			var up = in_dataServer.getCameraUp();
 			origin.setX(origin.getX() + (up.getX() * in_posYDeltaOrUndefined));
 			origin.setY(origin.getY() + (up.getY() * in_posYDeltaOrUndefined));
 			origin.setZ(origin.getZ() + (up.getZ() * in_posYDeltaOrUndefined));
 		}
 		
 		if (undefined !== in_posZDeltaOrUndefined){
-			var at = in_dataServer.getValue("cameraAt");
+			var at = in_dataServer.getCameraAt();
 			origin.setX(origin.getX() + (at.getX() * in_posZDeltaOrUndefined));
 			origin.setY(origin.getY() + (at.getY() * in_posZDeltaOrUndefined));
 			origin.setZ(origin.getZ() + (at.getZ() * in_posZDeltaOrUndefined));
 		}
 
 		{
-			var at = in_dataServer.getValue("cameraAt");
-			const pos = in_dataServer.getValue("cameraPos");
-			const boomLength = claculateBoomLength(in_dataServer.getValue("cameraZoom"));
+			var at = in_dataServer.getCameraAt();
+			const pos = in_dataServer.getCameraPos();
+			const boomLength = claculateBoomLength(in_dataServer.getCameraZoom());
 
 			pos.setX(origin.getX() - (at.getX() * boomLength));
 			pos.setY(origin.getY() - (at.getY() * boomLength));
@@ -146,7 +145,7 @@ const factory = function(in_clickDragElement, in_dataServer){
 			}
 		}
 
-		const boomLength = claculateBoomLength(in_dataServer.getValue("cameraZoom"));
+		const boomLength = claculateBoomLength(in_dataServer.getCameraZoom());
 		const moveScale = boomLength / innerRadius;
 
 		if (true === rmb){ //pan left-right or up-down
@@ -167,13 +166,13 @@ const factory = function(in_clickDragElement, in_dataServer){
 
 	const wheelCallback = function(in_event){
 		//console.log(in_event.deltaY);
-		var zoom = in_dataServer.getValue("cameraZoom");
+		var zoom = in_dataServer.getCameraZoom();
 		if (in_event.deltaY < 0.0){
 			zoom *= 0.75;
 		} else if (0.0 < in_event.deltaY){
 			zoom *= 1.3333333333333;
 		}
-		in_dataServer.setValue("cameraZoom", zoom);
+		in_dataServer.setCameraZoom(zoom);
 		//console.log(zoom);
 		update();
 	}

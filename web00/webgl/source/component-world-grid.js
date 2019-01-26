@@ -1,5 +1,5 @@
 const Core = require("core");
-const ComponentMaterialMacroAlphaEdge = require("./component-material-macro-alpha-edge.js");
+const ComponentMaterialMacroPosColourLine = require("./component-material-macro-pos-colour-line.js");
 const ModelDataStream = require("./modeldatastream.js");
 const ModelWrapper = require("./modelwrapper.js");
 
@@ -79,7 +79,9 @@ const factoryModelWorldGrid = function(in_gridStep, in_gridCount){
 const factory = function(in_resourceManager, in_webGLContextWrapper, in_dataServer, in_gridStep, in_gridCount){
 	var m_model = undefined;
 	var m_modelOldName = undefined;
-	var m_materialComponent = ComponentMaterialMacroAlphaEdge.factory(in_resourceManager, in_webGLContextWrapper, in_dataServer);
+	var m_dataServer = Object.create({ "getModelOrigin" : function(){ return Core.Vector3.sZero(); }});
+	Object.assign(m_dataServer, in_dataServer);
+	var m_materialComponent = ComponentMaterialMacroPosColourLine.factory(in_resourceManager, in_webGLContextWrapper, m_dataServer);
 	var m_material = m_materialComponent.getMaterial();
 
 	const release = function(){

@@ -10,7 +10,7 @@
 	},
 	"copyFileDest" : "js/modelviewedge00", 
 	"copyFileArray" :  [
-			"source/modelviewedge00/data_edge.js"
+			"source/modelviewedge00/data.js"
 		],
 	"outputRootDir": "output"
 }
