@@ -1,5 +1,4 @@
 const BarycentricTriangle = require("./barycentric-triangle.js");
-const RawTriangleScale = require("./raw-triangle-scale.js");
 const SpaceInvestigator = require("./space-investigator.js");
 const SampleGenerator = require("./sample-generator.js");
 
@@ -29,10 +28,42 @@ const makeBarycentricTriangleArray = function(in_rawTriangle) {
 	return barycentricTriangleArray;
 };
 
-const rawTriangleToSphere = function(in_rawTriangle, in_sphereDiameter){
+const getRawTiangleArrayMin = function(in_rawTiangleArray){
+	var low = [in_rawTiangleArray[0], in_rawTiangleArray[1], in_rawTiangleArray[2]];
+
+	for (var index = 0; index < in_rawTiangleArray.length; index += 3){
+		for (var subIndex = 0; subIndex < 3; ++subIndex){
+			low[subIndex] = Math.min(low[subIndex], in_rawTiangleArray[index + subIndex]);
+		}
+	}
+
+	return low;
+}
+
+const getRawTiangleArrayDim = function(in_rawTiangleArray){
+	var low = [in_rawTiangleArray[0], in_rawTiangleArray[1], in_rawTiangleArray[2]];
+	var high = [in_rawTiangleArray[0], in_rawTiangleArray[1], in_rawTiangleArray[2]];
+
+	for (var index = 0; index < in_rawTiangleArray.length; index += 3){
+		for (var subIndex = 0; subIndex < 3; ++subIndex){
+			low[subIndex] = Math.min(low[subIndex], in_rawTiangleArray[index + subIndex]);
+			high[subIndex] = Math.max(high[subIndex], in_rawTiangleArray[index + subIndex]);
+		}
+	}
+
+	var dim = [
+		(high[0] - low[0]), 
+		(high[1] - low[1]), 
+		(high[2] - low[2])
+		];
+	return dim;
+}
+
+
+const run = function(in_rawTriangle, in_sphereDiameter){
 	const barycentricTriangleArray = makeBarycentricTriangleArray(in_rawTriangle);
-	const dim = RawTriangleScale.getRawTiangleArrayDim(in_rawTriangle);
-	const min = RawTriangleScale.getRawTiangleArrayMin(in_rawTriangle);
+	const dim = getRawTiangleArrayDim(in_rawTriangle);
+	const min = getRawTiangleArrayMin(in_rawTriangle);
 
 	const spaceInvestigator = SpaceInvestigator.factory(barycentricTriangleArray);
 	const arraySphereInside = SampleGenerator.visit(spaceInvestigator, in_sphereDiameter, min, dim);
@@ -41,5 +72,5 @@ const rawTriangleToSphere = function(in_rawTriangle, in_sphereDiameter){
 }
 
 module.exports = {
-	"rawTriangleToSphere" : rawTriangleToSphere
+	"run" : run
 };

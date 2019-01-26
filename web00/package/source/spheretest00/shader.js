@@ -2,13 +2,12 @@ const Core = require("core");
 const WebGL = require("webgl");
 
 const sVertexShader = `
-attribute vec3 a_position;
+attribute vec4 a_position;
 
 varying vec2 v_majorAxis;
 varying vec2 v_minorAxis;
 
 uniform vec4 u_viewportWidthHeightWidthhalfHeighthalf;
-uniform float u_sphereRadius;
 uniform vec3 u_cameraAt;
 uniform vec3 u_cameraLeft;
 uniform vec3 u_cameraUp;
@@ -16,7 +15,8 @@ uniform vec3 u_cameraPos;
 uniform vec3 u_cameraFovhFovvFar;
 
 void main() {
-	vec3 cameraToAtom = a_position - u_cameraPos;
+	vec3 cameraToAtom = a_position.xyz - u_cameraPos;
+	float sphereRadius = a_position.w / 2.0;
 
 	float cameraSpaceX = -dot(cameraToAtom, u_cameraLeft);
 	float cameraSpaceY = dot(cameraToAtom, u_cameraUp);
@@ -46,18 +46,18 @@ void main() {
 	float apsectCorrection = (width / height);
 	float screenY = screenR * cameraSpaceYNorm * apsectCorrection;
 
-	float screenZRaw = (cameraSpaceLength + u_sphereRadius) / u_cameraFovhFovvFar.z;
+	float screenZRaw = (cameraSpaceLength + sphereRadius) / u_cameraFovhFovvFar.z;
 	float screenZ = (screenZRaw * 2.0) - 1.0;
 
-	float atomAngle = degrees(asin(clamp(u_sphereRadius / cameraSpaceLength, -1.0, 1.0)));
+	float atomAngle = degrees(asin(clamp(sphereRadius / cameraSpaceLength, -1.0, 1.0)));
 	float minorAxis = atomAngle / fovHHalf;
 
-	float atomAngleMajor = degrees(atan(u_sphereRadius, cameraSpaceXYLength));
+	float atomAngleMajor = degrees(atan(sphereRadius, cameraSpaceXYLength));
 	float majorAxisTemp = sin(radians(atomAngleMajor)) * polarR / fovHHalf;
 	float majorAxis = max(minorAxis, majorAxisTemp);
 
 	float pointSize = 1024.0; //arbitary max radius in pixels
-	if (u_sphereRadius < cameraSpaceLength){
+	if (sphereRadius < cameraSpaceLength){
 		pointSize = min(1024.0, majorAxis * width);
 	}
 
@@ -91,7 +91,7 @@ void main() {
 `;
 
 const sVertexAttributeNameArray = ["a_position"];
-const sUniformNameArray = ["u_viewportWidthHeightWidthhalfHeighthalf", "u_sphereRadius", "u_cameraAt", "u_cameraUp", "u_cameraLeft", "u_cameraPos", "u_cameraFovhFovvFar"];
+const sUniformNameArray = ["u_viewportWidthHeightWidthhalfHeighthalf", "u_cameraAt", "u_cameraUp", "u_cameraLeft", "u_cameraPos", "u_cameraFovhFovvFar"];
 
 const factory = function(in_webGLContextWrapper, in_uniformServer){
 	return WebGL.ShaderWrapper.factory(

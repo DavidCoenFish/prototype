@@ -30,43 +30,41 @@ const onPageLoad = function(){
 		"material" : Material.factory,
 	});
 
-	const m_viewportWidthHeightWidthhalfHeighthalf = Core.Vector4.factoryFloat32(m_width, m_height, m_width / 2.0, m_height / 2.0);
-	var m_sphereRadius = 0.01;
-	const m_cameraAt = Core.Vector3.factoryFloat32(0.0, 1.0, 0.0);
-	const m_cameraUp = Core.Vector3.factoryFloat32(0.0, 0.0, 1.0);
-	const m_cameraLeft = Core.Vector3.factoryFloat32(1.0, 0.0, 0.0);
-	//const m_cameraPos = Core.Vector3.factoryFloat32(0.0, -5.0, 0.0);
-	const m_cameraPos = Core.Vector3.factoryFloat32(0.04571287365044965, -0.1294732246360698, -0.8690733764450884);
-	const m_cameraFovhFovvFar = Core.Vector3.factoryFloat32(120.0, 120.0, 10.0);
-
+	const m_mapValues = {
+		"u_viewportWidthHeightWidthhalfHeighthalf" : function(localWebGLContextWrapper, in_position){
+			WebGL.WebGLContextWrapperHelper.setUniformFloat4(localWebGLContextWrapper, in_position, m_viewportWidthHeightWidthhalfHeighthalf.getRaw());
+		},
+		"u_cameraAt" : function(localWebGLContextWrapper, in_position){
+			WebGL.WebGLContextWrapperHelper.setUniformFloat3(localWebGLContextWrapper, in_position, m_cameraAt.getRaw());
+		},
+		"u_cameraUp" : function(localWebGLContextWrapper, in_position){
+			WebGL.WebGLContextWrapperHelper.setUniformFloat3(localWebGLContextWrapper, in_position, m_cameraUp.getRaw());
+		},
+		"u_cameraLeft" : function(localWebGLContextWrapper, in_position){
+			WebGL.WebGLContextWrapperHelper.setUniformFloat3(localWebGLContextWrapper, in_position, m_cameraLeft.getRaw());
+		},
+		"u_cameraPos" : function(localWebGLContextWrapper, in_position){
+			WebGL.WebGLContextWrapperHelper.setUniformFloat3(localWebGLContextWrapper, in_position, m_cameraPos.getRaw());
+		},
+		"u_cameraFovhFovvFar" : function(localWebGLContextWrapper, in_position){
+			WebGL.WebGLContextWrapperHelper.setUniformFloat3(localWebGLContextWrapper, in_position, m_cameraFovhFovvFar.getRaw());
+		},
+	};
 	const m_uniformServer = {
 		"setUniform" : function(localWebGLContextWrapper, in_key, in_position){
-			if (in_key === "u_viewportWidthHeightWidthhalfHeighthalf"){
-				WebGL.WebGLContextWrapperHelper.setUniformFloat4(localWebGLContextWrapper, in_position, m_viewportWidthHeightWidthhalfHeighthalf.getRaw());
-			} else if (in_key === "u_sphereRadius"){
-				WebGL.WebGLContextWrapperHelper.setUniformFloat(localWebGLContextWrapper, in_position, m_sphereRadius);
-			} else if (in_key === "u_cameraAt"){
-				WebGL.WebGLContextWrapperHelper.setUniformFloat3(localWebGLContextWrapper, in_position, m_cameraAt.getRaw());
-			} else if (in_key === "u_cameraUp"){
-				WebGL.WebGLContextWrapperHelper.setUniformFloat3(localWebGLContextWrapper, in_position, m_cameraUp.getRaw());
-			} else if (in_key === "u_cameraLeft"){
-				WebGL.WebGLContextWrapperHelper.setUniformFloat3(localWebGLContextWrapper, in_position, m_cameraLeft.getRaw());
-			} else if (in_key === "u_cameraPos"){
-				WebGL.WebGLContextWrapperHelper.setUniformFloat3(localWebGLContextWrapper, in_position, m_cameraPos.getRaw());
-			} else if (in_key === "u_cameraFovhFovvFar"){
-				WebGL.WebGLContextWrapperHelper.setUniformFloat3(localWebGLContextWrapper, in_position, m_cameraFovhFovvFar.getRaw());
+			if (in_key in m_mapValues){
+				m_mapValues[in_key](localWebGLContextWrapper, in_position);
 			}
-
-			return;
 		}
-	};
+	}
 
 	const m_shader = resourceManager.getCommonReference("shader", webGLContextWrapper, m_uniformServer);
 	const m_material = resourceManager.getCommonReference("material", m_shader);
 	const m_model = resourceManager.getCommonReference("model", webGLContextWrapper);
 
+
 	var m_timestamp;
-	const m_clearColor = Core.Colour4.factoryFloat32(0.1, 0.1, 0.1, 1.0);
+	const m_clearColor = Core.Colour4.factoryFloat32(0.5, 0.5, 0.5, 0.0);
 	const m_webGLState = WebGL.WebGLState.factory(webGLContextWrapper);
 	const animationFrameCallback = function(in_timestamp){
 		var tick = 0.0; 
@@ -76,38 +74,72 @@ const onPageLoad = function(){
 		m_timestamp = in_timestamp;
 		m_fpsElement.update(in_timestamp);
 
-		//m_editCamera.orbit(tick);
-
 		WebGL.WebGLContextWrapperHelper.clear(webGLContextWrapper, m_clearColor, 1.0);
 
 		m_material.apply(webGLContextWrapper, m_webGLState);
 		m_model.draw(webGLContextWrapper, m_webGLState.getMapVertexAttribute());
 
+		m_gridComponent.draw(webGLContextWrapper, m_webGLState);
+
 		m_requestId = requestAnimationFrame(animationFrameCallback);
 	}
-
 	var m_requestId = requestAnimationFrame(animationFrameCallback);
 
 	ManipulateDom.Format.addSimpleBr(document, document.body);
 	ManipulateDom.Button.addSimpleButton(document, document.body, "stop", function(in_event){
 		cancelAnimationFrame(m_requestId);
 		m_requestId = undefined;
+		m_dragCamera.destroy();
+		m_gridComponent.destroy();
 		console.log("end");
 		return;
 	});
 	const m_fpsElement = ManipulateDom.ComponentFps.factory(document);
 	document.body.appendChild(m_fpsElement.getElement());
 
-	const m_editCamera = ManipulateDom.ComponentEditOrbitalCamera.factoryDistancePosAtLeftUp(
-		document, 
-		5.0, 0.0, 10.0, 0.1, 
-		m_cameraPos,
-		m_cameraAt,
-		m_cameraLeft,
-		m_cameraUp,
-		undefined, undefined, 0.01
-	);
-	document.body.appendChild(m_editCamera.getElement());
+	const m_cameraOrigin = Core.Vector3.factoryFloat32(0.0, 0.0, 0.0);
+	var m_cameraZoom = 1.0;
+	const m_cameraPos = Core.Vector3.factoryFloat32(0.0, 0.0, 0.0);
+	const m_cameraAt = Core.Vector3.factoryFloat32(0.0, 1.0, 0.0);
+	const m_cameraLeft = Core.Vector3.factoryFloat32(-1.0, 0.0, 0.0);
+	const m_cameraUp = Core.Vector3.factoryFloat32(0.0, 0.0, 1.0);
+	const m_cameraFovhFovvFar = Core.Vector3.factoryFloat32(120.0, 120.0, 100.0);
+	const m_viewportWidthHeightWidthhalfHeighthalf = Core.Vector4.factoryFloat32(m_width, m_height, m_width / 2.0, m_height / 2.0);
+	const m_dataServer = {
+		"getCameraOrigin" : function(){
+			return m_cameraOrigin;
+		},
+		"getCameraZoom" : function(){
+			return m_cameraZoom;
+		},
+		"getCameraPos" : function(){
+			return m_cameraPos;
+		},
+		"getCameraAt" : function(){
+			return m_cameraAt;
+		},
+		"getCameraLeft" : function(){
+			return m_cameraLeft;
+		},
+		"getCameraUp" : function(){
+			return m_cameraUp;
+		},
+		"getCameraFovhFovvFar" : function(){
+			return m_cameraFovhFovvFar;
+		},
+		"getViewportWidthHeightWidthhalfHeighthalf" : function(){
+			return m_viewportWidthHeightWidthhalfHeighthalf;
+		},
+		"setCameraZoom" : function(in_value){
+			m_cameraZoom = in_value;
+			return;
+		},
+	};
+
+	const m_dragCamera = ManipulateDom.ComponentClickDragCamera.factory(html5CanvasElement, m_dataServer);
+	const m_gridComponent = WebGL.ComponentWorldGrid.factory(resourceManager, webGLContextWrapper, m_dataServer, 0.25, 8);
+
+	ManipulateDom.ComponentClickDragCamera.factory(html5CanvasElement, m_dataServer);
 
 	return;
 }

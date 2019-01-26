@@ -26,32 +26,6 @@ const onPageLoad = function(){
 		"model" : Model.factory,
 	});
 
-	const m_uniformServer = {
-		"setUniform" : function(localWebGLContextWrapper, in_key, in_position){
-			if (in_key === "u_viewportWidthHeightWidthhalfHeighthalf"){
-				WebGL.WebGLContextWrapperHelper.setUniformFloat4(localWebGLContextWrapper, in_position, m_viewportWidthHeightWidthhalfHeighthalf.getRaw());
-			} else if (in_key === "u_sphereRadius"){
-				WebGL.WebGLContextWrapperHelper.setUniformFloat(localWebGLContextWrapper, in_position, m_sphereRadius);
-			} else if (in_key === "u_cameraAt"){
-				WebGL.WebGLContextWrapperHelper.setUniformFloat3(localWebGLContextWrapper, in_position, m_cameraAt.getRaw());
-			} else if (in_key === "u_cameraUp"){
-				WebGL.WebGLContextWrapperHelper.setUniformFloat3(localWebGLContextWrapper, in_position, m_cameraUp.getRaw());
-			} else if (in_key === "u_cameraLeft"){
-				WebGL.WebGLContextWrapperHelper.setUniformFloat3(localWebGLContextWrapper, in_position, m_cameraLeft.getRaw());
-			} else if (in_key === "u_cameraPos"){
-				WebGL.WebGLContextWrapperHelper.setUniformFloat3(localWebGLContextWrapper, in_position, m_cameraPos.getRaw());
-			} else if (in_key === "u_cameraFovhFovvFar"){
-				WebGL.WebGLContextWrapperHelper.setUniformFloat3(localWebGLContextWrapper, in_position, m_cameraFovhFovvFar.getRaw());
-			}
-
-			return;
-		}
-	};
-
-	//const m_shaderEdge = resourceManager.getCommonReference("shaderEdge", webGLContextWrapper, m_uniformServer);
-	//const m_materialEdge = resourceManager.getCommonReference("materialEdge", m_shaderEdge);
-	//const m_modelEdge = resourceManager.getCommonReference("modelEdge", webGLContextWrapper);
-
 	var m_timestamp;
 	const m_clearColor = Core.Colour4.factoryFloat32(0.5, 0.5, 0.5, 0.0);
 	const m_webGLState = WebGL.WebGLState.factory(webGLContextWrapper);
@@ -126,7 +100,7 @@ const onPageLoad = function(){
 
 	const m_dragCamera = ManipulateDom.ComponentClickDragCamera.factory(html5CanvasElement, m_dataServer);
 	const m_gridComponent = WebGL.ComponentWorldGrid.factory(resourceManager, webGLContextWrapper, m_dataServer, 0.25, 8);
-	const m_modelComponent = WebGL.ComponentModelLine.factory(resourceManager, webGLContextWrapper, m_dataServer, "model", Core.Vector3.factoryFloat32(0.0, 0.0, 1.0), Core.Colour4.sRed);
+	const m_modelComponent = WebGL.ComponentModelLine.factory(resourceManager, webGLContextWrapper, m_dataServer, "model", Core.Vector3.sZero, Core.Colour4.sRed);
 
 	ManipulateDom.ComponentClickDragCamera.factory(html5CanvasElement, m_dataServer);
 

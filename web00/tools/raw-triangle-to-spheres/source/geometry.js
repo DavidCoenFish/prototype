@@ -69,6 +69,22 @@ const rayDistance = function(in_testPoint, in_rayOrigin, in_rayNormal){
 	return t;
 }
 
+const vec3Min = function(in_pos3PointA, in_pos3PointB, in_pos3PointC){
+	return [
+		Math.min(in_pos3PointA[0], in_pos3PointB[0], in_pos3PointC[0]),
+		Math.min(in_pos3PointA[1], in_pos3PointB[1], in_pos3PointC[1]),
+		Math.min(in_pos3PointA[2], in_pos3PointB[2], in_pos3PointC[2])
+	];
+}
+
+const vec3Max = function(in_pos3PointA, in_pos3PointB, in_pos3PointC){
+	return [
+		Math.max(in_pos3PointA[0], in_pos3PointB[0], in_pos3PointC[0]),
+		Math.max(in_pos3PointA[1], in_pos3PointB[1], in_pos3PointC[1]),
+		Math.max(in_pos3PointA[2], in_pos3PointB[2], in_pos3PointC[2])
+	];
+}
+
 /*
 float denom = normal.dot(ray.direction);
 if (abs(denom) > 0.0001f) // your favorite epsilon
@@ -88,5 +104,7 @@ module.exports = {
 	"vec3Minus" : vec3Minus,
 	"vec3DotProduct" : vec3DotProduct,
 	"vec3Plus" : vec3Plus,
-	"vec3MultiplyScalar" : vec3MultiplyScalar	
+	"vec3MultiplyScalar" : vec3MultiplyScalar,
+	"vec3Min" : vec3Min,
+	"vec3Max" : vec3Max
 }

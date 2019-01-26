@@ -43,6 +43,9 @@ const factory = function(in_pos3PointA, in_pos3PointB, in_pos3PointC){
 	var m_d11 = Geometry.vec3DotProduct(m_v1, m_v1);
 	var m_denom = m_d00 * m_d11 - m_d01 * m_d01;
 
+	var m_min = Geometry.vec3Min(in_pos3PointA, in_pos3PointB, in_pos3PointC);
+	var m_max = Geometry.vec3Max(in_pos3PointA, in_pos3PointB, in_pos3PointC);
+
 	var m_trianglePlaneNorm = Geometry.vec3LengthReturnNormal(Geometry.vec3CrossProduct(m_v0, m_v1));
 
 	const result = Object.create({
@@ -102,6 +105,12 @@ const factory = function(in_pos3PointA, in_pos3PointB, in_pos3PointC){
 				(true === sharedEdgeTest(in_point3[1], in_point3[2])) ||
 				(true === sharedEdgeTest(in_point3[2], in_point3[0])));
 		},
+		"boundsTestYZ" : function(in_y, in_z){
+			return ((m_min[1] <= in_y) && 
+				(in_y <= m_max[1]) &&
+				(m_min[2] <= in_z) &&
+				(in_z <= m_max[2]));
+		}
 	});
 	return result;
 }

@@ -13,6 +13,9 @@ const factory = function(in_barycentricTriangleArray){
 			const rayOrigin = [0.0, in_y, in_z];
 			for (var index = 0; index < in_barycentricTriangleArray.length; ++index){
 				var triangle = in_barycentricTriangleArray[index];
+				if (false === triangle.boundsTestYZ(in_y, in_z)){
+					continue;
+				}
 				var projectedPointOnPlane = triangle.projectRayOntoTrianglePlane(rayOrigin, m_xRayNormal);
 				if (true === triangle.testPointInTriangle(projectedPointOnPlane)){
 					result.push({ "triangle" : triangle, "point" : [projectedPointOnPlane[0], projectedPointOnPlane[1], projectedPointOnPlane[2]] });
