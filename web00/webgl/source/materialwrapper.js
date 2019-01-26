@@ -1,5 +1,22 @@
 //const Core = require("core");
 /*
+		blend modes
+gl.ZERO	0,0,0,0	Multiplies all colors by 0.
+gl.ONE	1,1,1,1	Multiplies all colors by 1.
+gl.SRC_COLOR	RS, GS, BS, AS	Multiplies all colors by the source colors.
+gl.ONE_MINUS_SRC_COLOR	1-RS, 1-GS, 1-BS, 1-AS	Multiplies all colors by 1 minus each source color.
+gl.DST_COLOR	RD, GD, BD, AD	Multiplies all colors by the destination color.
+gl.ONE_MINUS_DST_COLOR	1-RD, 1-GD, 1-BD, 1-AD	Multiplies all colors by 1 minus each destination color.
+gl.SRC_ALPHA	AS, AS, AS, AS	Multiplies all colors by the source alpha value.
+gl.ONE_MINUS_SRC_ALPHA	1-AS, 1-AS, 1-AS, 1-AS	Multiplies all colors by 1 minus the source alpha value.
+gl.DST_ALPHA	AD, AD, AD, AD	Multiplies all colors by the destination alpha value.
+gl.ONE_MINUS_DST_ALPHA	1-AD, 1-AD, 1-AD, 1-AD	Multiplies all colors by 1 minus the destination alpha value.
+gl.CONSTANT_COLOR	RC, GC, BC, AC	Multiplies all colors by a constant color.
+gl.ONE_MINUS_CONSTANT_COLOR	1-RC, 1-GC, 1-BC, 1-AC	Multiplies all colors by 1 minus a constant color.
+gl.CONSTANT_ALPHA	AC, AC, AC, AC	Multiplies all colors by a constant alpha value.
+gl.ONE_MINUS_CONSTANT_ALPHA	1-AC, 1-AC, 1-AC, 1-AC	Multiplies all colors by 1 minus a constant alpha value.
+gl.SRC_ALPHA_SATURATE
+
 		in_depthFuncEnumNameOrUndefined
 NEVER (never pass)
 LESS (pass if the incoming value is less than the depth buffer value)

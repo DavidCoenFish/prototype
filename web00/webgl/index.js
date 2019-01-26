@@ -1,4 +1,6 @@
 module.exports = {
+	"ComponentMaterialMacroAlphaEdge" : require("./source/component-material-macro-alpha-edge.js"),
+	"ComponentWorldGrid" : require("./source/component-world-grid.js"),
 	"MaterialWrapper" : require("./source/materialwrapper.js"),
 	"ModelDataStream" : require("./source/modeldatastream.js"),
 	"ModelWrapper" : require("./source/modelwrapper.js"),

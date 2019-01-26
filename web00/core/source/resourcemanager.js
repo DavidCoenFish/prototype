@@ -19,6 +19,10 @@ const factory = function(in_mapNameFactoryOrUndefined){
 			m_dataMap[in_name] = ResourceManagerData.factory(in_factory);
 			return;
 		},
+		
+		"hasFactory" : function(in_name){
+			return (in_name in m_dataMap);
+		},
 
 		//getDynamicReference/ unmanaged, can be edited, don't need to tell resource manager about release
 		"getUniqueReference" : function(in_name){ //...

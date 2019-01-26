@@ -30,17 +30,20 @@ const calculateYawPitch = function(in_delta){
 
 /*
 in_dataServer
-	getStartOrigin
-	getZoom
-	getPos
-	getAt
-	getLeft
-	getUp
+	getValue
+		cameraOrigin
+		cameraZoom
+		cameraPos
+		cameraAt
+		cameraLeft
+		cameraUp
+		cameraZoom
+	setValue
+		cameraZoom
  */
 const factory = function(in_clickDragElement, in_dataServer){
 	var m_oldX = undefined;
 	var m_oldY = undefined;
-	var m_origin = in_dataServer.getStartOrigin();
 
 	const update = function(in_yawDeltaOrUndefined, in_pitchDeltaOrUndefined, in_rollDeltaOrUndefined,
 		in_posXDeltaOrUndefined, in_posYDeltaOrUndefined, in_posZDeltaOrUndefined){
@@ -51,59 +54,60 @@ const factory = function(in_clickDragElement, in_dataServer){
 		var rotation = Core.Quaternion.factoryIdentity();
 		if (undefined !== in_yawDeltaOrUndefined){
 			doRot = true;
-			const quat = Core.Quaternion.factoryAxisAngle(in_dataServer.getUp(), in_yawDeltaOrUndefined);
+			const quat = Core.Quaternion.factoryAxisAngle(in_dataServer.getValue("cameraUp"), in_yawDeltaOrUndefined);
 			rotation = Core.Quaternion.multiplication(rotation, quat);
 		}
 		if (undefined !== in_pitchDeltaOrUndefined){
 			doRot = true;
-			const quat = Core.Quaternion.factoryAxisAngle(in_dataServer.getLeft(), -in_pitchDeltaOrUndefined);
+			const quat = Core.Quaternion.factoryAxisAngle(in_dataServer.getValue("cameraLeft"), -in_pitchDeltaOrUndefined);
 			rotation = Core.Quaternion.multiplication(rotation, quat);
 		}
 		if (undefined !== in_rollDeltaOrUndefined){
 			doRot = true;
-			const quat = Core.Quaternion.factoryAxisAngle(in_dataServer.getAt(), in_rollDeltaOrUndefined);
+			const quat = Core.Quaternion.factoryAxisAngle(in_dataServer.getValue("cameraAt"), in_rollDeltaOrUndefined);
 			rotation = Core.Quaternion.multiplication(rotation, quat);
 		}
 
 		if (true === doRot){
 			const matrix = Core.Matrix33.factoryQuaternion(rotation);
-			const localAt = Core.Matrix33.transformVector3(matrix, in_dataServer.getAt());
-			in_dataServer.getAt().set(localAt.getX(), localAt.getY(), localAt.getZ());
-			const localUp = Core.Matrix33.transformVector3(matrix, in_dataServer.getUp());
-			in_dataServer.getUp().set(localUp.getX(), localUp.getY(), localUp.getZ());
-			const localLeft = Core.Matrix33.transformVector3(matrix, in_dataServer.getLeft());
-			in_dataServer.getLeft().set(localLeft.getX(), localLeft.getY(), localLeft.getZ());
+			const localAt = Core.Matrix33.transformVector3(matrix, in_dataServer.getValue("cameraAt"));
+			in_dataServer.getValue("cameraAt").set(localAt.getX(), localAt.getY(), localAt.getZ());
+			const localUp = Core.Matrix33.transformVector3(matrix, in_dataServer.getValue("cameraUp"));
+			in_dataServer.getValue("cameraUp").set(localUp.getX(), localUp.getY(), localUp.getZ());
+			const localLeft = Core.Matrix33.transformVector3(matrix, in_dataServer.getValue("cameraLeft"));
+			in_dataServer.getValue("cameraLeft").set(localLeft.getX(), localLeft.getY(), localLeft.getZ());
 		}
 
+		const origin = in_dataServer.getValue("cameraOrigin");
 		if (undefined !== in_posXDeltaOrUndefined){
-			var left = in_dataServer.getLeft();
-			m_origin.setX(m_origin.getX() + (left.getX() * in_posXDeltaOrUndefined));
-			m_origin.setY(m_origin.getY() + (left.getY() * in_posXDeltaOrUndefined));
-			m_origin.setZ(m_origin.getZ() + (left.getZ() * in_posXDeltaOrUndefined));
+			var left = in_dataServer.getValue("cameraLeft");
+			origin.setX(origin.getX() + (left.getX() * in_posXDeltaOrUndefined));
+			origin.setY(origin.getY() + (left.getY() * in_posXDeltaOrUndefined));
+			origin.setZ(origin.getZ() + (left.getZ() * in_posXDeltaOrUndefined));
 		}
 		
 		if (undefined !== in_posYDeltaOrUndefined){
-			var up = in_dataServer.getUp();
-			m_origin.setX(m_origin.getX() + (up.getX() * in_posYDeltaOrUndefined));
-			m_origin.setY(m_origin.getY() + (up.getY() * in_posYDeltaOrUndefined));
-			m_origin.setZ(m_origin.getZ() + (up.getZ() * in_posYDeltaOrUndefined));
+			var up = in_dataServer.getValue("cameraUp");
+			origin.setX(origin.getX() + (up.getX() * in_posYDeltaOrUndefined));
+			origin.setY(origin.getY() + (up.getY() * in_posYDeltaOrUndefined));
+			origin.setZ(origin.getZ() + (up.getZ() * in_posYDeltaOrUndefined));
 		}
 		
 		if (undefined !== in_posZDeltaOrUndefined){
-			var at = in_dataServer.getAt();
-			m_origin.setX(m_origin.getX() + (at.getX() * in_posZDeltaOrUndefined));
-			m_origin.setY(m_origin.getY() + (at.getY() * in_posZDeltaOrUndefined));
-			m_origin.setZ(m_origin.getZ() + (at.getZ() * in_posZDeltaOrUndefined));
+			var at = in_dataServer.getValue("cameraAt");
+			origin.setX(origin.getX() + (at.getX() * in_posZDeltaOrUndefined));
+			origin.setY(origin.getY() + (at.getY() * in_posZDeltaOrUndefined));
+			origin.setZ(origin.getZ() + (at.getZ() * in_posZDeltaOrUndefined));
 		}
 
 		{
-			var at = in_dataServer.getAt();
-			const pos = in_dataServer.getPos();
-			const boomLength = claculateBoomLength(in_dataServer.getZoom());
+			var at = in_dataServer.getValue("cameraAt");
+			const pos = in_dataServer.getValue("cameraPos");
+			const boomLength = claculateBoomLength(in_dataServer.getValue("cameraZoom"));
 
-			pos.setX(m_origin.getX() - (at.getX() * boomLength));
-			pos.setY(m_origin.getY() - (at.getY() * boomLength));
-			pos.setZ(m_origin.getZ() - (at.getZ() * boomLength));
+			pos.setX(origin.getX() - (at.getX() * boomLength));
+			pos.setY(origin.getY() - (at.getY() * boomLength));
+			pos.setZ(origin.getZ() - (at.getZ() * boomLength));
 		}
 	}
 
@@ -142,7 +146,7 @@ const factory = function(in_clickDragElement, in_dataServer){
 			}
 		}
 
-		const boomLength = claculateBoomLength(in_dataServer.getZoom());
+		const boomLength = claculateBoomLength(in_dataServer.getValue("cameraZoom"));
 		const moveScale = boomLength / innerRadius;
 
 		if (true === rmb){ //pan left-right or up-down
@@ -163,13 +167,13 @@ const factory = function(in_clickDragElement, in_dataServer){
 
 	const wheelCallback = function(in_event){
 		//console.log(in_event.deltaY);
-		var zoom = in_dataServer.getZoom();
+		var zoom = in_dataServer.getValue("cameraZoom");
 		if (in_event.deltaY < 0.0){
 			zoom *= 0.75;
 		} else if (0.0 < in_event.deltaY){
 			zoom *= 1.3333333333333;
 		}
-		in_dataServer.setZoom(zoom);
+		in_dataServer.setValue("cameraZoom", zoom);
 		//console.log(zoom);
 		update();
 	}

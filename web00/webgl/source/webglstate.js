@@ -95,7 +95,7 @@ const factory = function(in_webGLContextWrapper){
 				if ((m_sourceBlendEnum !== in_sourceBlendEnum) || 
 					(m_destinationBlendEnum !== in_destinationBlendEnum)){
 
-					in_webGLContextWrapper.callMethod("blendFunc", m_sourceBlendEnum, m_destinationBlendEnum);
+					in_webGLContextWrapper.callMethod("blendFunc", in_sourceBlendEnum, in_destinationBlendEnum);
 
 					m_sourceBlendEnum = in_sourceBlendEnum;
 					m_destinationBlendEnum = in_destinationBlendEnum;

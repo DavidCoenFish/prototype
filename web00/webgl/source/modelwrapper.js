@@ -39,7 +39,7 @@ const factory = function(
 
 			return;
 		},
-		"destroy" : function(in_webGLContextWrapper){
+		"destroy" : function(){
 			in_webGLContextWrapper.removeResourceContextCallbacks(aquireWebGLResources, releaseWebGLResources);
 		},
 	});

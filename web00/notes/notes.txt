@@ -1,5 +1,10 @@
 todo:
 _	texture sphere humanoid test
+		move pos into camera data
+		grid component
+		snapshot component
+		record component
+		romboid packing
 	sphere physics, gravity, ground plane
 	ridgid body
 	joints

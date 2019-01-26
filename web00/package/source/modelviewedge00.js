@@ -30,15 +30,6 @@ const onPageLoad = function(){
 		"materialEdge" : MaterialEdge.factory,
 	});
 
-	const m_viewportWidthHeightWidthhalfHeighthalf = Core.Vector4.factoryFloat32(m_width, m_height, m_width / 2.0, m_height / 2.0);
-	var m_sphereRadius = 0.01;
-	var m_zoom = 1.0;
-	const m_cameraAt = Core.Vector3.factoryFloat32(0.0, 1.0, 0.0);
-	const m_cameraUp = Core.Vector3.factoryFloat32(0.0, 0.0, 1.0);
-	const m_cameraLeft = Core.Vector3.factoryFloat32(1.0, 0.0, 0.0);
-	const m_cameraPos = Core.Vector3.factoryFloat32(0.04571287365044965, -0.1294732246360698, -0.8690733764450884);
-	const m_cameraFovhFovvFar = Core.Vector3.factoryFloat32(120.0, 120.0, 100.0);
-
 	const m_uniformServer = {
 		"setUniform" : function(localWebGLContextWrapper, in_key, in_position){
 			if (in_key === "u_viewportWidthHeightWidthhalfHeighthalf"){
@@ -61,12 +52,12 @@ const onPageLoad = function(){
 		}
 	};
 
-	const m_shaderEdge = resourceManager.getCommonReference("shaderEdge", webGLContextWrapper, m_uniformServer);
-	const m_materialEdge = resourceManager.getCommonReference("materialEdge", m_shaderEdge);
-	const m_modelEdge = resourceManager.getCommonReference("modelEdge", webGLContextWrapper);
+	//const m_shaderEdge = resourceManager.getCommonReference("shaderEdge", webGLContextWrapper, m_uniformServer);
+	//const m_materialEdge = resourceManager.getCommonReference("materialEdge", m_shaderEdge);
+	//const m_modelEdge = resourceManager.getCommonReference("modelEdge", webGLContextWrapper);
 
 	var m_timestamp;
-	const m_clearColor = Core.Colour4.factoryFloat32(0.1, 0.1, 0.1, 1.0);
+	const m_clearColor = Core.Colour4.factoryFloat32(0.5, 0.5, 0.5, 0.0);
 	const m_webGLState = WebGL.WebGLState.factory(webGLContextWrapper);
 	const animationFrameCallback = function(in_timestamp){
 		var tick = 0.0; 
@@ -76,16 +67,12 @@ const onPageLoad = function(){
 		m_timestamp = in_timestamp;
 		m_fpsElement.update(in_timestamp);
 
-		//m_editCamera.orbit(tick);
-
 		WebGL.WebGLContextWrapperHelper.clear(webGLContextWrapper, m_clearColor, 1.0);
 
-		m_materialEdge.apply(webGLContextWrapper, m_webGLState);
-		m_modelEdge.draw(webGLContextWrapper, m_webGLState.getMapVertexAttribute());
+		m_gridComponent.draw(webGLContextWrapper, m_webGLState);
 
 		m_requestId = requestAnimationFrame(animationFrameCallback);
 	}
-
 	var m_requestId = requestAnimationFrame(animationFrameCallback);
 
 	ManipulateDom.Format.addSimpleBr(document, document.body);
@@ -93,32 +80,44 @@ const onPageLoad = function(){
 		cancelAnimationFrame(m_requestId);
 		m_requestId = undefined;
 		m_dragCamera.destroy();
+		m_gridComponent.destroy();
 		console.log("end");
 		return;
 	});
 	const m_fpsElement = ManipulateDom.ComponentFps.factory(document);
 	document.body.appendChild(m_fpsElement.getElement());
 
-	// const m_editCamera = ManipulateDom.ComponentEditOrbitalCamera.factoryDistancePosAtLeftUp(
-	// 	document, 
-	// 	5.0, 0.0, 10.0, 0.1, 
-	// 	m_cameraPos,
-	// 	m_cameraAt,
-	// 	m_cameraLeft,
-	// 	m_cameraUp,
-	// 	undefined, undefined, 0.01
-	// );
-	// document.body.appendChild(m_editCamera.getElement());
+	const m_dataServerData = {
+		"cameraOrigin" : Core.Vector3.factoryFloat32(0.0, 0.0, 0.0),
+		"cameraZoom" : 1.0,
+		"cameraPos": Core.Vector3.factoryFloat32(0.0, 0.0, 0.0),
+		"cameraAt" : Core.Vector3.factoryFloat32(0.0, 1.0, 0.0),
+		"cameraLeft" : Core.Vector3.factoryFloat32(-1.0, 0.0, 0.0),
+		"cameraUp" : Core.Vector3.factoryFloat32(0.0, 0.0, 1.0),
+		"viewportWidthHeightWidthhalfHeighthalf" : Core.Vector4.factoryFloat32(m_width, m_height, m_width / 2.0, m_height / 2.0),
+		"cameraFovhFovvFar" : Core.Vector3.factoryFloat32(120.0, 120.0, 100.0)
+	};
 
-	const m_dragCamera = ManipulateDom.ComponentClickDragCamera.factory(html5CanvasElement, {
-		"getStartOrigin" : function() { return Core.Vector3.factoryFloat32(0.0, 0.0, 0.0); },
-		"getZoom" : function() { return m_zoom; },
-		"setZoom" : function(in_zoom) { m_zoom = in_zoom; return; },
-		"getPos" : function() { return m_cameraPos; },
-		"getAt" : function() { return m_cameraAt; },
-		"getLeft" : function() { return m_cameraLeft; },
-		"getUp" : function() { return m_cameraUp; },
-	});
+	const m_dataServer = {
+		"getValue" : function(in_name){
+			if (in_name in m_dataServerData){
+				return m_dataServerData[in_name];
+			}
+			return undefined;
+		},
+		"setValue" : function(in_name, in_value){
+			if (in_name in m_dataServerData){
+				m_dataServerData[in_name] = in_value;
+				return;
+			}
+			return undefined;
+		},
+	};
+
+	const m_dragCamera = ManipulateDom.ComponentClickDragCamera.factory(html5CanvasElement, m_dataServer);
+	const m_gridComponent = WebGL.ComponentWorldGrid.factory(resourceManager, webGLContextWrapper, m_dataServer, 0.25, 8);
+	
+	ManipulateDom.ComponentClickDragCamera.factory(html5CanvasElement, m_dataServer);
 
 	return;
 }
