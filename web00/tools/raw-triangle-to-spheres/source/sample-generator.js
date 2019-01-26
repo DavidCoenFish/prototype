@@ -50,6 +50,7 @@ const visit = function(in_spaceInvestigator, in_sphereDiameter, in_min, in_dim){
 	const zCount = Math.ceil(in_dim[2] / (in_sphereDiameter * 0.5)) + 1;
 	for (var zIndex = 0; zIndex <= zCount; ++zIndex){
 		const localZ = calculateZ(in_min, zIndex, in_sphereDiameter);
+		in_spaceInvestigator.filterZ(localZ);
 
 		console.log(".");
 		for (var yIndex = 0; yIndex <= yCount; ++yIndex){

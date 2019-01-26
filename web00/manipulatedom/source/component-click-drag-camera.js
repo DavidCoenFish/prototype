@@ -53,17 +53,17 @@ const factory = function(in_clickDragElement, in_dataServer){
 		var rotation = Core.Quaternion.factoryIdentity();
 		if (undefined !== in_yawDeltaOrUndefined){
 			doRot = true;
-			const quat = Core.Quaternion.factoryAxisAngle(in_dataServer.getCameraUp(), in_yawDeltaOrUndefined);
+			const quat = Core.Quaternion.factoryAxisAngle(in_dataServer.getCameraUp(), -in_yawDeltaOrUndefined);
 			rotation = Core.Quaternion.multiplication(rotation, quat);
 		}
 		if (undefined !== in_pitchDeltaOrUndefined){
 			doRot = true;
-			const quat = Core.Quaternion.factoryAxisAngle(in_dataServer.getCameraLeft(), -in_pitchDeltaOrUndefined);
+			const quat = Core.Quaternion.factoryAxisAngle(in_dataServer.getCameraLeft(), in_pitchDeltaOrUndefined);
 			rotation = Core.Quaternion.multiplication(rotation, quat);
 		}
 		if (undefined !== in_rollDeltaOrUndefined){
 			doRot = true;
-			const quat = Core.Quaternion.factoryAxisAngle(in_dataServer.getCameraAt(), in_rollDeltaOrUndefined);
+			const quat = Core.Quaternion.factoryAxisAngle(in_dataServer.getCameraAt(), -in_rollDeltaOrUndefined);
 			rotation = Core.Quaternion.multiplication(rotation, quat);
 		}
 

@@ -2,8 +2,16 @@ const Geometry = require("./geometry.js");
 
 const factory = function(in_barycentricTriangleArray){
 	const m_xRayNormal = [1.0, 0.0, 0.0];
+	var m_zFilterTriangleArray = in_barycentricTriangleArray;
 	const result = Object.create({
-		"isPointInside" : function(in_pos3){
+		"filterZ" : function(in_z){
+			m_zFilterTriangleArray = [];
+			for (var index = 0; index < in_barycentricTriangleArray.length; ++index){
+				var triangle = in_barycentricTriangleArray[index];
+				if (true === triangle.boundsTestZ(in_z)){
+					m_zFilterTriangleArray.push(triangle);
+				}
+			}
 			// changed over to cache intersection on ray
 			return false;
 		},
@@ -11,8 +19,8 @@ const factory = function(in_barycentricTriangleArray){
 			//console.log("calculateDataOfInterestOnRayX");
 			var result = [];
 			const rayOrigin = [0.0, in_y, in_z];
-			for (var index = 0; index < in_barycentricTriangleArray.length; ++index){
-				var triangle = in_barycentricTriangleArray[index];
+			for (var index = 0; index < m_zFilterTriangleArray.length; ++index){
+				var triangle = m_zFilterTriangleArray[index];
 				if (false === triangle.boundsTestYZ(in_y, in_z)){
 					continue;
 				}
