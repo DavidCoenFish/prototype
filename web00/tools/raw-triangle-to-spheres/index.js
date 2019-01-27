@@ -42,7 +42,7 @@ const loadGltr = function(in_outputFilePath, in_inputFilePath, in_sphereDiameter
 		}).then(function(in_rawTriangleArray) {	
 			return RawTriangleToSphere.run(in_rawTriangleArray, in_sphereDiameter);
 		}).then(function(in_sphereArray) {
-			console.log("in_sphereArray.length:" + in_sphereArray.length);
+			console.log("in_sphereArray.length:" + in_sphereArray.length / 4);
 			return FsExtra.writeJSON(in_outputFilePath, in_sphereArray);
 		}).then(function() {
 			console.log("done:" + new Date().toLocaleTimeString());

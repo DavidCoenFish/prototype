@@ -1,7 +1,7 @@
 const Core = require("core");
 const WebGL = require("webgl");
 const ManipulateDom = require("manipulatedom");
-const Asset = require("./spheretest01/asset_female_anatomy.js");
+const Asset = require("./spheretest01/asset.js");
 const Shader = require("./spheretest01/shader.js");
 const Material = require("./spheretest01/material.js");
 
@@ -20,7 +20,7 @@ const onPageLoad = function(){
 		m_height = html5CanvasElement.height;
 	}
 
-	const webGLContextWrapperParam = WebGL.WebGLContextWrapper.makeParamObject(false, true, false, [
+	const webGLContextWrapperParam = WebGL.WebGLContextWrapper.makeParamObject(false, true, true, [
 		"OES_texture_float"
 	]);
 	const webGLContextWrapper = WebGL.WebGLContextWrapper.factory(html5CanvasElement, webGLContextWrapperParam);
@@ -33,19 +33,18 @@ const onPageLoad = function(){
 	});
 
 	const m_viewportWidthHeightWidthhalfHeighthalf = Core.Vector4.factoryFloat32(m_width, m_height, m_width / 2.0, m_height / 2.0);
-	var m_sphereRadius = 0.01;
+	const m_cameraOrigin = Core.Vector3.factoryFloat32(0.0, 0.0, 0.0);
 	const m_cameraAt = Core.Vector3.factoryFloat32(0.0, 1.0, 0.0);
 	const m_cameraUp = Core.Vector3.factoryFloat32(0.0, 0.0, 1.0);
-	const m_cameraLeft = Core.Vector3.factoryFloat32(1.0, 0.0, 0.0);
+	const m_cameraLeft = Core.Vector3.factoryFloat32(-1.0, 0.0, 0.0);
 	const m_cameraPos = Core.Vector3.factoryFloat32(0.0, 0.0, 0.0);
+	var m_cameraZoom = 1.0;
 	const m_cameraFovhFovvFar = Core.Vector3.factoryFloat32(120.0, 120.0, 10.0);
 
 	const m_uniformServer = {
 		"setUniform" : function(localWebGLContextWrapper, in_key, in_position){
 			if (in_key === "u_viewportWidthHeightWidthhalfHeighthalf"){
 				WebGL.WebGLContextWrapperHelper.setUniformFloat4(localWebGLContextWrapper, in_position, m_viewportWidthHeightWidthhalfHeighthalf.getRaw());
-			} else if (in_key === "u_sphereRadius"){
-				WebGL.WebGLContextWrapperHelper.setUniformFloat(localWebGLContextWrapper, in_position, m_sphereRadius);
 			} else if (in_key === "u_cameraAt"){
 				WebGL.WebGLContextWrapperHelper.setUniformFloat3(localWebGLContextWrapper, in_position, m_cameraAt.getRaw());
 			} else if (in_key === "u_cameraUp"){
@@ -79,6 +78,8 @@ const onPageLoad = function(){
 		m_material.apply(webGLContextWrapper, m_webGLState);
 		m_model.draw(webGLContextWrapper, m_webGLState.getMapVertexAttribute());
 
+		m_gridComponent.draw(webGLContextWrapper, m_webGLState);
+
 		m_requestId = requestAnimationFrame(animationFrameCallback);
 	}
 
@@ -94,16 +95,39 @@ const onPageLoad = function(){
 	const m_fpsElement = ManipulateDom.ComponentFps.factory(document);
 	document.body.appendChild(m_fpsElement.getElement());
 
-	const m_editCamera = ManipulateDom.ComponentEditOrbitalCamera.factoryDistancePosAtLeftUp(
-		document, 
-		5.0, 0.0, 10.0, 0.1, 
-		m_cameraPos,
-		m_cameraAt,
-		m_cameraLeft,
-		m_cameraUp,
-		undefined, undefined, 0.01
-	);
-	document.body.appendChild(m_editCamera.getElement());
+	const m_dataServer = {
+		"getCameraOrigin" : function(){
+			return m_cameraOrigin;
+		},
+		"getCameraZoom" : function(){
+			return m_cameraZoom;
+		},
+		"getCameraPos" : function(){
+			return m_cameraPos;
+		},
+		"getCameraAt" : function(){
+			return m_cameraAt;
+		},
+		"getCameraLeft" : function(){
+			return m_cameraLeft;
+		},
+		"getCameraUp" : function(){
+			return m_cameraUp;
+		},
+		"getCameraFovhFovvFar" : function(){
+			return m_cameraFovhFovvFar;
+		},
+		"getViewportWidthHeightWidthhalfHeighthalf" : function(){
+			return m_viewportWidthHeightWidthhalfHeighthalf;
+		},
+		"setCameraZoom" : function(in_value){
+			m_cameraZoom = in_value;
+			return;
+		},
+	};
+
+	const m_dragCamera = ManipulateDom.ComponentClickDragCamera.factory(html5CanvasElement, m_dataServer);
+	const m_gridComponent = WebGL.ComponentWorldGrid.factory(resourceManager, webGLContextWrapper, m_dataServer, 0.25, 8);
 
 	return;
 }

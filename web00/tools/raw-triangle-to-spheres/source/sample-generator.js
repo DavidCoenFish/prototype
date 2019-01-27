@@ -55,6 +55,7 @@ const visit = function(in_spaceInvestigator, in_sphereDiameter, in_min, in_dim){
 		console.log(".");
 		for (var yIndex = 0; yIndex <= yCount; ++yIndex){
 			const localY = calculateY(in_min, yIndex, zIndex, in_sphereDiameter);
+			in_spaceInvestigator.filterY(localY);
 			const dataOfInterestOnRayX = in_spaceInvestigator.calculateDataOfInterestOnRayX(localY, localZ);
 
 			for (var xIndex = 0; xIndex <= xCount; ++xIndex){

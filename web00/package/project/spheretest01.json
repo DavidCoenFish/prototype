@@ -10,7 +10,7 @@
 	},
 	"copyFileDest" : "js/spheretest01", 
 	"copyFileArray" :  [
-		"source/spheretest01/data_female_anatomy.js"
+		"source/spheretest01/data.js"
 		],
 	"outputRootDir": "output"
 }

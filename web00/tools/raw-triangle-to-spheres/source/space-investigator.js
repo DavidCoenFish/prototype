@@ -3,6 +3,7 @@ const Geometry = require("./geometry.js");
 const factory = function(in_barycentricTriangleArray){
 	const m_xRayNormal = [1.0, 0.0, 0.0];
 	var m_zFilterTriangleArray = in_barycentricTriangleArray;
+	var m_yFilterTriangleArray = in_barycentricTriangleArray;
 	const result = Object.create({
 		"filterZ" : function(in_z){
 			m_zFilterTriangleArray = [];
@@ -15,12 +16,23 @@ const factory = function(in_barycentricTriangleArray){
 			// changed over to cache intersection on ray
 			return false;
 		},
+		"filterY" : function(in_y){
+			m_yFilterTriangleArray = [];
+			for (var index = 0; index < m_zFilterTriangleArray.length; ++index){
+				var triangle = m_zFilterTriangleArray[index];
+				if (true === triangle.boundsTestY(in_y)){
+					m_yFilterTriangleArray.push(triangle);
+				}
+			}
+			// changed over to cache intersection on ray
+			return false;
+		},
 		"calculateDataOfInterestOnRayX" : function(in_y, in_z){
 			//console.log("calculateDataOfInterestOnRayX");
 			var result = [];
 			const rayOrigin = [0.0, in_y, in_z];
-			for (var index = 0; index < m_zFilterTriangleArray.length; ++index){
-				var triangle = m_zFilterTriangleArray[index];
+			for (var index = 0; index < m_yFilterTriangleArray.length; ++index){
+				var triangle = m_yFilterTriangleArray[index];
 				if (false === triangle.boundsTestYZ(in_y, in_z)){
 					continue;
 				}

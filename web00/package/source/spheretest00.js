@@ -139,8 +139,6 @@ const onPageLoad = function(){
 	const m_dragCamera = ManipulateDom.ComponentClickDragCamera.factory(html5CanvasElement, m_dataServer);
 	const m_gridComponent = WebGL.ComponentWorldGrid.factory(resourceManager, webGLContextWrapper, m_dataServer, 0.25, 8);
 
-	ManipulateDom.ComponentClickDragCamera.factory(html5CanvasElement, m_dataServer);
-
 	return;
 }
 

@@ -8,8 +8,9 @@
     "female_anatomy_10k_model": "node --nolazy --inspect-brk=5858 index.js output\\asset_female_anatomy_10k_model.js output\\data_female_anatomy_10k_model.js input\\spheres_female_anatomy_10k.json model",
 	"male_anatomy_10k_model": "node --nolazy --inspect-brk=5858 index.js output\\asset_male_anatomy_10k_model.js output\\data_male_anatomy_10k_model.js input\\spheres_male_anatomy_10k.json model",
     "skeleton_10k_model": "node --nolazy --inspect-brk=5858 index.js output\\asset_skeleton_10k_model.js output\\data_skeleton_10k_model.js input\\spheres_skeleton_10k.json model",
+    "skeleton_10k_model_texture": "node --nolazy --inspect-brk=5858 index.js output\\asset_skeleton_10k_model_texture.js output\\data_skeleton_10k_model_texture.js input\\spheres_skeleton_10k.json model_texture",
     "skeleton_50k_model": "node --nolazy --inspect-brk=5858 index.js output\\asset_skeleton_50k_model.js output\\data_skeleton_50k_model.js input\\spheres_skeleton_50k.json model",
-    "skeleton_10k_model_texture": "node --nolazy --inspect-brk=5858 index.js output\\asset_skeleton_10k_model_texture.js output\\data_skeleton_10k_model_texture.js input\\spheres_skeleton_10k.json model_texture"
+    "skeleton_50k_model_texture": "node --nolazy --inspect-brk=5858 index.js output\\asset_skeleton_50k_model_texture.js output\\data_skeleton_50k_model_texture.js input\\spheres_skeleton_50k.json model_texture"
   },
   "dependencies": {
     "fs-extra": "^7.0.1",

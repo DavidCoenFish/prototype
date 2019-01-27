@@ -3,6 +3,7 @@ const FileSystem = require("fs");
 const FsExtra = require("fs-extra");
 const Path = require("path");
 const SphereToModel = require("./source/sphere-to-model.js");
+const SphereToModelTexture = require("./source/sphere-to-model-texture.js");
 
 console.log(new Date().toLocaleTimeString());
 
@@ -34,9 +35,13 @@ const loadGltr = function(in_outputAssetFilePath, in_outputDataFilePath, in_inpu
 			console.log("load file:" + in_inputFilePath);
 			return FsExtra.readJson(in_inputFilePath);
 		}).then(function(in_sphereArray) {
+			baseName = Path.basename(in_inputFilePath, ".json");
 			if (in_mode === "model"){
-				baseName = Path.basename(in_inputFilePath, ".json");
 				return SphereToModel.run(in_sphereArray, in_outputAssetFilePath, in_outputDataFilePath, baseName);
+			} else if (in_mode === "model_texture"){
+				return SphereToModelTexture.run(in_sphereArray, in_outputAssetFilePath, in_outputDataFilePath, baseName);
+			} else {
+				throw new Error("unknown mode:" + in_mode);
 			}
 		}).then(function() {
 			console.log("done:" + new Date().toLocaleTimeString());

@@ -111,6 +111,10 @@ const factory = function(in_pos3PointA, in_pos3PointB, in_pos3PointC){
 				(m_min[2] <= in_z) &&
 				(in_z <= m_max[2]));
 		},
+		"boundsTestY" : function(in_y){
+			return ((m_min[1] <= in_y) &&
+				(in_y <= m_max[1]));
+		},
 		"boundsTestZ" : function(in_z){
 			return ((m_min[2] <= in_z) &&
 				(in_z <= m_max[2]));
