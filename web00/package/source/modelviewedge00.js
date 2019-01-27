@@ -63,7 +63,10 @@ const onPageLoad = function(){
 	const m_cameraAt = Core.Vector3.factoryFloat32(0.0, 1.0, 0.0);
 	const m_cameraLeft = Core.Vector3.factoryFloat32(-1.0, 0.0, 0.0);
 	const m_cameraUp = Core.Vector3.factoryFloat32(0.0, 0.0, 1.0);
-	const m_cameraFovhFovvFar = Core.Vector3.factoryFloat32(120.0, 120.0, 100.0);
+	const fovV = 150.0;
+	const aspect = m_height / m_width;
+	const fovH = fovV / aspect;
+	const m_cameraFovhFovvFar = Core.Vector3.factoryFloat32(fovH, fovV, 100.0);
 	const m_viewportWidthHeightWidthhalfHeighthalf = Core.Vector4.factoryFloat32(m_width, m_height, m_width / 2.0, m_height / 2.0);
 	const m_dataServer = {
 		"getCameraPos" : function(){

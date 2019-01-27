@@ -5,7 +5,7 @@
 	"templateParam" : {
 		"title" : "modelviewedge00",
 		"canvasWidth" : "512px",
-		"canvasHeight" : "512px",
+		"canvasHeight" : "366px",
 		"bundleFilePath" : "js/modelviewedge00bundle.js"
 	},
 	"copyFileDest" : "js/modelviewedge00", 

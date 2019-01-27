@@ -97,21 +97,13 @@ const onPageLoad = function(){
 	const m_fpsElement = ManipulateDom.ComponentFps.factory(document);
 	document.body.appendChild(m_fpsElement.getElement());
 
-	const m_cameraOrigin = Core.Vector3.factoryFloat32(0.0, 0.0, 0.0);
-	var m_cameraZoom = 1.0;
-	const m_cameraPos = Core.Vector3.factoryFloat32(0.0, 0.0, 0.0);
+	const m_cameraPos = Core.Vector3.factoryFloat32(0.0, -1.0, 0.0);
 	const m_cameraAt = Core.Vector3.factoryFloat32(0.0, 1.0, 0.0);
 	const m_cameraLeft = Core.Vector3.factoryFloat32(-1.0, 0.0, 0.0);
 	const m_cameraUp = Core.Vector3.factoryFloat32(0.0, 0.0, 1.0);
 	const m_cameraFovhFovvFar = Core.Vector3.factoryFloat32(120.0, 120.0, 100.0);
 	const m_viewportWidthHeightWidthhalfHeighthalf = Core.Vector4.factoryFloat32(m_width, m_height, m_width / 2.0, m_height / 2.0);
 	const m_dataServer = {
-		"getCameraOrigin" : function(){
-			return m_cameraOrigin;
-		},
-		"getCameraZoom" : function(){
-			return m_cameraZoom;
-		},
 		"getCameraPos" : function(){
 			return m_cameraPos;
 		},
@@ -129,11 +121,7 @@ const onPageLoad = function(){
 		},
 		"getViewportWidthHeightWidthhalfHeighthalf" : function(){
 			return m_viewportWidthHeightWidthhalfHeighthalf;
-		},
-		"setCameraZoom" : function(in_value){
-			m_cameraZoom = in_value;
-			return;
-		},
+		}
 	};
 
 	const m_dragCamera = ManipulateDom.ComponentClickDragCamera.factory(html5CanvasElement, m_dataServer);
