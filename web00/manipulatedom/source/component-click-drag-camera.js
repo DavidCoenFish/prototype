@@ -45,68 +45,68 @@ const factory = function(in_clickDragElement, in_dataServer){
 	var m_oldY = undefined;
 
 	const update = function(in_yawDeltaOrUndefined, in_pitchDeltaOrUndefined, in_rollDeltaOrUndefined,
-		in_posXDeltaOrUndefined, in_posYDeltaOrUndefined, in_posZDeltaOrUndefined){
+		in_posXDeltaOrUndefined, in_posYDeltaOrUndefined, in_posZDeltaOrUndefined, in_zoomDeltaOrUndefined){
 		//console.log(in_yawDeltaOrUndefined, in_pitchDeltaOrUndefined, in_rollDeltaOrUndefined,
 		//in_posXDeltaOrUndefined, in_posYDeltaOrUndefined, in_posZDeltaOrUndefined);
 		
-		var doRot = false;
-		var rotation = Core.Quaternion.factoryIdentity();
-		if (undefined !== in_yawDeltaOrUndefined){
-			doRot = true;
-			const quat = Core.Quaternion.factoryAxisAngle(in_dataServer.getCameraUp(), -in_yawDeltaOrUndefined);
-			rotation = Core.Quaternion.multiplication(rotation, quat);
-		}
-		if (undefined !== in_pitchDeltaOrUndefined){
-			doRot = true;
-			const quat = Core.Quaternion.factoryAxisAngle(in_dataServer.getCameraLeft(), in_pitchDeltaOrUndefined);
-			rotation = Core.Quaternion.multiplication(rotation, quat);
-		}
-		if (undefined !== in_rollDeltaOrUndefined){
-			doRot = true;
-			const quat = Core.Quaternion.factoryAxisAngle(in_dataServer.getCameraAt(), -in_rollDeltaOrUndefined);
-			rotation = Core.Quaternion.multiplication(rotation, quat);
+		const at = in_dataServer.getCameraAt();
+		const up = in_dataServer.getCameraUp();
+		const left = in_dataServer.getCameraLeft();
+		if ((undefined !== in_yawDeltaOrUndefined) ||
+			(undefined !== in_pitchDeltaOrUndefined) ||
+			(undefined !== in_rollDeltaOrUndefined) ||
+			(undefined !== in_zoomDeltaOrUndefined)){
+		
+			var scale = (at.normaliseSelf() + up.normaliseSelf() + left.normaliseSelf()) / 3.0;
+/*
+			if (undefined !== in_zoomDeltaOrUndefined){
+				var localScale = (1.0 + (in_zoomDeltaOrUndefined * 0.1));
+				localScale = Math.max(0.1, Math.min(10.0, localScale));
+				scale *= localScale;
+			}
+*/
+			var rotation = Core.Quaternion.factoryIdentity();
+			if (undefined !== in_yawDeltaOrUndefined){
+				const quat = Core.Quaternion.factoryAxisAngle(up, -in_yawDeltaOrUndefined);
+				rotation = Core.Quaternion.multiplication(rotation, quat);
+			}
+			if (undefined !== in_pitchDeltaOrUndefined){
+				const quat = Core.Quaternion.factoryAxisAngle(left, in_pitchDeltaOrUndefined);
+				rotation = Core.Quaternion.multiplication(rotation, quat);
+			}
+			if (undefined !== in_rollDeltaOrUndefined){
+				const quat = Core.Quaternion.factoryAxisAngle(at, -in_rollDeltaOrUndefined);
+				rotation = Core.Quaternion.multiplication(rotation, quat);
+			}
+
+			{
+				const matrix = Core.Matrix33.factoryQuaternion(rotation);
+				const localAt = Core.Vector3.multiplyScalar(Core.Matrix33.transformVector3(matrix, at), scale);
+				at.set(localAt.getX(), localAt.getY(), localAt.getZ());
+				const localUp = Core.Vector3.multiplyScalar(Core.Matrix33.transformVector3(matrix, up), scale);
+				up.set(localUp.getX(), localUp.getY(), localUp.getZ());
+				const localLeft = Core.Vector3.multiplyScalar(Core.Matrix33.transformVector3(matrix, left), scale);
+				left.set(localLeft.getX(), localLeft.getY(), localLeft.getZ());
+			}
 		}
 
-		if (true === doRot){
-			const matrix = Core.Matrix33.factoryQuaternion(rotation);
-			const localAt = Core.Matrix33.transformVector3(matrix, in_dataServer.getCameraAt());
-			in_dataServer.getCameraAt().set(localAt.getX(), localAt.getY(), localAt.getZ());
-			const localUp = Core.Matrix33.transformVector3(matrix, in_dataServer.getCameraUp());
-			in_dataServer.getCameraUp().set(localUp.getX(), localUp.getY(), localUp.getZ());
-			const localLeft = Core.Matrix33.transformVector3(matrix, in_dataServer.getCameraLeft());
-			in_dataServer.getCameraLeft().set(localLeft.getX(), localLeft.getY(), localLeft.getZ());
-		}
-
-		const origin = in_dataServer.getCameraOrigin();
+		const pos = in_dataServer.getCameraPos();
 		if (undefined !== in_posXDeltaOrUndefined){
-			var left = in_dataServer.getCameraLeft();
-			origin.setX(origin.getX() + (left.getX() * in_posXDeltaOrUndefined));
-			origin.setY(origin.getY() + (left.getY() * in_posXDeltaOrUndefined));
-			origin.setZ(origin.getZ() + (left.getZ() * in_posXDeltaOrUndefined));
+			pos.setX(pos.getX() + (left.getX() * in_posXDeltaOrUndefined));
+			pos.setY(pos.getY() + (left.getY() * in_posXDeltaOrUndefined));
+			pos.setZ(pos.getZ() + (left.getZ() * in_posXDeltaOrUndefined));
 		}
 		
 		if (undefined !== in_posYDeltaOrUndefined){
-			var up = in_dataServer.getCameraUp();
-			origin.setX(origin.getX() + (up.getX() * in_posYDeltaOrUndefined));
-			origin.setY(origin.getY() + (up.getY() * in_posYDeltaOrUndefined));
-			origin.setZ(origin.getZ() + (up.getZ() * in_posYDeltaOrUndefined));
+			pos.setX(pos.getX() + (up.getX() * in_posYDeltaOrUndefined));
+			pos.setY(pos.getY() + (up.getY() * in_posYDeltaOrUndefined));
+			pos.setZ(pos.getZ() + (up.getZ() * in_posYDeltaOrUndefined));
 		}
 		
 		if (undefined !== in_posZDeltaOrUndefined){
-			var at = in_dataServer.getCameraAt();
-			origin.setX(origin.getX() + (at.getX() * in_posZDeltaOrUndefined));
-			origin.setY(origin.getY() + (at.getY() * in_posZDeltaOrUndefined));
-			origin.setZ(origin.getZ() + (at.getZ() * in_posZDeltaOrUndefined));
-		}
-
-		{
-			var at = in_dataServer.getCameraAt();
-			const pos = in_dataServer.getCameraPos();
-			const boomLength = claculateBoomLength(in_dataServer.getCameraZoom());
-
-			pos.setX(origin.getX() - (at.getX() * boomLength));
-			pos.setY(origin.getY() - (at.getY() * boomLength));
-			pos.setZ(origin.getZ() - (at.getZ() * boomLength));
+			pos.setX(pos.getX() + (at.getX() * in_posZDeltaOrUndefined));
+			pos.setY(pos.getY() + (at.getY() * in_posZDeltaOrUndefined));
+			pos.setZ(pos.getZ() + (at.getZ() * in_posZDeltaOrUndefined));
 		}
 	}
 
@@ -145,36 +145,19 @@ const factory = function(in_clickDragElement, in_dataServer){
 			}
 		}
 
-		const boomLength = claculateBoomLength(in_dataServer.getCameraZoom());
-		const moveScale = boomLength / innerRadius;
-
 		if (true === rmb){ //pan left-right or up-down
-			var cameraDeltaX = deltaX * moveScale;
-			var cameraDeltaY = deltaY * moveScale;
+			var cameraDeltaX = deltaX / innerRadius;
+			var cameraDeltaY = deltaY / innerRadius;
 		}
 
 		if (true === mmb){ //dolly
-			var cameraDeltaZ = deltaY * moveScale;
+			var cameraZoom = deltaX / innerRadius;
+			var cameraDeltaZ = deltaY / innerRadius;
 		}
 
-		update(yaw, pitch, roll, cameraDeltaX, cameraDeltaY, cameraDeltaZ);
-
-		//console.log("x: " + x + " y: " + y + " buttons:" + in_event.buttons);
+		update(yaw, pitch, roll, cameraDeltaX, cameraDeltaY, cameraDeltaZ, cameraZoom);
 
 		return;
-	}
-
-	const wheelCallback = function(in_event){
-		//console.log(in_event.deltaY);
-		var zoom = in_dataServer.getCameraZoom();
-		if (in_event.deltaY < 0.0){
-			zoom *= 0.75;
-		} else if (0.0 < in_event.deltaY){
-			zoom *= 1.3333333333333;
-		}
-		in_dataServer.setCameraZoom(zoom);
-		//console.log(zoom);
-		update();
 	}
 
 	//public methods ==========================
@@ -186,7 +169,6 @@ const factory = function(in_clickDragElement, in_dataServer){
 	});
 
 	in_clickDragElement.addEventListener("mousemove", mouseMoveCallback);
-	in_clickDragElement.addEventListener("wheel", wheelCallback);
 
 	return result;
 }
