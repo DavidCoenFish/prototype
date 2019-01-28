@@ -6,7 +6,7 @@ const factory = function(
 	//in_levelOrUndefined //mipmap?
 	)
 {
-	var m_textureWrapper = in_textureWrapper;
+	const m_textureWrapper = in_textureWrapper;
 	const m_targetEnumName = in_targetEnumName; //"FRAMEBUFFER"
 	const m_attachmentEnumName = in_attachmentEnumName; //"COLOR_ATTACHMENT0"
 	const m_texTargetEnumName = in_texTargetEnumName; //"TEXTURE_2D"
@@ -14,10 +14,6 @@ const factory = function(
 	
 	//public methods ==========================
 	const result = Object.create({
-		"setTextureWrapper" : function(localTextureWrapper){
-			m_textureWrapper = localTextureWrapper;
-			return;
-		},
 		"apply" : function(in_webGLContextWrapper){
 
 			const targetEnum = in_webGLContextWrapper.getEnum(m_targetEnumName);

@@ -22,7 +22,7 @@ void main() {
 
 	v_forceSum = forceSum;
 
-	gl_Position = vec4((a_uv.x * 2.0) - 1.0, (a_uv.y * 2.0) - 1.0, 0.0, 1.0);
+	gl_Position = vec4(a_uv.x - 1.0, a_uv.y - 1.0, 0.0, 1.0);
 	gl_PointSize = 1.0; //point size is diameter
 }
 `;
@@ -31,6 +31,7 @@ precision mediump float;
 varying vec3 v_forceSum;
 void main() {
 	gl_FragColor = vec4(v_forceSum.x, v_forceSum.y, v_forceSum.z, 1.0);
+	//gl_FragColor = vec4(100.0, 100.0, 100.0, 1.0);
 }
 `;
 const sVertexAttributeNameArray = ["a_uv"];
@@ -59,7 +60,6 @@ const factory = function(in_resourceManager, in_webGLContextWrapper, in_webGLSta
 	//public methods ==========================
 	const result = Object.create({
 		"run" : function(){
-			m_renderTargetData.setTextureWrapper(in_dataServer.getTextureForceSum());
 			m_renderTarget.apply(in_webGLContextWrapper);
 
 			m_material.setTextureArray([in_dataServer.getTexturePrevPrevPos(), in_dataServer.getTexturePrevPos()]);

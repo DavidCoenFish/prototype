@@ -45,7 +45,8 @@ const onPageLoad = function(){
 	}
 
 	const m_webGLContextWrapperParam = WebGL.WebGLContextWrapper.makeParamObject(false, true, true, [
-		"OES_texture_float"
+		"OES_texture_float"//,
+		//"EXT_color_buffer_float"
 	]);
 	const m_webGLContextWrapper = WebGL.WebGLContextWrapper.factory(m_html5CanvasElement, m_webGLContextWrapperParam);
 	const m_webGLState = WebGL.WebGLState.factory(m_webGLContextWrapper);
@@ -62,11 +63,31 @@ const onPageLoad = function(){
 
 	const m_cameraFovhFovvFar = Core.Vector3.factoryFloat32(120.0, 120.0, 10.0);
 	var m_timeDelta = 0.0;
-	var m_textureNewPos = m_resourceManager.getUniqueReference("model_texture", m_webGLContextWrapper);
-	var m_texturePrevPos = m_resourceManager.getUniqueReference("model_texture", m_webGLContextWrapper);
-	var m_texturePrevPrevPos = m_resourceManager.getUniqueReference("model_texture", m_webGLContextWrapper);
-	var m_textureForceSum = WebGL.TextureWrapper.factoryFloatRGB(m_webGLContextWrapper, m_textureNewPos.getWidth(), m_textureNewPos.getHeight());
-	var m_textureCollisionResolvedForceSum = WebGL.TextureWrapper.factoryFloatRGB(m_webGLContextWrapper, m_textureNewPos.getWidth(), m_textureNewPos.getHeight());
+	const m_textureArray = [];
+	m_textureArray.push(m_resourceManager.getUniqueReference("model_texture", m_webGLContextWrapper));
+	m_textureArray.push(m_resourceManager.getUniqueReference("model_texture", m_webGLContextWrapper));
+	m_textureArray.push(m_resourceManager.getUniqueReference("model_texture", m_webGLContextWrapper));
+
+	const m_renderTargetArray = [];
+	m_renderTargetArray.push(WebGL.RenderTargetWrapper.factory(
+		m_webGLContextWrapper,
+		[ WebGL.RenderTargetData.factory(m_textureArray[0], "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D") ]
+	));
+	m_renderTargetArray.push(WebGL.RenderTargetWrapper.factory(
+		m_webGLContextWrapper,
+		[ WebGL.RenderTargetData.factory(m_textureArray[1], "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D") ]
+	));
+	m_renderTargetArray.push(WebGL.RenderTargetWrapper.factory(
+		m_webGLContextWrapper,
+		[ WebGL.RenderTargetData.factory(m_textureArray[2], "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D") ]
+	));
+
+	var m_renderTargetIndex = 0;
+
+	const m_textureWidth = m_textureArray[0].getWidth();
+	const m_textureHeight = m_textureArray[0].getHeight();
+	var m_textureForceSum = WebGL.TextureWrapper.factoryFloatRGB(m_webGLContextWrapper, m_textureWidth, m_textureHeight);
+	var m_textureCollisionResolvedForceSum = WebGL.TextureWrapper.factoryFloatRGB(m_webGLContextWrapper, m_textureWidth, m_textureHeight);
 
 	const m_dataServer = {
 		"getCameraPos" : function(){
@@ -91,31 +112,34 @@ const onPageLoad = function(){
 			return m_timeDelta;
 		},
 		"getTextureNewPos" : function(){
-			return m_textureNewPos;
-		},
-		"setTextureNewPos" : function(in_textureNewPos){
-			m_textureNewPos = in_textureNewPos;
-			return;
+			return m_textureArray[(m_renderTargetIndex + 2) % 3];
 		},
 		"getTexturePrevPos" : function(){
-			return m_texturePrevPos;
-		},
-		"setTexturePrevPos" : function(in_texturePrevPos){
-			m_texturePrevPos = in_texturePrevPos;
-			return;
+			return m_textureArray[(m_renderTargetIndex + 1) % 3];
 		},
 		"getTexturePrevPrevPos" : function(){
-			return m_texturePrevPrevPos;
-		},
-		"setTexturePrevPrevPos" : function(in_texturePrevPrevPos){
-			m_texturePrevPrevPos = in_texturePrevPrevPos;
-			return;
+			return m_textureArray[(m_renderTargetIndex + 0) % 3];
 		},
 		"getTextureForceSum" : function(){
 			return m_textureForceSum;
 		},
 		"getTextureCollisionResolvedForceSum" : function(){
 			return m_textureCollisionResolvedForceSum;
+		},
+
+		"getRenderTargetNewPos" : function(){
+			return m_renderTargetArray[(m_renderTargetIndex + 2) % 3];
+		},
+		"getRenderTargetPrevPos" : function(){
+			return m_renderTargetArray[(m_renderTargetIndex + 1) % 3];
+		},
+		"getRenderTargetPrevPrevPos" : function(){
+			return m_renderTargetArray[(m_renderTargetIndex + 0) % 3];
+		},
+
+		"cycleTextures" : function(){
+			m_renderTargetIndex = (m_renderTargetIndex + 1) % 3;
+			return;
 		},
 	};
 
@@ -125,6 +149,17 @@ const onPageLoad = function(){
 	const m_stagePresent = StagePresent.factory(m_resourceManager, m_webGLContextWrapper, m_webGLState, m_dataServer);
 	const m_stagePrepNextLoop = StagePrepNextLoop.factory(m_resourceManager, m_webGLContextWrapper, m_webGLState, m_dataServer);
 
+	const m_quad0 = WebGL.ComponentScreenTextureQuad.factory(m_resourceManager, m_webGLContextWrapper, m_dataServer.getTextureForceSum(), Core.Vector2.factoryFloat32(-1.0, 0.0), Core.Vector2.factoryFloat32(0.0, 1.0));
+	const m_quad1 = WebGL.ComponentScreenTextureQuad.factory(m_resourceManager, m_webGLContextWrapper, m_dataServer.getTextureCollisionResolvedForceSum(), Core.Vector2.factoryFloat32(-1.0, -1.0), Core.Vector2.factoryFloat32(0.0, 0.0));
+
+	//m_stageGetForceSum.run();
+	//m_stageResolveForceSumVrsCollision.run(); 
+	//m_stageConstuctNewPos.run();
+	//m_stagePresent.run();
+	//m_stagePrepNextLoop.run();
+
+	var m_step = true;
+	var m_trace = 0;
 	var m_prevTimeStamp = undefined;
 	const m_clearColor = Core.Colour4.factoryFloat32(0.5, 0.5, 0.5, 1.0);
 	const animationFrameCallback = function(in_timestamp){
@@ -132,18 +167,35 @@ const onPageLoad = function(){
 		WebGL.WebGLContextWrapperHelper.clear(m_webGLContextWrapper, m_clearColor, 1.0);
 
 		if (undefined !== m_prevTimeStamp){
-			m_timeDelta = in_timestamp - m_prevTimeStamp;
+			m_timeDelta = (in_timestamp - m_prevTimeStamp) / 1000.0;
 		}
 		m_prevTimeStamp = in_timestamp;
 
-		m_stageGetForceSum.run();
-		m_stageResolveForceSumVrsCollision.run(); 
-		m_stageConstuctNewPos.run();
-		m_stagePresent.run();
-		m_stagePrepNextLoop.run();
-
 		m_gridComponent.draw(m_webGLContextWrapper, m_webGLState);
-		m_requestId = requestAnimationFrame(animationFrameCallback);
+		//m_quad0.setTexture(m_dataServer.getTexturePrevPos());
+		//m_quad0.draw(m_webGLContextWrapper, m_webGLState);
+		m_quad1.setTexture(m_dataServer.getTextureNewPos());
+		m_quad1.draw(m_webGLContextWrapper, m_webGLState);
+
+		if(true === m_step){
+			if (0.1 < m_timeDelta){
+				m_timeDelta = 0.1;
+			}
+			m_timeDelta = 0.01;
+			if (0.0 < m_timeDelta){
+				m_stagePrepNextLoop.run();
+				m_stageGetForceSum.run();
+				m_stageResolveForceSumVrsCollision.run(); 
+				m_stageConstuctNewPos.run();
+			}
+			//m_step = false;
+		}
+		m_stagePresent.run();
+		if (m_trace < 60){
+			m_trace += 1;
+			ManipulateDom.AutoDownload.autoSnapShot(document, m_html5CanvasElement, "physics20190128_" + m_trace + ".png");
+			m_requestId = requestAnimationFrame(animationFrameCallback);
+		}
 	}
 
 	var m_requestId = requestAnimationFrame(animationFrameCallback);
@@ -159,6 +211,10 @@ const onPageLoad = function(){
 		console.log("m_cameraPos" + m_cameraPos.getX() + ", " + m_cameraPos.getY() + ", " + m_cameraPos.getZ());
 		return;
 	});
+	ManipulateDom.Button.addSimpleButton(document, document.body, "step", function(in_event){
+		m_step = true;
+	});
+
 	const m_fpsElement = ManipulateDom.ComponentFps.factory(document);
 	document.body.appendChild(m_fpsElement.getElement());
 

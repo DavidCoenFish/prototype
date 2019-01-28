@@ -9,6 +9,8 @@ TEXTURE_WRAP_T	REPEAT (default value), CLAMP_TO_EDGE, MIRRORED_REPEAT
 
  */
 
+var sId = 0;
+
 const factory = function(
 	in_webGLContextWrapper, 
 	in_width, 
@@ -37,6 +39,7 @@ const factory = function(
 
 	//const
 	var m_webglTexture = undefined;
+	var m_id = ++sId;
 
 	//public methods ==========================
 	const result = Object.create({
@@ -48,6 +51,9 @@ const factory = function(
 				in_webGLContextWrapper.callMethod("bindTexture", targetEnum, m_webglTexture);
 			}
 			return;
+		},
+		"getId" : function(){
+			return m_id;
 		},
 		"getWebGLTexture" : function(){
 			return m_webglTexture;

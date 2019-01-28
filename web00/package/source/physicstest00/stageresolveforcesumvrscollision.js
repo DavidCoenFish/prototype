@@ -13,15 +13,18 @@ uniform float u_timeStep;
 void main() {
 	vec4 prevPos = texture2D(u_samplerPrevPos, a_uv);
 	vec4 forceSum = texture2D(u_samplerForceSum, a_uv);
+	float radius = prevPos.w / 2.0;
+	float predectedHeight = prevPos.z + (forceSum.z * u_timeStep * u_timeStep);
 
-	float height = prevPos.z - prevPos.w;
+	float height = predectedHeight - radius;
 	if (height < 0.0){
-		forceSum.z = 0.0;
+		float targetDisplacment = prevPos.z - radius;
+		forceSum.z = -targetDisplacment / (u_timeStep * u_timeStep);
 	}
 
 	v_forceSum = forceSum.xyz;
 
-	gl_Position = vec4((a_uv.x * 2.0) - 1.0, (a_uv.y * 2.0) - 1.0, 0.0, 1.0);
+	gl_Position = vec4(a_uv.x - 1.0, a_uv.y - 1.0, 0.0, 1.0);
 	gl_PointSize = 1.0; //point size is diameter
 }
 `;
@@ -58,7 +61,6 @@ const factory = function(in_resourceManager, in_webGLContextWrapper, in_webGLSta
 	//public methods ==========================
 	const result = Object.create({
 		"run" : function(){
-			m_renderTargetData.setTextureWrapper(in_dataServer.getTextureCollisionResolvedForceSum());
 			m_renderTarget.apply(in_webGLContextWrapper);
 
 			m_material.setTextureArray([in_dataServer.getTexturePrevPos(), in_dataServer.getTextureForceSum()]);

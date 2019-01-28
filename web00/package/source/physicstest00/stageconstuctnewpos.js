@@ -1,3 +1,4 @@
+const Core = require("core");
 const WebGL = require("webgl");
 
 	// input [prev_pos, collision_resolved_force_sum]
@@ -14,9 +15,10 @@ void main() {
 	vec4 forceSum = texture2D(u_samplerForceSum, a_uv);
 
 	v_sphere.xyz = prevPos.xyz + (forceSum.xyz * u_timeStep * u_timeStep);
+	//v_sphere.xyz = prevPos.xyz + vec3(0.0, 0.0, -u_timeStep);
 	v_sphere.w = prevPos.w;
 
-	gl_Position = vec4((a_uv.x * 2.0) - 1.0, (a_uv.y * 2.0) - 1.0, 0.0, 1.0);
+	gl_Position = vec4(a_uv.x - 1.0, a_uv.y - 1.0, 0.0, 1.0);
 	gl_PointSize = 1.0; //point size is diameter
 }
 `;
@@ -44,19 +46,23 @@ const factory = function(in_resourceManager, in_webGLContextWrapper, in_webGLSta
 		}
 	};
 	const m_shader = WebGL.ShaderWrapper.factory(in_webGLContextWrapper, sVertexShaserSource, sFragmentShaderSource, m_uniformServer, sVertexAttributeNameArray, sUniformNameArray);
-	const m_material = WebGL.MaterialWrapper.factory(m_shader, [in_dataServer.getTexturePrevPos(), in_dataServer.getTextureCollisionResolvedForceSum()]);
-	const m_model = in_resourceManager.getCommonReference("model", in_webGLContextWrapper);
+	const m_material = WebGL.MaterialWrapper.factory(
+		m_shader, 
+		[in_dataServer.getTexturePrevPos(), in_dataServer.getTextureCollisionResolvedForceSum()],
+		);
+	m_material.setColorMask(true, true, true, true);
 
-	const m_renderTargetData = WebGL.RenderTargetData.factory(in_dataServer.getTextureNewPos(), "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D");
-	const m_renderTarget = WebGL.RenderTargetWrapper.factory(in_webGLContextWrapper, [m_renderTargetData]);
+	const m_model = in_resourceManager.getCommonReference("model", in_webGLContextWrapper);
 
 	//public methods ==========================
 	const result = Object.create({
 		"run" : function(){
-			m_renderTargetData.setTextureWrapper(in_dataServer.getTextureNewPos());
+			var m_renderTarget = in_dataServer.getRenderTargetNewPos();
 			m_renderTarget.apply(in_webGLContextWrapper);
-
+			//WebGL.WebGLContextWrapperHelper.clear(in_webGLContextWrapper, m_clearColor);
+	
 			m_material.setTextureArray([in_dataServer.getTexturePrevPos(), in_dataServer.getTextureCollisionResolvedForceSum()]);
+
 			m_material.apply(in_webGLContextWrapper, in_webGLState);
 			m_model.draw(in_webGLContextWrapper, in_webGLState.getMapVertexAttribute());
 
