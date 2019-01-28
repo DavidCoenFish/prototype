@@ -1,4 +1,3 @@
-const Core = require("core");
 const WebGL = require("webgl");
 
 const factory = function(in_shader, in_textureArray){

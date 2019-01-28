@@ -61,6 +61,10 @@ const factory = function(
 		// "getShader" : function(){
 		// 	return m_shaderWrapper;
 		// },
+		"setTextureArray" : function(in_textureArray){
+			m_textureArray = in_textureArray;
+			return;
+		},
 		"apply" : function(in_webGLContextWrapper, in_webGLState){
 
 			in_webGLState.setMaterialOrUndefined(result);

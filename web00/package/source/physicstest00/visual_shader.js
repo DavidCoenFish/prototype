@@ -1,4 +1,3 @@
-const Core = require("core");
 const WebGL = require("webgl");
 
 const sVertexShader = `
