@@ -55,13 +55,18 @@ const onPageLoad = function(){
 	});
 
 	const m_viewportWidthHeightWidthhalfHeighthalf = Core.Vector4.factoryFloat32(m_width, m_height, m_width / 2.0, m_height / 2.0);
-	const m_cameraAt = Core.Vector3.factoryFloat32(0.0, 1.0, 0.0);
-	const m_cameraUp = Core.Vector3.factoryFloat32(0.0, 0.0, 1.0);
-	const m_cameraLeft = Core.Vector3.factoryFloat32(-1.0, 0.0, 0.0);
-	const m_cameraPos = Core.Vector3.factoryFloat32(0.0, -1.0, 0.0);
+	const m_cameraAt = Core.Vector3.factoryFloat32(0.5058590769767761, 0.7736392617225647, 0.3815615177154541);
+	const m_cameraUp = Core.Vector3.factoryFloat32(-0.1547088921070099, -0.3537920415401459, 0.9224405884742737);
+	const m_cameraLeft = Core.Vector3.factoryFloat32(-0.8486290574073792, 0.5256565809249878, 0.05928056687116623);
+	const m_cameraPos = Core.Vector3.factoryFloat32(-0.2982713580131531, -0.37982672452926636, 0.2146763950586319);
+
 	const m_cameraFovhFovvFar = Core.Vector3.factoryFloat32(120.0, 120.0, 10.0);
 	var m_timeDelta = 0.0;
 	var m_textureNewPos = m_resourceManager.getUniqueReference("model_texture", m_webGLContextWrapper);
+	var m_texturePrevPos = m_resourceManager.getUniqueReference("model_texture", m_webGLContextWrapper);
+	var m_texturePrevPrevPos = m_resourceManager.getUniqueReference("model_texture", m_webGLContextWrapper);
+	var m_textureForceSum = WebGL.TextureWrapper.factoryFloatRGB(m_webGLContextWrapper, m_textureNewPos.getWidth(), m_textureNewPos.getHeight());
+	var m_textureCollisionResolvedForceSum = WebGL.TextureWrapper.factoryFloatRGB(m_webGLContextWrapper, m_textureNewPos.getWidth(), m_textureNewPos.getHeight());
 
 	const m_dataServer = {
 		"getCameraPos" : function(){
@@ -87,7 +92,31 @@ const onPageLoad = function(){
 		},
 		"getTextureNewPos" : function(){
 			return m_textureNewPos;
-		}
+		},
+		"setTextureNewPos" : function(in_textureNewPos){
+			m_textureNewPos = in_textureNewPos;
+			return;
+		},
+		"getTexturePrevPos" : function(){
+			return m_texturePrevPos;
+		},
+		"setTexturePrevPos" : function(in_texturePrevPos){
+			m_texturePrevPos = in_texturePrevPos;
+			return;
+		},
+		"getTexturePrevPrevPos" : function(){
+			return m_texturePrevPrevPos;
+		},
+		"setTexturePrevPrevPos" : function(in_texturePrevPrevPos){
+			m_texturePrevPrevPos = in_texturePrevPrevPos;
+			return;
+		},
+		"getTextureForceSum" : function(){
+			return m_textureForceSum;
+		},
+		"getTextureCollisionResolvedForceSum" : function(){
+			return m_textureCollisionResolvedForceSum;
+		},
 	};
 
 	const m_stageGetForceSum = StageGetForceSum.factory(m_resourceManager, m_webGLContextWrapper, m_webGLState, m_dataServer);
@@ -124,6 +153,10 @@ const onPageLoad = function(){
 		cancelAnimationFrame(m_requestId);
 		m_requestId = undefined;
 		console.log("end");
+		console.log("m_cameraAt" + m_cameraAt.getX() + ", " + m_cameraAt.getY() + ", " + m_cameraAt.getZ());
+		console.log("m_cameraUp" + m_cameraUp.getX() + ", " + m_cameraUp.getY() + ", " + m_cameraUp.getZ());
+		console.log("m_cameraLeft" + m_cameraLeft.getX() + ", " + m_cameraLeft.getY() + ", " + m_cameraLeft.getZ());
+		console.log("m_cameraPos" + m_cameraPos.getX() + ", " + m_cameraPos.getY() + ", " + m_cameraPos.getZ());
 		return;
 	});
 	const m_fpsElement = ManipulateDom.ComponentFps.factory(document);
