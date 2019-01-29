@@ -55,7 +55,7 @@ const onPageLoad = function(){
 	}
 
 	var frameTrace = 0;
-	var frameMax = 100;
+	var frameMax = 10000;
 	var fps = 30; 
 	var targetTimePerFrame = 1000.0 / fps;
 	var m_startTime = undefined;
@@ -78,8 +78,8 @@ const onPageLoad = function(){
 		m_stage0.draw(webGLContextWrapper, m_webGLState, frameTrace);
 		m_stage1.draw(webGLContextWrapper, m_webGLState);
 
-		const capturedImage = html5CanvasElement.toDataURL("image/png");
-		saveFile(capturedImage, frameTrace);
+		//const capturedImage = html5CanvasElement.toDataURL("image/png");
+		//saveFile(capturedImage, frameTrace);
 
 		frameTrace += 1;
 		if (frameTrace <= frameMax){

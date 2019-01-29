@@ -60,13 +60,13 @@ const getRawTiangleArrayDim = function(in_rawTiangleArray){
 }
 
 
-const run = function(in_rawTriangle, in_sphereDiameter){
+const run = function(in_rawTriangle, in_sphereDiameter, in_debugIndexArray){
 	const barycentricTriangleArray = makeBarycentricTriangleArray(in_rawTriangle);
 	const dim = getRawTiangleArrayDim(in_rawTriangle);
 	const min = getRawTiangleArrayMin(in_rawTriangle);
 
 	const spaceInvestigator = SpaceInvestigator.factory(barycentricTriangleArray);
-	const arraySphereInside = SampleGenerator.visit(spaceInvestigator, in_sphereDiameter, min, dim);
+	const arraySphereInside = SampleGenerator.visit(spaceInvestigator, in_sphereDiameter, min, dim, in_debugIndexArray);
 
 	return arraySphereInside;
 }

@@ -1,5 +1,4 @@
 const WebGL = require("webgl");
-const Math = require("math");
 
 const vertexShaderSource = `
 attribute vec2 a_position;

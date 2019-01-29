@@ -6,12 +6,30 @@ const Helper = require("./source/helper.js");
 console.log(new Date().toLocaleTimeString());
 
 const projectArray = [];
-const normal = false; //true;
+const normal = false; //true;//
 if (true === normal){
 	const projectPath = Path.join(__dirname, "/project");
 	Helper.gatherProjectArray(projectArray, projectPath);
 } else {
-	projectArray.push(require("./project/physicstest00.json"));
+	projectArray.push(require("./project/physicstest00.json")); //physicstest01.json"));
 }
+
+// celticknot.json
+// clear.json
+// context.json
+// heightmap.json
+// modelviewedge00.json
+// noise.json
+// octtreespheretest.json
+// physicstest00.json
+// physicstest01.json
+// properties.json
+// rendertarget.json
+// spheretest00.json
+// spheretest01.json
+// texture.json
+// triangle.json
+// water00.json
+// water01.json
 
 Helper.runProjectArray(projectArray)

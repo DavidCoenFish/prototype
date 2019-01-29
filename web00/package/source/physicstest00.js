@@ -181,7 +181,7 @@ const onPageLoad = function(){
 			if (0.1 < m_timeDelta){
 				m_timeDelta = 0.1;
 			}
-			m_timeDelta = 0.01;
+			//m_timeDelta = 0.01;
 			if (0.0 < m_timeDelta){
 				m_stagePrepNextLoop.run();
 				m_stageGetForceSum.run();
@@ -193,7 +193,7 @@ const onPageLoad = function(){
 		m_stagePresent.run();
 		if (m_trace < 60){
 			m_trace += 1;
-			ManipulateDom.AutoDownload.autoSnapShot(document, m_html5CanvasElement, "physics20190128_" + m_trace + ".png");
+			//ManipulateDom.AutoDownload.autoSnapShot(document, m_html5CanvasElement, "physics20190128_" + m_trace + ".png");
 			m_requestId = requestAnimationFrame(animationFrameCallback);
 		}
 	}

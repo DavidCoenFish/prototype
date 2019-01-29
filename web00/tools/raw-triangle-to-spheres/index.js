@@ -34,16 +34,22 @@ const makeDirectory = function(in_filePath){
 
 const loadGltr = function(in_outputFilePath, in_inputFilePath, in_sphereDiameter){
 
+	var debugIndexArray = [];
 	return Q(true).then(function(){
 			return makeDirectory(in_outputFilePath);
 		}).then(function() {	
 			console.log("load file:" + in_inputFilePath);
 			return FsExtra.readJson(in_inputFilePath);
 		}).then(function(in_rawTriangleArray) {	
-			return RawTriangleToSphere.run(in_rawTriangleArray, in_sphereDiameter);
+			return RawTriangleToSphere.run(in_rawTriangleArray, in_sphereDiameter, debugIndexArray);
 		}).then(function(in_sphereArray) {
 			console.log("in_sphereArray.length:" + in_sphereArray.length / 4);
 			return FsExtra.writeJSON(in_outputFilePath, in_sphereArray);
+		}).then(function() {
+			var baseName = Path.basename(in_outputFilePath, ".json");
+			var outputDebug = Path.join(Path.dirname(in_outputFilePath), baseName + "_index.json");
+			console.log("debugIndexArray.length:" + debugIndexArray.length);
+			return FsExtra.writeJSON(outputDebug, debugIndexArray);
 		}).then(function() {
 			console.log("done:" + new Date().toLocaleTimeString());
 		}).catch(function(in_reason){

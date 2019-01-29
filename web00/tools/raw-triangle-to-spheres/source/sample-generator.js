@@ -43,7 +43,7 @@ const calculateZ = function(in_min, in_zIndex, in_sphereDiameter){
 	return in_min[2] + (in_zIndex * in_sphereDiameter * 0.5);
 }
 
-const visit = function(in_spaceInvestigator, in_sphereDiameter, in_min, in_dim){
+const visit = function(in_spaceInvestigator, in_sphereDiameter, in_min, in_dim, in_debugIndexArray){
 	const floatArray = [];
 	const xCount = Math.ceil(in_dim[0] / in_sphereDiameter) + 1;
 	const yCount = Math.ceil(in_dim[1] / in_sphereDiameter) + 1;;
@@ -65,6 +65,10 @@ const visit = function(in_spaceInvestigator, in_sphereDiameter, in_min, in_dim){
 					floatArray.push(localY);
 					floatArray.push(localZ);
 					floatArray.push(in_sphereDiameter);
+
+					in_debugIndexArray.push(xIndex);
+					in_debugIndexArray.push(yIndex);
+					in_debugIndexArray.push(zIndex);
 				}
 			}
 		}

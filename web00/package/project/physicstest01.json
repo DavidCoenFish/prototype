@@ -1,0 +1,16 @@
+{
+	"name" : "physicstest01",
+	"source" : "physicstest01.js",
+	"template" : "template/simplecanvas.htm.template",
+	"templateParam" : {
+		"title" : "physicstest01",
+		"canvasWidth" : "512px",
+		"canvasHeight" : "512px",
+		"bundleFilePath" : "js/physicstest01bundle.js"
+	},
+	"copyFileDest" : "js/physicstest01", 
+	"copyFileArray" :  [
+		"source/physicstest01/data.js"
+		],
+	"outputRootDir": "output"
+}
