@@ -11,7 +11,7 @@ if (true === normal){
 	const projectPath = Path.join(__dirname, "/project");
 	Helper.gatherProjectArray(projectArray, projectPath);
 } else {
-	projectArray.push(require("./project/physicstest00.json")); //physicstest01.json"));
+	projectArray.push(require("./project/physicstest01.json")); //physicstest01.json"));
 }
 
 // celticknot.json

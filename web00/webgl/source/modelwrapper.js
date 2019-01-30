@@ -100,8 +100,9 @@ const factory = function(
 		for (var key in in_mapVertexAttribute){
 			//console.log("mapVertexAttribute:" + key);
 			var position = in_mapVertexAttribute[key];
-			if (!(key in m_mapDataStream))
+			if (!(key in m_mapDataStream) || (-1 === position)){ 
 				continue;
+			}
 
 			var dataStream = m_mapDataStream[key];
 			dataStream.setupDraw(in_webGLContextWrapper, position);
@@ -130,7 +131,7 @@ const factory = function(
 		for (var key in in_mapVertexAttribute){
 			//console.log("mapVertexAttribute:" + key);
 			var position = in_mapVertexAttribute[key];
-			if (!(key in m_mapDataStream))
+			if (!(key in m_mapDataStream) || (-1 === position))
 				continue;
 			var dataStream = m_mapDataStream[key];
 			dataStream.tearDownDraw(in_webGLContextWrapper, position);

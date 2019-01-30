@@ -83,7 +83,7 @@ const getDataArrayText = function(in_sphereArray, in_uvDataArrayName, in_texture
 	var pixelCount = in_textureDim * in_textureDim;
 	for (var index = 0; index < pixelCount; index++){
 		var sphereIndex = index * 4;
-		if (sphereIndex <= in_sphereArray.length){
+		if (sphereIndex < in_sphereArray.length){
 			result += `${in_sphereArray[sphereIndex + 0]}, ${in_sphereArray[sphereIndex + 1]}, ${in_sphereArray[sphereIndex + 2]}, ${in_sphereArray[sphereIndex + 3]},\n`;
 		} else {
 			result += "0,0,0,0,\n";
@@ -132,7 +132,7 @@ const linkPoint = function(inout_arrayLinkData, in_sourceX, in_sourceY, in_sourc
 	const length = getLength(linkSphereX - sphereX, linkSphereY - sphereY, linkSphereZ - sphereZ);
 	const vIndex = Math.floor(linkSphereIndex / in_textureDim);
 	const v = (vIndex + vIndex + 1) / (in_textureDim + in_textureDim);
-	const uIndex = linkSphereIndex - (v * in_textureDim);
+	const uIndex = linkSphereIndex - (vIndex * in_textureDim);
 	const u = (uIndex + uIndex + 1) / (in_textureDim + in_textureDim);
 	inout_arrayLinkData.push(u);
 	inout_arrayLinkData.push(v);

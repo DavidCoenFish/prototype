@@ -1,13 +1,13 @@
 const Core = require("core");
 const WebGL = require("webgl");
 const ManipulateDom = require("manipulatedom");
-const Asset = require("./physicstest00/asset.js");
+const Asset = require("./physicstest01/asset.js");
 
-const StageGetForceSum = require("./physicstest00/stagegetforcesum.js");
-const StageResolveForceSumVrsCollision = require("./physicstest00/stageresolveforcesumvrscollision.js");
-const StageConstuctNewPos = require("./physicstest00/stageconstuctnewpos.js");
-const StagePresent = require("./physicstest00/stagepresent.js");
-const StagePrepNextLoop = require("./physicstest00/stageprepnextloop.js");
+const StageGetForceSum = require("./physicstest01/stagegetforcesum.js");
+const StageResolveForceSumVrsCollision = require("./physicstest01/stageresolveforcesumvrscollision.js");
+const StageConstuctNewPos = require("./physicstest01/stageconstuctnewpos.js");
+const StagePresent = require("./physicstest01/stagepresent.js");
+const StagePrepNextLoop = require("./physicstest01/stageprepnextloop.js");
 
 /*
 get force sum 
@@ -158,7 +158,7 @@ const onPageLoad = function(){
 	//m_stagePresent.run();
 	//m_stagePrepNextLoop.run();
 
-	var m_step = true;
+	var m_step = false;
 	var m_trace = 0;
 	var m_prevTimeStamp = undefined;
 	const m_clearColor = Core.Colour4.factoryFloat32(0.5, 0.5, 0.5, 1.0);
@@ -181,21 +181,21 @@ const onPageLoad = function(){
 			if (0.1 < m_timeDelta){
 				m_timeDelta = 0.1;
 			}
-			m_timeDelta = 0.01;
+			//m_timeDelta = 0.01;
 			if (0.0 < m_timeDelta){
 				m_stagePrepNextLoop.run();
 				m_stageGetForceSum.run();
 				m_stageResolveForceSumVrsCollision.run(); 
 				m_stageConstuctNewPos.run();
 			}
-			//m_step = false;
+			m_step = false;
 		}
 		m_stagePresent.run();
-		if (m_trace < 60){
+		//if (m_trace < 60){
 			m_trace += 1;
-			ManipulateDom.AutoDownload.autoSnapShot(document, m_html5CanvasElement, "physics20190128_" + m_trace + ".png");
+			//ManipulateDom.AutoDownload.autoSnapShot(document, m_html5CanvasElement, "physics20190128_" + m_trace + ".png");
 			m_requestId = requestAnimationFrame(animationFrameCallback);
-		}
+		//}
 	}
 
 	var m_requestId = requestAnimationFrame(animationFrameCallback);
@@ -205,10 +205,10 @@ const onPageLoad = function(){
 		cancelAnimationFrame(m_requestId);
 		m_requestId = undefined;
 		console.log("end");
-		console.log("m_cameraAt" + m_cameraAt.getX() + ", " + m_cameraAt.getY() + ", " + m_cameraAt.getZ());
-		console.log("m_cameraUp" + m_cameraUp.getX() + ", " + m_cameraUp.getY() + ", " + m_cameraUp.getZ());
-		console.log("m_cameraLeft" + m_cameraLeft.getX() + ", " + m_cameraLeft.getY() + ", " + m_cameraLeft.getZ());
-		console.log("m_cameraPos" + m_cameraPos.getX() + ", " + m_cameraPos.getY() + ", " + m_cameraPos.getZ());
+		console.log("m_cameraAt: [" + m_cameraAt.getX() + ", " + m_cameraAt.getY() + ", " + m_cameraAt.getZ() + "]");
+		console.log("m_cameraUp: [" + m_cameraUp.getX() + ", " + m_cameraUp.getY() + ", " + m_cameraUp.getZ() + "]");
+		console.log("m_cameraLeft: [" + m_cameraLeft.getX() + ", " + m_cameraLeft.getY() + ", " + m_cameraLeft.getZ() + "]");
+		console.log("m_cameraPos: [" + m_cameraPos.getX() + ", " + m_cameraPos.getY() + ", " + m_cameraPos.getZ() + "]");
 		return;
 	});
 	ManipulateDom.Button.addSimpleButton(document, document.body, "step", function(in_event){

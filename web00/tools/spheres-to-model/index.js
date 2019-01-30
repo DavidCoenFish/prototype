@@ -43,7 +43,7 @@ const loadGltr = function(in_outputAssetFilePath, in_outputDataFilePath, in_inpu
 				return SphereToModelTexture.run(in_sphereArray, in_outputAssetFilePath, in_outputDataFilePath, baseName);
 			} else if (in_mode === "model_texture_link8"){
 				var linkPath = Path.join(Path.dirname(in_inputFilePath), baseName + "_index.json");
-				var linkData = FsExtra.readFileSync(linkPath);
+				var linkData = FsExtra.readJsonSync(linkPath);
 				return SphereToModelTextureLink.run8(in_sphereArray, linkData, in_outputAssetFilePath, in_outputDataFilePath, baseName);
 			} else {
 				throw new Error("unknown mode:" + in_mode);

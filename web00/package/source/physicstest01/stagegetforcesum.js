@@ -7,10 +7,39 @@ const WebGL = require("webgl");
 
 const sVertexShaserSource = `
 attribute vec2 a_uv;
+attribute vec3 a_link0;
+attribute vec3 a_link1;
+attribute vec3 a_link2;
+attribute vec3 a_link3;
+attribute vec3 a_link4;
+attribute vec3 a_link5;
+attribute vec3 a_link6;
+attribute vec3 a_link7;
+
 varying vec3 v_forceSum;
+
 uniform sampler2D u_samplerPrevPrevPos;
 uniform sampler2D u_samplerPrevPos;
 uniform float u_timeStep;
+
+vec3 forceFromLink(vec3 in_link, vec4 in_position){
+	if (0.0 == in_link.x){
+		return vec3(0.0, 0.0, 0.0);
+	}
+	vec4 positionLink = texture2D(u_samplerPrevPos, in_link.xy);
+	vec3 offset = positionLink.xyz - in_position.xyz;
+	float len = length(offset);
+	if (0.0 == len){
+		return vec3(0.0, 0.0, 0.0);
+	}
+	offset /= len;
+	len -= in_link.z;
+	vec3 targetOffset = offset * len * 0.5;
+	//vec3 force = targetOffset / (u_timeStep * u_timeStep);
+	vec3 force = targetOffset / u_timeStep;
+	return force;
+}
+
 void main() {
 	vec4 positionPrev = texture2D(u_samplerPrevPos, a_uv);
 	vec4 positionPrevPrev = texture2D(u_samplerPrevPrevPos, a_uv);
@@ -19,6 +48,14 @@ void main() {
 	vec3 gravity = vec3(0.0, 0.0, -9.8);
 
 	vec3 forceSum = vAccel + gravity;
+	//forceSum += forceFromLink(a_link0, positionPrev);
+	//forceSum += forceFromLink(a_link1, positionPrev);
+	//forceSum += forceFromLink(a_link2, positionPrev);
+	//forceSum += forceFromLink(a_link3, positionPrev);
+	//forceSum += forceFromLink(a_link4, positionPrev);
+	//forceSum += forceFromLink(a_link5, positionPrev);
+	//forceSum += forceFromLink(a_link6, positionPrev);
+	//forceSum += forceFromLink(a_link7, positionPrev);
 
 	v_forceSum = forceSum;
 
@@ -34,7 +71,7 @@ void main() {
 	//gl_FragColor = vec4(100.0, 100.0, 100.0, 1.0);
 }
 `;
-const sVertexAttributeNameArray = ["a_uv"];
+const sVertexAttributeNameArray = ["a_uv", "a_link0", "a_link1", "a_link2", "a_link3", "a_link4", "a_link5", "a_link6", "a_link7"];
 const sUniformNameArray = ["u_samplerPrevPrevPos", "u_samplerPrevPos", "u_timeStep"];
 
 const factory = function(in_resourceManager, in_webGLContextWrapper, in_webGLState, in_dataServer){

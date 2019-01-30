@@ -58,7 +58,7 @@ const getDataArrayText = function(in_sphereArray, in_uvDataArrayName, in_texture
 	var pixelCount = in_textureDim * in_textureDim;
 	for (var index = 0; index < pixelCount; index++){
 		var sphereIndex = index * 4;
-		if (sphereIndex <= in_sphereArray.length){
+		if (sphereIndex < in_sphereArray.length){
 			result += `${in_sphereArray[sphereIndex + 0]}, ${in_sphereArray[sphereIndex + 1]}, ${in_sphereArray[sphereIndex + 2]}, ${in_sphereArray[sphereIndex + 3]},\n`;
 		} else {
 			result += "0,0,0,0,\n";
