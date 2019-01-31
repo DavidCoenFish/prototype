@@ -22,7 +22,7 @@ void main() {
 
 	v_forceSum = forceSum;
 
-	gl_Position = vec4(a_uv.x - 1.0, a_uv.y - 1.0, 0.0, 1.0);
+	gl_Position = vec4((a_uv.x * 2.0) - 1.0, (a_uv.y * 2.0) - 1.0, 0.0, 1.0);
 	gl_PointSize = 1.0; //point size is diameter
 }
 `;
@@ -55,18 +55,18 @@ const factory = function(in_resourceManager, in_webGLContextWrapper, in_webGLSta
 	const m_model = in_resourceManager.getCommonReference("model", in_webGLContextWrapper);
 
 	const m_renderTargetData = WebGL.RenderTargetData.factory(in_dataServer.getTextureForceSum(), "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D");
-	const m_renderTarget = WebGL.RenderTargetWrapper.factory(in_webGLContextWrapper, [m_renderTargetData]);
+	const m_renderTarget = WebGL.RenderTargetWrapper.factory(in_webGLContextWrapper, in_dataServer.getTextureForceSum().getWidth(), in_dataServer.getTextureForceSum().getHeight(), [m_renderTargetData]);
 
 	//public methods ==========================
 	const result = Object.create({
 		"run" : function(){
-			m_renderTarget.apply(in_webGLContextWrapper);
+			m_renderTarget.apply(in_webGLContextWrapper, in_webGLState);
 
 			m_material.setTextureArray([in_dataServer.getTexturePrevPrevPos(), in_dataServer.getTexturePrevPos()]);
 			m_material.apply(in_webGLContextWrapper, in_webGLState);
 			m_model.draw(in_webGLContextWrapper, in_webGLState.getMapVertexAttribute());
 
-			WebGL.WebGLContextWrapperHelper.resetRenderTarget(in_webGLContextWrapper);
+			WebGL.WebGLContextWrapperHelper.resetRenderTarget(in_webGLContextWrapper, in_webGLState);
 		},
 	})
 

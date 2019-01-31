@@ -14,7 +14,7 @@ const factory = function(in_webGLContextWrapper, in_resourceManager, in_width, i
 			m_material.apply(localWebGLContextWrapper, localWebGLState);
 			m_model.draw(localWebGLContextWrapper, localWebGLState.getMapVertexAttribute());
 
-			WebGL.WebGLContextWrapperHelper.resetRenderTarget(localWebGLContextWrapper);
+			WebGL.WebGLContextWrapperHelper.resetRenderTarget(localWebGLContextWrapper, localWebGLState);
 		},
 		"getTexture" : function(){
 			return m_renderTexture;

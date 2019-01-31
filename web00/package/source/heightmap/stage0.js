@@ -249,20 +249,20 @@ const factory = function(in_webGLContextWrapper, in_width, in_height, in_resourc
 		"CLAMP_TO_EDGE",
 		"CLAMP_TO_EDGE"
 	);
-	var m_renderTarget = WebGL.RenderTargetWrapper.factory(in_webGLContextWrapper,
+	var m_renderTarget = WebGL.RenderTargetWrapper.factory(in_webGLContextWrapper, in_width, in_height,
 		[ WebGL.RenderTargetData.factory(m_targetTexture, "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D") ]
 	);
 	const m_clearColour = Core.Colour4.factoryFloat32(0.0, 0.0, 1.0, 1.0);
 
 	const result = Object.create({
 		"draw" : function(localWebGLContextWrapper, localWebGLState){
-			m_renderTarget.apply(localWebGLContextWrapper);
+			m_renderTarget.apply(localWebGLContextWrapper, localWebGLState);
 
 			WebGL.WebGLContextWrapperHelper.clear(localWebGLContextWrapper, m_clearColour);
 			m_material.apply(localWebGLContextWrapper, localWebGLState);
 			m_model.draw(localWebGLContextWrapper, m_shader.getMapVertexAttribute());
 
-			WebGL.WebGLContextWrapperHelper.resetRenderTarget(localWebGLContextWrapper);
+			WebGL.WebGLContextWrapperHelper.resetRenderTarget(localWebGLContextWrapper, localWebGLState);
 		},
 		"getTexture" : function(){
 			return m_targetTexture;

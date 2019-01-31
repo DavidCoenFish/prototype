@@ -175,7 +175,7 @@ const factory = function(in_webGLContextWrapper, in_textureWrapper, in_width, in
 
 	const result = Object.create({
 		"draw" : function(localWebGLContextWrapper, localWebGLState){
-			WebGL.WebGLContextWrapperHelper.resetRenderTarget(localWebGLContextWrapper);
+			WebGL.WebGLContextWrapperHelper.resetRenderTarget(localWebGLContextWrapper, localWebGLState);
 
 			m_material.apply(localWebGLContextWrapper, localWebGLState);
 			m_model.draw(localWebGLContextWrapper, m_shader.getMapVertexAttribute());

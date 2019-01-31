@@ -86,7 +86,7 @@ const factory = function(in_webGLContextWrapper, in_textureWrapper){
 
 	const result = Object.create({
 		"draw" : function(localWebGLContextWrapper, localWebGLState){
-			WebGL.WebGLContextWrapperHelper.resetRenderTarget(localWebGLContextWrapper);
+			WebGL.WebGLContextWrapperHelper.resetRenderTarget(localWebGLContextWrapper, localWebGLState);
 
 			const clearColour = Core.Colour4.factoryFloat32(0.0, 0.0, 0.0, 1.0);
 			WebGL.WebGLContextWrapperHelper.clear(localWebGLContextWrapper, clearColour);

@@ -118,7 +118,16 @@ const factory = function(in_html5CanvasElement, in_paramObjectOrUndefined, in_ca
 			}
 			result.removeEventListener(sTokenWebglContextLost, in_contextLostCallback);
 			result.removeEventListener(sTokenWebglContextRestored, in_contextRestoredCallback);
-		}
+		},
+
+		"getWindowWidth" : function(){
+			return in_html5CanvasElement.width;
+		},
+
+		"getWindowHeight" : function(){
+			return in_html5CanvasElement.height;
+		},
+
 	});
 
 	Core.EventDispatcherDecorate(result);

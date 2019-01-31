@@ -17,21 +17,22 @@
 
 const factory = function(
 	in_webGLContextWrapper, 
+	in_width,
+	in_height,
 	in_renderTargetDataArray,
-	//in_width,
-	//in_height,
 	){
-	//const m_width = in_width;
-	//const m_height = in_height;
+	const m_width = in_width;
+	const m_height = in_height;
 	const m_renderTargetDataArray = in_renderTargetDataArray;
 
 	var m_frameBufferObject = undefined; //WebGLFramebuffer
 
 	//public methods ==========================
 	const result = Object.create({
-		"apply" : function(in_webGLContextWrapper){
+		"apply" : function(in_webGLContextWrapper, in_webGlState){
 			const targetEnum = in_webGLContextWrapper.getEnum("FRAMEBUFFER");
 			in_webGLContextWrapper.callMethod("bindFramebuffer", targetEnum, m_frameBufferObject);
+			in_webGlState.setViewport(in_webGLContextWrapper, 0, 0, m_width, in_height);
 			return;
 		},
 		"destroy" : function(){

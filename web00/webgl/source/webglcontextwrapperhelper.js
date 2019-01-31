@@ -38,9 +38,13 @@ const clear = function(in_webGLContextWrapper, in_colourOrUndefined, in_depthOrU
 	return;
 }
 
-const resetRenderTarget = function(in_webGLContextWrapper){
+const resetRenderTarget = function(in_webGLContextWrapper, in_webGLState){
 	const targetEnum = in_webGLContextWrapper.getEnum("FRAMEBUFFER");
 	in_webGLContextWrapper.callMethod("bindFramebuffer", targetEnum, null);
+
+	in_webGLState.setViewport(in_webGLContextWrapper, 
+		0, 0, in_webGLContextWrapper.getWindowWidth(), in_webGLContextWrapper.getWindowHeight());
+
 	return;
 }
 

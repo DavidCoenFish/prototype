@@ -67,25 +67,25 @@ const onPageLoad = function(){
 	m_textureArray.push(m_resourceManager.getUniqueReference("model_texture", m_webGLContextWrapper));
 	m_textureArray.push(m_resourceManager.getUniqueReference("model_texture", m_webGLContextWrapper));
 	m_textureArray.push(m_resourceManager.getUniqueReference("model_texture", m_webGLContextWrapper));
+	const m_textureWidth = m_textureArray[0].getWidth();
+	const m_textureHeight = m_textureArray[0].getHeight();
 
 	const m_renderTargetArray = [];
 	m_renderTargetArray.push(WebGL.RenderTargetWrapper.factory(
-		m_webGLContextWrapper,
+		m_webGLContextWrapper, m_textureWidth, m_textureHeight,
 		[ WebGL.RenderTargetData.factory(m_textureArray[0], "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D") ]
 	));
 	m_renderTargetArray.push(WebGL.RenderTargetWrapper.factory(
-		m_webGLContextWrapper,
+		m_webGLContextWrapper, m_textureWidth, m_textureHeight,
 		[ WebGL.RenderTargetData.factory(m_textureArray[1], "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D") ]
 	));
 	m_renderTargetArray.push(WebGL.RenderTargetWrapper.factory(
-		m_webGLContextWrapper,
+		m_webGLContextWrapper, m_textureWidth, m_textureHeight,
 		[ WebGL.RenderTargetData.factory(m_textureArray[2], "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D") ]
 	));
 
 	var m_renderTargetIndex = 0;
 
-	const m_textureWidth = m_textureArray[0].getWidth();
-	const m_textureHeight = m_textureArray[0].getHeight();
 	var m_textureForceSum = WebGL.TextureWrapper.factoryFloatRGB(m_webGLContextWrapper, m_textureWidth, m_textureHeight);
 	var m_textureCollisionResolvedForceSum = WebGL.TextureWrapper.factoryFloatRGB(m_webGLContextWrapper, m_textureWidth, m_textureHeight);
 
@@ -158,8 +158,8 @@ const onPageLoad = function(){
 	//m_stagePresent.run();
 	//m_stagePrepNextLoop.run();
 
-	var m_step = false;
-	var m_trace = 0;
+	var m_useTimeStep = false;
+	var m_step = (false === m_useTimeStep);
 	var m_prevTimeStamp = undefined;
 	const m_clearColor = Core.Colour4.factoryFloat32(0.5, 0.5, 0.5, 1.0);
 	const animationFrameCallback = function(in_timestamp){
@@ -171,9 +171,11 @@ const onPageLoad = function(){
 		}
 		m_prevTimeStamp = in_timestamp;
 
+		m_timeDelta *= 0.01;
+
 		m_gridComponent.draw(m_webGLContextWrapper, m_webGLState);
-		//m_quad0.setTexture(m_dataServer.getTexturePrevPos());
-		//m_quad0.draw(m_webGLContextWrapper, m_webGLState);
+		m_quad0.setTexture(m_dataServer.getTexturePrevPos());
+		m_quad0.draw(m_webGLContextWrapper, m_webGLState);
 		m_quad1.setTexture(m_dataServer.getTextureNewPos());
 		m_quad1.draw(m_webGLContextWrapper, m_webGLState);
 
@@ -181,21 +183,17 @@ const onPageLoad = function(){
 			if (0.1 < m_timeDelta){
 				m_timeDelta = 0.1;
 			}
-			//m_timeDelta = 0.01;
 			if (0.0 < m_timeDelta){
 				m_stagePrepNextLoop.run();
 				m_stageGetForceSum.run();
 				m_stageResolveForceSumVrsCollision.run(); 
 				m_stageConstuctNewPos.run();
 			}
-			m_step = false;
+			m_step = (false === m_useTimeStep);
 		}
 		m_stagePresent.run();
-		//if (m_trace < 60){
-			m_trace += 1;
-			//ManipulateDom.AutoDownload.autoSnapShot(document, m_html5CanvasElement, "physics20190128_" + m_trace + ".png");
-			m_requestId = requestAnimationFrame(animationFrameCallback);
-		//}
+		//ManipulateDom.AutoDownload.autoSnapShot(document, m_html5CanvasElement, "physics20190128_" + m_trace + ".png");
+		m_requestId = requestAnimationFrame(animationFrameCallback);
 	}
 
 	var m_requestId = requestAnimationFrame(animationFrameCallback);

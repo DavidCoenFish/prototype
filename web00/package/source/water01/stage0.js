@@ -30,7 +30,7 @@ const factory = function(in_webGLContextWrapper, in_resourceManager){
 		"CLAMP_TO_EDGE",
 		"CLAMP_TO_EDGE"		
 		);
-	var m_renderTarget = WebGL.RenderTargetWrapper.factory(in_webGLContextWrapper,
+	var m_renderTarget = WebGL.RenderTargetWrapper.factory(in_webGLContextWrapper, 512, 512,
 		[ WebGL.RenderTargetData.factory(m_renderTexture, "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D") ]
 	);
 
@@ -38,11 +38,11 @@ const factory = function(in_webGLContextWrapper, in_resourceManager){
 		"draw" : function(localWebGLContextWrapper, localWebGLState, localFrameIndex){
 			m_ratio = localFrameIndex / 100.0;
 
-			m_renderTarget.apply(localWebGLContextWrapper);
+			m_renderTarget.apply(localWebGLContextWrapper, localWebGLState);
 			m_material.apply(localWebGLContextWrapper, localWebGLState);
 			m_model.draw(localWebGLContextWrapper, localWebGLState.getMapVertexAttribute());
 
-			WebGL.WebGLContextWrapperHelper.resetRenderTarget(localWebGLContextWrapper);
+			WebGL.WebGLContextWrapperHelper.resetRenderTarget(localWebGLContextWrapper, localWebGLState);
 		},
 		"getTexture" : function(){
 			return m_renderTexture;

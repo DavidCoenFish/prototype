@@ -52,13 +52,13 @@ const factory = function(in_webGLContextWrapper){
 		}
 		);
 	var m_texture = WebGL.TextureWrapper.factoryByteRGBA(in_webGLContextWrapper, 512, 512);
-	var m_renderTarget = WebGL.RenderTargetWrapper.factory(in_webGLContextWrapper,
+	var m_renderTarget = WebGL.RenderTargetWrapper.factory(in_webGLContextWrapper, 512, 512,
 		[ WebGL.RenderTargetData.factory(m_texture, "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D") ]
 	);
 
 	const result = Object.create({
 		"draw" : function(localWebGLContextWrapper, localWebGLState){
-			m_renderTarget.apply(localWebGLContextWrapper);
+			m_renderTarget.apply(localWebGLContextWrapper, localWebGLState);
 
 			const clearColour = Core.Colour4.factoryFloat32(0.1, 0.1, 0.1, 1.0);
 			WebGL.WebGLContextWrapperHelper.clear(localWebGLContextWrapper, clearColour);
@@ -66,7 +66,7 @@ const factory = function(in_webGLContextWrapper){
 			m_material.apply(localWebGLContextWrapper, localWebGLState);
 			m_model.draw(localWebGLContextWrapper, m_shader.getMapVertexAttribute());
 
-			WebGL.WebGLContextWrapperHelper.resetRenderTarget(localWebGLContextWrapper);
+			WebGL.WebGLContextWrapperHelper.resetRenderTarget(localWebGLContextWrapper, localWebGLState);
 		},
 		"getTexture" : function(){
 			return m_texture;

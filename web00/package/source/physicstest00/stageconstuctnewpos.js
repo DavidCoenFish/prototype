@@ -18,7 +18,7 @@ void main() {
 	//v_sphere.xyz = prevPos.xyz + vec3(0.0, 0.0, -u_timeStep);
 	v_sphere.w = prevPos.w;
 
-	gl_Position = vec4(a_uv.x - 1.0, a_uv.y - 1.0, 0.0, 1.0);
+	gl_Position = vec4((a_uv.x * 2.0) - 1.0, (a_uv.y * 2.0) - 1.0, 0.0, 1.0);
 	gl_PointSize = 1.0; //point size is diameter
 }
 `;
@@ -58,7 +58,7 @@ const factory = function(in_resourceManager, in_webGLContextWrapper, in_webGLSta
 	const result = Object.create({
 		"run" : function(){
 			var m_renderTarget = in_dataServer.getRenderTargetNewPos();
-			m_renderTarget.apply(in_webGLContextWrapper);
+			m_renderTarget.apply(in_webGLContextWrapper, localWebGLState);
 			//WebGL.WebGLContextWrapperHelper.clear(in_webGLContextWrapper, m_clearColor);
 	
 			m_material.setTextureArray([in_dataServer.getTexturePrevPos(), in_dataServer.getTextureCollisionResolvedForceSum()]);
@@ -66,7 +66,7 @@ const factory = function(in_resourceManager, in_webGLContextWrapper, in_webGLSta
 			m_material.apply(in_webGLContextWrapper, in_webGLState);
 			m_model.draw(in_webGLContextWrapper, in_webGLState.getMapVertexAttribute());
 
-			WebGL.WebGLContextWrapperHelper.resetRenderTarget(in_webGLContextWrapper);
+			WebGL.WebGLContextWrapperHelper.resetRenderTarget(in_webGLContextWrapper, localWebGLState);
 		},
 	})
 

@@ -67,25 +67,25 @@ const onPageLoad = function(){
 	m_textureArray.push(m_resourceManager.getUniqueReference("model_texture", m_webGLContextWrapper));
 	m_textureArray.push(m_resourceManager.getUniqueReference("model_texture", m_webGLContextWrapper));
 	m_textureArray.push(m_resourceManager.getUniqueReference("model_texture", m_webGLContextWrapper));
+	const m_textureWidth = m_textureArray[0].getWidth();
+	const m_textureHeight = m_textureArray[0].getHeight();
 
 	const m_renderTargetArray = [];
 	m_renderTargetArray.push(WebGL.RenderTargetWrapper.factory(
-		m_webGLContextWrapper,
+		m_webGLContextWrapper, m_textureWidth, m_textureHeight,
 		[ WebGL.RenderTargetData.factory(m_textureArray[0], "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D") ]
 	));
 	m_renderTargetArray.push(WebGL.RenderTargetWrapper.factory(
-		m_webGLContextWrapper,
+		m_webGLContextWrapper, m_textureWidth, m_textureHeight,
 		[ WebGL.RenderTargetData.factory(m_textureArray[1], "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D") ]
 	));
 	m_renderTargetArray.push(WebGL.RenderTargetWrapper.factory(
-		m_webGLContextWrapper,
+		m_webGLContextWrapper, m_textureWidth, m_textureHeight,
 		[ WebGL.RenderTargetData.factory(m_textureArray[2], "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D") ]
 	));
 
 	var m_renderTargetIndex = 0;
 
-	const m_textureWidth = m_textureArray[0].getWidth();
-	const m_textureHeight = m_textureArray[0].getHeight();
 	var m_textureForceSum = WebGL.TextureWrapper.factoryFloatRGB(m_webGLContextWrapper, m_textureWidth, m_textureHeight);
 	var m_textureCollisionResolvedForceSum = WebGL.TextureWrapper.factoryFloatRGB(m_webGLContextWrapper, m_textureWidth, m_textureHeight);
 
