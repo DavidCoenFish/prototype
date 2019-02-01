@@ -1,7 +1,8 @@
 const Core = require("core");
 const WebGL = require("webgl");
 const ManipulateDom = require("manipulatedom");
-const Asset = require("./physicstest01/asset.js");
+//const Asset = require("./physicstest01/asset.js");
+const Asset = require("./physicstest01/assetdebug.js");
 
 const StageGetForceSum = require("./physicstest01/stagegetforcesum.js");
 const StageResolveForceSumVrsCollision = require("./physicstest01/stageresolveforcesumvrscollision.js");

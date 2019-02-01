@@ -48,7 +48,7 @@ void main() {
 	vec3 vAccel = velocity / u_timeStep;
 	vec3 gravity = vec3(0.0, 0.0, -9.8);
 
-	vec3 forceSum = vAccel + gravity;
+	vec3 forceSum = vAccel; // + gravity;
 	forceSum += forceFromLink(a_link0, positionPrev);
 	forceSum += forceFromLink(a_link1, positionPrev);
 	forceSum += forceFromLink(a_link2, positionPrev);
