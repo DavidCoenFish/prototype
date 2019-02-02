@@ -22,11 +22,12 @@ uniform sampler2D u_samplerPrevPrevPos;
 uniform sampler2D u_samplerPrevPos;
 uniform float u_timeStep;
 
-vec3 forceFromLink(vec3 in_link, vec4 in_position){
+vec3 forceFromLink(vec3 in_link, vec4 in_position, vec4 in_positionPrev){
 	if (0.0 == in_link.x){
 		return vec3(0.0, 0.0, 0.0);
 	}
 	vec4 positionLink = texture2D(u_samplerPrevPos, in_link.xy);
+	vec4 positionPrevLink = texture2D(u_samplerPrevPrevPos, in_link.xy);
 	vec3 offset = positionLink.xyz - in_position.xyz;
 	float len = length(offset);
 	if (0.0 == len){
@@ -36,8 +37,13 @@ vec3 forceFromLink(vec3 in_link, vec4 in_position){
 	len -= in_link.z;
 	len *= 0.5;
 	vec3 targetOffset = (offset * len);
-	//vec3 force = targetOffset / (u_timeStep * u_timeStep);
-	vec3 force = targetOffset / u_timeStep;
+	float scale = 0.5 / (u_timeStep * u_timeStep);
+	vec3 force = targetOffset * scale;
+
+	//dampen velocity along spring
+	float velocityAlongSpring = dot(offset, ((in_position.xyz - in_positionPrev.xyz) - (positionLink.xyz - positionPrevLink.xyz)));
+	force -= ((0.25 * velocityAlongSpring / (u_timeStep * u_timeStep)) * offset);
+
 	return force;
 }
 
@@ -45,18 +51,20 @@ void main() {
 	vec4 positionPrev = texture2D(u_samplerPrevPos, a_uv);
 	vec4 positionPrevPrev = texture2D(u_samplerPrevPrevPos, a_uv);
 	vec3 velocity = (positionPrev.xyz - positionPrevPrev.xyz) / u_timeStep;
+	//velocity *= 0.95; hack energy leak/ dampen
 	vec3 vAccel = velocity / u_timeStep;
 	vec3 gravity = vec3(0.0, 0.0, -9.8);
 
-	vec3 forceSum = vAccel; // + gravity;
-	forceSum += forceFromLink(a_link0, positionPrev);
-	forceSum += forceFromLink(a_link1, positionPrev);
-	forceSum += forceFromLink(a_link2, positionPrev);
-	forceSum += forceFromLink(a_link3, positionPrev);
-	forceSum += forceFromLink(a_link4, positionPrev);
-	forceSum += forceFromLink(a_link5, positionPrev);
-	forceSum += forceFromLink(a_link6, positionPrev);
-	forceSum += forceFromLink(a_link7, positionPrev);
+	vec3 forceSum = vAccel + gravity;
+	float forceInfluence = 1.0;
+	forceSum += forceInfluence * forceFromLink(a_link0, positionPrev, positionPrevPrev);
+	forceSum += forceInfluence * forceFromLink(a_link1, positionPrev, positionPrevPrev);
+	forceSum += forceInfluence * forceFromLink(a_link2, positionPrev, positionPrevPrev);
+	forceSum += forceInfluence * forceFromLink(a_link3, positionPrev, positionPrevPrev);
+	forceSum += forceInfluence * forceFromLink(a_link4, positionPrev, positionPrevPrev);
+	forceSum += forceInfluence * forceFromLink(a_link5, positionPrev, positionPrevPrev);
+	forceSum += forceInfluence * forceFromLink(a_link6, positionPrev, positionPrevPrev);
+	forceSum += forceInfluence * forceFromLink(a_link7, positionPrev, positionPrevPrev);
 
 	v_forceSum = forceSum;
 

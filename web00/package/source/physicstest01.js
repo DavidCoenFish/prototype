@@ -3,6 +3,8 @@ const WebGL = require("webgl");
 const ManipulateDom = require("manipulatedom");
 //const Asset = require("./physicstest01/asset.js");
 const Asset = require("./physicstest01/assetdebug.js");
+//const Asset = require("./physicstest01/assetdebug2.js");
+//const Asset = require("./physicstest01/assetdebug3.js");
 
 const StageGetForceSum = require("./physicstest01/stagegetforcesum.js");
 const StageResolveForceSumVrsCollision = require("./physicstest01/stageresolveforcesumvrscollision.js");
@@ -57,12 +59,13 @@ const onPageLoad = function(){
 	});
 
 	const m_viewportWidthHeightWidthhalfHeighthalf = Core.Vector4.factoryFloat32(m_width, m_height, m_width / 2.0, m_height / 2.0);
-	const m_cameraAt = Core.Vector3.factoryFloat32(0.5058590769767761, 0.7736392617225647, 0.3815615177154541);
-	const m_cameraUp = Core.Vector3.factoryFloat32(-0.1547088921070099, -0.3537920415401459, 0.9224405884742737);
-	const m_cameraLeft = Core.Vector3.factoryFloat32(-0.8486290574073792, 0.5256565809249878, 0.05928056687116623);
-	const m_cameraPos = Core.Vector3.factoryFloat32(-0.2982713580131531, -0.37982672452926636, 0.2146763950586319);
+	const m_cameraAt = Core.Vector3.factoryFloat32(-0.17204129695892334, 0.9847173094749451, -0.027092771604657173);
+	const m_cameraUp = Core.Vector3.factoryFloat32(0.04971622675657272, 0.03614601865410805, 0.9981092810630798);
+	const m_cameraLeft = Core.Vector3.factoryFloat32(-0.9838346838951111, -0.17036838829517365, 0.05517512187361717);
+	const m_cameraPos = Core.Vector3.factoryFloat32(-0.5217249393463135, -1.4198795557022095, 1.0516513586044312);
 
 	const m_cameraFovhFovvFar = Core.Vector3.factoryFloat32(120.0, 120.0, 10.0);
+
 	var m_timeDelta = 0.0;
 	const m_textureArray = [];
 	m_textureArray.push(m_resourceManager.getUniqueReference("model_texture", m_webGLContextWrapper));
@@ -153,12 +156,7 @@ const onPageLoad = function(){
 	const m_quad0 = WebGL.ComponentScreenTextureQuad.factory(m_resourceManager, m_webGLContextWrapper, m_dataServer.getTextureForceSum(), Core.Vector2.factoryFloat32(-1.0, 0.0), Core.Vector2.factoryFloat32(0.0, 1.0));
 	const m_quad1 = WebGL.ComponentScreenTextureQuad.factory(m_resourceManager, m_webGLContextWrapper, m_dataServer.getTextureCollisionResolvedForceSum(), Core.Vector2.factoryFloat32(-1.0, -1.0), Core.Vector2.factoryFloat32(0.0, 0.0));
 
-	//m_stageGetForceSum.run();
-	//m_stageResolveForceSumVrsCollision.run(); 
-	//m_stageConstuctNewPos.run();
-	//m_stagePresent.run();
-	//m_stagePrepNextLoop.run();
-
+	//var m_frameCount = 100;
 	var m_useTimeStep = false;
 	var m_step = (false === m_useTimeStep);
 	var m_prevTimeStamp = undefined;
@@ -172,13 +170,16 @@ const onPageLoad = function(){
 		}
 		m_prevTimeStamp = in_timestamp;
 
-		m_timeDelta *= 0.01;
+		m_timeDelta = 0.015;
 
 		m_gridComponent.draw(m_webGLContextWrapper, m_webGLState);
 		m_quad0.setTexture(m_dataServer.getTexturePrevPos());
 		m_quad0.draw(m_webGLContextWrapper, m_webGLState);
 		m_quad1.setTexture(m_dataServer.getTextureNewPos());
 		m_quad1.draw(m_webGLContextWrapper, m_webGLState);
+
+		//m_frameCount -= 1;
+		//if (0 < m_frameCount){
 
 		if(true === m_step){
 			if (0.1 < m_timeDelta){
@@ -193,8 +194,10 @@ const onPageLoad = function(){
 			m_step = (false === m_useTimeStep);
 		}
 		m_stagePresent.run();
-		//ManipulateDom.AutoDownload.autoSnapShot(document, m_html5CanvasElement, "physics20190128_" + m_trace + ".png");
+		//ManipulateDom.AutoDownload.autoSnapShot(document, m_html5CanvasElement, "physics20190202_" + (100 - m_frameCount) + ".png");
 		m_requestId = requestAnimationFrame(animationFrameCallback);
+
+		//} //mframecount
 	}
 
 	var m_requestId = requestAnimationFrame(animationFrameCallback);
@@ -204,10 +207,11 @@ const onPageLoad = function(){
 		cancelAnimationFrame(m_requestId);
 		m_requestId = undefined;
 		console.log("end");
-		console.log("m_cameraAt: [" + m_cameraAt.getX() + ", " + m_cameraAt.getY() + ", " + m_cameraAt.getZ() + "]");
-		console.log("m_cameraUp: [" + m_cameraUp.getX() + ", " + m_cameraUp.getY() + ", " + m_cameraUp.getZ() + "]");
-		console.log("m_cameraLeft: [" + m_cameraLeft.getX() + ", " + m_cameraLeft.getY() + ", " + m_cameraLeft.getZ() + "]");
-		console.log("m_cameraPos: [" + m_cameraPos.getX() + ", " + m_cameraPos.getY() + ", " + m_cameraPos.getZ() + "]");
+		console.log("	const m_cameraAt = Core.Vector3.factoryFloat32(" + m_cameraAt.getX() + ", " + m_cameraAt.getY() + ", " + m_cameraAt.getZ() + ");//");
+		console.log("	const m_cameraUp = Core.Vector3.factoryFloat32(" + m_cameraUp.getX() + ", " + m_cameraUp.getY() + ", " + m_cameraUp.getZ() + ");//");
+		console.log("	const m_cameraLeft = Core.Vector3.factoryFloat32(" + m_cameraLeft.getX() + ", " + m_cameraLeft.getY() + ", " + m_cameraLeft.getZ() + ");//");
+		console.log("	const m_cameraPos = Core.Vector3.factoryFloat32(" + m_cameraPos.getX() + ", " + m_cameraPos.getY() + ", " + m_cameraPos.getZ() + ");//");
+
 		return;
 	});
 	ManipulateDom.Button.addSimpleButton(document, document.body, "step", function(in_event){

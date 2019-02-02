@@ -18,8 +18,9 @@ void main() {
 
 	float height = predectedHeight - radius;
 	if (height < 0.0){
-		float targetDisplacment = prevPos.z - radius;
-		forceSum.z = -targetDisplacment / (u_timeStep * u_timeStep);
+		//float targetDisplacment = min(predectedHeight + radius, radius) - prevPos.z;
+		float targetDisplacment = radius - prevPos.z;
+		forceSum.z = targetDisplacment / (u_timeStep * u_timeStep);
 	}
 
 	v_forceSum = forceSum.xyz;
