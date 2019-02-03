@@ -15,6 +15,12 @@ attribute vec3 a_link4;
 attribute vec3 a_link5;
 attribute vec3 a_link6;
 attribute vec3 a_link7;
+attribute vec3 a_link8;
+attribute vec3 a_link9;
+attribute vec3 a_link10;
+attribute vec3 a_link11;
+attribute vec3 a_link12;
+attribute vec3 a_link13;
 
 varying vec3 v_forceSum;
 
@@ -31,9 +37,10 @@ vec3 forceFromLink(vec3 in_link, vec4 in_position, vec4 in_positionPrev){
 	vec3 offset = positionLink.xyz - in_position.xyz;
 	float len = length(offset);
 	if (0.0 == len){
-		return vec3(0.0, 0.0, 0.0);
+		offset = vec3(0.0, 0.0, 1.0);
+	} else {
+		offset /= len;
 	}
-	offset /= len;
 	len -= in_link.z;
 	len *= 0.5;
 	vec3 targetOffset = (offset * len);
@@ -42,7 +49,7 @@ vec3 forceFromLink(vec3 in_link, vec4 in_position, vec4 in_positionPrev){
 
 	//dampen velocity along spring
 	float velocityAlongSpring = dot(offset, ((in_position.xyz - in_positionPrev.xyz) - (positionLink.xyz - positionPrevLink.xyz)));
-	force -= ((0.25 * velocityAlongSpring / (u_timeStep * u_timeStep)) * offset);
+	force -= ((0.05 * velocityAlongSpring / (u_timeStep * u_timeStep)) * offset);
 
 	return force;
 }
@@ -53,18 +60,23 @@ void main() {
 	vec3 velocity = (positionPrev.xyz - positionPrevPrev.xyz) / u_timeStep;
 	//velocity *= 0.95; hack energy leak/ dampen
 	vec3 vAccel = velocity / u_timeStep;
-	vec3 gravity = vec3(0.0, 0.0, -9.8);
+	vec3 gravity = vec3(0.0, 0.0, -0.98);
 
 	vec3 forceSum = vAccel + gravity;
-	float forceInfluence = 1.0;
-	forceSum += forceInfluence * forceFromLink(a_link0, positionPrev, positionPrevPrev);
-	forceSum += forceInfluence * forceFromLink(a_link1, positionPrev, positionPrevPrev);
-	forceSum += forceInfluence * forceFromLink(a_link2, positionPrev, positionPrevPrev);
-	forceSum += forceInfluence * forceFromLink(a_link3, positionPrev, positionPrevPrev);
-	forceSum += forceInfluence * forceFromLink(a_link4, positionPrev, positionPrevPrev);
-	forceSum += forceInfluence * forceFromLink(a_link5, positionPrev, positionPrevPrev);
-	forceSum += forceInfluence * forceFromLink(a_link6, positionPrev, positionPrevPrev);
-	forceSum += forceInfluence * forceFromLink(a_link7, positionPrev, positionPrevPrev);
+	forceSum += forceFromLink(a_link0, positionPrev, positionPrevPrev);
+	forceSum += forceFromLink(a_link1, positionPrev, positionPrevPrev);
+	forceSum += forceFromLink(a_link2, positionPrev, positionPrevPrev);
+	forceSum += forceFromLink(a_link3, positionPrev, positionPrevPrev);
+	forceSum += forceFromLink(a_link4, positionPrev, positionPrevPrev);
+	forceSum += forceFromLink(a_link5, positionPrev, positionPrevPrev);
+	forceSum += forceFromLink(a_link6, positionPrev, positionPrevPrev);
+	forceSum += forceFromLink(a_link7, positionPrev, positionPrevPrev);
+	forceSum += forceFromLink(a_link8, positionPrev, positionPrevPrev);
+	forceSum += forceFromLink(a_link9, positionPrev, positionPrevPrev);
+	forceSum += forceFromLink(a_link10, positionPrev, positionPrevPrev);
+	forceSum += forceFromLink(a_link11, positionPrev, positionPrevPrev);
+	forceSum += forceFromLink(a_link12, positionPrev, positionPrevPrev);
+	forceSum += forceFromLink(a_link13, positionPrev, positionPrevPrev);
 
 	v_forceSum = forceSum;
 
@@ -80,7 +92,7 @@ void main() {
 	//gl_FragColor = vec4(100.0, 100.0, 100.0, 1.0);
 }
 `;
-const sVertexAttributeNameArray = ["a_uv", "a_link0", "a_link1", "a_link2", "a_link3", "a_link4", "a_link5", "a_link6", "a_link7"];
+const sVertexAttributeNameArray = ["a_uv", "a_link0", "a_link1", "a_link2", "a_link3", "a_link4", "a_link5", "a_link6", "a_link7", "a_link8", "a_link9", "a_link10", "a_link11", "a_link12", "a_link13"];
 const sUniformNameArray = ["u_samplerPrevPrevPos", "u_samplerPrevPos", "u_timeStep"];
 
 const factory = function(in_resourceManager, in_webGLContextWrapper, in_webGLState, in_dataServer){

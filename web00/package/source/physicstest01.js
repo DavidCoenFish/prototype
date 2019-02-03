@@ -2,9 +2,10 @@ const Core = require("core");
 const WebGL = require("webgl");
 const ManipulateDom = require("manipulatedom");
 //const Asset = require("./physicstest01/asset.js");
-const Asset = require("./physicstest01/assetdebug.js");
+//const Asset = require("./physicstest01/assetdebug.js");
 //const Asset = require("./physicstest01/assetdebug2.js");
 //const Asset = require("./physicstest01/assetdebug3.js");
+const Asset = require("./physicstest01/assetdebug4.js");
 
 const StageGetForceSum = require("./physicstest01/stagegetforcesum.js");
 const StageResolveForceSumVrsCollision = require("./physicstest01/stageresolveforcesumvrscollision.js");
@@ -59,10 +60,10 @@ const onPageLoad = function(){
 	});
 
 	const m_viewportWidthHeightWidthhalfHeighthalf = Core.Vector4.factoryFloat32(m_width, m_height, m_width / 2.0, m_height / 2.0);
-	const m_cameraAt = Core.Vector3.factoryFloat32(-0.17204129695892334, 0.9847173094749451, -0.027092771604657173);
-	const m_cameraUp = Core.Vector3.factoryFloat32(0.04971622675657272, 0.03614601865410805, 0.9981092810630798);
-	const m_cameraLeft = Core.Vector3.factoryFloat32(-0.9838346838951111, -0.17036838829517365, 0.05517512187361717);
-	const m_cameraPos = Core.Vector3.factoryFloat32(-0.5217249393463135, -1.4198795557022095, 1.0516513586044312);
+	const m_cameraAt = Core.Vector3.factoryFloat32(-0.269618958234787, 0.9618650674819946, -0.04606166109442711);//
+	const m_cameraUp = Core.Vector3.factoryFloat32(0.04356933757662773, 0.059967849403619766, 0.9972492456436157);//
+	const m_cameraLeft = Core.Vector3.factoryFloat32(-0.9619814157485962, -0.2668697237968445, 0.05807628110051155);//
+	const m_cameraPos = Core.Vector3.factoryFloat32(-0.005856039002537727, -0.1587212085723877, 0.07009273022413254);//
 
 	const m_cameraFovhFovvFar = Core.Vector3.factoryFloat32(120.0, 120.0, 10.0);
 
@@ -170,7 +171,7 @@ const onPageLoad = function(){
 		}
 		m_prevTimeStamp = in_timestamp;
 
-		m_timeDelta = 0.015;
+		m_timeDelta = 0.005;
 
 		m_gridComponent.draw(m_webGLContextWrapper, m_webGLState);
 		m_quad0.setTexture(m_dataServer.getTexturePrevPos());
@@ -207,10 +208,11 @@ const onPageLoad = function(){
 		cancelAnimationFrame(m_requestId);
 		m_requestId = undefined;
 		console.log("end");
-		console.log("	const m_cameraAt = Core.Vector3.factoryFloat32(" + m_cameraAt.getX() + ", " + m_cameraAt.getY() + ", " + m_cameraAt.getZ() + ");//");
-		console.log("	const m_cameraUp = Core.Vector3.factoryFloat32(" + m_cameraUp.getX() + ", " + m_cameraUp.getY() + ", " + m_cameraUp.getZ() + ");//");
-		console.log("	const m_cameraLeft = Core.Vector3.factoryFloat32(" + m_cameraLeft.getX() + ", " + m_cameraLeft.getY() + ", " + m_cameraLeft.getZ() + ");//");
-		console.log("	const m_cameraPos = Core.Vector3.factoryFloat32(" + m_cameraPos.getX() + ", " + m_cameraPos.getY() + ", " + m_cameraPos.getZ() + ");//");
+		console.log(`	const m_cameraAt = Core.Vector3.factoryFloat32(" + m_cameraAt.getX() + ", " + m_cameraAt.getY() + ", " + m_cameraAt.getZ() + ");
+	const m_cameraUp = Core.Vector3.factoryFloat32(" + m_cameraUp.getX() + ", " + m_cameraUp.getY() + ", " + m_cameraUp.getZ() + ");
+	const m_cameraLeft = Core.Vector3.factoryFloat32(" + m_cameraLeft.getX() + ", " + m_cameraLeft.getY() + ", " + m_cameraLeft.getZ() + ");
+	const m_cameraPos = Core.Vector3.factoryFloat32(" + m_cameraPos.getX() + ", " + m_cameraPos.getY() + ", " + m_cameraPos.getZ() + ");
+	`);
 
 		return;
 	});

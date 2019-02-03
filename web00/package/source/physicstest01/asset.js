@@ -10,6 +10,13 @@ const factoryModel = function(in_webGLContextWrapper){
 	const m_link5DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(gLink5SpheresSkeleton10k), "STATIC_DRAW", false);
 	const m_link6DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(gLink6SpheresSkeleton10k), "STATIC_DRAW", false);
 	const m_link7DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(gLink7SpheresSkeleton10k), "STATIC_DRAW", false);
+	const m_link8DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(gLink8SpheresSkeleton10k), "STATIC_DRAW", false);
+	const m_link9DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(gLink9SpheresSkeleton10k), "STATIC_DRAW", false);
+	const m_link10DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(gLink10SpheresSkeleton10k), "STATIC_DRAW", false);
+	const m_link11DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(gLink11SpheresSkeleton10k), "STATIC_DRAW", false);
+	const m_link12DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(gLink12SpheresSkeleton10k), "STATIC_DRAW", false);
+	const m_link13DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(gLink13SpheresSkeleton10k), "STATIC_DRAW", false);
+
 
 	return WebGL.ModelWrapper.factory(
 		in_webGLContextWrapper, 
@@ -25,6 +32,13 @@ const factoryModel = function(in_webGLContextWrapper){
 			"a_link5" : m_link5DataStream,
 			"a_link6" : m_link6DataStream,
 			"a_link7" : m_link7DataStream,
+			"a_link8" : m_link8DataStream,
+			"a_link9" : m_link9DataStream,
+			"a_link10" : m_link10DataStream,
+			"a_link11" : m_link11DataStream,
+			"a_link12" : m_link12DataStream,
+			"a_link13" : m_link13DataStream,
+
 		}
 	);
 }

@@ -4,18 +4,18 @@ const FsExtra = require("fs-extra");
 const CamelCase = require("./camel-case.js");
 
 const getAssetText = function(in_uvDataArrayName, in_uvLinkArrayName, in_textureDataArrayName, in_textureDim){
+	var dataStreamText = "";
+	var dataStreamMap = "";
+	for (var index = 0; index < in_uvLinkArrayName.length; ++index){
+		dataStreamText += `	const m_link${index}DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(${in_uvLinkArrayName[index]}), "STATIC_DRAW", false);\n`;
+		dataStreamMap += `			"a_link${index}" : m_link${index}DataStream,\n`;
+	}
+
 	return `const WebGL = require("webgl");
 
 const factoryModel = function(in_webGLContextWrapper){
 	const m_uvDataStream = WebGL.ModelDataStream.factory("FLOAT", 2, new Float32Array(${in_uvDataArrayName}), "STATIC_DRAW", false);
-	const m_link0DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(${in_uvLinkArrayName[0]}), "STATIC_DRAW", false);
-	const m_link1DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(${in_uvLinkArrayName[1]}), "STATIC_DRAW", false);
-	const m_link2DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(${in_uvLinkArrayName[2]}), "STATIC_DRAW", false);
-	const m_link3DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(${in_uvLinkArrayName[3]}), "STATIC_DRAW", false);
-	const m_link4DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(${in_uvLinkArrayName[4]}), "STATIC_DRAW", false);
-	const m_link5DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(${in_uvLinkArrayName[5]}), "STATIC_DRAW", false);
-	const m_link6DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(${in_uvLinkArrayName[6]}), "STATIC_DRAW", false);
-	const m_link7DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(${in_uvLinkArrayName[7]}), "STATIC_DRAW", false);
+${dataStreamText}
 
 	return WebGL.ModelWrapper.factory(
 		in_webGLContextWrapper, 
@@ -23,14 +23,7 @@ const factoryModel = function(in_webGLContextWrapper){
 		Math.floor(${in_uvDataArrayName}.length / 2),
 		{
 			"a_uv" : m_uvDataStream,
-			"a_link0" : m_link0DataStream,
-			"a_link1" : m_link1DataStream,
-			"a_link2" : m_link2DataStream,
-			"a_link3" : m_link3DataStream,
-			"a_link4" : m_link4DataStream,
-			"a_link5" : m_link5DataStream,
-			"a_link6" : m_link6DataStream,
-			"a_link7" : m_link7DataStream,
+${dataStreamMap}
 		}
 	);
 }
@@ -69,7 +62,7 @@ const getDataArrayText = function(in_sphereArray, in_uvDataArrayName, in_texture
 	result += `]\n`;
 
 	//link in_arrayArrayLinkData, in_uvLinkArrayName
-	for (var index = 0; index < 8; ++index){
+	for (var index = 0; index < in_uvLinkArrayName.length; ++index){
 		result += `const ${in_uvLinkArrayName[index]} = [\n`;
 		var arrayLinkData = in_arrayArrayLinkData[index];
 		for (var subIndex = 0; subIndex < arrayLinkData.length; subIndex += 3){
@@ -141,7 +134,14 @@ const linkPoint = function(inout_arrayLinkData, in_sourceX, in_sourceY, in_sourc
 	return;
 }
 
-const makeLinkData = function(inout_arrayArrayLinkData, in_linkArray, in_sphereArray, in_linkMap, in_textureDim){
+const makeLinkData = function(inout_arrayArrayLinkData, in_linkArray, in_sphereArray, in_linkMap, in_textureDim, in_linkCount){
+	if (8 === in_linkCount){
+		makeLinkData8(inout_arrayArrayLinkData, in_linkArray, in_sphereArray, in_linkMap, in_textureDim);
+	} else if (14 === in_linkCount){
+		makeLinkData14(inout_arrayArrayLinkData, in_linkArray, in_sphereArray, in_linkMap, in_textureDim);
+	}
+}
+const makeLinkData8 = function(inout_arrayArrayLinkData, in_linkArray, in_sphereArray, in_linkMap, in_textureDim){
 	var sphereCount = in_sphereArray.length / 4;
 	for (var sphereIndex = 0; sphereIndex < sphereCount; ++sphereIndex){
 		var sourceX = in_linkArray[(sphereIndex * 3) + 0];
@@ -170,12 +170,48 @@ const makeLinkData = function(inout_arrayArrayLinkData, in_linkArray, in_sphereA
 	}
 }
 
-const run8 = function(in_sphereArray, in_linkArray, in_fileAssetPath, in_fileDataPath, in_baseName){
+const makeLinkData14 = function(inout_arrayArrayLinkData, in_linkArray, in_sphereArray, in_linkMap, in_textureDim){
+	var sphereCount = in_sphereArray.length / 4;
+	for (var sphereIndex = 0; sphereIndex < sphereCount; ++sphereIndex){
+		var sourceX = in_linkArray[(sphereIndex * 3) + 0];
+		var sourceY = in_linkArray[(sphereIndex * 3) + 1];
+		var sourceZ = in_linkArray[(sphereIndex * 3) + 2];
+		var even = (0 === (sourceZ & 1));
+		if (true === even){
+			linkPoint(inout_arrayArrayLinkData[0], sourceX - 1, sourceY - 1, sourceZ - 1, in_sphereArray, sphereIndex, in_linkMap, in_textureDim);
+			linkPoint(inout_arrayArrayLinkData[1], sourceX - 1, sourceY, sourceZ - 1, in_sphereArray, sphereIndex, in_linkMap, in_textureDim);
+			linkPoint(inout_arrayArrayLinkData[2], sourceX, sourceY, sourceZ - 1, in_sphereArray, sphereIndex, in_linkMap, in_textureDim);
+			linkPoint(inout_arrayArrayLinkData[3], sourceX, sourceY - 1, sourceZ - 1, in_sphereArray, sphereIndex, in_linkMap, in_textureDim);
+			linkPoint(inout_arrayArrayLinkData[4], sourceX - 1, sourceY - 1, sourceZ + 1, in_sphereArray, sphereIndex, in_linkMap, in_textureDim);
+			linkPoint(inout_arrayArrayLinkData[5], sourceX - 1, sourceY, sourceZ + 1, in_sphereArray, sphereIndex, in_linkMap, in_textureDim);
+			linkPoint(inout_arrayArrayLinkData[6], sourceX, sourceY, sourceZ + 1, in_sphereArray, sphereIndex, in_linkMap, in_textureDim);
+			linkPoint(inout_arrayArrayLinkData[7], sourceX, sourceY - 1, sourceZ + 1, in_sphereArray, sphereIndex, in_linkMap, in_textureDim);
+		} else {
+			linkPoint(inout_arrayArrayLinkData[0], sourceX, sourceY, sourceZ - 1, in_sphereArray, sphereIndex, in_linkMap, in_textureDim);
+			linkPoint(inout_arrayArrayLinkData[1], sourceX, sourceY + 1, sourceZ - 1, in_sphereArray, sphereIndex, in_linkMap, in_textureDim);
+			linkPoint(inout_arrayArrayLinkData[2], sourceX + 1, sourceY + 1, sourceZ - 1, in_sphereArray, sphereIndex, in_linkMap, in_textureDim);
+			linkPoint(inout_arrayArrayLinkData[3], sourceX + 1, sourceY, sourceZ - 1, in_sphereArray, sphereIndex, in_linkMap, in_textureDim);
+			linkPoint(inout_arrayArrayLinkData[4], sourceX, sourceY, sourceZ + 1, in_sphereArray, sphereIndex, in_linkMap, in_textureDim);
+			linkPoint(inout_arrayArrayLinkData[5], sourceX, sourceY + 1, sourceZ + 1, in_sphereArray, sphereIndex, in_linkMap, in_textureDim);
+			linkPoint(inout_arrayArrayLinkData[6], sourceX + 1, sourceY + 1, sourceZ + 1, in_sphereArray, sphereIndex, in_linkMap, in_textureDim);
+			linkPoint(inout_arrayArrayLinkData[7], sourceX + 1, sourceY, sourceZ + 1, in_sphereArray, sphereIndex, in_linkMap, in_textureDim);
+		}
+		
+		linkPoint(inout_arrayArrayLinkData[8], sourceX - 1, sourceY, sourceZ, in_sphereArray, sphereIndex, in_linkMap, in_textureDim);
+		linkPoint(inout_arrayArrayLinkData[9], sourceX + 1, sourceY, sourceZ, in_sphereArray, sphereIndex, in_linkMap, in_textureDim);
+		linkPoint(inout_arrayArrayLinkData[10], sourceX, sourceY - 1, sourceZ, in_sphereArray, sphereIndex, in_linkMap, in_textureDim);
+		linkPoint(inout_arrayArrayLinkData[11], sourceX, sourceY + 1, sourceZ, in_sphereArray, sphereIndex, in_linkMap, in_textureDim);
+		linkPoint(inout_arrayArrayLinkData[12], sourceX, sourceY, sourceZ - 2, in_sphereArray, sphereIndex, in_linkMap, in_textureDim);
+		linkPoint(inout_arrayArrayLinkData[13], sourceX, sourceY, sourceZ + 2, in_sphereArray, sphereIndex, in_linkMap, in_textureDim);
+	}
+}
+
+const runN = function(in_sphereArray, in_linkArray, in_fileAssetPath, in_fileDataPath, in_baseName, in_linkCount){
 	const rootName = CamelCase.uppercaseFirstLetter(CamelCase.toCamelCase(in_baseName));
 	var uvDataArrayName = "gUv" + rootName;
 	var uvLinkArrayName = [];
 	var arrayArrayLinkData = [];
-	for (var index = 0; index < 8; ++index){
+	for (var index = 0; index < in_linkCount; ++index){
 		uvLinkArrayName.push("gLink" + index + rootName);
 		arrayArrayLinkData.push([]);
 	}
@@ -185,7 +221,7 @@ const run8 = function(in_sphereArray, in_linkArray, in_fileAssetPath, in_fileDat
 	console.log("textureDim:" + textureDim + " sphereCount:" + in_sphereArray.length / 4);
 
 	const linkMap = makeLinkMap(in_linkArray);
-	makeLinkData(arrayArrayLinkData, in_linkArray, in_sphereArray, linkMap, textureDim);
+	makeLinkData(arrayArrayLinkData, in_linkArray, in_sphereArray, linkMap, textureDim, in_linkCount);
 
 	var assetText = getAssetText(uvDataArrayName, uvLinkArrayName, textureDataArrayName, textureDim);
 	var dataText = getDataArrayText(in_sphereArray, uvDataArrayName, textureDataArrayName, textureDim, arrayArrayLinkData, uvLinkArrayName);
@@ -195,6 +231,16 @@ const run8 = function(in_sphereArray, in_linkArray, in_fileAssetPath, in_fileDat
 	});
 }
 
+
+const run8 = function(in_sphereArray, in_linkArray, in_fileAssetPath, in_fileDataPath, in_baseName){
+	return runN(in_sphereArray, in_linkArray, in_fileAssetPath, in_fileDataPath, in_baseName, 8);
+}
+
+const run14 = function(in_sphereArray, in_linkArray, in_fileAssetPath, in_fileDataPath, in_baseName){
+	return runN(in_sphereArray, in_linkArray, in_fileAssetPath, in_fileDataPath, in_baseName, 14);
+}
+
 module.exports = {
-	"run8" : run8
+	"run8" : run8,
+	"run14" : run14,
 }

@@ -103,6 +103,21 @@
 		{
 			"type": "node",
 			"request": "launch",
+			"name": "skeleton_10k_model_texture_link14",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"skeleton_10k_model_texture_link14"
+			],
+			"port": 5858,
+			"timeout": 100000
+		},
+		{
+			"type": "node",
+			"request": "launch",
 			"name": "skeleton_50k_model",
 			"runtimeExecutable": "npm",
 			"windows": {
