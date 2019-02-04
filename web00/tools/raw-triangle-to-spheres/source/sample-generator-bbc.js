@@ -2,7 +2,7 @@ const FsExtra = require("fs-extra");
 
 const gSqrt0_75 = 0.86602540378443864676372317075294;
 const gSqrt0_5 = 0.70710678118654752440084436210485;
-const gSqrt0_33333 = 0.57735026918962576450914878050196;
+const gSqrt0_66666 = 0.81649658092772603273242802490196;
 const gSqrt0_08333 = 0.28867513459481288225457439025098;
 
 
@@ -70,20 +70,22 @@ const calculateY = function(in_min, in_yIndex, in_zIndex, in_sphereDiameter){
 }
 
 const calculateZ = function(in_min, in_zIndex, in_sphereDiameter){
-	return in_min[2] + (in_zIndex * in_sphereDiameter * gSqrt0_5);
+	return in_min[2] + (in_zIndex * in_sphereDiameter * gSqrt0_66666);
 }
 
-const visit = function(in_spaceInvestigator, in_sphereDiameter, in_min, in_dim){
+const visit = function(in_spaceInvestigator, in_sphereDiameter, in_min, in_dim, in_debugIndexArray){
 	const floatArray = [];
 	const xCount = Math.ceil(in_dim[0] / in_sphereDiameter) + 1;
 	const yCount = Math.ceil(in_dim[1] / (in_sphereDiameter * gSqrt0_75)) + 1;
 	const zCount = Math.ceil(in_dim[2] / (in_sphereDiameter * gSqrt0_5)) + 1;
 	for (var zIndex = 0; zIndex <= zCount; ++zIndex){
 		const localZ = calculateZ(in_min, zIndex, in_sphereDiameter);
+		in_spaceInvestigator.filterZ(localZ);
 
 		console.log(".");
 		for (var yIndex = 0; yIndex <= yCount; ++yIndex){
 			const localY = calculateY(in_min, yIndex, zIndex, in_sphereDiameter);
+			in_spaceInvestigator.filterY(localY);
 			const dataOfInterestOnRayX = in_spaceInvestigator.calculateDataOfInterestOnRayX(localY, localZ);
 
 			for (var xIndex = 0; xIndex <= xCount; ++xIndex){
@@ -92,6 +94,11 @@ const visit = function(in_spaceInvestigator, in_sphereDiameter, in_min, in_dim){
 					floatArray.push(localX);
 					floatArray.push(localY);
 					floatArray.push(localZ);
+					floatArray.push(in_sphereDiameter);
+
+					in_debugIndexArray.push(xIndex);
+					in_debugIndexArray.push(yIndex);
+					in_debugIndexArray.push(zIndex);
 				}
 			}
 		}
@@ -99,7 +106,30 @@ const visit = function(in_spaceInvestigator, in_sphereDiameter, in_min, in_dim){
 	return floatArray;
 }
 
+const visitDebug = function(in_sphereDiameter, in_dimCount, in_debugIndexArray){
+	const floatArray = [];
+	const min = [0.0, 0.0, 0.0];
+	for (var zIndex = 0; zIndex < in_dimCount; ++zIndex){
+		const localZ = calculateZ(min, zIndex, in_sphereDiameter);
+		for (var yIndex = 0; yIndex < in_dimCount; ++yIndex){
+			const localY = calculateY(min, yIndex, zIndex, in_sphereDiameter);
+			for (var xIndex = 0; xIndex < in_dimCount; ++xIndex){
+				const localX = calculateX(min, xIndex, yIndex, zIndex, in_sphereDiameter);
+				floatArray.push(localX);
+				floatArray.push(localY);
+				floatArray.push(localZ);
+				floatArray.push(in_sphereDiameter);
+
+				in_debugIndexArray.push(xIndex);
+				in_debugIndexArray.push(yIndex);
+				in_debugIndexArray.push(zIndex);
+			}
+		}
+	}
+	return floatArray;
+}
 
 module.exports = {
-	"visit" : visit
+	"visit" : visit,
+	"visitDebug" : visitDebug,
 }

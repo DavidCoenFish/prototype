@@ -242,5 +242,5 @@ const run14 = function(in_sphereArray, in_linkArray, in_fileAssetPath, in_fileDa
 
 module.exports = {
 	"run8" : run8,
-	"run14" : run14,
+	"run14" : run14
 }

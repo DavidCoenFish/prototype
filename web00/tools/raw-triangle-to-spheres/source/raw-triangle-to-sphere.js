@@ -1,6 +1,7 @@
 const BarycentricTriangle = require("./barycentric-triangle.js");
 const SpaceInvestigator = require("./space-investigator.js");
-const SampleGenerator = require("./sample-generator.js");
+//const SampleGenerator = require("./sample-generator.js");
+const SampleGenerator = require("./sample-generator-bbc.js");
 
 const makeBarycentricTriangleArray = function(in_rawTriangle) {
 	const barycentricTriangleArray = [];

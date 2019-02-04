@@ -76,7 +76,6 @@ const visit = function(in_spaceInvestigator, in_sphereDiameter, in_min, in_dim, 
 	return floatArray;
 }
 
-
 module.exports = {
-	"visit" : visit
+	"visit" : visit,
 }

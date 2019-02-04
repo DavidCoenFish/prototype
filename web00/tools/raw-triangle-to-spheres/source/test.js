@@ -1,6 +1,8 @@
 const Geometry = require("./geometry.js");
 const BarycentricTriangle = require("./barycentric-triangle.js");
 const SpaceInvestigator = require("./space-investigator.js");
+const SpaceGeneratorBbc = require("./sample-generator-bbc.js");
+const FsExtra = require("fs-extra");
 
 const dealTest = function(testName, value, expected)
 {
@@ -142,11 +144,26 @@ const testInside = function(){
 	return;
 }
 
+const testSampleGeneratorBbc = function(){
+	const debugIndexArray = [];
+	const sphereArray = SpaceGeneratorBbc.visitDebug(1.0, 10, debugIndexArray);
+
+	FsExtra.writeJSONSync("C:\\development\\prototype\\web00\\tools\\raw-triangle-to-spheres\\output\\bbc.json", sphereArray);
+	FsExtra.writeJSONSync("C:\\development\\prototype\\web00\\tools\\raw-triangle-to-spheres\\output\\debugIndexArray.json", debugIndexArray);
+
+	//console.log("bbc:" + JSON.stringify(sphereArray));
+	//console.log("debugIndexArray:" + JSON.stringify(debugIndexArray));
+
+	return;
+}
+
+
 const run = function(){
 	testGeometryRayPlaneIntersect();
 	testBarycentricTriangle0();
 	testRayDistance();
 	testInside();
+	testSampleGeneratorBbc();
 
 	console.log("done");
 }

@@ -1,11 +1,11 @@
 const Core = require("core");
 const WebGL = require("webgl");
 const ManipulateDom = require("manipulatedom");
-//const Asset = require("./physicstest01/asset.js");
+const Asset = require("./physicstest01/asset.js");
 //const Asset = require("./physicstest01/assetdebug.js");
 //const Asset = require("./physicstest01/assetdebug2.js");
 //const Asset = require("./physicstest01/assetdebug3.js");
-const Asset = require("./physicstest01/assetdebug4.js");
+//const Asset = require("./physicstest01/assetdebug4.js");
 
 const StageGetForceSum = require("./physicstest01/stagegetforcesum.js");
 const StageResolveForceSumVrsCollision = require("./physicstest01/stageresolveforcesumvrscollision.js");
@@ -158,7 +158,7 @@ const onPageLoad = function(){
 	const m_quad1 = WebGL.ComponentScreenTextureQuad.factory(m_resourceManager, m_webGLContextWrapper, m_dataServer.getTextureCollisionResolvedForceSum(), Core.Vector2.factoryFloat32(-1.0, -1.0), Core.Vector2.factoryFloat32(0.0, 0.0));
 
 	//var m_frameCount = 100;
-	var m_useTimeStep = false;
+	var m_useTimeStep = true;
 	var m_step = (false === m_useTimeStep);
 	var m_prevTimeStamp = undefined;
 	const m_clearColor = Core.Colour4.factoryFloat32(0.5, 0.5, 0.5, 1.0);

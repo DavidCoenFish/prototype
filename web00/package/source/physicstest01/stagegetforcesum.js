@@ -19,8 +19,6 @@ attribute vec3 a_link8;
 attribute vec3 a_link9;
 attribute vec3 a_link10;
 attribute vec3 a_link11;
-attribute vec3 a_link12;
-attribute vec3 a_link13;
 
 varying vec3 v_forceSum;
 
@@ -75,8 +73,6 @@ void main() {
 	forceSum += forceFromLink(a_link9, positionPrev, positionPrevPrev);
 	forceSum += forceFromLink(a_link10, positionPrev, positionPrevPrev);
 	forceSum += forceFromLink(a_link11, positionPrev, positionPrevPrev);
-	forceSum += forceFromLink(a_link12, positionPrev, positionPrevPrev);
-	forceSum += forceFromLink(a_link13, positionPrev, positionPrevPrev);
 
 	v_forceSum = forceSum;
 
@@ -92,7 +88,7 @@ void main() {
 	//gl_FragColor = vec4(100.0, 100.0, 100.0, 1.0);
 }
 `;
-const sVertexAttributeNameArray = ["a_uv", "a_link0", "a_link1", "a_link2", "a_link3", "a_link4", "a_link5", "a_link6", "a_link7", "a_link8", "a_link9", "a_link10", "a_link11", "a_link12", "a_link13"];
+const sVertexAttributeNameArray = ["a_uv", "a_link0", "a_link1", "a_link2", "a_link3", "a_link4", "a_link5", "a_link6", "a_link7", "a_link8", "a_link9", "a_link10", "a_link11"];
 const sUniformNameArray = ["u_samplerPrevPrevPos", "u_samplerPrevPos", "u_timeStep"];
 
 const factory = function(in_resourceManager, in_webGLContextWrapper, in_webGLState, in_dataServer){

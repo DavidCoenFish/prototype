@@ -10,6 +10,7 @@ console.log(new Date().toLocaleTimeString());
 if ((3 == process.argv.length) && ("test" === process.argv[2])){
 	console.log("test");
 	Test.run();
+
 	process.exit(0);
 }
 
@@ -43,7 +44,7 @@ const loadGltr = function(in_outputFilePath, in_inputFilePath, in_sphereDiameter
 		}).then(function(in_rawTriangleArray) {	
 			return RawTriangleToSphere.run(in_rawTriangleArray, in_sphereDiameter, debugIndexArray);
 		}).then(function(in_sphereArray) {
-			console.log("in_sphereArray.length:" + in_sphereArray.length / 4);
+			console.log("sphere count" + in_sphereArray.length / 4);
 			return FsExtra.writeJSON(in_outputFilePath, in_sphereArray);
 		}).then(function() {
 			var baseName = Path.basename(in_outputFilePath, ".json");

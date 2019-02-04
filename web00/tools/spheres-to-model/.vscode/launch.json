@@ -103,6 +103,21 @@
 		{
 			"type": "node",
 			"request": "launch",
+			"name": "skeleton_10k_model_texture_link12",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"skeleton_10k_model_texture_link12"
+			],
+			"port": 5858,
+			"timeout": 100000
+		},
+		{
+			"type": "node",
+			"request": "launch",
 			"name": "skeleton_10k_model_texture_link14",
 			"runtimeExecutable": "npm",
 			"windows": {
@@ -141,6 +156,21 @@
 			"runtimeArgs": [
 				"run-script",
 				"skeleton_50k_model_texture"
+			],
+			"port": 5858,
+			"timeout": 100000
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "skeleton_50k_model_texture_link12",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"skeleton_50k_model_texture_link12"
 			],
 			"port": 5858,
 			"timeout": 100000
