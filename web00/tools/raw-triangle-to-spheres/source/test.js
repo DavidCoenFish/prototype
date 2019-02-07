@@ -145,14 +145,25 @@ const testInside = function(){
 }
 
 const testSampleGeneratorBbc = function(){
+	console.log("testSampleGeneratorBbc");
+
 	const debugIndexArray = [];
-	const sphereArray = SpaceGeneratorBbc.visitDebug(1.0, 10, debugIndexArray);
+	const sphereArray = SpaceGeneratorBbc.visitDebug(0.00725, 10, debugIndexArray);
 
-	FsExtra.writeJSONSync("C:\\development\\prototype\\web00\\tools\\raw-triangle-to-spheres\\output\\bbc.json", sphereArray);
-	FsExtra.writeJSONSync("C:\\development\\prototype\\web00\\tools\\raw-triangle-to-spheres\\output\\debugIndexArray.json", debugIndexArray);
+	FsExtra.writeJSONSync(".\\output\\spheres_10x10x10.json", sphereArray);
+	FsExtra.writeJSONSync(".\\output\\spheres_10x10x10_index.json", debugIndexArray);
 
-	//console.log("bbc:" + JSON.stringify(sphereArray));
-	//console.log("debugIndexArray:" + JSON.stringify(debugIndexArray));
+	return;
+}
+
+const testSampleGeneratorBbcSphere = function(){
+	console.log("testSampleGeneratorBbcSphere");
+
+	const debugIndexArray = [];
+	const sphereArray = SpaceGeneratorBbc.visitDebugSphere(0.00725, 10, debugIndexArray);
+
+	FsExtra.writeJSONSync(".\\output\\sphere.json", sphereArray);
+	FsExtra.writeJSONSync(".\\output\\sphere_index.json", debugIndexArray);
 
 	return;
 }
@@ -164,6 +175,7 @@ const run = function(){
 	testRayDistance();
 	testInside();
 	testSampleGeneratorBbc();
+	testSampleGeneratorBbcSphere();
 
 	console.log("done");
 }

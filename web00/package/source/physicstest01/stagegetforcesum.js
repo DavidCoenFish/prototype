@@ -47,7 +47,7 @@ vec3 forceFromLink(vec3 in_link, vec4 in_position, vec4 in_positionPrev){
 
 	//dampen velocity along spring
 	float velocityAlongSpring = dot(offset, ((in_position.xyz - in_positionPrev.xyz) - (positionLink.xyz - positionPrevLink.xyz)));
-	force -= ((0.05 * velocityAlongSpring / (u_timeStep * u_timeStep)) * offset);
+	force -= ((10.0 * velocityAlongSpring / u_timeStep) * offset);
 
 	return force;
 }

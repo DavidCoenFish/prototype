@@ -1,7 +1,7 @@
 const FsExtra = require("fs-extra");
+const Geometry = require("./geometry.js");
 
 const gSqrt0_75 = 0.86602540378443864676372317075294;
-const gSqrt0_5 = 0.70710678118654752440084436210485;
 const gSqrt0_66666 = 0.81649658092772603273242802490196;
 const gSqrt0_08333 = 0.28867513459481288225457439025098;
 
@@ -65,7 +65,7 @@ const calculateY = function(in_min, in_yIndex, in_zIndex, in_sphereDiameter){
 	if (zEven){
 		return in_min[1] + (in_yIndex * in_sphereDiameter * gSqrt0_75);
 	} else {
-		return in_min[1] + ((gSqrt0_08333) + in_yIndex * in_sphereDiameter * gSqrt0_75);
+		return in_min[1] + (gSqrt0_08333 + (in_yIndex * gSqrt0_75)) * in_sphereDiameter;
 	}
 }
 
@@ -77,7 +77,7 @@ const visit = function(in_spaceInvestigator, in_sphereDiameter, in_min, in_dim, 
 	const floatArray = [];
 	const xCount = Math.ceil(in_dim[0] / in_sphereDiameter) + 1;
 	const yCount = Math.ceil(in_dim[1] / (in_sphereDiameter * gSqrt0_75)) + 1;
-	const zCount = Math.ceil(in_dim[2] / (in_sphereDiameter * gSqrt0_5)) + 1;
+	const zCount = 10; //Math.ceil(in_dim[2] / (in_sphereDiameter * gSqrt0_66666)) + 1;
 	for (var zIndex = 0; zIndex <= zCount; ++zIndex){
 		const localZ = calculateZ(in_min, zIndex, in_sphereDiameter);
 		in_spaceInvestigator.filterZ(localZ);
@@ -129,7 +129,40 @@ const visitDebug = function(in_sphereDiameter, in_dimCount, in_debugIndexArray){
 	return floatArray;
 }
 
+const visitDebugSphere = function(in_sphereDiameter, in_dimCount, in_debugIndexArray){
+	const floatArray = [];
+	const radius = in_dimCount * in_sphereDiameter * 0.5;
+	const min = [-radius, -radius, -radius];
+
+	const xCount = in_dimCount + 1;
+	const yCount = Math.ceil(in_dimCount / gSqrt0_75) + 1;
+	const zCount = Math.ceil(in_dimCount / gSqrt0_66666) + 1;
+
+	for (var zIndex = 0; zIndex < zCount; ++zIndex){
+		const localZ = calculateZ(min, zIndex, in_sphereDiameter);
+		for (var yIndex = 0; yIndex < yCount; ++yIndex){
+			const localY = calculateY(min, yIndex, zIndex, in_sphereDiameter);
+			for (var xIndex = 0; xIndex < xCount; ++xIndex){
+				const localX = calculateX(min, xIndex, yIndex, zIndex, in_sphereDiameter);
+				const length = Geometry.vec3Length([localX, localY, localZ]);
+				if (length <= radius){
+					floatArray.push(localX);
+					floatArray.push(localY);
+					floatArray.push(localZ + radius);
+					floatArray.push(in_sphereDiameter);
+
+					in_debugIndexArray.push(xIndex);
+					in_debugIndexArray.push(yIndex);
+					in_debugIndexArray.push(zIndex);
+				}
+			}
+		}
+	}
+	return floatArray;
+}
+
 module.exports = {
 	"visit" : visit,
 	"visitDebug" : visitDebug,
+	"visitDebugSphere" : visitDebugSphere, 
 }

@@ -175,5 +175,35 @@
 			"port": 5858,
 			"timeout": 100000
 		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "10x10x10_link12",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"10x10x10_link12"
+			],
+			"port": 5858,
+			"timeout": 100000
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "sphere_link12",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"sphere_link12"
+			],
+			"port": 5858,
+			"timeout": 100000
+		},
 	]
 }

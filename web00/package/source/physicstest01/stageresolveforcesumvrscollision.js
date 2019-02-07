@@ -17,9 +17,10 @@ void main() {
 	float predectedHeight = prevPos.z + (forceSum.z * u_timeStep * u_timeStep);
 
 	float height = predectedHeight - radius;
-	if (height < 0.0){
+	float zPlaneHeight = -0.01;
+	if (height < zPlaneHeight){
 		//float targetDisplacment = min(predectedHeight + radius, radius) - prevPos.z;
-		float targetDisplacment = radius - prevPos.z;
+		float targetDisplacment = radius - prevPos.z + zPlaneHeight;
 		forceSum.z = targetDisplacment / (u_timeStep * u_timeStep);
 	}
 

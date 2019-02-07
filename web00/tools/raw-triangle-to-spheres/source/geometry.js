@@ -4,6 +4,10 @@ const vec3Equal = function(in_pos3PointA, in_pos3PointB){
 		(in_pos3PointA[2] === in_pos3PointB[2]));
 }
 
+const vec3Length = function(in_vec3){
+	const length = Math.sqrt(vec3DotProduct(in_vec3, in_vec3));
+	return length;
+}
 
 	//return [n0, n1, n2, length]
 const vec3LengthReturnNormal = function(in_vec3){
@@ -99,6 +103,7 @@ module.exports = {
 	"rayPlaneIntersection" : rayPlaneIntersection,
 	"rayDistance" : rayDistance,
 	"vec3Equal" : vec3Equal,
+	"vec3Length" : vec3Length,
 	"vec3LengthReturnNormal" : vec3LengthReturnNormal,
 	"vec3CrossProduct" : vec3CrossProduct,
 	"vec3Minus" : vec3Minus,
