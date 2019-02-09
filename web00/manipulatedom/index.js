@@ -8,6 +8,7 @@ module.exports = {
 	"ComponentEditVec3" : require("./source/component-editvec3.js"),
 	"ComponentEditVec4" : require("./source/component-editvec4.js"),
 	"ComponentFps" : require("./source/component-fps.js"),
+	"ComponentMouseKeyboardCamera" : require("./source/component-mouse-keyboard-camera.js"),
 	"Format" : require("./source/format.js"),
 	"Text" : require("./source/text.js"),
 };

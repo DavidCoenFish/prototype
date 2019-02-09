@@ -8,10 +8,6 @@ const getInside = function(in_radius, in_x0, in_y0, in_x1, in_y1){
 	return inside;
 }
 
-const claculateBoomLength = function(in_zoom){
-	return (1.0 / in_zoom);
-}
-
 const calculateRoll = function(in_x0, in_y0, in_x1, in_y1, in_originX, in_originY){
 	const vectorNew = Core.Vector2.factoryFloat32(in_x0 - in_originX, in_y0 - in_originY);
 	vectorNew.normaliseSelf();
@@ -21,6 +17,8 @@ const calculateRoll = function(in_x0, in_y0, in_x1, in_y1, in_originX, in_origin
 	var cross = vectorNew.crossProduct();
 	var angle = Math.acos(dot);
 	angle *= Math.sign(cross.dotProduct(vectorPrev));
+	//console.log(JSON.stringify([in_x0, in_y0, in_x1, in_y1]));
+	//console.log("dot:" + dot + " angle:" + angle);
 	return angle;
 }
 
@@ -43,6 +41,8 @@ in_dataServer
 const factory = function(in_clickDragElement, in_dataServer){
 	var m_oldX = undefined;
 	var m_oldY = undefined;
+	var m_lmbDown = undefined;
+	const m_keyMap = {}
 
 	const update = function(in_yawDeltaOrUndefined, in_pitchDeltaOrUndefined, in_rollDeltaOrUndefined,
 		in_posXDeltaOrUndefined, in_posYDeltaOrUndefined, in_posZDeltaOrUndefined, in_zoomDeltaOrUndefined){
@@ -58,13 +58,7 @@ const factory = function(in_clickDragElement, in_dataServer){
 			(undefined !== in_zoomDeltaOrUndefined)){
 		
 			var scale = (at.normaliseSelf() + up.normaliseSelf() + left.normaliseSelf()) / 3.0;
-/*
-			if (undefined !== in_zoomDeltaOrUndefined){
-				var localScale = (1.0 + (in_zoomDeltaOrUndefined * 0.1));
-				localScale = Math.max(0.1, Math.min(10.0, localScale));
-				scale *= localScale;
-			}
-*/
+
 			var rotation = Core.Quaternion.factoryIdentity();
 			if (undefined !== in_yawDeltaOrUndefined){
 				const quat = Core.Quaternion.factoryAxisAngle(up, -in_yawDeltaOrUndefined);
@@ -122,20 +116,12 @@ const factory = function(in_clickDragElement, in_dataServer){
 		m_oldX = x;
 		m_oldY = y;
 
-		if ((0.0 === deltaX) && (0.0 === deltaY)){
-			return;
-		}
-
 		const lmb = (0 !== (in_event.buttons & 1));
-		const rmb = (0 !== (in_event.buttons & 2));
-		const mmb = (0 !== (in_event.buttons & 4));
-		if ((false === lmb) && (false === rmb) && (false === mmb)){
-			return;
-		}
-
-		const innerRadius = Math.min(rect.width, rect.height) * 0.45;
+		m_lmbDown = lmb;
 
 		if (true === lmb){ //if in circle, do yaw and pitch, else roll
+			const innerRadius = Math.min(rect.width, rect.height) * 0.45;
+
 			const inside = getInside(innerRadius, rect.width * 0.5, rect.height * 0.5, x, y);
 			if (inside){
 				var yaw = calculateYawPitch(deltaX / innerRadius);
@@ -143,32 +129,76 @@ const factory = function(in_clickDragElement, in_dataServer){
 			} else {
 				var roll = calculateRoll(x, y, x - deltaX, y - deltaY, rect.width * 0.5, rect.height * 0.5);
 			}
-		}
 
-		if (true === rmb){ //pan left-right or up-down
-			var cameraDeltaX = deltaX / innerRadius;
-			var cameraDeltaY = deltaY / innerRadius;
+			update(yaw, pitch, roll);
 		}
-
-		if (true === mmb){ //dolly
-			var cameraZoom = deltaX / innerRadius;
-			var cameraDeltaZ = deltaY / innerRadius;
-		}
-
-		update(yaw, pitch, roll, cameraDeltaX, cameraDeltaY, cameraDeltaZ, cameraZoom);
 
 		return;
+	}
+
+	const keyDownCallback = function(in_event){
+		m_keyMap[in_event.code] = 1;
+		//console.log("keyDown:" + in_event.code);
+		return;
+	}
+	const keyUpCallback = function(in_event){
+		m_keyMap[in_event.code] = 0;
+		//console.log("keyUp:" + in_event.code);
+		return;
+	}
+	const anyKeyDown = function(in_keys){
+		for (var index = 0; index < in_keys.length; ++index){
+			var key = in_keys[index];
+			if ((key in m_keyMap) && (1 === m_keyMap[key])){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	//public methods ==========================
 	const result = Object.create({
 		"destroy" : function(){
 			in_clickDragElement.removeEventListener("mousemove", mouseMoveCallback);
+			in_clickDragElement.removeEventListener("keydown", keyDownCallback);
+			in_clickDragElement.removeEventListener("keyup", keyUpCallback);
 			return;
+		},
+		"tick" : function(in_timeDelta){
+			if (true === m_lmbDown){
+				const deltaTimeSinceLastUpdate = in_timeDelta / 10.0;
+				if (true === anyKeyDown(["KeyA", "ArrowLeft"])){
+					var cameraDeltaX = deltaTimeSinceLastUpdate;
+				}
+				if (true === anyKeyDown(["KeyD", "ArrowRight"])){
+					var cameraDeltaX = -deltaTimeSinceLastUpdate;
+				}
+				if (true === anyKeyDown(["KeyW", "ArrowUp"])){
+					var cameraDeltaZ = deltaTimeSinceLastUpdate;
+				}
+				if (true === anyKeyDown(["KeyS", "ArrowDown"])){
+					var cameraDeltaZ = -deltaTimeSinceLastUpdate;
+				}
+
+				if (true === anyKeyDown(["KeyE", "PageUp"])){
+					var cameraDeltaY = deltaTimeSinceLastUpdate;
+				}
+				if (true === anyKeyDown(["KeyQ", "PageDown"])){
+					var cameraDeltaY = -deltaTimeSinceLastUpdate;
+				}
+				var yaw = undefined;
+				var pitch = undefined;
+				var roll = undefined;
+				var cameraZoom = undefined;
+
+				update(yaw, pitch, roll, cameraDeltaX, cameraDeltaY, cameraDeltaZ, cameraZoom);
+			}
 		}
 	});
 
 	in_clickDragElement.addEventListener("mousemove", mouseMoveCallback);
+	in_clickDragElement.addEventListener("keydown", keyDownCallback);
+	in_clickDragElement.addEventListener("keyup", keyUpCallback);
 
 	return result;
 }
