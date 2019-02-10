@@ -16,7 +16,8 @@
     "skeleton_50k_model_texture": "node --nolazy --inspect-brk=5858 index.js output\\asset_skeleton_50k_model_texture.js output\\data_skeleton_50k_model_texture.js input\\spheres_skeleton_50k.json model_texture",
     "skeleton_50k_model_texture_link12": "node --nolazy --inspect-brk=5858 index.js output\\asset_skeleton_50k_model_texture_link12.js output\\data_skeleton_50k_model_texture_link12.js input\\spheres_skeleton_50k.json model_texture_link12",
     "10x10x10_link12": "node --nolazy --inspect-brk=5858 index.js output\\asset_10x10x10_model_texture_link12.js output\\data_10x10x10_model_texture_link12.js input\\spheres_10x10x10.json model_texture_link12",
-	"sphere_link12": "node --nolazy --inspect-brk=5858 index.js output\\asset_sphere_model_texture_link12.js output\\data_sphere_model_texture_link12.js input\\sphere.json model_texture_link12"
+	"sphere_link12": "node --nolazy --inspect-brk=5858 index.js output\\asset_sphere_model_texture_link12.js output\\data_sphere_model_texture_link12.js input\\sphere.json model_texture_link12",
+	"sphere_volume12": "node --nolazy --inspect-brk=5858 index.js output\\asset_sphere_model_texture_volume12.js output\\data_sphere_model_texture_volume12.js input\\sphere.json model_texture_volume12"
 	
   },
   "dependencies": {

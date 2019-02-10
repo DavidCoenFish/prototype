@@ -6,6 +6,7 @@ const SphereToModel = require("./source/sphere-to-model.js");
 const SphereToModelTexture = require("./source/sphere-to-model-texture.js");
 const SphereToModelTextureLink = require("./source/sphere-to-model-texture-link.js");
 const SphereToModelTextureLinkBbc = require("./source/sphere-to-model-texture-link-bbc.js");
+const SphereToModelTextureVolumeBbc = require("./source/sphere-to-model-texture-volume-bbc.js");
 const Test = require("./source/test.js");
 
 console.log(new Date().toLocaleTimeString());
@@ -62,6 +63,10 @@ const run = function(in_outputAssetFilePath, in_outputDataFilePath, in_inputFile
 				var linkPath = Path.join(Path.dirname(in_inputFilePath), baseName + "_index.json");
 				var linkData = FsExtra.readJsonSync(linkPath);
 				return SphereToModelTextureLinkBbc.run12(in_sphereArray, linkData, in_outputAssetFilePath, in_outputDataFilePath, baseName);
+			} else if (in_mode === "model_texture_volume12"){
+				var linkPath = Path.join(Path.dirname(in_inputFilePath), baseName + "_index.json");
+				var linkData = FsExtra.readJsonSync(linkPath);
+				return SphereToModelTextureVolumeBbc.run12(in_sphereArray, linkData, in_outputAssetFilePath, in_outputDataFilePath, baseName);
 			} else {
 				throw new Error("unknown mode:" + in_mode);
 			}

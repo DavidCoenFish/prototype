@@ -289,14 +289,12 @@ const testPrintArrayData = function(in_arrayData, in_linkArray, in_outerDataInde
 	){
 		var message = `${linkA} ${linkB} ${linkC}:`;
 		var item = in_arrayData[0];
-		message += "\"sphereA\":[" + item.sphereA[0] + "," + item.sphereA[1] + "," + item.sphereA[2] + "," + item.sphereA[3] + "\n";
+		message += `{"sphereA":[${item.sphereA[0]}, ${item.sphereA[1]}, ${item.sphereA[2]}, ${item.sphereA}],\n`;
 
 		for (var index = 0; index < 12; ++index){
 			item = in_arrayData[index];
-			//message += JSON.stringify(item);
-			//message += "{\"distance\":" + item.distance;
-			message += "{\"linkB\":[" + (item.linkB[0] - linkA) + "," + (item.linkB[1] - linkB) + "," + (item.linkB[2] - linkC) + "]}\n";
-			//message += ",\"sphereB\":[" + item.sphereB[0] + "," + item.sphereB[1] + "," + item.sphereB[2] + "," + item.sphereB[3] + "]}\n";
+			message += `"distance": ${item.distance},\n`;
+			message += `"linkB":[${item.linkB[0] - linkA}, ${item.linkB[1] - linkB}, ${item.linkB[2] - linkC},`;
 		}
 		console.log(message);
 	}
@@ -330,9 +328,6 @@ const test = function(in_sphereArray,  in_linkArray){
 
 		testPrintArrayData(arrayData, in_linkArray, outerDataIndex);
 	}
-
-
-
 }
 
 const run12 = function(in_sphereArray, in_linkArray, in_fileAssetPath, in_fileDataPath, in_baseName){
