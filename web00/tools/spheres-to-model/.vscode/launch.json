@@ -205,5 +205,20 @@
 			"port": 5858,
 			"timeout": 100000
 		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "sphere_volume12",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"sphere_volume12"
+			],
+			"port": 5858,
+			"timeout": 100000
+		},
 	]
 }
