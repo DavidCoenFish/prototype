@@ -123,6 +123,9 @@ const testPrintArrayVolumeData = function(in_arrayVolumeData, in_originLink, in_
 		return 0;
 	});
 
+	const yText = (0 === (in_originLink[1] & 1)) ? "EvenY" : "OddY";
+	const zText = (0 === (in_originLink[2] & 1)) ? "EvenZ" : "OddZ";
+
 	// do in two passes, keys must have 2 points in {0, 1, 2} or {9, 10, 11}
 	const validKeySet = {0:0,1:0,2:0, 9:0,10:0,11:0};
 	var array4Pair = [];
@@ -190,7 +193,7 @@ const testPrintArrayVolumeData = function(in_arrayVolumeData, in_originLink, in_
 		}
 	}
 
-	var message = "const gOffset = [";
+	var message = `const gOffset${yText}${zText} = [`;
 	for (var index = 0; index < 12; ++index){
 		message += `[${in_linkData[index][0]},${in_linkData[index][1]},${in_linkData[index][2]}],\n`;
 	}
@@ -216,7 +219,7 @@ const testPrintArrayVolumeData = function(in_arrayVolumeData, in_originLink, in_
 		return 0;
 	});
 
-	message += "const gVolume = [";
+	message += `const gVolume${yText}${zText} = [`;
 	for (var index = 0; index < masterItemList.length; ++index){
 		const item = masterItemList[index];
 		message += testPrintVolumeDataItem(item, in_linkData);
@@ -284,7 +287,7 @@ const testPrintArrayData = function(in_arrayData, in_linkArray, in_outerDataInde
 		var linkData = [];
 		for (var index = 0; index < 12; ++index){
 			item = in_arrayData[index];
-			message += `"link${index}":[${item.linkB[0] - linkX}, ${item.linkB[1] - linkY}, ${item.linkB[2] - linkZ}],\n`;
+			//message += `"link${index}":[${item.linkB[0] - linkX}, ${item.linkB[1] - linkY}, ${item.linkB[2] - linkZ}],\n`;
 			linkData.push([item.linkB[0] - linkX, item.linkB[1] - linkY, item.linkB[2] - linkZ]);
 		}
 
@@ -330,27 +333,38 @@ const test = function(in_sphereArray,  in_linkArray){
 	for (key in volumeDictionary){
 		count += 1;
 	}
-	console.log(count);
-	console.log(JSON.stringify(volumeDictionary));
+	console.log("unique permutations:" + count);
+	//console.log(JSON.stringify(volumeDictionary));
 }
 
-const getAssetText = function(in_uvDataArrayName, in_quadrantArrayName, in_volumeUvPairArrayNameArray, in_volumeDataArrayNameArray, in_textureDataArrayName, in_textureDim){
+const getAssetText = function(in_uvDataArrayName, in_linkUvNameArray, in_textureNameArray, in_textureDataNameArray, in_textureDim){
 	var dataStreamText = "";
 	var dataStreamMap = "";
-	for (var index = 0; index < in_volumeUvPairArrayNameArray.length; ++index){
-		dataStreamText += `	const m_volumeUvPair${index}DataStream = WebGL.ModelDataStream.factory("FLOAT", 4, new Float32Array(${in_volumeUvPairArrayNameArray[index]}), "STATIC_DRAW", false);\n`;
-		dataStreamMap += `			"a_volumeUvPair${index}" : m_volumeUvPair${index}DataStream,\n`;
+	for (var index = 0; index < in_linkUvNameArray.length; ++index){
+		dataStreamText += `	const m_linkUv${index}DataStream = WebGL.ModelDataStream.factory("FLOAT", 4, new Float32Array(${in_linkUvNameArray[index]}), "STATIC_DRAW", false);\n`;
+		dataStreamMap += `			"a_linkUv${index}" : m_linkUv${index}DataStream,\n`;
 	}
-	for (var index = 0; index < in_volumeDataArrayNameArray.length; ++index){
-		dataStreamText += `	const m_volumeData${index}DataStream = WebGL.ModelDataStream.factory("FLOAT", 4, new Float32Array(${in_volumeDataArrayNameArray[index]}), "STATIC_DRAW", false);\n`;
-		dataStreamMap += `			"a_volumeData${index}" : m_volumeData${index}DataStream,\n`;
+
+	var textureData = "";
+	var factoryDataText = "";
+
+	for (var index = 0; index < in_textureDataNameArray.length; ++index){
+		factoryDataText += `	"factory${in_textureNameArray[index]}" : factory${in_textureNameArray[index]},\n`;
+		textureData += `const factory${in_textureNameArray[index]} = function(in_webGLContextWrapper){
+	return WebGL.TextureWrapper.factoryFloatRGBA(
+		in_webGLContextWrapper, 
+		${in_textureDim}, 
+		${in_textureDim},
+		new Float32Array(${in_textureDataNameArray[index]})
+	);
+}
+`;
 	}
 
 	return `const WebGL = require("webgl");
 
 const factoryModel = function(in_webGLContextWrapper){
 	const m_uvDataStream = WebGL.ModelDataStream.factory("FLOAT", 2, new Float32Array(${in_uvDataArrayName}), "STATIC_DRAW", false);
-	const m_quadrantDataStream = WebGL.ModelDataStream.factory("UNSIGNED_BYTE", 1, new Uint8Array(${in_quadrantArrayName}), "STATIC_DRAW", false);
 ${dataStreamText}
 
 	return WebGL.ModelWrapper.factory(
@@ -359,31 +373,22 @@ ${dataStreamText}
 		Math.floor(${in_uvDataArrayName}.length / 2),
 		{
 			"a_uv" : m_uvDataStream,
-			"a_quadrant" : m_quadrantDataStream,
 ${dataStreamMap}
 		}
 	);
 }
 
-const factoryTexture = function(in_webGLContextWrapper){
-	return WebGL.TextureWrapper.factoryFloatRGBA(
-		in_webGLContextWrapper, 
-		${in_textureDim}, 
-		${in_textureDim},
-		new Float32Array(${in_textureDataArrayName})
-	);
-}
+${textureData}
 
 module.exports = {
-	"factoryModel" : factoryModel,
-	"factoryTexture" : factoryTexture,
+${factoryDataText}	"factoryModel" : factoryModel
 };`; 
 }
 
-const getDataArrayText = function(in_sphereArray, in_uvDataArrayName, in_quadrantArrayName, in_quadrantArray, in_textureDim, in_textureDataArrayName, volumeUvPairArrayNameArray, volumeUvPairArray, volumeDataArrayNameArray, volumeDataArray){
-	//uv
+const getDataArrayText = function(in_sphereArray, in_uvDataArrayName, in_linkUvDataArray, in_volumeDataArray, in_textureDim, in_linkUvNameArray, in_textureDataNameArray){
 	var result = "";
 
+	//uv
 	result += `const ${in_uvDataArrayName} = [\n`;
 	var sphereCount = in_sphereArray.length / 4;
 	var traceX = 0;
@@ -400,33 +405,18 @@ const getDataArrayText = function(in_sphereArray, in_uvDataArrayName, in_quadran
 	}
 	result += `]\n`;
 
-	result += `const ${in_quadrantArrayName} = [\n`;
-	for (var index = 0; index < in_quadrantArray.length; ++index){
-		result += `${in_quadrantArray[index]},\n`;
-	}
-	result += `]\n`;
-
-
-	//volumeUvPairArrayNameArray, volumeUvPairArray, 24
+	//link data
 	for (var index = 0; index < 6; ++index){
-		result += `const ${volumeUvPairArrayNameArray[index]} = [\n`;
-		for (var subIndex = (index * 4); subIndex < volumeUvPairArray.length; subIndex += 24){
-			result += `${volumeUvPairArray[subIndex + 0]}, ${volumeUvPairArray[subIndex + 1]}, ${volumeUvPairArray[subIndex + 2]}, ${volumeUvPairArray[subIndex + 3]},\n`;
+		result += `const ${in_linkUvNameArray[index]} = [\n`;
+		for (var subIndex = 0; subIndex < sphereCount; ++subIndex){
+			var linkIndex = (subIndex * 24) + (index * 4);
+			result += `${in_linkUvDataArray[linkIndex + 0]}, ${in_linkUvDataArray[linkIndex + 1]},\n`;
 		}
 		result += `]\n`;
 	}
 
-	//volumeDataArrayNameArray, volumeDataArray //20
-	for (var index = 0; index < 5; ++index){
-		result += `const ${volumeDataArrayNameArray[index]} = [\n`;
-		for (var subIndex = (index * 4); subIndex < volumeDataArray.length; subIndex += 20){
-			result += `${volumeDataArray[subIndex + 0]}, ${volumeDataArray[subIndex + 1]}, ${volumeDataArray[subIndex + 2]}, ${volumeDataArray[subIndex + 3]},\n`;
-		}
-		result += `]\n`;
-	}
-
-	//texture
-	result += `const ${in_textureDataArrayName} = [\n`;
+	//texture pos
+	result += `const ${in_textureDataNameArray[0]} = [\n`;
 	var pixelCount = in_textureDim * in_textureDim;
 	for (var index = 0; index < pixelCount; index++){
 		var sphereIndex = index * 4;
@@ -437,6 +427,23 @@ const getDataArrayText = function(in_sphereArray, in_uvDataArrayName, in_quadran
 		}
 	}
 	result += `]\n`;
+
+	//texture volume
+	for (var index = 1; index < 6; ++index){
+		result += `const ${in_textureDataNameArray[index]} = [\n`;
+		var pixelCount = in_textureDim * in_textureDim;
+		for (var subIndex = 0; subIndex < pixelCount; subIndex++){
+			var volumeIndex = (subIndex * 20) + (index * 5);
+			//in_volumeDataArray
+			if (volumeIndex < in_volumeDataArray.length){
+				result += `${in_volumeDataArray[volumeIndex + 0]}, ${in_volumeDataArray[volumeIndex + 1]}, ${in_volumeDataArray[volumeIndex + 2]}, ${in_volumeDataArray[volumeIndex + 3]},\n`;
+			} else {
+				result += "0,0,0,0,\n";
+			}
+		}
+		result += `]\n`;
+
+	}
 
 	return result;
 }
@@ -505,43 +512,146 @@ const gatherVolumeDataImple = function(out_volumeUvPairArray, out_volumeDataArra
 	}
 }
 
-const gOffsetOddYOddZ = [[0,1,1],
-[-1,0,1],
+const gOffsetEvenYEvenZ = [[-1,0,1],
 [0,0,1],
+[0,-1,1],
 [-1,1,0],
 [0,1,0],
 [-1,0,0],
 [1,0,0],
 [-1,-1,0],
 [0,-1,0],
-[0,1,-1],
 [-1,0,-1],
 [0,0,-1],
+[0,-1,-1],
 ];
-const gVolumeOddYOddZ = [[0,1,3],
-[0,2,1],
+const gVolumeEvenYEvenZ = [[0,1,2],
+[0,2,5],
 [0,3,4],
-[0,4,2],
-[1,2,8],
-[1,5,3],
-[1,7,5],
-[1,8,7],
-[2,4,6],
+[0,4,1],
+[0,5,3],
+[1,4,6],
+[1,6,2],
 [2,6,8],
-[3,5,10],
+[2,7,5],
+[2,8,7],
+[3,5,9],
 [3,9,4],
-[3,10,9],
-[4,9,11],
-[4,11,6],
-[5,7,10],
-[6,11,8],
-[7,8,10],
-[8,11,10],
-[9,10,11],
+[4,9,10],
+[4,10,6],
+[5,7,9],
+[6,10,8],
+[7,8,11],
+[7,11,9],
+[8,10,11],
+[9,11,10],
+];
+const gOffsetOddYEvenZ = [[0,0,1],
+[1,0,1],
+[0,-1,1],
+[0,1,0],
+[1,1,0],
+[-1,0,0],
+[1,0,0],
+[0,-1,0],
+[1,-1,0],
+[0,0,-1],
+[1,0,-1],
+[0,-1,-1],
+];
+const gVolumeOddYEvenZ = [[0,1,2],
+[0,2,5],
+[0,3,4],
+[0,4,1],
+[0,5,3],
+[1,4,6],
+[1,6,2],
+[2,6,8],
+[2,7,5],
+[2,8,7],
+[3,5,9],
+[3,9,4],
+[4,9,10],
+[4,10,6],
+[5,7,9],
+[6,10,8],
+[7,8,11],
+[7,11,9],
+[8,10,11],
+[9,11,10],
+];
+const gOffsetEvenYOddZ = [[1,0,1],
+[0,0,1],
+[0,1,1],
+[1,-1,0],
+[0,-1,0],
+[1,0,0],
+[-1,0,0],
+[1,1,0],
+[0,1,0],
+[1,0,-1],
+[0,0,-1],
+[0,1,-1],
+];
+const gVolumeEvenYOddZ = [[0,1,2],
+[0,2,5],
+[0,3,4],
+[0,4,1],
+[0,5,3],
+[1,4,6],
+[1,6,2],
+[2,6,8],
+[2,7,5],
+[2,8,7],
+[3,5,9],
+[3,9,4],
+[4,9,10],
+[4,10,6],
+[5,7,9],
+[6,10,8],
+[7,8,11],
+[7,11,9],
+[8,10,11],
+[9,11,10],
+];
+const gOffsetOddYOddZ = [[0,0,1],
+[-1,0,1],
+[0,1,1],
+[0,-1,0],
+[-1,-1,0],
+[1,0,0],
+[-1,0,0],
+[0,1,0],
+[-1,1,0],
+[0,0,-1],
+[-1,0,-1],
+[0,1,-1],
+];
+const gVolumeOddYOddZ = [[0,1,2],
+[0,2,5],
+[0,3,4],
+[0,4,1],
+[0,5,3],
+[1,4,6],
+[1,6,2],
+[2,6,8],
+[2,7,5],
+[2,8,7],
+[3,5,9],
+[3,9,4],
+[4,9,10],
+[4,10,6],
+[5,7,9],
+[6,10,8],
+[7,8,11],
+[7,11,9],
+[8,10,11],
+[9,11,10],
 ];
 
 
-const gatherVolumeData = function(out_volumeUvPairArray, out_volumeDataArray, out_quadrantArray, in_sphereArray, in_linkArray, in_textureDim, in_linkMap){
+
+const gatherVolumeData = function(out_volumeUvPairArray, out_volumeDataArray, in_sphereArray, in_linkArray, in_textureDim, in_linkMap){
 	var sphereCount = in_sphereArray.length / 4;
 	for (var sphereIndex = 0; sphereIndex < sphereCount; ++sphereIndex){
 		var sourceX = in_linkArray[(sphereIndex * 3) + 0];
@@ -552,120 +662,12 @@ const gatherVolumeData = function(out_volumeUvPairArray, out_volumeDataArray, ou
 		var evenZ = (0 === (sourceZ & 1));
 
 		if ((true === evenY) && (true === evenZ)){
-			out_quadrantArray.push(0);
-			const gOffset = [[-1,0,1],
-			[0,0,1],
-			[0,-1,1],
-			[-1,1,0],
-			[0,1,0],
-			[-1,0,0],
-			[1,0,0],
-			[-1,-1,0],
-			[0,-1,0],
-			[-1,0,-1],
-			[0,0,-1],
-			[0,-1,-1],
-			];
-			const gVolume = [[0,1,2],
-			[0,2,5],
-			[0,3,4],
-			[0,4,1],
-			[0,5,3],
-			[1,4,6],
-			[1,6,2],
-			[2,6,8],
-			[2,7,5],
-			[2,8,7],
-			[3,5,9],
-			[3,9,4],
-			[4,9,10],
-			[4,10,6],
-			[5,7,9],
-			[6,10,8],
-			[7,8,11],
-			[7,11,9],
-			[8,10,11],
-			[9,11,10],
-			];
-			gatherVolumeDataImple(out_volumeUvPairArray, out_volumeDataArray, gOffset, gVolume, in_sphereArray, in_linkArray, in_textureDim, in_linkMap, source, sphereIndex);
+			gatherVolumeDataImple(out_volumeUvPairArray, out_volumeDataArray, gOffsetEvenYEvenZ, gVolumeEvenYEvenZ, in_sphereArray, in_linkArray, in_textureDim, in_linkMap, source, sphereIndex);
 		} else if ((true === evenY) && (false === evenZ)){
-			out_quadrantArray.push(1);
-			const gOffset = [[0,0,1],
-			[1,0,1],
-			[0,-1,1],
-			[0,1,0],
-			[1,1,0],
-			[-1,0,0],
-			[1,0,0],
-			[0,-1,0],
-			[1,-1,0],
-			[0,0,-1],
-			[1,0,-1],
-			[0,-1,-1],
-			];
-			const gVolume = [[0,1,2],
-			[0,2,5],
-			[0,3,4],
-			[0,4,1],
-			[0,5,3],
-			[1,4,6],
-			[1,6,2],
-			[2,6,8],
-			[2,7,5],
-			[2,8,7],
-			[3,5,9],
-			[3,9,4],
-			[4,9,10],
-			[4,10,6],
-			[5,7,9],
-			[6,10,8],
-			[7,8,11],
-			[7,11,9],
-			[8,10,11],
-			[9,11,10],
-			];
-
-			gatherVolumeDataImple(out_volumeUvPairArray, out_volumeDataArray, gOffset, gVolume, in_sphereArray, in_linkArray, in_textureDim, in_linkMap, source, sphereIndex);
+			gatherVolumeDataImple(out_volumeUvPairArray, out_volumeDataArray, gOffsetEvenYOddZ, gVolumeEvenYOddZ, in_sphereArray, in_linkArray, in_textureDim, in_linkMap, source, sphereIndex);
 		} else if ((false === evenY) && (true === evenZ)){
-			out_quadrantArray.push(2);
-			const gOffset = [[0,1,1],
-			[0,0,1],
-			[1,0,1],
-			[0,1,0],
-			[1,1,0],
-			[-1,0,0],
-			[1,0,0],
-			[0,-1,0],
-			[1,-1,0],
-			[0,1,-1],
-			[0,0,-1],
-			[1,0,-1],
-			];
-			const gVolume = [[0,1,3],
-			[0,2,1],
-			[0,3,4],
-			[0,4,2],
-			[1,2,8],
-			[1,5,3],
-			[1,7,5],
-			[1,8,7],
-			[2,4,6],
-			[2,6,8],
-			[3,5,10],
-			[3,9,4],
-			[3,10,9],
-			[4,9,11],
-			[4,11,6],
-			[5,7,10],
-			[6,11,8],
-			[7,8,10],
-			[8,11,10],
-			[9,10,11],
-			];
-
-			gatherVolumeDataImple(out_volumeUvPairArray, out_volumeDataArray, gOffset, gVolume, in_sphereArray, in_linkArray, in_textureDim, in_linkMap, source, sphereIndex);
+			gatherVolumeDataImple(out_volumeUvPairArray, out_volumeDataArray, gOffsetOddYEvenZ, gVolumeOddYEvenZ, in_sphereArray, in_linkArray, in_textureDim, in_linkMap, source, sphereIndex);
 		} else if ((false === evenY) && (false === evenZ)){
-			out_quadrantArray.push(3);
 			gatherVolumeDataImple(out_volumeUvPairArray, out_volumeDataArray, gOffsetOddYOddZ, gVolumeOddYOddZ, in_sphereArray, in_linkArray, in_textureDim, in_linkMap, source, sphereIndex);
 		}
 	}
@@ -682,40 +684,6 @@ const makeLinkMap = function(in_linkArray){
 		result[key] = index / 3;
 	}
 	return result;
-}
-
-const run12 = function(in_sphereArray, in_linkArray, in_fileAssetPath, in_fileDataPath, in_baseName){
-	const rootName = CamelCase.uppercaseFirstLetter(CamelCase.toCamelCase(in_baseName));
-	var uvDataArrayName = "gUv" + rootName;
-	var quadrantArrayName = "gQuadrant" + rootName;
-
-	var volumeUvPairArrayNameArray = [];
-	var volumeUvPairArray = [];
-	for (var index = 0; index < 6; ++index){
-		volumeUvPairArrayNameArray.push("gVolumeUvPair" + index + rootName);
-	}
-
-	var volumeDataArrayNameArray = [];
-	var volumeDataArray = [];
-	for (var index = 0; index < 5; ++index){
-		volumeDataArrayNameArray.push("gVolumeData" + index + rootName);
-	}
-
-	var quadrantArray = [];
-
-	var textureDataArrayName ="gTex" + rootName;
-	var textureDim = Math.pow(2, Math.ceil(Math.log2(Math.sqrt(in_sphereArray.length / 4))));
-	console.log("textureDim:" + textureDim + " sphereCount:" + in_sphereArray.length / 4);
-
-	const linkMap = makeLinkMap(in_linkArray);
-	gatherVolumeData(volumeUvPairArray, volumeDataArray, quadrantArray, in_sphereArray, in_linkArray, textureDim, linkMap);
-
-	var assetText = getAssetText(uvDataArrayName, quadrantArrayName, volumeUvPairArrayNameArray, volumeDataArrayNameArray, textureDataArrayName, textureDim);
-	var dataText = getDataArrayText(in_sphereArray, uvDataArrayName, quadrantArrayName, quadrantArray, textureDim, textureDataArrayName, volumeUvPairArrayNameArray, volumeUvPairArray, volumeDataArrayNameArray, volumeDataArray);
-
-	return FsExtra.writeFile(in_fileAssetPath, assetText).then(function(){
-		return FsExtra.writeFile(in_fileDataPath, dataText);
-	});
 }
 
 const testPoint = function(in_index3, in_linkArray, in_sphereArray){
@@ -800,6 +768,37 @@ const testPoint = function(in_index3, in_linkArray, in_sphereArray){
 	return;
 }
 
+const run12 = function(in_sphereArray, in_linkArray, in_fileAssetPath, in_fileDataPath, in_baseName){
+	const rootName = CamelCase.uppercaseFirstLetter(CamelCase.toCamelCase(in_baseName));
+	var uvDataArrayName = "gUv" + rootName;
+
+	var linkUvNameArray = [];
+	for (var index = 0; index < 6; ++index){
+		linkUvNameArray.push(`gUvLink${index}`);
+	}
+
+	var textureNameArray = ["TexSpherePos"];
+	var textureDataNameArray = ["gTexSpherePosData"];
+	for (var index = 0; index < 5; ++index){
+		textureNameArray.push(`TexVolume${index}`);
+		textureDataNameArray.push(`gTexVolume${index}Data`);
+	}
+
+	var textureDim = Math.pow(2, Math.ceil(Math.log2(Math.sqrt(in_sphereArray.length / 4))));
+	console.log("textureDim:" + textureDim + " sphereCount:" + in_sphereArray.length / 4);
+
+	const linkMap = makeLinkMap(in_linkArray);
+	var linkUvDataArray = [];
+	var volumeDataArray = [];
+	gatherVolumeData(linkUvDataArray, volumeDataArray, in_sphereArray, in_linkArray, textureDim, linkMap);
+
+	var assetText = getAssetText(uvDataArrayName, linkUvNameArray, textureNameArray, textureDataNameArray, textureDim);
+	var dataText = getDataArrayText(in_sphereArray, uvDataArrayName, linkUvDataArray, volumeDataArray, textureDim, linkUvNameArray, textureDataNameArray);
+
+	return FsExtra.writeFile(in_fileAssetPath, assetText).then(function(){
+		return FsExtra.writeFile(in_fileDataPath, dataText);
+	});
+}
 
 module.exports = {
 	"test" : test,
