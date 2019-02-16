@@ -129,6 +129,60 @@ const visitDebug = function(in_sphereDiameter, in_dimCount, in_debugIndexArray){
 	return floatArray;
 }
 
+const debugSimpleGetPass = function(in_needle, in_origin, in_offsetArray){
+	for( var index = 0; index < in_offsetArray.length; ++index){
+		var offset = in_offsetArray[index];
+		if ((in_needle[0] === (in_origin[0] + offset[0])) &&
+			(in_needle[1] === (in_origin[1] + offset[1])) &&
+			(in_needle[2] === (in_origin[2] + offset[2]))){
+				return true;
+		}
+	}
+	return false;
+}
+
+const visitDebugSimple = function(in_sphereDiameter, in_dimCount, in_debugIndexArray){
+	const floatArray = [];
+	const radius = in_dimCount * in_sphereDiameter * 0.5;
+	const min = [-radius, -radius, -radius];
+
+	for (var zIndex = 0; zIndex < in_dimCount; ++zIndex){
+		const localZ = calculateZ(min, zIndex, in_sphereDiameter);
+		for (var yIndex = 0; yIndex < in_dimCount; ++yIndex){
+			const localY = calculateY(min, yIndex, zIndex, in_sphereDiameter);
+			for (var xIndex = 0; xIndex < in_dimCount; ++xIndex){
+				const localX = calculateX(min, xIndex, yIndex, zIndex, in_sphereDiameter);
+				var pass = debugSimpleGetPass([xIndex, yIndex, zIndex], [1,1,1],
+					[[0,0,0],
+					[0,1,1],
+					[-1,0,1],
+					[0,0,1],
+					[-1,1,0],
+					[0,1,0],
+					[-1,0,0],
+					[1,0,0],
+					[-1,-1,0],
+					[0,-1,0],
+					[0,1,-1],
+					[-1,0,-1],
+					[0,0,-1]]);
+
+				if (true === pass){
+					floatArray.push(localX);
+					floatArray.push(localY);
+					floatArray.push(localZ + radius);
+					floatArray.push(in_sphereDiameter);
+
+					in_debugIndexArray.push(xIndex);
+					in_debugIndexArray.push(yIndex);
+					in_debugIndexArray.push(zIndex);
+				}
+			}
+		}
+	}
+	return floatArray;
+}
+
 const visitDebugSphere = function(in_sphereDiameter, in_dimCount, in_debugIndexArray){
 	const floatArray = [];
 	const radius = in_dimCount * in_sphereDiameter * 0.5;
@@ -164,5 +218,6 @@ const visitDebugSphere = function(in_sphereDiameter, in_dimCount, in_debugIndexA
 module.exports = {
 	"visit" : visit,
 	"visitDebug" : visitDebug,
+	"visitDebugSimple" : visitDebugSimple,
 	"visitDebugSphere" : visitDebugSphere, 
 }

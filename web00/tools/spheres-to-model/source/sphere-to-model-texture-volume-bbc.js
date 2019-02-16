@@ -1,5 +1,6 @@
 const FsExtra = require("fs-extra");
 const CamelCase = require("./camel-case.js");
+const Geometry = require("./geometry.js");
 
 /*
 each vertex/point
@@ -13,65 +14,13 @@ uv is also used to look up another texture for target length?
 
 */
 
-
-//https://www.mathwarehouse.com/geometry/triangles/area/herons-formula-triangle-area.php
-const vec3AreaTriangle = function(in_vecA, in_vec3B, in_vec3C){
-	const A = vec3Distance(in_vecA, in_vec3B);
-	const B = vec3Distance(in_vecB, in_vec3C);
-	const C = vec3Distance(in_vecC, in_vec3A);
-	const S = (A + B + C) / 2;
-	const area = Math.sqrt(S * (S - A) * (S - B) * (S - C));
-	return area;
-}
-
-const vec3Cross = function(in_vecA, in_vecB){
-	return [
-		(in_vecA[1] * in_vecB[2]) - (in_vecA[2] * in_vecB[1]),
-		(in_vecA[2] * in_vecB[0]) - (in_vecA[0] * in_vecB[2]),
-		(in_vecA[0] * in_vecB[1]) - (in_vecA[1] * in_vecB[0])
-	];
-}
-
-const vec3Dot = function(in_vecA, in_vecB){
-	return (in_vecA[0] * in_vecB[0]) + (in_vecA[1] * in_vecB[1]) + (in_vecA[2] * in_vecB[2]);
-}
-
-const vec3Distance = function(in_vec3A, in_vec3B){
-	var a = in_vec3A[0] - in_vec3B[0];
-	var b = in_vec3A[1] - in_vec3B[1];
-	var c = in_vec3A[2] - in_vec3B[2];
-	var result = Math.sqrt((a * a) + (b * b) + (c * c));
-	return result;
-}
-
-const vec3Normalise = function(in_vec3){
-	const a = in_vec3[0];
-	const b = in_vec3[1];
-	const c = in_vec3[2];
-	var length = Math.sqrt((a * a) + (b * b) + (c * c));
-	if (0.0 === length){
-		return [0.0, 0.0, 0.0];
-	}
-	return [a/length, b/length, c/length];
-}
-
-const vec3Subtract = function(in_vec3A, in_vec3B){
-	return [ in_vec3A[0] - in_vec3B[0],
-		in_vec3A[1] - in_vec3B[1],
-		in_vec3A[2] - in_vec3B[2]];
-}
-
-const dotProduct = function(in_vecA, in_vecB){
-	return ((in_vecA[0] * in_vecB[0]) + (in_vecA[1] * in_vecB[1]) + (in_vecA[2] * in_vecB[2]));
-}
-
 const testDistance = function(out_arrayData, in_sphereArray, in_linkArray, in_outerSphereIndex, in_outerDataIndex, in_innerSphereIndex, in_innerDataIndex){
 	var sphereA = [in_sphereArray[in_outerSphereIndex + 0], in_sphereArray[in_outerSphereIndex + 1], in_sphereArray[in_outerSphereIndex + 2], in_sphereArray[in_outerSphereIndex + 3]];
 	var linkA = [in_linkArray[in_outerDataIndex + 0], in_linkArray[in_outerDataIndex + 1], in_linkArray[in_outerDataIndex + 2]];
 	var sphereB = [in_sphereArray[in_innerSphereIndex + 0], in_sphereArray[in_innerSphereIndex + 1], in_sphereArray[in_innerSphereIndex + 2], in_sphereArray[in_innerSphereIndex + 3]];
 	var linkB = [in_linkArray[in_innerDataIndex + 0], in_linkArray[in_innerDataIndex + 1], in_linkArray[in_innerDataIndex + 2]];
 
-	const distance = vec3Distance(sphereA, sphereB);
+	const distance = Geometry.vec3Distance(sphereA, sphereB);
 	out_arrayData.push({
 		"distance" : distance,
 		"linkA" : linkA,
@@ -81,21 +30,16 @@ const testDistance = function(out_arrayData, in_sphereArray, in_linkArray, in_ou
 	});
 }
 
-const vec3Volume = function(in_offsetA, in_offsetB, in_offsetC){
-	const volume = vec3Dot(in_offsetA, vec3Cross(in_offsetB, in_offsetC)) / 6.0;
-	return volume;
-}
-
 const testVolumeData = function(out_arrayVolumeData, in_arrayData, in_indexA, in_indexB, in_indexC){
-	const vecA = vec3Subtract(in_arrayData[in_indexA].sphereB, in_arrayData[in_indexA].sphereA);
-	const vecB = vec3Subtract(in_arrayData[in_indexB].sphereB, in_arrayData[in_indexB].sphereA);
-	const vecC = vec3Subtract(in_arrayData[in_indexC].sphereB, in_arrayData[in_indexC].sphereA);
-	const normalA = vec3Normalise(vecA);
-	const normalB = vec3Normalise(vecB);
-	const normalC = vec3Normalise(vecC);
-	var maxDot = (1 - dotProduct(normalA, normalB)) + (1 - dotProduct(normalB, normalC)) + (1 - dotProduct(normalC, normalA));
+	const vecA = Geometry.vec3Subtract(in_arrayData[in_indexA].sphereB, in_arrayData[in_indexA].sphereA);
+	const vecB = Geometry.vec3Subtract(in_arrayData[in_indexB].sphereB, in_arrayData[in_indexB].sphereA);
+	const vecC = Geometry.vec3Subtract(in_arrayData[in_indexC].sphereB, in_arrayData[in_indexC].sphereA);
+	const normalA = Geometry.vec3Normalise(vecA);
+	const normalB = Geometry.vec3Normalise(vecB);
+	const normalC = Geometry.vec3Normalise(vecC);
+	var maxDot = (1 - Geometry.vec3Dot(normalA, normalB)) + (1 - Geometry.vec3Dot(normalB, normalC)) + (1 - Geometry.vec3Dot(normalC, normalA));
 	maxDot = Math.round(maxDot * 24);
-	const volume = vec3Volume(vecA, vecB, vecC);
+	const volume = Geometry.vec3Volume(vecA, vecB, vecC);
 
 	if (Math.abs(volume) < Number.EPSILON){
 		return;
@@ -172,7 +116,7 @@ const testPrintVolumeDataItem = function(in_item, in_linkData){
 }
 
 
-const testPrintArrayVolumeData = function(in_arrayVolumeData, in_originLink, in_linkData){
+const testPrintArrayVolumeData = function(in_arrayVolumeData, in_originLink, in_linkData, inout_volumeDictionary){
 	in_arrayVolumeData.sort(function(lhs, rhs){ 
 		if (lhs.maxDot < rhs.maxDot){ return -1; }
 		if (rhs.maxDot < lhs.maxDot){ return +1; }
@@ -276,16 +220,26 @@ const testPrintArrayVolumeData = function(in_arrayVolumeData, in_originLink, in_
 	for (var index = 0; index < masterItemList.length; ++index){
 		const item = masterItemList[index];
 		message += testPrintVolumeDataItem(item, in_linkData);
+
+		var volumeKey = linkHash(item.indexA, item.indexB, item.indexC);
+		if (volumeKey in inout_volumeDictionary){
+			inout_volumeDictionary[volumeKey].push([item.indexA, item.indexB, item.indexC]);
+		} else {
+			inout_volumeDictionary[volumeKey] = [[item.indexA, item.indexB, item.indexC]];
+		}
 	}
 	message += "]\n";
 	console.log(message);
 
 }
 
-const testPrintArrayData = function(in_arrayData, in_linkArray, in_outerDataIndex){
-	var linkA = in_linkArray[in_outerDataIndex + 0];
-	var linkB = in_linkArray[in_outerDataIndex + 1];
-	var linkC = in_linkArray[in_outerDataIndex + 2];
+const testPrintArrayData = function(in_arrayData, in_linkArray, in_outerDataIndex, inout_volumeDictionary){
+	var linkX = in_linkArray[in_outerDataIndex + 0];
+	var linkY = in_linkArray[in_outerDataIndex + 1];
+	var linkZ = in_linkArray[in_outerDataIndex + 2];
+
+	var evenY = (0 === (linkY & 1));
+	var evenZ = (0 === (linkZ & 1));
 
 	in_arrayData.sort(function(lhs, rhs){
 		var lhsD = Math.round(lhs.distance * 2.0); 
@@ -293,39 +247,45 @@ const testPrintArrayData = function(in_arrayData, in_linkArray, in_outerDataInde
 		if (lhsD < rhsD){ return -1; }
 		if (rhsD < lhsD){ return +1; }
 
-		const lhsZ = lhs.linkB[2] - linkC;
-		const rhsZ = rhs.linkB[2] - linkC;
+		const lhsZ = lhs.linkB[2] - linkZ;
+		const rhsZ = rhs.linkB[2] - linkZ;
 		if (lhsZ < rhsZ){ return +1; }
 		if (rhsZ < lhsZ){ return -1; }
 
-		const lhsY = lhs.linkB[1] - linkB;
-		const rhsY = rhs.linkB[1] - linkB;
-		if (lhsY < rhsY){ return +1; }
-		if (rhsY < lhsY){ return -1; }
+		var sortValue = -1;
+		if (true === evenZ)
+		{
+			sortValue = 1;
+		}
 
-		const lhsX = lhs.linkB[0] - linkA;
-		const rhsX = rhs.linkB[0] - linkA;
-		if (lhsX < rhsX){ return -1; }
-		if (rhsX < lhsX){ return +1; }
+		const lhsY = lhs.linkB[1] - linkY;
+		const rhsY = rhs.linkB[1] - linkY;
+		if (lhsY < rhsY){ return sortValue; }
+		if (rhsY < lhsY){ return -sortValue; }
+
+		const lhsX = lhs.linkB[0] - linkX;
+		const rhsX = rhs.linkB[0] - linkX;
+		if (lhsX < rhsX){ return -sortValue; }
+		if (rhsX < lhsX){ return sortValue; }
 
 		return 0;
 	});
 	if (
-		((linkA === 4) && (linkB === 4) && (linkC == 4))
-		|| ((linkA === 4) && (linkB === 5) && (linkC == 4))
-		|| ((linkA === 4) && (linkB === 4) && (linkC == 5))
-		|| ((linkA === 4) && (linkB === 5) && (linkC == 5))
+		((linkX === 4) && (linkY === 4) && (linkZ == 4))
+		|| ((linkX === 4) && (linkY === 5) && (linkZ == 4))
+		|| ((linkX === 4) && (linkY === 4) && (linkZ == 5))
+		|| ((linkX === 4) && (linkY === 5) && (linkZ == 5))
 	)
 	{
-		var message = `${linkA} ${linkB} ${linkC}:`;
+		var message = `${linkX} ${linkY} ${linkZ}:`;
 		var item = in_arrayData[0];
 		message += `{"sphereA":[${item.sphereA[0]}, ${item.sphereA[1]}, ${item.sphereA[2]}, ${item.sphereA[3]}],\n`;
 
 		var linkData = [];
 		for (var index = 0; index < 12; ++index){
 			item = in_arrayData[index];
-			//message += `"link${index}":[${item.linkB[0] - linkA}, ${item.linkB[1] - linkB}, ${item.linkB[2] - linkC}],\n`;
-			linkData.push([item.linkB[0] - linkA, item.linkB[1] - linkB, item.linkB[2] - linkC]);
+			message += `"link${index}":[${item.linkB[0] - linkX}, ${item.linkB[1] - linkY}, ${item.linkB[2] - linkZ}],\n`;
+			linkData.push([item.linkB[0] - linkX, item.linkB[1] - linkY, item.linkB[2] - linkZ]);
 		}
 
 		console.log(message);
@@ -340,12 +300,14 @@ const testPrintArrayData = function(in_arrayData, in_linkArray, in_outerDataInde
 			}
 		}
 
-		testPrintArrayVolumeData(arrayVolumeData, [linkA, linkB, linkC], linkData);
+		testPrintArrayVolumeData(arrayVolumeData, [linkX, linkY, linkZ], linkData, inout_volumeDictionary);
 	}
 }
 
 const test = function(in_sphereArray,  in_linkArray){
-	console.log(vec3Volume([1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]));
+	console.log(Geometry.vec3Volume([1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]));
+
+	var volumeDictionary = {};
 
 	const sphereCount = in_sphereArray.length / 4;
 	for (var index = 0; index < sphereCount; ++index){
@@ -361,8 +323,15 @@ const test = function(in_sphereArray,  in_linkArray){
 			testDistance(arrayData, in_sphereArray, in_linkArray, outerSphereIndex, outerDataIndex, innerSphereIndex, innerDataIndex);
 		}
 
-		testPrintArrayData(arrayData, in_linkArray, outerDataIndex);
+		testPrintArrayData(arrayData, in_linkArray, outerDataIndex, volumeDictionary);
 	}
+
+	var count = 0;
+	for (key in volumeDictionary){
+		count += 1;
+	}
+	console.log(count);
+	console.log(JSON.stringify(volumeDictionary));
 }
 
 const getAssetText = function(in_uvDataArrayName, in_quadrantArrayName, in_volumeUvPairArrayNameArray, in_volumeDataArrayNameArray, in_textureDataArrayName, in_textureDim){
@@ -490,10 +459,10 @@ const calculateSphereVolume = function(in_sphereArray, in_sphereIndex, in_sphere
 	const sphereB = [in_sphereArray[(in_sphereIndexA * 4) + 0], in_sphereArray[(in_sphereIndexA * 4) + 1], in_sphereArray[(in_sphereIndexA * 4) + 2], in_sphereArray[(in_sphereIndexA * 4) + 3]];
 	const sphereC = [in_sphereArray[(in_sphereIndexB * 4) + 0], in_sphereArray[(in_sphereIndexB * 4) + 1], in_sphereArray[(in_sphereIndexB * 4) + 2], in_sphereArray[(in_sphereIndexB * 4) + 3]];
 	const sphereD = [in_sphereArray[(in_sphereIndexC * 4) + 0], in_sphereArray[(in_sphereIndexC * 4) + 1], in_sphereArray[(in_sphereIndexC * 4) + 2], in_sphereArray[(in_sphereIndexC * 4) + 3]];
-	const vecA = vec3Subtract(sphereB, sphereA);
-	const vecB = vec3Subtract(sphereC, sphereA);
-	const vecC = vec3Subtract(sphereD, sphereA);
-	const volume = vec3Volume(vecA, vecC, vecB);
+	const vecA = Geometry.vec3Subtract(sphereB, sphereA);
+	const vecB = Geometry.vec3Subtract(sphereC, sphereA);
+	const vecC = Geometry.vec3Subtract(sphereD, sphereA);
+	const volume = Geometry.vec3Volume(vecA, vecC, vecB);
 	return volume;
 }
 
@@ -535,6 +504,42 @@ const gatherVolumeDataImple = function(out_volumeUvPairArray, out_volumeDataArra
 		out_volumeDataArray.push(volume);
 	}
 }
+
+const gOffsetOddYOddZ = [[0,1,1],
+[-1,0,1],
+[0,0,1],
+[-1,1,0],
+[0,1,0],
+[-1,0,0],
+[1,0,0],
+[-1,-1,0],
+[0,-1,0],
+[0,1,-1],
+[-1,0,-1],
+[0,0,-1],
+];
+const gVolumeOddYOddZ = [[0,1,3],
+[0,2,1],
+[0,3,4],
+[0,4,2],
+[1,2,8],
+[1,5,3],
+[1,7,5],
+[1,8,7],
+[2,4,6],
+[2,6,8],
+[3,5,10],
+[3,9,4],
+[3,10,9],
+[4,9,11],
+[4,11,6],
+[5,7,10],
+[6,11,8],
+[7,8,10],
+[8,11,10],
+[9,10,11],
+];
+
 
 const gatherVolumeData = function(out_volumeUvPairArray, out_volumeDataArray, out_quadrantArray, in_sphereArray, in_linkArray, in_textureDim, in_linkMap){
 	var sphereCount = in_sphereArray.length / 4;
@@ -661,42 +666,7 @@ const gatherVolumeData = function(out_volumeUvPairArray, out_volumeDataArray, ou
 			gatherVolumeDataImple(out_volumeUvPairArray, out_volumeDataArray, gOffset, gVolume, in_sphereArray, in_linkArray, in_textureDim, in_linkMap, source, sphereIndex);
 		} else if ((false === evenY) && (false === evenZ)){
 			out_quadrantArray.push(3);
-			const gOffset = [[0,1,1],
-			[-1,0,1],
-			[0,0,1],
-			[-1,1,0],
-			[0,1,0],
-			[-1,0,0],
-			[1,0,0],
-			[-1,-1,0],
-			[0,-1,0],
-			[0,1,-1],
-			[-1,0,-1],
-			[0,0,-1],
-			];
-			const gVolume = [[0,1,3],
-			[0,2,1],
-			[0,3,4],
-			[0,4,2],
-			[1,2,8],
-			[1,5,3],
-			[1,7,5],
-			[1,8,7],
-			[2,4,6],
-			[2,6,8],
-			[3,5,10],
-			[3,9,4],
-			[3,10,9],
-			[4,9,11],
-			[4,11,6],
-			[5,7,10],
-			[6,11,8],
-			[7,8,10],
-			[8,11,10],
-			[9,10,11],
-			];
-
-			gatherVolumeDataImple(out_volumeUvPairArray, out_volumeDataArray, gOffset, gVolume, in_sphereArray, in_linkArray, in_textureDim, in_linkMap, source, sphereIndex);
+			gatherVolumeDataImple(out_volumeUvPairArray, out_volumeDataArray, gOffsetOddYOddZ, gVolumeOddYOddZ, in_sphereArray, in_linkArray, in_textureDim, in_linkMap, source, sphereIndex);
 		}
 	}
 }
@@ -748,7 +718,91 @@ const run12 = function(in_sphereArray, in_linkArray, in_fileAssetPath, in_fileDa
 	});
 }
 
+const testPoint = function(in_index3, in_linkArray, in_sphereArray){
+	const linkMap = makeLinkMap(in_linkArray);
+	const key = linkHash(in_index3[0], in_index3[1], in_index3[2]);
+	if (key in linkMap){
+		var sphereIndex = linkMap[key];
+	}
+
+	/*
+		0
+	   1 2
+
+	   3 4
+	  5 6 7
+	   8 9
+	
+		10
+	   11 12
+	*/
+	const gOffset = [[0,1,1],
+	[-1,0,1],
+	[0,0,1],
+	[-1,1,0],
+	[0,1,0],
+	[-1,0,0],
+	[1,0,0],
+	[-1,-1,0],
+	[0,-1,0],
+	[0,1,-1],
+	[-1,0,-1],
+	[0,0,-1],
+	];
+	const gVolume = [[0,1,3],
+	[0,2,1],
+	[0,3,4],
+	[0,4,2],
+	[1,2,8],
+	[1,5,3],
+	[1,7,5],
+	[1,8,7],
+	[2,4,6],
+	[2,6,8],
+	[3,5,10],
+	[3,9,4],
+	[3,10,9],
+	[4,9,11],
+	[4,11,6],
+	[5,7,10],
+	[6,11,8],
+	[7,8,10],
+	[8,11,10],
+	[9,10,11],
+	];
+
+	var volumeUvPairArray = [];
+	var volumeDataArray = [];
+	var textureDim = 4;
+	gatherVolumeDataImple(volumeUvPairArray, volumeDataArray, gOffset, gVolume, in_sphereArray, in_linkArray, textureDim, linkMap, in_index3, sphereIndex);
+
+	console.log(JSON.stringify(volumeDataArray));
+	console.log(JSON.stringify(volumeUvPairArray));
+
+	console.log(`${in_sphereArray[(sphereIndex * 4) + 0]}, ${in_sphereArray[(sphereIndex * 4) + 1]}, ${in_sphereArray[(sphereIndex * 4) + 2]}, ${in_sphereArray[(sphereIndex * 4) + 3]}`);
+	for (var index = 0; index < gOffset.length; ++index){
+		var item = gOffset[index];
+		var indexArray = [in_index3[0] + item[0], in_index3[1] + item[1], in_index3[2] + item[2]];
+		const key = linkHash(indexArray[0], indexArray[1], indexArray[2]);
+		if (key in linkMap){
+			var subSphereIndex = linkMap[key];
+			console.log(`${index}:${in_sphereArray[(subSphereIndex * 4) + 0]}, ${in_sphereArray[(subSphereIndex * 4) + 1]}, ${in_sphereArray[(subSphereIndex * 4) + 2]}, ${in_sphereArray[(subSphereIndex * 4) + 3]}`);
+		}
+	}
+
+	for (var index = 0; index < 20; ++index){
+		var item = gVolume[index];
+		var message = `${index}:${volumeDataArray[index]} [${item[0]},${item[1]},${item[2]}] `;
+
+		console.log(message);
+	}
+
+	return;
+}
+
+
 module.exports = {
 	"test" : test,
+	"testPoint" : testPoint,
 	"run12" : run12
 }

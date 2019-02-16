@@ -1,5 +1,6 @@
 const SphereToModelTextureLinkBbc = require("./sphere-to-model-texture-link-bbc.js");
 const SphereToModelTextureVolumeBbc = require("./sphere-to-model-texture-volume-bbc.js");
+const Geometry = require("./geometry.js");
 
 const dealTest = function(testName, value, expected)
 {
@@ -64,10 +65,52 @@ const testSphereToModelTextureVolumeBbc = function(){
 	SphereToModelTextureVolumeBbc.test(bbcSphereArray, debugIndexArray);
 }
 
+const gPoint13Links = [
+	0,1,0,
+	1,1,0,
+	1,2,0,
+	0,0,1,
+	1,0,1,
+	0,1,1,
+	1,1,1, //6
+	2,1,1,
+	0,2,1,
+	1,2,1,
+	0,1,2,
+	1,1,2,
+	1,2,2];
+const gPoint13Sphere = [
+	-1,-0.6339745962155614,0,1,
+	0,-0.6339745962155614,0,1,
+	-0.5,0.2320508075688772,0,1,
+	-1,-1.2113248654051871,0.816496580927726,1,
+	0,-1.2113248654051871,0.816496580927726,1,
+	-1.5,-0.34529946162074854,0.816496580927726,1,
+	-0.5,-0.34529946162074854,0.816496580927726,1, //6
+	0.5,-0.34529946162074854,0.816496580927726,1,
+	-1,0.5207259421636898,0.816496580927726,1,
+	0,0.5207259421636898,0.816496580927726,1,
+	-1,-0.6339745962155614,1.632993161855452,1,
+	0,-0.6339745962155614,1.632993161855452,1,
+	-0.5,0.2320508075688772,1.632993161855452,1];
+
+const testSphereToModelTextureVolumeBbcSimple = function(){
+	console.log("testSphereToModelTextureVolumeBbcSimple");
+	SphereToModelTextureVolumeBbc.testPoint([1,1,1], gPoint13Links, gPoint13Sphere);
+}
+
+const testGeometry = function(){
+	console.log("testGeometry");
+	dealTestAlmost("volume0", Geometry.vec3Volume([1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]), 1.0/6.0, Number.epsilon);
+	dealTestAlmost("volume0", Geometry.vec3Volume([1.0, 1.0, 0.0], [0.0, 1.0, 1.0], [1.0, 0.0, 1.0]), 1.0/3.0, Number.epsilon);
+}
+
 const run = function(){
 	
 	//testSphereToModelTextureLinkBbc();
 	testSphereToModelTextureVolumeBbc();
+	//testSphereToModelTextureVolumeBbcSimple();
+	testGeometry();
 
 	console.log("done");
 }

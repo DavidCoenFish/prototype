@@ -156,6 +156,16 @@ const testSampleGeneratorBbc = function(){
 	return;
 }
 
+const testSampleGeneratorBbcSimple = function(){
+	console.log("testSampleGeneratorBbcSphere");
+
+	const debugIndexArray = [];
+	const sphereArray = SpaceGeneratorBbc.visitDebugSimple(1.0, 3, debugIndexArray);
+
+	console.log(JSON.stringify(debugIndexArray));
+	console.log(JSON.stringify(sphereArray));
+}
+
 const testSampleGeneratorBbcSphere = function(){
 	console.log("testSampleGeneratorBbcSphere");
 
@@ -168,13 +178,13 @@ const testSampleGeneratorBbcSphere = function(){
 	return;
 }
 
-
 const run = function(){
 	testGeometryRayPlaneIntersect();
 	testBarycentricTriangle0();
 	testRayDistance();
 	testInside();
 	testSampleGeneratorBbc();
+	//testSampleGeneratorBbcSimple();
 	testSampleGeneratorBbcSphere();
 
 	console.log("done");
