@@ -31,7 +31,6 @@ void main() {
 `;
 const sVertexAttributeNameArray = ["a_uv"];
 const sUniformNameArray = ["u_samplerPrevPos", "u_samplerForceSum", "u_timeStep"];
-//const sUniformNameArray = ["u_samplerPrevPos", "u_timeStep"];
 
 const factory = function(in_resourceManager, in_webGLContextWrapper, in_webGLState, in_dataServer){
 	const m_uniformServer = {
@@ -60,7 +59,7 @@ const factory = function(in_resourceManager, in_webGLContextWrapper, in_webGLSta
 			m_renderTarget.apply(in_webGLContextWrapper, in_webGLState);
 			WebGL.WebGLContextWrapperHelper.clear(in_webGLContextWrapper, m_clearColor);
 	
-			m_material.setTextureArray([in_dataServer.getTexturePrevPos(), in_dataServer.getTextureForceSum0()]);
+			m_material.setTextureArray([in_dataServer.getTexturePrevPos(), in_dataServer.getTextureForceSum1()]);
 
 			m_material.apply(in_webGLContextWrapper, in_webGLState);
 			m_model.draw(in_webGLContextWrapper, in_webGLState.getMapVertexAttribute());

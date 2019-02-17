@@ -4,7 +4,7 @@ const ManipulateDom = require("manipulatedom");
 const Asset = require("./physicstest02/asset.js");
 
 const StageForceSum0 = require("./physicstest02/stageforcesum0.js");
-//const StageForceSum1 = require("./physicstest02/stageforcesum1.js");
+const StageForceSum1 = require("./physicstest02/stageforcesum1.js");
 const StagePresent = require("./physicstest02/stagepresent.js");
 const StageConstuctNewPos = require("./physicstest02/stageconstuctnewpos.js");
 const StagePrepNextLoop = require("./physicstest02/stageprepnextloop.js");
@@ -77,7 +77,12 @@ const onPageLoad = function(){
 	const m_textureWidth = m_textureArray[0].getWidth();
 	const m_textureHeight = m_textureArray[0].getHeight();
 	const m_textureForceSum0 = WebGL.TextureWrapper.factoryFloatRGB(m_webGLContextWrapper, m_textureWidth, m_textureHeight);
-	//const m_textureForceSum1 = WebGL.TextureWrapper.factoryFloatRGB(m_webGLContextWrapper, m_textureWidth, m_textureHeight);
+	const m_textureForceSum1 = WebGL.TextureWrapper.factoryFloatRGB(m_webGLContextWrapper, m_textureWidth, m_textureHeight);
+	const m_textureVolumeData0 = m_resourceManager.getUniqueReference("textureVolume0", m_webGLContextWrapper);
+	const m_textureVolumeData1 = m_resourceManager.getUniqueReference("textureVolume1", m_webGLContextWrapper);
+	const m_textureVolumeData2 = m_resourceManager.getUniqueReference("textureVolume2", m_webGLContextWrapper);
+	const m_textureVolumeData3 = m_resourceManager.getUniqueReference("textureVolume3", m_webGLContextWrapper);
+	const m_textureVolumeData4 = m_resourceManager.getUniqueReference("textureVolume4", m_webGLContextWrapper);
 
 	const m_renderTargetArray = [];
 	m_renderTargetArray.push(WebGL.RenderTargetWrapper.factory(
@@ -133,6 +138,21 @@ const onPageLoad = function(){
 		"getTextureForceSum1" : function(){
 			return m_textureForceSum1;
 		},
+		"getTextureVolumeData0" : function(){
+			return m_textureVolumeData0;
+		},
+		"getTextureVolumeData1" : function(){
+			return m_textureVolumeData1;
+		},
+		"getTextureVolumeData2" : function(){
+			return m_textureVolumeData2;
+		},
+		"getTextureVolumeData3" : function(){
+			return m_textureVolumeData3;
+		},
+		"getTextureVolumeData4" : function(){
+			return m_textureVolumeData4;
+		},
 
 		"getRenderTargetNewPos" : function(){
 			return m_renderTargetArray[(m_renderTargetIndex + 2) % 3];
@@ -154,7 +174,7 @@ const onPageLoad = function(){
 	const m_stageConstuctNewPos = StageConstuctNewPos.factory(m_resourceManager, m_webGLContextWrapper, m_webGLState, m_dataServer);
 	const m_stagePrepNextLoop = StagePrepNextLoop.factory(m_resourceManager, m_webGLContextWrapper, m_webGLState, m_dataServer);
 	const m_stageForceSum0 = StageForceSum0.factory(m_resourceManager, m_webGLContextWrapper, m_webGLState, m_dataServer);
-	//const m_stageForceSum1 = StageForceSum1.factory(m_resourceManager, m_webGLContextWrapper, m_webGLState, m_dataServer);
+	const m_stageForceSum1 = StageForceSum1.factory(m_resourceManager, m_webGLContextWrapper, m_webGLState, m_dataServer);
 
 	const m_quad0 = WebGL.ComponentScreenTextureQuad.factory(m_resourceManager, m_webGLContextWrapper, m_dataServer.getTextureNewPos(), Core.Vector2.factoryFloat32(-1.0, 0.0), Core.Vector2.factoryFloat32(0.0, 1.0));
 	const m_quad1 = WebGL.ComponentScreenTextureQuad.factory(m_resourceManager, m_webGLContextWrapper, m_dataServer.getTexturePrevPos(), Core.Vector2.factoryFloat32(-1.0, -1.0), Core.Vector2.factoryFloat32(0.0, 0.0));
@@ -193,7 +213,7 @@ const onPageLoad = function(){
 			if (0.0 < m_timeDelta){
 				m_stagePrepNextLoop.run();
 				m_stageForceSum0.run();
-				//m_stageForceSum1.run();
+				m_stageForceSum1.run();
 				m_stageConstuctNewPos.run();
 			}
 			m_step = (true === m_realTime);

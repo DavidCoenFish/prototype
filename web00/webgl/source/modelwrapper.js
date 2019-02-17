@@ -101,6 +101,7 @@ const factory = function(
 			//console.log("mapVertexAttribute:" + key);
 			var position = in_mapVertexAttribute[key];
 			if (!(key in m_mapDataStream) || (-1 === position)){ 
+				//in_webGLContextWrapper.callMethod("disableVertexAttribArray", in_position);
 				continue;
 			}
 
