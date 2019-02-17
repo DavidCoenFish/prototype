@@ -3,11 +3,32 @@ const WebGL = require("webgl");
 const ManipulateDom = require("manipulatedom");
 const Asset = require("./physicstest02/asset.js");
 
-const StageGetForceSum = require("./physicstest02/stagegetforcesum.js");
-const StageResolveForceSumVrsCollision = require("./physicstest02/stageresolveforcesumvrscollision.js");
-const StageConstuctNewPos = require("./physicstest02/stageconstuctnewpos.js");
+const StageForceSum0 = require("./physicstest02/stageforcesum0.js");
+//const StageForceSum1 = require("./physicstest02/stageforcesum1.js");
 const StagePresent = require("./physicstest02/stagepresent.js");
+const StageConstuctNewPos = require("./physicstest02/stageconstuctnewpos.js");
 const StagePrepNextLoop = require("./physicstest02/stageprepnextloop.js");
+
+/*
+
+//get force sum (velocity, gravity, collision, volume, dampen)
+force sum 0 (velocity, gravity, collision)
+	input sphere pos -2
+	input sphere pos -1
+	output force texture 0
+force sum 1 (volume spring, dampen)
+	input force texture 0
+	input sphere pos -1
+	input volume data 0,1,2,3,4
+	output force texture 1
+
+construct new pos
+	input force texture 0
+	input sphere pos -1
+	output sphere pos
+
+ */
+
 
 const onPageLoad = function(){
 	console.info("onPageLoad");
@@ -31,7 +52,12 @@ const onPageLoad = function(){
 	const m_webGLState = WebGL.WebGLState.factory(m_webGLContextWrapper);
 	const m_resourceManager = Core.ResourceManager.factory({
 		"model" : Asset.factoryModel,
-		"model_texture" : Asset.factoryTexture,
+		"model_texture" : Asset.factoryTexSpherePos,
+		"textureVolume0" : Asset.factoryTexVolume0,
+		"textureVolume1" : Asset.factoryTexVolume1,
+		"textureVolume2" : Asset.factoryTexVolume2,
+		"textureVolume3" : Asset.factoryTexVolume3,
+		"textureVolume4" : Asset.factoryTexVolume4,
 	});
 
 	const m_viewportWidthHeightWidthhalfHeighthalf = Core.Vector4.factoryFloat32(m_width, m_height, m_width / 2.0, m_height / 2.0);
@@ -50,6 +76,8 @@ const onPageLoad = function(){
 	m_textureArray.push(m_resourceManager.getUniqueReference("model_texture", m_webGLContextWrapper));
 	const m_textureWidth = m_textureArray[0].getWidth();
 	const m_textureHeight = m_textureArray[0].getHeight();
+	const m_textureForceSum0 = WebGL.TextureWrapper.factoryFloatRGB(m_webGLContextWrapper, m_textureWidth, m_textureHeight);
+	//const m_textureForceSum1 = WebGL.TextureWrapper.factoryFloatRGB(m_webGLContextWrapper, m_textureWidth, m_textureHeight);
 
 	const m_renderTargetArray = [];
 	m_renderTargetArray.push(WebGL.RenderTargetWrapper.factory(
@@ -99,6 +127,13 @@ const onPageLoad = function(){
 			return m_textureArray[(m_renderTargetIndex + 0) % 3];
 		},
 
+		"getTextureForceSum0" : function(){
+			return m_textureForceSum0;
+		},
+		"getTextureForceSum1" : function(){
+			return m_textureForceSum1;
+		},
+
 		"getRenderTargetNewPos" : function(){
 			return m_renderTargetArray[(m_renderTargetIndex + 2) % 3];
 		},
@@ -115,9 +150,11 @@ const onPageLoad = function(){
 		},
 	};
 
-	//const m_stageConstuctNewPos = StageConstuctNewPos.factory(m_resourceManager, m_webGLContextWrapper, m_webGLState, m_dataServer);
 	const m_stagePresent = StagePresent.factory(m_resourceManager, m_webGLContextWrapper, m_webGLState, m_dataServer);
-	//const m_stagePrepNextLoop = StagePrepNextLoop.factory(m_resourceManager, m_webGLContextWrapper, m_webGLState, m_dataServer);
+	const m_stageConstuctNewPos = StageConstuctNewPos.factory(m_resourceManager, m_webGLContextWrapper, m_webGLState, m_dataServer);
+	const m_stagePrepNextLoop = StagePrepNextLoop.factory(m_resourceManager, m_webGLContextWrapper, m_webGLState, m_dataServer);
+	const m_stageForceSum0 = StageForceSum0.factory(m_resourceManager, m_webGLContextWrapper, m_webGLState, m_dataServer);
+	//const m_stageForceSum1 = StageForceSum1.factory(m_resourceManager, m_webGLContextWrapper, m_webGLState, m_dataServer);
 
 	const m_quad0 = WebGL.ComponentScreenTextureQuad.factory(m_resourceManager, m_webGLContextWrapper, m_dataServer.getTextureNewPos(), Core.Vector2.factoryFloat32(-1.0, 0.0), Core.Vector2.factoryFloat32(0.0, 1.0));
 	const m_quad1 = WebGL.ComponentScreenTextureQuad.factory(m_resourceManager, m_webGLContextWrapper, m_dataServer.getTexturePrevPos(), Core.Vector2.factoryFloat32(-1.0, -1.0), Core.Vector2.factoryFloat32(0.0, 0.0));
@@ -154,10 +191,10 @@ const onPageLoad = function(){
 				m_timeDelta = 0.1;
 			}
 			if (0.0 < m_timeDelta){
-				//m_stagePrepNextLoop.run();
-				//m_stageGetForceSum.run();
-				//m_stageResolveForceSumVrsCollision.run(); 
-				//m_stageConstuctNewPos.run();
+				m_stagePrepNextLoop.run();
+				m_stageForceSum0.run();
+				//m_stageForceSum1.run();
+				m_stageConstuctNewPos.run();
 			}
 			m_step = (true === m_realTime);
 		}

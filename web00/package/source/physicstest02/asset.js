@@ -1,54 +1,88 @@
 const WebGL = require("webgl");
 
 const factoryModel = function(in_webGLContextWrapper){
-	const m_uvDataStream = WebGL.ModelDataStream.factory("FLOAT", 2, new Float32Array(gUvSpheres10x10x10), "STATIC_DRAW", false);
-	const m_link0DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(gLink0Spheres10x10x10), "STATIC_DRAW", false);
-	const m_link1DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(gLink1Spheres10x10x10), "STATIC_DRAW", false);
-	const m_link2DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(gLink2Spheres10x10x10), "STATIC_DRAW", false);
-	const m_link3DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(gLink3Spheres10x10x10), "STATIC_DRAW", false);
-	const m_link4DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(gLink4Spheres10x10x10), "STATIC_DRAW", false);
-	const m_link5DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(gLink5Spheres10x10x10), "STATIC_DRAW", false);
-	const m_link6DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(gLink6Spheres10x10x10), "STATIC_DRAW", false);
-	const m_link7DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(gLink7Spheres10x10x10), "STATIC_DRAW", false);
-	const m_link8DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(gLink8Spheres10x10x10), "STATIC_DRAW", false);
-	const m_link9DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(gLink9Spheres10x10x10), "STATIC_DRAW", false);
-	const m_link10DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(gLink10Spheres10x10x10), "STATIC_DRAW", false);
-	const m_link11DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(gLink11Spheres10x10x10), "STATIC_DRAW", false);
+	const m_uvDataStream = WebGL.ModelDataStream.factory("FLOAT", 2, new Float32Array(gUvSphere), "STATIC_DRAW", false);
+	const m_linkUv0DataStream = WebGL.ModelDataStream.factory("FLOAT", 4, new Float32Array(gUvLink0), "STATIC_DRAW", false);
+	const m_linkUv1DataStream = WebGL.ModelDataStream.factory("FLOAT", 4, new Float32Array(gUvLink1), "STATIC_DRAW", false);
+	const m_linkUv2DataStream = WebGL.ModelDataStream.factory("FLOAT", 4, new Float32Array(gUvLink2), "STATIC_DRAW", false);
+	const m_linkUv3DataStream = WebGL.ModelDataStream.factory("FLOAT", 4, new Float32Array(gUvLink3), "STATIC_DRAW", false);
+	const m_linkUv4DataStream = WebGL.ModelDataStream.factory("FLOAT", 4, new Float32Array(gUvLink4), "STATIC_DRAW", false);
+	const m_linkUv5DataStream = WebGL.ModelDataStream.factory("FLOAT", 4, new Float32Array(gUvLink5), "STATIC_DRAW", false);
 
 
 	return WebGL.ModelWrapper.factory(
 		in_webGLContextWrapper, 
 		"POINTS",
-		Math.floor(gUvSpheres10x10x10.length / 2),
+		Math.floor(gUvSphere.length / 2),
 		{
 			"a_uv" : m_uvDataStream,
-			"a_link0" : m_link0DataStream,
-			"a_link1" : m_link1DataStream,
-			"a_link2" : m_link2DataStream,
-			"a_link3" : m_link3DataStream,
-			"a_link4" : m_link4DataStream,
-			"a_link5" : m_link5DataStream,
-			"a_link6" : m_link6DataStream,
-			"a_link7" : m_link7DataStream,
-			"a_link8" : m_link8DataStream,
-			"a_link9" : m_link9DataStream,
-			"a_link10" : m_link10DataStream,
-			"a_link11" : m_link11DataStream,
+			"a_linkUv0" : m_linkUv0DataStream,
+			"a_linkUv1" : m_linkUv1DataStream,
+			"a_linkUv2" : m_linkUv2DataStream,
+			"a_linkUv3" : m_linkUv3DataStream,
+			"a_linkUv4" : m_linkUv4DataStream,
+			"a_linkUv5" : m_linkUv5DataStream,
 
 		}
 	);
 }
 
-const factoryTexture = function(in_webGLContextWrapper){
+const factoryTexSpherePos = function(in_webGLContextWrapper){
 	return WebGL.TextureWrapper.factoryFloatRGBA(
 		in_webGLContextWrapper, 
 		32, 
 		32,
-		new Float32Array(gTexSpheres10x10x10)
+		new Float32Array(gTexSpherePosData)
+	);
+}
+const factoryTexVolume0 = function(in_webGLContextWrapper){
+	return WebGL.TextureWrapper.factoryFloatRGBA(
+		in_webGLContextWrapper, 
+		32, 
+		32,
+		new Float32Array(gTexVolume0Data)
+	);
+}
+const factoryTexVolume1 = function(in_webGLContextWrapper){
+	return WebGL.TextureWrapper.factoryFloatRGBA(
+		in_webGLContextWrapper, 
+		32, 
+		32,
+		new Float32Array(gTexVolume1Data)
+	);
+}
+const factoryTexVolume2 = function(in_webGLContextWrapper){
+	return WebGL.TextureWrapper.factoryFloatRGBA(
+		in_webGLContextWrapper, 
+		32, 
+		32,
+		new Float32Array(gTexVolume2Data)
+	);
+}
+const factoryTexVolume3 = function(in_webGLContextWrapper){
+	return WebGL.TextureWrapper.factoryFloatRGBA(
+		in_webGLContextWrapper, 
+		32, 
+		32,
+		new Float32Array(gTexVolume3Data)
+	);
+}
+const factoryTexVolume4 = function(in_webGLContextWrapper){
+	return WebGL.TextureWrapper.factoryFloatRGBA(
+		in_webGLContextWrapper, 
+		32, 
+		32,
+		new Float32Array(gTexVolume4Data)
 	);
 }
 
+
 module.exports = {
-	"factoryModel" : factoryModel,
-	"factoryTexture" : factoryTexture,
+	"factoryTexSpherePos" : factoryTexSpherePos,
+	"factoryTexVolume0" : factoryTexVolume0,
+	"factoryTexVolume1" : factoryTexVolume1,
+	"factoryTexVolume2" : factoryTexVolume2,
+	"factoryTexVolume3" : factoryTexVolume3,
+	"factoryTexVolume4" : factoryTexVolume4,
+	"factoryModel" : factoryModel
 };
