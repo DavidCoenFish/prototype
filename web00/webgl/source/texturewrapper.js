@@ -9,10 +9,8 @@ TEXTURE_WRAP_T	REPEAT (default value), CLAMP_TO_EDGE, MIRRORED_REPEAT
 
  */
 
-var sId = 0;
-
 const factory = function(
-	in_webGLContextWrapper, 
+	in_webGLState, 
 	in_width, 
 	in_height,
 	in_dataOrUndefined, 
@@ -25,21 +23,7 @@ const factory = function(
 	in_wrapSEnumName,
 	in_wrapTEnumName,
 	){
-	const m_width = in_width; 
-	const m_height = in_height;
-	const m_dataOrUndefined = in_dataOrUndefined; 
-	const m_flip = in_flip;
-	const m_internalFormatEnumName = in_internalFormatEnumName;
-	const m_formatEnumName = in_formatEnumName;
-	const m_typeEnumName = in_typeEnumName;
-	const m_magFilterEnumName = in_magFilterEnumName;
-	const m_minFilterEnumName = in_minFilterEnumName;
-	const m_wrapSEnumName = in_wrapSEnumName;
-	const m_wrapTEnumName = in_wrapTEnumName;
-
-	//const
 	var m_webglTexture = undefined;
-	var m_id = ++sId;
 
 	//public methods ==========================
 	const result = Object.create({
@@ -52,17 +36,14 @@ const factory = function(
 			}
 			return;
 		},
-		"getId" : function(){
-			return m_id;
-		},
 		"getWebGLTexture" : function(){
 			return m_webglTexture;
 		},
 		"getWidth" : function(){
-			return m_width;
+			return in_width;
 		},
 		"getHeight" : function(){
-			return m_height;
+			return in_height;
 		},
 		"destroy" : function(){
 			in_webGLContextWrapper.removeResourceContextCallbacks(restoredCallback, lostCallback);
@@ -78,25 +59,25 @@ const factory = function(
 
 		const paramFlipYEnum = in_webGLContextWrapper.getEnum("UNPACK_FLIP_Y_WEBGL");
 
-		if (true === m_flip) {
+		if (true === in_flip) {
 			in_webGLContextWrapper.callMethod("pixelStorei", paramFlipYEnum, true);
 		}
 		in_webGLContextWrapper.callMethod(
 			"texImage2D",
 			targetEnum,		//GLenum target, 
 			0,									//GLint level, 
-			in_webGLContextWrapper.getEnum(m_internalFormatEnumName),				//GLenum internalformat, 
-			m_width,						//GLsizei width, 
-			m_height,						//GLsizei height, 
+			in_webGLContextWrapper.getEnum(in_internalFormatEnumName),				//GLenum internalformat, 
+			in_width,						//GLsizei width, 
+			in_height,						//GLsizei height, 
 			0,									//GLint border, 
-			in_webGLContextWrapper.getEnum(m_formatEnumName),						//GLenum format, 
-			in_webGLContextWrapper.getEnum(m_typeEnumName),						//GLenum type, 
-			(undefined === m_dataOrUndefined) ? null : m_dataOrUndefined //ArrayBufferView? pixels
+			in_webGLContextWrapper.getEnum(in_formatEnumName),						//GLenum format, 
+			in_webGLContextWrapper.getEnum(in_typeEnumName),						//GLenum type, 
+			(undefined === in_dataOrUndefined) ? null : in_dataOrUndefined //ArrayBufferView? pixels
 			);
-		in_webGLContextWrapper.callMethod("texParameteri", targetEnum, in_webGLContextWrapper.getEnum("TEXTURE_MAG_FILTER"), in_webGLContextWrapper.getEnum(m_magFilterEnumName));
-		in_webGLContextWrapper.callMethod("texParameteri", targetEnum, in_webGLContextWrapper.getEnum("TEXTURE_MIN_FILTER"), in_webGLContextWrapper.getEnum(m_minFilterEnumName));
-		in_webGLContextWrapper.callMethod("texParameteri", targetEnum, in_webGLContextWrapper.getEnum("TEXTURE_WRAP_S"), in_webGLContextWrapper.getEnum(m_wrapSEnumName));
-		in_webGLContextWrapper.callMethod("texParameteri", targetEnum, in_webGLContextWrapper.getEnum("TEXTURE_WRAP_T"), in_webGLContextWrapper.getEnum(m_wrapTEnumName));
+		in_webGLContextWrapper.callMethod("texParameteri", targetEnum, in_webGLContextWrapper.getEnum("TEXTURE_MAG_FILTER"), in_webGLContextWrapper.getEnum(in_magFilterEnumName));
+		in_webGLContextWrapper.callMethod("texParameteri", targetEnum, in_webGLContextWrapper.getEnum("TEXTURE_MIN_FILTER"), in_webGLContextWrapper.getEnum(in_minFilterEnumName));
+		in_webGLContextWrapper.callMethod("texParameteri", targetEnum, in_webGLContextWrapper.getEnum("TEXTURE_WRAP_S"), in_webGLContextWrapper.getEnum(in_wrapSEnumName));
+		in_webGLContextWrapper.callMethod("texParameteri", targetEnum, in_webGLContextWrapper.getEnum("TEXTURE_WRAP_T"), in_webGLContextWrapper.getEnum(in_wrapTEnumName));
 
 		in_webGLContextWrapper.callMethod("bindTexture", targetEnum, null);
 
@@ -109,7 +90,8 @@ const factory = function(
 		return;
 	}
 
-	in_webGLContextWrapper.addResourceContextCallbacks(restoredCallback, lostCallback);
+
+	in_webGLState.addResourceContextCallbacks(restoredCallback, lostCallback);
 
 	return result;
 }

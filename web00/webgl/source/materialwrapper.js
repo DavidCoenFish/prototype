@@ -29,7 +29,6 @@ ALWAYS (always pass)
 
  */
 const factory = function(
-		in_shaderWrapperOrUndefined, 
 		in_textureArrayOrUndefined,
 		in_triangleCullEnabledOrUndefined,
 		in_triangleCullEnumNameOrUndefined,
@@ -37,102 +36,124 @@ const factory = function(
 		in_sourceBlendEnumNameOrUndefined,
 		in_destinationBlendEnumNameOrUndefined,
 		in_depthFuncEnabledOrUndefined,
-		in_depthFuncEnumNameOrUndefined
+		in_depthFuncEnumNameOrUndefined, 
+		in_frontFaceEnumNameOrUndefined, //"CW"
+		in_colorMaskRedOrUndefined, //true
+		in_colorMaskGreenOrUndefined, //true
+		in_colorMaskBlueOrUndefined, //true
+		in_colorMaskAlphaOrUndefined, //false
+		in_depthMaskOrUndefined, //false
+		in_stencilMaskOrUndefined //false
 		){
-	var m_shaderWrapper = in_shaderWrapperOrUndefined;
-	var m_textureArray = (undefined === in_textureArrayOrUndefined) ? [] : in_textureArrayOrUndefined;
-	var m_triangleCullEnabled = (undefined === in_triangleCullEnabledOrUndefined) ? false : in_triangleCullEnabledOrUndefined;
-	var m_triangleCullEnumName = in_triangleCullEnumNameOrUndefined;
-	var m_blendModeEnabled = (undefined === in_blendModeEnabledOrUndefined) ? false : in_blendModeEnabledOrUndefined;
-	var m_sourceBlendEnumName = in_sourceBlendEnumNameOrUndefined;
-	var m_destinationBlendEnumName = in_destinationBlendEnumNameOrUndefined;
-	var m_depthFuncEnabled = (undefined === in_depthFuncEnabledOrUndefined) ? false : in_depthFuncEnabledOrUndefined;
-	var m_depthFuncEnumName = in_depthFuncEnumNameOrUndefined;
-	var m_frontFaceEnumName = "CW";
-	var m_colorMaskRed = true;
-	var m_colorMaskGreen = true;
-	var m_colorMaskBlue = true; 
-	var m_colorMaskAlpha = false;
-	var m_depthMask = false;
-	var m_stencilMask = false;
 
 	//public methods ==========================
 	const result = Object.create({
-		// "getShader" : function(){
-		// 	return m_shaderWrapper;
-		// },
+		"getTextureArray" : function(){
+			if (undefined === in_textureArrayOrUndefined){
+				return [];
+			}
+		 	return in_textureArrayOrUndefined;
+		},
 		"setTextureArray" : function(in_textureArray){
-			m_textureArray = in_textureArray;
+			in_textureArrayOrUndefined = in_textureArray;
 			return;
 		},
-		"apply" : function(in_webGLContextWrapper, in_webGLState){
-
-			in_webGLState.setMaterialOrUndefined(result);
-			in_webGLState.setMapVertexAttributeOrUndefined((undefined !== m_shaderWrapper)? m_shaderWrapper.getMapVertexAttribute():undefined);
-
-			if (undefined !== m_shaderWrapper){
-				m_shaderWrapper.apply(in_webGLContextWrapper);
+		"getTriangleCullEnabled" : function(){
+			if (undefined === in_triangleCullEnabledOrUndefined){
+				return false;
 			}
-
-			for (var index = 0; index < m_textureArray.length; ++index){
-				var texture = m_textureArray[index];
-				in_webGLState.setTextureOrUndefined(in_webGLContextWrapper, index, texture);
-				//in_material.m_shader.ApplyUniform(webGL, DSC.Framework.Context.Uniform.Collection.s_sampler + index, index);
+			return in_triangleCullEnabledOrUndefined;
+		},
+		//FRONT, BACK, FRONT_AND_BACK
+		"getTriangleCullEnumName" : function(){
+			if (undefined === in_triangleCullEnumNameOrUndefined){
+				return "BACK";
 			}
-
-			const triangleCullEnum = in_webGLContextWrapper.getEnum(m_triangleCullEnumName);
-			in_webGLState.setTriangleCull(in_webGLContextWrapper, m_triangleCullEnabled, triangleCullEnum);
-
-			const frontFaceEnum = in_webGLContextWrapper.getEnum(m_frontFaceEnumName);
-			in_webGLState.setFrontFace(in_webGLContextWrapper, frontFaceEnum);
-
-			const sourceBlendEnum = in_webGLContextWrapper.getEnum(m_sourceBlendEnumName);
-			const destinationBlendEnum = in_webGLContextWrapper.getEnum(m_destinationBlendEnumName);
-			in_webGLState.setBlendMode(in_webGLContextWrapper, m_blendModeEnabled, sourceBlendEnum, destinationBlendEnum);
-
-			const depthFuncEnum = in_webGLContextWrapper.getEnum(m_depthFuncEnumName);
-			in_webGLState.setDepthFunc(in_webGLContextWrapper, m_depthFuncEnabled, depthFuncEnum);
-
-			in_webGLState.setColorMask(in_webGLContextWrapper, m_colorMaskRed, m_colorMaskGreen, m_colorMaskBlue, m_colorMaskAlpha);
-			in_webGLState.setDepthMask(in_webGLContextWrapper, m_depthMask);
-			in_webGLState.setStencilMask(in_webGLContextWrapper, m_stencilMask);
+			return in_triangleCullEnumNameOrUndefined;
 		},
-		"setFrontFaceEnumName" : function(in_name){
-			m_frontFaceEnumName = in_name;
+		"getBlendModeEnabled" : function(){
+			if (undefined === in_blendModeEnabledOrUndefined){
+				return false;
+			}
+			return in_blendModeEnabledOrUndefined;
 		},
-		"setColorMask" : function(in_redMask, in_greenMask, in_blueMask, in_alphaMask){
-			m_colorMaskRed = in_redMask;
-			m_colorMaskGreen = in_greenMask;
-			m_colorMaskBlue = in_blueMask;
-			m_colorMaskAlpha = in_alphaMask;
+		"getSourceBlendEnumName" : function(){
+			if (undefined === in_sourceBlendEnumNameOrUndefined){
+				return "ZERO";
+			}
+			return in_sourceBlendEnumNameOrUndefined;
 		},
-		"setDepthMask" : function(in_depthMask){
-			m_depthMask = in_depthMask;
+		"getDestinationBlendEnumName" : function(){
+			if (undefined === in_destinationBlendEnumNameOrUndefined){
+				return "ONE";
+			}
+			return in_destinationBlendEnumNameOrUndefined;
 		},
-		"setStencilMask" : function(in_stencilMask){
-			m_stencilMask = in_stencilMask;
+		"getDepthFuncEnabled" : function(){
+			if (undefined === in_depthFuncEnabledOrUndefined){
+				return false;
+			}
+			return in_depthFuncEnabledOrUndefined;
 		},
-
+		"getDepthFuncEnabled" : function(){
+			if (undefined === in_depthFuncEnabledOrUndefined){
+				return false;
+			}
+			return in_depthFuncEnabledOrUndefined;
+		},
+		"getDepthFuncEnumName" : function(){
+			if (undefined === in_depthFuncEnumNameOrUndefined){
+				return "LEQUAL";
+			}
+			return in_depthFuncEnumNameOrUndefined;
+		},
+		"getFrontFaceEnumName" : function(){
+			if (undefined === in_frontFaceEnumNameOrUndefined){
+				return "CW";
+			}
+			return in_frontFaceEnumNameOrUndefined;
+		},
+		"getColorMaskRed" : function(){
+			if (undefined === in_colorMaskRedOrUndefined){
+				return true;
+			}
+			return in_colorMaskRedOrUndefined;
+		},
+		"getColorMaskGreen" : function(){
+			if (undefined === in_colorMaskGreenOrUndefined){
+				return true;
+			}
+			return in_colorMaskGreenOrUndefined;
+		},
+		"getColorMaskBlue" : function(){
+			if (undefined === in_colorMaskBlueOrUndefined){
+				return true;
+			}
+			return in_colorMaskBlueOrUndefined;
+		},
+		"getColorMaskAlpha" : function(){
+			if (undefined === in_colorMaskAlphaOrUndefined){
+				return false;
+			}
+			return in_colorMaskAlphaOrUndefined;
+		},
+		"getDepthMask" : function(){
+			if (undefined === in_depthMaskOrUndefined){
+				return false;
+			}
+			return in_depthMaskOrUndefined;
+		},
+		"getStencilMask" : function(){
+			if (undefined === in_stencilMaskOrUndefined){
+				return false;
+			}
+			return in_stencilMaskOrUndefined;
+		},
 	});
 
 	return result;
 }
 
-const factoryDefault = function(in_shaderWrapperOrUndefined, in_textureArrayOrUndefined){
-	return factory(
-		in_shaderWrapperOrUndefined,
-		in_textureArrayOrUndefined,
-		false, //true,
-		undefined, //"BACK",
-		false,
-		undefined, //"ZERO",
-		undefined, //"ONE",
-		false,
-		);
-}
-
-
 module.exports = {
-	"factory" : factory,
-	"factoryDefault" : factoryDefault
+	"factory" : factory
 };

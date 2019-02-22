@@ -20,11 +20,6 @@ const factory = function(in_x, in_y, in_baseArrayClass){
 			data[1] = in_value;
 			return;
 		},
-		"crossProduct" : function() {
-			const x = this.getY();
-			const y = -(this.getX());
-			return module.exports.factory(x, y, in_baseArrayClass);
-		},
 		"getRaw" : function(){
 			return data;
 		},
@@ -54,9 +49,16 @@ const factorySubtract = function(in_lhs, in_rhs){
 	return factory(in_lhs.getX() - in_rhs.getX(), in_lhs.getY() - in_rhs.getY(), in_lhs.getRawClass());
 }
 
+const crossProduct = function(in_vector2){
+	const x = this.getY();
+	const y = -(this.getX());
+	return module.exports.factory(x, y, in_vector2.getRawClass());
+}
+
 module.exports = {
 	"factory" : factory,
 	"factoryFloat32" : factoryFloat32,
 	"factoryInt32" : factoryInt32,
-	"factorySubtract" : factorySubtract
+	"factorySubtract" : factorySubtract,
+	"crossProduct" : crossProduct
 }

@@ -1,24 +1,12 @@
-/*
-collect the data to represent a shader. 
-when we have a webGLContext 
- */
-//const Core = require("core");
+const ShaderUniformData = require("./shaderuniformdata.js");
 
 const factory = function(
 	in_webGLContextWrapper, 
 	in_vertexShaderSource, 
 	in_fragmentShaderSource, 
-	in_uniformServerOrUndefined, 
 	in_vertexAttributeNameArrayOrUndefined, 
-	in_uniformNameArrayOrUndefined
+	in_uniformNameNameTypeMapOrUndefined,
 	){
-	const m_vertexShaderSource = in_vertexShaderSource; //Core.StringUtil.deepCopyString(in_vertexShaderSource);
-	const m_fragmentShaderSource = in_fragmentShaderSource; //Core.StringUtil.deepCopyString(in_fragmentShaderSource);
-	const m_vertexAttributeNameArray = (undefined === in_vertexAttributeNameArrayOrUndefined) ? [] : Array.prototype.slice.call(in_vertexAttributeNameArrayOrUndefined);
-	const m_uniformNameArray = (undefined === in_uniformNameArrayOrUndefined) ? [] : Array.prototype.slice.call(in_uniformNameArrayOrUndefined);
-
-	const m_uniformServerOrUndefined = in_uniformServerOrUndefined;
-
 	var m_shaderProgramObject = undefined;
 	var m_vertexWebGLShader = undefined;
 	var m_fragmentWebGLShader = undefined;
@@ -27,20 +15,6 @@ const factory = function(
 
 	//public methods ==========================
 	const result = Object.create({
-		"apply" : function(in_webGLContextWrapper){
-			if (undefined !== m_shaderProgramObject){
-				in_webGLContextWrapper.callMethod("useProgram", m_shaderProgramObject);
-			}
-
-			if (undefined !== m_uniformServerOrUndefined){
-				for (var key in m_mapUniform){
-					var position = m_mapUniform[key];
-					m_uniformServerOrUndefined.setUniform(in_webGLContextWrapper, key, position);
-				}
-			}
- 
-			return;
-		},
 		"getMapVertexAttribute" : function(){
 			return m_mapVertexAttribute;
 		},
@@ -50,21 +24,24 @@ const factory = function(
 	});
 
 	//private methods ==========================
-	const restoredCallback = function(in_webGLContextWrapper){
+	const restoredCallback = function(){
 		const vertexShaderEnum = in_webGLContextWrapper.getEnum("VERTEX_SHADER");
-		m_vertexWebGLShader = loadShader(in_webGLContextWrapper, m_vertexShaderSource, vertexShaderEnum);
+		m_vertexWebGLShader = loadShader(in_vertexShaderSource, vertexShaderEnum);
+
 		const fragmentShaderEnum = in_webGLContextWrapper.getEnum("FRAGMENT_SHADER");
-		m_fragmentWebGLShader = loadShader(in_webGLContextWrapper, m_fragmentShaderSource, fragmentShaderEnum);
-		m_shaderProgramObject = linkProgram(in_webGLContextWrapper, m_mapVertexAttribute, m_mapUniform, m_vertexWebGLShader, m_fragmentWebGLShader, m_mapVertexAttribute, m_mapUniform);
+		m_fragmentWebGLShader = loadShader(in_fragmentShaderSource, fragmentShaderEnum);
+
+		m_shaderProgramObject = linkProgram(m_vertexWebGLShader, m_fragmentWebGLShader);
 
 		if (undefined === m_shaderProgramObject){
 			alert("Error creating shader Program");
 		}
+
 		return;
 	}
 
 	// if we still have a webgl context, mark the resources for delete, else clear the resource references
-	const lostCallback = function(in_webGLContextWrapper){
+	const lostCallback = function(){
 		m_mapVertexAttribute = undefined;
 		m_mapUniform = undefined;
 		if ( undefined !== m_vertexWebGLShader){
@@ -83,7 +60,7 @@ const factory = function(
 		return;
 	}
 
-	const loadShader = function(in_webGLContextWrapper, in_shaderText, in_type){
+	const loadShader = function(in_shaderText, in_type){
 		var shaderHandle = in_webGLContextWrapper.callMethod("createShader", in_type);
 		if (0 === shaderHandle){
 			return undefined;
@@ -111,7 +88,7 @@ const factory = function(
 		return shaderHandle;
 	}
 
-	const linkProgram = function(in_webGLContextWrapper, in_mapVertexAttribute, in_mapUniform, in_vertexWebGLShader, in_fragmentWebGLShader){
+	const linkProgram = function(in_vertexWebGLShader, in_fragmentWebGLShader){
 		var programHandle = in_webGLContextWrapper.callMethod("createProgram");
 		if ((0 === programHandle) || (undefined === programHandle)){
 			return undefined;
@@ -136,15 +113,20 @@ const factory = function(
 		}
 
 		m_mapVertexAttribute = {};
-		for (var index = 0; index < m_vertexAttributeNameArray.length; ++index){
-			var key = m_vertexAttributeNameArray[index];
-			m_mapVertexAttribute[key] = in_webGLContextWrapper.callMethod("getAttribLocation", programHandle, key);
+		if (undefined !== in_vertexAttributeNameArrayOrUndefined){
+			for (var index = 0; index < in_vertexAttributeNameArrayOrUndefined.length; ++index){
+				var key = in_vertexAttributeNameArrayOrUndefined[index];
+				m_mapVertexAttribute[key] = in_webGLContextWrapper.callMethod("getAttribLocation", programHandle, key);
+			}
 		}
 
 		m_mapUniform = {};
-		for (var index = 0; index < m_uniformNameArray.length; ++index){
-			var key = m_uniformNameArray[index];
-			m_mapUniform[key] = in_webGLContextWrapper.callMethod("getUniformLocation", programHandle, key);
+		if (undefined !== in_uniformNameNameTypeMapOrUndefined){
+			for (var name in in_uniformNameNameTypeMapOrUndefined){
+				var typeName = in_uniformNameNameTypeMapOrUndefined[name];
+				var location = in_webGLContextWrapper.callMethod("getUniformLocation", programHandle, name);
+				m_mapUniform[name] = ShaderUniformData.factory(typeName, location);
+			}
 		}
 			
 		return programHandle;

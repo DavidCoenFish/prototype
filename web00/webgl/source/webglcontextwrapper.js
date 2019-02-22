@@ -41,21 +41,23 @@ const getWebGLContext = function(in_html5CanvasElement, in_paramObjectOrUndefine
 	return webGLContext;
 }
 
-const makeParamObject = function(in_alphaOrUndefined, in_depthOrUndefined, in_antialiasOrUndefined, in_extentionsOrUndefined){
-	return {
+const sTokenWebglContextLost = "webglcontextlost";
+const sTokenWebglContextRestored = "webglcontextrestored";
+
+const factory = function(
+	in_html5CanvasElement,
+	in_alphaOrUndefined, 
+	in_depthOrUndefined, 
+	in_antialiasOrUndefined, 
+	in_extentionsOrUndefined
+	){
+	var m_webGLContext = getWebGLContext(in_html5CanvasElement, {
 		"alpha" : in_alphaOrUndefined,
 		"depth" : in_depthOrUndefined,
 		"antialias" : in_antialiasOrUndefined,
 		//premultipliedAlpha : false,
 		"extentions" : in_extentionsOrUndefined
-		};
-}
-
-const sTokenWebglContextLost = "webglcontextlost";
-const sTokenWebglContextRestored = "webglcontextrestored";
-
-const factory = function(in_html5CanvasElement, in_paramObjectOrUndefined, in_callbackContextRestoredOrUndefined){
-	var m_webGLContext = getWebGLContext(in_html5CanvasElement, in_paramObjectOrUndefined);
+		});
 
 	//public methods ==========================
 	const result = Object.create({
@@ -181,10 +183,6 @@ const factory = function(in_html5CanvasElement, in_paramObjectOrUndefined, in_ca
 		m_webGLContext = undefined;
 		m_webGLContext = getWebGLContext(in_html5CanvasElement, in_paramObjectOrUndefined);
 		result.triggerEvent(sTokenWebglContextRestored, result);
-		if (undefined !== in_callbackContextRestoredOrUndefined)
-		{
-			in_callbackContextRestoredOrUndefined(result);
-		}
 	};
 
 	//these event names are matching the webgl canvas contract, internally we just use sTokenWebglContextLost...
@@ -195,6 +193,5 @@ const factory = function(in_html5CanvasElement, in_paramObjectOrUndefined, in_ca
 }
 
 module.exports = {
-	"makeParamObject" : makeParamObject,
 	"factory" : factory
 };

@@ -10,9 +10,10 @@ module.exports = {
 	"ModelWrapper" : require("./source/modelwrapper.js"),
 	"RenderTargetData" : require("./source/rendertargetdata.js"),
 	"RenderTargetWrapper" : require("./source/rendertargetwrapper.js"),
+	"ShaderUniformData" : require("./source/shaderuniformdata.js"),
 	"ShaderWrapper" : require("./source/shaderwrapper.js"),
 	"TextureWrapper" : require("./source/texturewrapper.js"),
-	"WebGLContextWrapper" : require("./source/webglcontextwrapper.js"),
-	"WebGLContextWrapperHelper" : require("./source/webglcontextwrapperhelper.js"),
+	//"WebGLContextWrapper" : require("./source/webglcontextwrapper.js"),
+	//"WebGLContextWrapperHelper" : require("./source/webglcontextwrapperhelper.js"),
 	"WebGLState" : require("./source/webglstate.js")
 };

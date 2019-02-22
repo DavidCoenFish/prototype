@@ -1,6 +1,7 @@
 /*
 Float32Array
  */
+const CoreMath = require("./coremath.js")
 
 const factory = function(in_red, in_green, in_blue, in_alpha, in_baseArrayClass){
 	const data = new in_baseArrayClass([in_red, in_green, in_blue, in_alpha]);
@@ -66,10 +67,20 @@ const factoryUnsignedByte = function(in_redOrUndefined, in_greenOrUndefined, in_
 	return factory(red, green, blue, alpha, Uint8Array);
 }
 
+const cmpAlmost = function(in_lhs, in_rhs, in_epsilonOrUndefined){
+	var dataLhs = in_lhs.getRaw();
+	var dataRhs = in_rhs.getRaw();
+	return ((true === CoreMath.cmpAlmost(dataLhs[0], dataRhs[0], in_epsilonOrUndefined)),
+		(true === CoreMath.cmpAlmost(dataLhs[1], dataRhs[1], in_epsilonOrUndefined)),
+		(true === CoreMath.cmpAlmost(dataLhs[2], dataRhs[2], in_epsilonOrUndefined)),
+		(true === CoreMath.cmpAlmost(dataLhs[3], dataRhs[3], in_epsilonOrUndefined)));
+}
+
 module.exports = {
 	"factory" : factory,
 	"factoryFloat32" : factoryFloat32,
 	"factoryUnsignedByte" : factoryUnsignedByte,
+	"cmpAlmost" : cmpAlmost,
 	"sRed" : factoryFloat32(1.0, 0.0, 0.0, 1.0),
 	"sGreen" : factoryFloat32(0.0, 1.0, 0.0, 1.0),
 	"sBlue" : factoryFloat32(0.0, 0.0, 1.0, 1.0),
