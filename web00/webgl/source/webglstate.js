@@ -15,7 +15,7 @@ const factory = function(
 	in_antialiasOrUndefined, 
 	in_extentionsOrUndefined
 ){
-	var m_webGlContextWrapper = WebGlContextWrapper.factory(
+	var m_webGLContextWrapper = WebGlContextWrapper.factory(
 		in_html5CanvasElement, 
 		in_alphaOrUndefined, 
 		in_depthOrUndefined, 
@@ -60,9 +60,9 @@ const factory = function(
 	const setTexture = function(in_index, in_textureOrUndefined){
 		if (false === stateValueCmp(sTextureStateName[in_index], in_textureOrUndefined)){
 			if (undefined !== in_textureOrUndefined){
-				in_textureOrUndefined.apply(m_webGlContextWrapper, in_index);
+				in_textureOrUndefined.apply(m_webGLContextWrapper, in_index);
 			} else {
-				m_webGlContextWrapper.callMethod("deactivateTexture", in_index);
+				m_webGLContextWrapper.callMethod("deactivateTexture", in_index);
 			}
 		}
 	}
@@ -162,15 +162,15 @@ const factory = function(
 
 	const that = Object.create({
 		"addResourceContextCallbacks" : function(in_restoredCallback, in_lostCallback){
-			m_webGlContextWrapper.addResourceContextCallbacks(in_restoredCallback, in_lostCallback);
+			m_webGLContextWrapper.addResourceContextCallbacks(in_restoredCallback, in_lostCallback);
 		},
 
 		"removeResourceContextCallbacks" : function(in_restoredCallback, in_lostCallback){
-			m_webGlContextWrapper.removeResourceContextCallbacks(in_restoredCallback, in_lostCallback);
+			m_webGLContextWrapper.removeResourceContextCallbacks(in_restoredCallback, in_lostCallback);
 		},
 
 		"flush" : function(){
-			m_webGlContextWrapper.callMethod("flush");
+			m_webGLContextWrapper.callMethod("flush");
 			return;
 		},
 
@@ -179,8 +179,8 @@ const factory = function(
 
 			if ((undefined !== in_colourOrUndefined) && 
 				(false === stateValueCmpColour4("clearColor", in_colourOrUndefined))){
-				clearFlag |= m_webGlContextWrapper.getEnum("COLOR_BUFFER_BIT");
-				m_webGlContextWrapper.callMethod(
+				clearFlag |= m_webGLContextWrapper.getEnum("COLOR_BUFFER_BIT");
+				m_webGLContextWrapper.callMethod(
 					"clearColor", 
 					in_colourOrUndefined.getRed(),
 					in_colourOrUndefined.getGreen(),
@@ -191,18 +191,18 @@ const factory = function(
 
 			if ((undefined !== in_depthOrUndefined) &&
 				(false === stateValueCmp("clearDepth", in_depthOrUndefined))){
-				clearFlag |= m_webGlContextWrapper.getEnum("DEPTH_BUFFER_BIT");
-				m_webGlContextWrapper.callMethod("clearDepth", in_depthOrUndefined);
+				clearFlag |= m_webGLContextWrapper.getEnum("DEPTH_BUFFER_BIT");
+				m_webGLContextWrapper.callMethod("clearDepth", in_depthOrUndefined);
 			}
 
 			if ((undefined !== in_stencilOrUndefined) &&
 				(false === stateValueCmp("clearStencil", in_stencilOrUndefined))){
-				clearFlag |= m_webGlContextWrapper.getEnum("STENCIL_BUFFER_BIT");
-				m_webGlContextWrapper.callMethod("clearStencil", in_stencilOrUndefined);
+				clearFlag |= m_webGLContextWrapper.getEnum("STENCIL_BUFFER_BIT");
+				m_webGLContextWrapper.callMethod("clearStencil", in_stencilOrUndefined);
 			}
 
 			if (0 !== clearFlag){
-				m_webGlContextWrapper.callMethod("clear", clearFlag);
+				m_webGLContextWrapper.callMethod("clear", clearFlag);
 			}
 
 			return;
@@ -288,6 +288,12 @@ const factory = function(
 			return;
 		},
 
+		"getExtention" : function(in_extentionName){
+						   m_webGLContextWrapper
+			const result = m_webGLContextWrapper.callMethod("getExtension", in_extentionName);
+			return result;
+		},
+
 		"destroy" : function(){
 			m_webGLContextWrapper.removeResourceContextCallbacks(aquireWebGLResources, releaseWebGLResources);
 		},
@@ -304,7 +310,7 @@ const factory = function(
 		return;
 	}
 
-	m_webGlContextWrapper.addResourceContextCallbacks(aquireWebGLResources, releaseWebGLResources);
+	m_webGLContextWrapper.addResourceContextCallbacks(aquireWebGLResources, releaseWebGLResources);
 
 	return that;
 }

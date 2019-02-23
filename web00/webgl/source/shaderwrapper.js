@@ -97,10 +97,14 @@ const factory = function(
 		in_webGLContextWrapper.callMethod("attachShader", programHandle, in_vertexWebGLShader);
 		in_webGLContextWrapper.callMethod("attachShader", programHandle, in_fragmentWebGLShader);
 		
-		for (var index = 0; index < m_vertexAttributeNameArray.length; ++index){
-			var key = m_vertexAttributeNameArray[key];
-			in_webGLContextWrapper.callMethod("bindAttribLocation", programHandle, index, key);
-		}		
+		//for (var index = 0; index < m_vertexAttributeNameArray.length; ++index){
+		if (undefined !== in_uniformNameNameTypeMapOrUndefined){
+			var index = 0;
+			for (var name in in_uniformNameNameTypeMapOrUndefined){
+				in_webGLContextWrapper.callMethod("bindAttribLocation", programHandle, index, name);
+				index += 1;
+			}
+		}
 			
 		in_webGLContextWrapper.callMethod("linkProgram", programHandle);
 
@@ -134,7 +138,7 @@ const factory = function(
 
 	in_webGLState.addResourceContextCallbacks(restoredCallback, lostCallback);
 
-	return result;
+	return that;
 }
 
 

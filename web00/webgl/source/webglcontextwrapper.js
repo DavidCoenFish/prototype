@@ -51,13 +51,14 @@ const factory = function(
 	in_antialiasOrUndefined, 
 	in_extentionsOrUndefined
 	){
-	var m_webGLContext = getWebGLContext(in_html5CanvasElement, {
+	const param = {
 		"alpha" : in_alphaOrUndefined,
 		"depth" : in_depthOrUndefined,
 		"antialias" : in_antialiasOrUndefined,
 		//premultipliedAlpha : false,
 		"extentions" : in_extentionsOrUndefined
-		});
+		};
+	var m_webGLContext = getWebGLContext(in_html5CanvasElement, param);
 
 	//public methods ==========================
 	const result = Object.create({
@@ -181,7 +182,7 @@ const factory = function(
 	};
 	const contextRestoredCallback = function(in_event){
 		m_webGLContext = undefined;
-		m_webGLContext = getWebGLContext(in_html5CanvasElement, in_paramObjectOrUndefined);
+		m_webGLContext = getWebGLContext(in_html5CanvasElement, param);
 		result.triggerEvent(sTokenWebglContextRestored, result);
 	};
 

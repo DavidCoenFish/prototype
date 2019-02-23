@@ -1,3 +1,5 @@
+const Core = require("core");
+const ManipulateDom = require("manipulatedom");
 const WebGL = require("webgl");
 
 const vertexShaderSource = `
@@ -13,75 +15,47 @@ void main() {
 	gl_FragColor = u_colour;
 }
 `;
-
-/*
-	"m_mapVertexAttributeNames" : {"a_position" : -1}, 
-	"m_mapUniformsNames" : {
-		"u_colour" : DSC.Framework.Asset.Shader.Uniform.Factory(DSC.Framework.Context.Uniform.s_type.TColour4)
-	}
- */
+const uniformMap = {
+	"u_colour" : WebGL.ShaderUniformData.sFloat4
+}
 
 const onPageLoad = function(){
 	console.info("onPageLoad");
 
-	const divElement = document.getElementById("divElement");
-	const html5CanvasElement = document.createElement("canvas");
-	const webGLContextWrapperParam = WebGL.WebGLContextWrapper.makeParamObject(false, false, false, []);
-	const webGLContextWrapper = WebGL.WebGLContextWrapper.factory(html5CanvasElement, webGLContextWrapperParam);
-	const extension = webGLContextWrapper.callMethod("getExtension", "WEBGL_lose_context");
-	var hasContext = true;
+	const m_canvaseElementWrapper = ManipulateDom.ComponentCanvas.factoryAppendBody(document, 512, 256);
+	const m_webGLState = WebGL.WebGLState.factory(m_canvaseElementWrapper.getElement());
+	const m_extension = m_webGLState.getExtention("WEBGL_lose_context");
+	var m_hasContext = true;
 
-	addButton("context restored", function(e){
-		if (true === hasContext){
-			logLine(divElement, "already have context");
+	ManipulateDom.Button.addSimpleButton(document, document.body, "context restored", function(in_event){
+		if (true === m_hasContext){
+			console.log("already have context");
 		} else {
-			logLine(divElement, "context restored");
-			extension.restoreContext();
-			hasContext = true;
-		}
-	});
-	addButton("context lost", function(e){
-		if (false === hasContext){
-			logLine(divElement, "already lost context");
-		} else {
-			logLine(divElement, "context lost");
-			extension.loseContext();
-			hasContext = false;
+			console.log("context restored");
+			m_extension.restoreContext();
+			m_hasContext = true;
 		}
 	});
 
-	const colour = Math.Colour4.factoryFloat32(0.0, 0.0, 1.0, 1.0);
+	ManipulateDom.Button.addSimpleButton(document, document.body, "context lost", function(in_event){
+		if (false === m_hasContext){
+			console.log("already lost context");
+		} else {
+			console.log("context lost");
+			m_extension.loseContext();
+			m_hasContext = false;
+		}
+	});
+
+	const colour = Core.Colour4.factoryFloat32(0.0, 0.0, 1.0, 1.0);
 	const shader0 = WebGL.ShaderWrapper.factory(
-		webGLContextWrapper, 
+		m_webGLState,
 		vertexShaderSource, 
 		fragmentShaderSource,
-		{
-			"getValue" : function(in_name){
-				if (in_name === "u_colour"){
-					return colour;
-				}
-				return undefined;
-			}
-		},
 		["a_position"],
-		["u_colour"]
+		uniformMap
 		);
 
-	return;
-}
-
-const logLine = function(in_divElement, in_message){
-	in_divElement.innerHTML += (in_message + "<br/>");
-	return;
-}
-
-const addButton = function(in_title, in_callback){
-	const button = document.createElement("BUTTON");
-	var textNode = document.createTextNode(in_title);
-
-	button.addEventListener("click",in_callback,false);
-	button.appendChild(textNode);
-	document.body.insertBefore(button, document.body.firstChild);
 	return;
 }
 

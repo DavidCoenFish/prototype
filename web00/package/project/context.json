@@ -1,7 +1,7 @@
 {
 	"name" : "context",
 	"source" : "context.js",
-	"template" : "template/simplediv.htm.template",
+	"template" : "template/blank.htm.template",
 	"templateParam" : {
 		"title" : "context",
 		"bundleFilePath" : "js/contextbundle.js"
