@@ -21,13 +21,11 @@ const factory = function(
 	in_normalise //bool
 	){
 	var m_bufferObject = undefined;
-	var m_type = undefined;
 
 	//public methods ==========================
 	const result = Object.create({
 		"aquireWebGLResources" : function(in_webGLState){
 			m_bufferObject = in_webGLState.createBuffer(in_arrayData, "ARRAY_BUFFER", in_usageName);
-			m_type = in_webGLContextWrapper.getEnum(in_typeName);
 		},
 		"releaseWebGLResources" : function(in_webGLState){
 			in_webGLState.deleteBuffer(m_bufferObject);
@@ -38,7 +36,8 @@ const factory = function(
 			in_webGLContextWrapper.callMethod("bindBuffer", bufferObjectType, m_bufferObject);
 			const stride = 0;
 			const offset = 0;
-			in_webGLContextWrapper.callMethod("vertexAttribPointer", in_position, in_elementsPerVertex, m_type, in_normalise, stride, offset);
+			const type = in_webGLContextWrapper.getEnum(in_typeName);
+			in_webGLContextWrapper.callMethod("vertexAttribPointer", in_position, in_elementsPerVertex, type, in_normalise, stride, offset);
 			in_webGLContextWrapper.callMethod("enableVertexAttribArray", in_position );
 
 		},

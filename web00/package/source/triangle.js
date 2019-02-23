@@ -1,4 +1,5 @@
 const Core = require("core");
+const ManipulateDom = require("manipulatedom");
 const WebGL = require("webgl");
 
 const sVertexShader = `
@@ -14,66 +15,49 @@ void main() {
 	gl_FragColor = u_colour;
 }
 `;
-//	gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);;
-//	gl_FragColor = u_colour;
 
 const sVertexAttributeNameArray = ["a_position"];
-const sUniformNameArray = ["u_colour"];
+const sUniformNameMap = {
+	"u_colour" : WebGL.ShaderUniformData.sFloat4
+};
 
 const onPageLoad = function(){
 	console.info("onPageLoad");
 
-	const html5CanvasElement = (undefined !== document) ? document.getElementById('html5CanvasElement') : undefined;
+	const m_canvaseElementWrapper = ManipulateDom.ComponentCanvas.factoryAppendBody(document, 512, 256);
+	const m_webGLState = WebGL.WebGLState.factory(m_canvaseElementWrapper.getElement());
 
-	//a canvas width, height is 300,150 by default (coordinate space). lets change that to what size it is
-	if (undefined !== html5CanvasElement){
-		html5CanvasElement.width = html5CanvasElement.clientWidth;
-		html5CanvasElement.height = html5CanvasElement.clientHeight;
+	const m_state = {
+		"u_colour" : Core.Colour4.factoryFloat32(0.0, 0.0, 1.0, 1.0).getRaw()
 	}
+	const m_shader = WebGL.ShaderWrapper.factory(m_webGLState, sVertexShader, sFragmentShader, sVertexAttributeNameArray, sUniformNameMap);
+	const m_material = WebGL.MaterialWrapper.factory(m_webGLState);
 
-	const webGLContextWrapperParam = WebGL.WebGLContextWrapper.makeParamObject(false, false, false, []);
-
-	const webGLContextWrapper = WebGL.WebGLContextWrapper.factory(html5CanvasElement, webGLContextWrapperParam);
-	const colour = Core.Colour4.factoryFloat32(0.0, 0.0, 1.0, 1.0);
-	const uniformServer = {
-		"setUniform" : function(in_webGLContextWrapper, in_key, in_position){
-			if (in_key === "u_colour"){
-				console.log("uniformServer:u_colour");
-				WebGL.WebGLContextWrapperHelper.setUniformFloat4(in_webGLContextWrapper, in_position, colour.getRaw());
-			}
-		}
-	};
-	const shader = WebGL.ShaderWrapper.factory(webGLContextWrapper, sVertexShader, sFragmentShader, uniformServer, sVertexAttributeNameArray, sUniformNameArray);
-	const material = WebGL.MaterialWrapper.factoryDefault(shader);
-	const webGLState = WebGL.WebGLState.factory(webGLContextWrapper);
-
-	const posDataStream = WebGL.ModelDataStream.factory(
-			"BYTE",
-			2,
-			new Int8Array([
-				-1, -1,
-				-1, 1,
-				1, -1
-				]),
-			"STATIC_DRAW",
-			false
-			);
-			//in_typeName,in_elementsPerVertex,in_arrayData,in_usageName,in_normalise
-
-	const model = WebGL.ModelWrapper.factory(
-		webGLContextWrapper, 
+	const m_model = WebGL.ModelWrapper.factory(
+		m_webGLState, 
 		"TRIANGLES",
 		3,
 		{
-			"a_position" : posDataStream
+			"a_position" : WebGL.ModelDataStream.factory(
+				"BYTE",
+				2,
+				new Int8Array([
+					-1, -1,
+					-1, 1,
+					1, -1
+					]),
+				"STATIC_DRAW",
+				false
+				)
 		}
-		);
+	);
 
-	const clearColour = Core.Colour4.factoryFloat32(0.1, 0.1, 0.1, 1.0);
-	WebGL.WebGLContextWrapperHelper.clear(webGLContextWrapper, clearColour);
+	const m_clearColour = Core.Colour4.factoryFloat32(0.1, 0.1, 0.1, 1.0);
+	m_webGLState.clear(m_clearColour);
 
-	material.apply(webGLContextWrapper, webGLState);
-	model.draw(webGLContextWrapper, shader.getMapVertexAttribute());
+	m_webGLState.applyMaterial(m_material);
+	m_webGLState.applyShader(m_shader, m_state);
+	m_webGLState.drawModel(m_model);
 
 	return;
 }

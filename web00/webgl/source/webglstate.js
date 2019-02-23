@@ -25,6 +25,7 @@ const factory = function(
 
 	// keep a copy of what we think the webgl state is, if values don't change, we don't need to tell webgl to change
 	var m_state = {};
+	var m_lastShaderMapVertexAttribute = {};
 
 	//return true if there is a matching value in state
 	const stateValueCmp = function(in_valueName, in_value){
@@ -89,7 +90,7 @@ const factory = function(
 	//CW, CCW
 	const setFrontFace = function(in_frontFaceEnumName){
 		if (false === stateValueCmp("frontFace", in_frontFaceEnumName)){
-			const frontFaceEnum = m_webGLContextWrapper.getEnum(in_cullFaceEnumName);
+			const frontFaceEnum = m_webGLContextWrapper.getEnum(in_frontFaceEnumName);
 			m_webGLContextWrapper.callMethod("frontFace", frontFaceEnum);
 		}
 		return;
@@ -233,6 +234,7 @@ const factory = function(
 					}
 				}
 			}
+			m_lastShaderMapVertexAttribute = in_shader.getMapVertexAttribute();
 	
 			return;
 		},
@@ -252,6 +254,11 @@ const factory = function(
 			setDepthMask(in_material.getDepthMask());
 			setStencilMask(in_material.getStencilMask());
 
+			return;
+		},
+
+		"drawModel" : function(in_model, in_firstOrUndefined, in_countOrUndefined){
+			in_model.draw(m_webGLContextWrapper, m_lastShaderMapVertexAttribute, in_firstOrUndefined, in_countOrUndefined);
 			return;
 		},
 		
@@ -289,7 +296,6 @@ const factory = function(
 		},
 
 		"getExtention" : function(in_extentionName){
-						   m_webGLContextWrapper
 			const result = m_webGLContextWrapper.callMethod("getExtension", in_extentionName);
 			return result;
 		},
@@ -303,6 +309,7 @@ const factory = function(
 	//private methods ==========================
 	const aquireWebGLResources = function(){
 		m_state = {};
+		m_lastShaderMapVertexAttribute = {};
 		return;
 	}
 

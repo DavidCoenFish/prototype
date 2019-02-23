@@ -18,6 +18,12 @@ const factory = function(
 		"getMapVertexAttribute" : function(){
 			return m_mapVertexAttribute;
 		},
+		"getMapUniform" : function(){
+			return m_mapUniform;
+		},
+		"getShaderProgramObject" : function(){
+			return m_shaderProgramObject;
+		},
 		"destroy" : function(){
 			in_webGLState.removeResourceContextCallbacks(restoredCallback, lostCallback);
 		},

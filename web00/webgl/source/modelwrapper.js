@@ -27,7 +27,7 @@ const factory = function(
 	var m_elementType = undefined;
 
 	//public methods ==========================
-	const result = Object.create({
+	const that = Object.create({
 		"draw" : function(in_webGLContextWrapper, in_mapVertexAttribute, in_firstOrUndefined, in_countOrUndefined){
 			setupDraw(in_webGLContextWrapper, in_mapVertexAttribute);
 			internalDraw(in_webGLContextWrapper, in_firstOrUndefined, in_countOrUndefined);
@@ -36,7 +36,7 @@ const factory = function(
 			return;
 		},
 		"destroy" : function(){
-			in_webGLContextWrapper.removeResourceContextCallbacks(aquireWebGLResources, releaseWebGLResources);
+			in_webGLState.removeResourceContextCallbacks(aquireWebGLResources, releaseWebGLResources);
 		},
 	});
 
@@ -94,12 +94,12 @@ const factory = function(
 		for (var key in in_mapVertexAttribute){
 			//console.log("mapVertexAttribute:" + key);
 			var position = in_mapVertexAttribute[key];
-			if (!(key in m_mapDataStream) || (-1 === position)){ 
+			if (!(key in in_mapDataStream) || (-1 === position)){ 
 				//in_webGLContextWrapper.callMethod("disableVertexAttribArray", in_position);
 				continue;
 			}
 
-			var dataStream = m_mapDataStream[key];
+			var dataStream = in_mapDataStream[key];
 			dataStream.setupDraw(in_webGLContextWrapper, position);
 		};
 
@@ -126,16 +126,16 @@ const factory = function(
 		for (var key in in_mapVertexAttribute){
 			//console.log("mapVertexAttribute:" + key);
 			var position = in_mapVertexAttribute[key];
-			if (!(key in m_mapDataStream) || (-1 === position))
+			if (!(key in in_mapDataStream) || (-1 === position))
 				continue;
-			var dataStream = m_mapDataStream[key];
+			var dataStream = in_mapDataStream[key];
 			dataStream.tearDownDraw(in_webGLContextWrapper, position);
 		};
 	}
 
 	in_webGLState.addResourceContextCallbacks(aquireWebGLResources, releaseWebGLResources);
 
-	return result;
+	return that;
 }
 
 

@@ -6,7 +6,7 @@ const VectorPrototype = require("./vectorprototype.js");
 
 const factory = function(in_x, in_y, in_z, in_w, in_baseArrayClass){
 	const data = new in_baseArrayClass([in_x, in_y, in_z, in_w]);
-	const result = Object.create({
+	const that = Object.create({
 		"getX" : function(){
 			return data[0];
 		},
@@ -43,9 +43,9 @@ const factory = function(in_x, in_y, in_z, in_w, in_baseArrayClass){
 		}
 	});
 
-	Object.assign(result, VectorPrototype);
+	Object.assign(that, VectorPrototype);
 	
-	return result;
+	return that;
 }
 
 const factoryFloat32 = function(in_xOrUndefined, in_yOrUndefined, in_zOrUndefined, in_wOrUndefined){

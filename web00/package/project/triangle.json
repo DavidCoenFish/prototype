@@ -1,11 +1,9 @@
 {
 	"name" : "triangle",
 	"source" : "triangle.js",
-	"template" : "template/simplecanvas.htm.template",
+	"template" : "template/blank.htm.template",
 	"templateParam" : {
 		"title" : "triangle",
-		"canvasWidth" : "512px",
-		"canvasHeight" : "512px",
 		"bundleFilePath" : "js/trianglebundle.js"
 	},
 	"outputRootDir": "output"

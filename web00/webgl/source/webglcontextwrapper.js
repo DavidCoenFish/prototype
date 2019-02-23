@@ -61,7 +61,7 @@ const factory = function(
 	var m_webGLContext = getWebGLContext(in_html5CanvasElement, param);
 
 	//public methods ==========================
-	const result = Object.create({
+	const that = Object.create({
 		"getParameter" : function(in_enum){
 			if (undefined === m_webGLContext){
 				return undefined;
@@ -108,19 +108,19 @@ const factory = function(
 		},
 
 		"addResourceContextCallbacks" : function(in_contextRestoredCallback, in_contextLostCallback){
-			result.addEventListener(sTokenWebglContextLost, in_contextLostCallback);
-			result.addEventListener(sTokenWebglContextRestored, in_contextRestoredCallback);
+			that.addEventListener(sTokenWebglContextLost, in_contextLostCallback);
+			that.addEventListener(sTokenWebglContextRestored, in_contextRestoredCallback);
 			if (m_webGLContext !== undefined){
-				in_contextRestoredCallback(result);
+				in_contextRestoredCallback(that);
 			}
 		},
 
 		"removeResourceContextCallbacks" : function(in_contextRestoredCallback, in_contextLostCallback){
 			if (m_webGLContext === undefined){
-				in_contextLostCallback(result);
+				in_contextLostCallback(that);
 			}
-			result.removeEventListener(sTokenWebglContextLost, in_contextLostCallback);
-			result.removeEventListener(sTokenWebglContextRestored, in_contextRestoredCallback);
+			that.removeEventListener(sTokenWebglContextLost, in_contextLostCallback);
+			that.removeEventListener(sTokenWebglContextRestored, in_contextRestoredCallback);
 		},
 
 		"getWindowWidth" : function(){
@@ -133,7 +133,7 @@ const factory = function(
 
 	});
 
-	Core.EventDispatcherDecorate(result);
+	Core.EventDispatcherDecorate(that);
 
 	//private methods ==========================
 	const getError = function(){
@@ -178,19 +178,19 @@ const factory = function(
 	const contextLostCallback = function(in_event){
 		in_event.preventDefault();
 		m_webGLContext = undefined;
-		result.triggerEvent(sTokenWebglContextLost, result);
+		that.triggerEvent(sTokenWebglContextLost, that);
 	};
 	const contextRestoredCallback = function(in_event){
 		m_webGLContext = undefined;
 		m_webGLContext = getWebGLContext(in_html5CanvasElement, param);
-		result.triggerEvent(sTokenWebglContextRestored, result);
+		that.triggerEvent(sTokenWebglContextRestored, that);
 	};
 
 	//these event names are matching the webgl canvas contract, internally we just use sTokenWebglContextLost...
 	in_html5CanvasElement.addEventListener("webglcontextlost", contextLostCallback, false);
 	in_html5CanvasElement.addEventListener("webglcontextrestored", contextRestoredCallback, false);
 	
-	return result;
+	return that;
 }
 
 module.exports = {
