@@ -1,6 +1,7 @@
 module.exports = {
 	"AutoDownload" : require("./source/autodownload.js"),
 	"Button" : require("./source/button.js"),
+	"ComponentCanvas" : require("./source/component-canvas.js"),
 	"ComponentClickDragCamera" : require("./source/component-click-drag-camera.js"),
 	"ComponentEditFloat" : require("./source/component-editfloat.js"),
 	"ComponentEditOrbitalCamera" : require("./source/component-editorbitalcamera.js"),

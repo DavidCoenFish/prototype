@@ -46,7 +46,7 @@ const factory = function(
 			return in_height;
 		},
 		"destroy" : function(){
-			in_webGLContextWrapper.removeResourceContextCallbacks(restoredCallback, lostCallback);
+			in_webGLState.removeResourceContextCallbacks(restoredCallback, lostCallback);
 		},
 	});
 

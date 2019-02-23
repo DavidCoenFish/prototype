@@ -1,6 +1,7 @@
 /*
 Float32Array
  */
+const CoreMath = require("./coremath.js")
 const VectorPrototype = require("./vectorprototype.js");
 
 const factory = function(in_x, in_y, in_z, in_w, in_baseArrayClass){
@@ -63,8 +64,18 @@ const factoryInt32 = function(in_xOrUndefined, in_yOrUndefined, in_zOrUndefined,
 	return factory(x, y, z, w, Int32Array);
 }
 
+const cmpAlmost = function(in_lhs, in_rhs){
+	var dataLhs = in_lhs.getRaw();
+	var dataRhs = in_rhs.getRaw();
+	return ((true === CoreMath.cmpAlmost(dataLhs[0], dataRhs[0], in_epsilonOrUndefined)),
+		(true === CoreMath.cmpAlmost(dataLhs[1], dataRhs[1], in_epsilonOrUndefined)),
+		(true === CoreMath.cmpAlmost(dataLhs[2], dataRhs[2], in_epsilonOrUndefined)),
+		(true === CoreMath.cmpAlmost(dataLhs[3], dataRhs[3], in_epsilonOrUndefined)));
+}
+
 module.exports = {
 	"factory" : factory,
 	"factoryFloat32" : factoryFloat32,
-	"factoryInt32" : factoryInt32
+	"factoryInt32" : factoryInt32,
+	"cmpAlmost" : cmpAlmost
 }

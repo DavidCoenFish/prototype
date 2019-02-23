@@ -3,6 +3,11 @@
 const Core = require("core");
 const WebGlContextWrapper = require("./webglcontextwrapper.js");
 
+const sTextureStateName = [];
+for (var index = 0; index < 128; ++index){
+	sTextureStateName.push("TEXTURE" + index);
+}
+
 const factory = function(
 	in_html5CanvasElement,
 	in_alphaOrUndefined, 
@@ -18,6 +23,7 @@ const factory = function(
 		in_extentionsOrUndefined
 		);
 
+	// keep a copy of what we think the webgl state is, if values don't change, we don't need to tell webgl to change
 	var m_state = {};
 
 	//return true if there is a matching value in state
@@ -28,6 +34,7 @@ const factory = function(
 		m_state[in_valueName] = in_value;
 		return false;
 	}
+
 	const stateValueCmpColour4 = function(in_valueName, in_value){
 		if (in_valueName in m_state){
 			var stateValue = m_state[in_valueName];
@@ -39,8 +46,25 @@ const factory = function(
 		return false;
 	}
 
-	const setTextureOrUndefined = function(in_index, in_texture){
+	const stateValueCmpVector4 = function(in_valueName, in_value){
+		if (in_valueName in m_state){
+			var stateValue = m_state[in_valueName];
+			if (true === Core.Vector4.cmpAlmost(stateValue, in_value)){
+				return true;
+			}
+		}
+		m_state[in_valueName] = in_value;
+		return false;
+	}
 
+	const setTexture = function(in_index, in_textureOrUndefined){
+		if (false === stateValueCmp(sTextureStateName[in_index], in_textureOrUndefined)){
+			if (undefined !== in_textureOrUndefined){
+				in_textureOrUndefined.apply(m_webGlContextWrapper, in_index);
+			} else {
+				m_webGlContextWrapper.callMethod("deactivateTexture", in_index);
+			}
+		}
 	}
 
 	//FRONT, BACK, FRONT_AND_BACK
@@ -136,9 +160,13 @@ const factory = function(
 		}
 	}
 
-	const result = Object.create({
+	const that = Object.create({
 		"addResourceContextCallbacks" : function(in_restoredCallback, in_lostCallback){
 			m_webGlContextWrapper.addResourceContextCallbacks(in_restoredCallback, in_lostCallback);
+		},
+
+		"removeResourceContextCallbacks" : function(in_restoredCallback, in_lostCallback){
+			m_webGlContextWrapper.removeResourceContextCallbacks(in_restoredCallback, in_lostCallback);
 		},
 
 		"flush" : function(){
@@ -179,6 +207,17 @@ const factory = function(
 
 			return;
 		},
+
+		"resetRenderTarget" : function(){
+			const targetEnum = m_webGLContextWrapper.getEnum("FRAMEBUFFER");
+			m_webGLContextWrapper.callMethod("bindFramebuffer", targetEnum, null);
+
+			that.setViewport(in_webGLContextWrapper, 
+				0, 0, in_webGLContextWrapper.getWindowWidth(), in_webGLContextWrapper.getWindowHeight());
+
+			return;
+		},
+
 		"applyShader" : function(in_shader, in_uniformServerOrUndefined){
 			const shaderProgramObject = in_shader.getShaderProgramObject();
 			if (undefined !== shaderProgramObject){
@@ -202,82 +241,72 @@ const factory = function(
 			const textureArray = in_material.getTextureArray();
 			for (var index = 0; index < textureArray.length; ++index){
 				var texture = textureArray[index];
-				setTextureOrUndefined(index, texture);
+				setTexture(index, texture);
 			}
 
+			setFrontFace(in_material.getFrontFaceEnumName());
 			setTriangleCull(in_material.getTriangleCullEnabled(), in_material.getTriangleCullEnumName());
+			setBlendMode(in_material.getBlendModeEnabled(), in_material.getSourceBlendEnumName(), in_material.getDestinationBlendEnumName());
+			setDepthFunc(in_material.getDepthFuncEnabled(), in_material.getDepthFuncEnumName());
+			setColorMask(in_material.getColorMaskRed(), in_material.getColorMaskGreen(), in_material.getColorMaskBlue(), in_material.getColorMaskAlpha());
+			setDepthMask(in_material.getDepthMask());
+			setStencilMask(in_material.getStencilMask());
 
-			const frontFaceEnum = in_webGLContextWrapper.getEnum(m_frontFaceEnumName);
-			setFrontFace(in_webGLContextWrapper, frontFaceEnum);
-
-			const sourceBlendEnum = in_webGLContextWrapper.getEnum(m_sourceBlendEnumName);
-			const destinationBlendEnum = in_webGLContextWrapper.getEnum(m_destinationBlendEnumName);
-			setBlendMode(in_webGLContextWrapper, m_blendModeEnabled, sourceBlendEnum, destinationBlendEnum);
-
-			const depthFuncEnum = in_webGLContextWrapper.getEnum(m_depthFuncEnumName);
-			setDepthFunc(in_webGLContextWrapper, m_depthFuncEnabled, depthFuncEnum);
-
-			setColorMask(in_webGLContextWrapper, m_colorMaskRed, m_colorMaskGreen, m_colorMaskBlue, m_colorMaskAlpha);
-			setDepthMask(in_webGLContextWrapper, m_depthMask);
-			setStencilMask(in_webGLContextWrapper, m_stencilMask);
 			return;
-		},
-
-		"setTextureOrUndefined" : function(in_index, in_texture){
-			if ((in_index in m_mapIndexTexture) && (in_texture === m_mapIndexTexture[in_index])){
-				return;
-			}
-			m_mapIndexTexture[in_index] = in_texture;
-			if (undefined !== in_texture){
-				in_texture.apply(m_webGlContextWrapper, in_index);
-			} else {
-				m_webGlContextWrapper.callMethod("deactivateTexture", in_index);
-			}
 		},
 		
 		"setViewport" : function(in_x, in_y, in_width, in_height){
-			const falseX = stateValueCmp("viewportX", in_x);
-			const falseY = stateValueCmp("viewportY", in_y);
-			const falseWidth = stateValueCmp("viewportWidth", in_width);
-			const falseHeight = stateValueCmp("viewportHeight", in_height);
-			if ((false === falseX) ||
-				(false === falseY) ||
-				(false === falseWidth) ||
-				(false === falseHeight)){
-				in_webGLContextWrapper.callMethod("viewport", in_x, in_y, in_width, in_height);
+			var param = Core.Vector4.factoryInt32(in_x, in_y, in_width, in_height);
+			if (false === stateValueCmpVector4("viewport", param)){
+				m_webGLContextWrapper.callMethod("viewport", in_x, in_y, in_width, in_height);
 			}
 
 			return;
 		},
 
-		"getViewport" : function(in_webGLContextWrapper){
-			const param = in_webGLContextWrapper.callMethod("getParameter", viewportEnum);
+		"getViewport" : function(){
+			const param = m_webGLContextWrapper.callMethod("getParameter", viewportEnum);
 			var result;
 			if (undefined !== param){
 				result = Core.Vector4.factoryInt32(param[0], param[1], param[2], param[3]);
-				m_state["viewportX"] = param[0];
-				m_state["viewportY"] = param[1];
-				m_state["viewportWidth"] = param[2];
-				m_state["viewportHeight"] = param[3];
+				m_state["viewport"] = result;
 			}
 			return result;
+		},
+
+		"createBuffer" : function(in_arrayData, in_bufferObjectTypeName, in_usageName){
+			const bufferHandle = m_webGLContextWrapper.callMethod("createBuffer");
+			const bufferObjectType = m_webGLContextWrapper.getEnum(in_bufferObjectTypeName);
+			m_webGLContextWrapper.callMethod("bindBuffer", bufferObjectType, bufferHandle);
+			const usage = m_webGLContextWrapper.getEnum(in_usageName);
+			m_webGLContextWrapper.callMethod("bufferData", bufferObjectType, in_arrayData, usage);
+			return bufferHandle;
+		},
+
+		"deleteBuffer" : function(in_bufferHandle){
+			m_webGLContextWrapper.callMethod("deleteBuffer", in_bufferHandle);
+			return;
+		},
+
+		"destroy" : function(){
+			m_webGLContextWrapper.removeResourceContextCallbacks(aquireWebGLResources, releaseWebGLResources);
 		},
 
 	});
 
 	//private methods ==========================
 	const aquireWebGLResources = function(){
-		return;
-	}
-
-	const releaseWebGLResources = function(){
 		m_state = {};
 		return;
 	}
 
-	in_webGLContextWrapper.addResourceContextCallbacks(aquireWebGLResources, releaseWebGLResources);
+	const releaseWebGLResources = function(){
+		return;
+	}
 
-	return result;
+	m_webGlContextWrapper.addResourceContextCallbacks(aquireWebGLResources, releaseWebGLResources);
+
+	return that;
 }
 
 module.exports = {

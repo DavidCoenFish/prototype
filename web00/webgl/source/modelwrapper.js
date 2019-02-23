@@ -15,16 +15,12 @@ const Core = require("core");
 const WebGLContextWrapperHelper = require("./webglcontextwrapperhelper.js");
 
 const factory = function(
-		in_webGLContextWrapper,
+		in_webGLState,
 		in_modeName,
 		in_elementCount,
 		in_mapDataStream,
 		in_elementIndexOrUndefined
 		){
-	const m_modeName = in_modeName;
-	const m_elementCount = in_elementCount;
-	const m_mapDataStream = in_mapDataStream;
-
 	const m_elementIndexOrUndefined = in_elementIndexOrUndefined;
 	var m_elementIndexHandle = undefined;
 	var m_elementByteSize = undefined;
@@ -61,18 +57,16 @@ const factory = function(
 		}
 
 		if (undefined !== m_elementIndexOrUndefined) {
-			m_elementIndexHandle = WebGLContextWrapperHelper.createBuffer(
-				in_webGLContextWrapper, 
+			m_elementIndexHandle = in_webGLState.createBuffer(
 				m_elementIndexOrUndefined,
 				"ELEMENT_ARRAY_BUFFER",
 				"STATIC_DRAW"
 				);
 		}
 
-		//free the data in the data streams
-		for (var key in m_mapDataStream){
-			var dataStream = m_mapDataStream[key];
-			dataStream.aquireWebGLResources(in_webGLContextWrapper);
+		for (var key in in_mapDataStream){
+			var dataStream = in_mapDataStream[key];
+			dataStream.aquireWebGLResources(in_webGLState);
 		}
 
 		return;
@@ -80,16 +74,16 @@ const factory = function(
 
 	const releaseWebGLResources = function(in_webGLContextWrapper){
 		if (undefined !== m_elementIndexOrUndefined){
-			WebGLContextWrapperHelper.deleteBuffer(in_webGLContextWrapper, m_elementIndexHandle);
+			in_webGLState.deleteBuffer(m_elementIndexHandle);
 			m_elementIndexHandle = undefined;
 		}
 		m_elementByteSize = undefined;
 		m_elementType = undefined;
 
 		//free the data in the data streams
-		for (var key in m_mapDataStream){
-			var dataStream = m_mapDataStream[key];
-			dataStream.releaseWebGLResources(in_webGLContextWrapper);
+		for (var key in in_mapDataStream){
+			var dataStream = in_mapDataStream[key];
+			dataStream.releaseWebGLResources(in_webGLState);
 		}
 
 		return;
@@ -117,8 +111,8 @@ const factory = function(
 
 	const internalDraw = function(in_webGLContextWrapper, in_firstOrUndefined, in_countOrUndefined){
 		const first = (undefined == in_firstOrUndefined) ? 0 : in_firstOrUndefined; 
-		const count = (undefined == in_countOrUndefined) ? m_elementCount : in_countOrUndefined; 
-		const mode = in_webGLContextWrapper.getEnum(m_modeName);
+		const count = (undefined == in_countOrUndefined) ? in_elementCount : in_countOrUndefined; 
+		const mode = in_webGLContextWrapper.getEnum(in_modeName);
 
 		if (undefined === m_elementIndexHandle){
 			in_webGLContextWrapper.callMethod("drawArrays", mode, first, count);
@@ -139,7 +133,7 @@ const factory = function(
 		};
 	}
 
-	in_webGLContextWrapper.addResourceContextCallbacks(aquireWebGLResources, releaseWebGLResources);
+	in_webGLState.addResourceContextCallbacks(aquireWebGLResources, releaseWebGLResources);
 
 	return result;
 }

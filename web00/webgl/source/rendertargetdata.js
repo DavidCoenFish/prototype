@@ -6,31 +6,25 @@ const factory = function(
 	//in_levelOrUndefined //mipmap?
 	)
 {
-	const m_textureWrapper = in_textureWrapper;
-	const m_targetEnumName = in_targetEnumName; //"FRAMEBUFFER"
-	const m_attachmentEnumName = in_attachmentEnumName; //"COLOR_ATTACHMENT0"
-	const m_texTargetEnumName = in_texTargetEnumName; //"TEXTURE_2D"
-	const m_level = 0; //docs says it must be zero
-	
 	//public methods ==========================
-	const result = Object.create({
+	const that = Object.create({
 		"apply" : function(in_webGLContextWrapper){
 
-			const targetEnum = in_webGLContextWrapper.getEnum(m_targetEnumName);
-			const attachmentEnum = in_webGLContextWrapper.getEnum(m_attachmentEnumName);
-			const texTargetEnum = in_webGLContextWrapper.getEnum(m_texTargetEnumName);
+			const targetEnum = in_webGLContextWrapper.getEnum(in_targetEnumName);
+			const attachmentEnum = in_webGLContextWrapper.getEnum(in_attachmentEnumName);
+			const texTargetEnum = in_webGLContextWrapper.getEnum(in_texTargetEnumName);
 			in_webGLContextWrapper.callMethod(
 				"framebufferTexture2D",
 				targetEnum, 
 				attachmentEnum, 
 				texTargetEnum, 
-				m_textureWrapper.getWebGLTexture(), 
-				m_level
+				in_textureWrapper.getWebGLTexture(), 
+				0 //in_levelOrUndefined docs says it must be zero
 			);
 		},
 	});
 
-	return result;
+	return that;
 }
 
 module.exports = {

@@ -1,7 +1,7 @@
 const ShaderUniformData = require("./shaderuniformdata.js");
 
 const factory = function(
-	in_webGLContextWrapper, 
+	in_webGLState, 
 	in_vertexShaderSource, 
 	in_fragmentShaderSource, 
 	in_vertexAttributeNameArrayOrUndefined, 
@@ -14,24 +14,24 @@ const factory = function(
 	var m_mapUniform = undefined;
 
 	//public methods ==========================
-	const result = Object.create({
+	const that = Object.create({
 		"getMapVertexAttribute" : function(){
 			return m_mapVertexAttribute;
 		},
 		"destroy" : function(){
-			in_webGLContextWrapper.removeResourceContextCallbacks(restoredCallback, lostCallback);
+			in_webGLState.removeResourceContextCallbacks(restoredCallback, lostCallback);
 		},
 	});
 
 	//private methods ==========================
-	const restoredCallback = function(){
+	const restoredCallback = function(in_webGLContextWrapper){
 		const vertexShaderEnum = in_webGLContextWrapper.getEnum("VERTEX_SHADER");
-		m_vertexWebGLShader = loadShader(in_vertexShaderSource, vertexShaderEnum);
+		m_vertexWebGLShader = loadShader(in_webGLContextWrapper, in_vertexShaderSource, vertexShaderEnum);
 
 		const fragmentShaderEnum = in_webGLContextWrapper.getEnum("FRAGMENT_SHADER");
-		m_fragmentWebGLShader = loadShader(in_fragmentShaderSource, fragmentShaderEnum);
+		m_fragmentWebGLShader = loadShader(in_webGLContextWrapper, in_fragmentShaderSource, fragmentShaderEnum);
 
-		m_shaderProgramObject = linkProgram(m_vertexWebGLShader, m_fragmentWebGLShader);
+		m_shaderProgramObject = linkProgram(in_webGLContextWrapper, m_vertexWebGLShader, m_fragmentWebGLShader);
 
 		if (undefined === m_shaderProgramObject){
 			alert("Error creating shader Program");
@@ -41,7 +41,7 @@ const factory = function(
 	}
 
 	// if we still have a webgl context, mark the resources for delete, else clear the resource references
-	const lostCallback = function(){
+	const lostCallback = function(in_webGLContextWrapper){
 		m_mapVertexAttribute = undefined;
 		m_mapUniform = undefined;
 		if ( undefined !== m_vertexWebGLShader){
@@ -60,7 +60,7 @@ const factory = function(
 		return;
 	}
 
-	const loadShader = function(in_shaderText, in_type){
+	const loadShader = function(in_webGLContextWrapper, in_shaderText, in_type){
 		var shaderHandle = in_webGLContextWrapper.callMethod("createShader", in_type);
 		if (0 === shaderHandle){
 			return undefined;
@@ -88,7 +88,7 @@ const factory = function(
 		return shaderHandle;
 	}
 
-	const linkProgram = function(in_vertexWebGLShader, in_fragmentWebGLShader){
+	const linkProgram = function(in_webGLContextWrapper, in_vertexWebGLShader, in_fragmentWebGLShader){
 		var programHandle = in_webGLContextWrapper.callMethod("createProgram");
 		if ((0 === programHandle) || (undefined === programHandle)){
 			return undefined;
@@ -132,7 +132,7 @@ const factory = function(
 		return programHandle;
 	}
 
-	in_webGLContextWrapper.addResourceContextCallbacks(restoredCallback, lostCallback);
+	in_webGLState.addResourceContextCallbacks(restoredCallback, lostCallback);
 
 	return result;
 }

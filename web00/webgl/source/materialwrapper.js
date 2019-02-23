@@ -31,13 +31,13 @@ ALWAYS (always pass)
 const factory = function(
 		in_textureArrayOrUndefined,
 		in_triangleCullEnabledOrUndefined,
-		in_triangleCullEnumNameOrUndefined,
+		in_triangleCullEnumNameOrUndefined, //"FRONT", "BACK", "FRONT_AND_BACK"
 		in_blendModeEnabledOrUndefined,
 		in_sourceBlendEnumNameOrUndefined,
 		in_destinationBlendEnumNameOrUndefined,
 		in_depthFuncEnabledOrUndefined,
 		in_depthFuncEnumNameOrUndefined, 
-		in_frontFaceEnumNameOrUndefined, //"CW"
+		in_frontFaceEnumNameOrUndefined, //"CW", "CCW"
 		in_colorMaskRedOrUndefined, //true
 		in_colorMaskGreenOrUndefined, //true
 		in_colorMaskBlueOrUndefined, //true
@@ -88,12 +88,6 @@ const factory = function(
 				return "ONE";
 			}
 			return in_destinationBlendEnumNameOrUndefined;
-		},
-		"getDepthFuncEnabled" : function(){
-			if (undefined === in_depthFuncEnabledOrUndefined){
-				return false;
-			}
-			return in_depthFuncEnabledOrUndefined;
 		},
 		"getDepthFuncEnabled" : function(){
 			if (undefined === in_depthFuncEnabledOrUndefined){

@@ -5,7 +5,7 @@ const sFloat = "uniform1f";
 const sFloat2Array = "uniform2fv";
 const sFloat3Array = "uniform3fv";
 const sFloat4Array = "uniform4fv";
-const sFloat16Array = "uniformMatrix4fv";
+//const sFloat16Array = "uniformMatrix4fv"; todo: matrix has a different func sig (transpose flag)
 const sInt = "uniform1i";
 
 const factory = function(
@@ -29,6 +29,6 @@ module.exports = {
 	"sFloat2Array" : sFloat2Array,
 	"sFloat3Array" : sFloat3Array,
 	"sFloat4Array" : sFloat4Array,
-	"sFloat16Array" : sFloat16Array,
+	//"sFloat16Array" : sFloat16Array,
 	"sInt" : sInt, 
 };

@@ -20,30 +20,25 @@ const factory = function(
 	in_usageName, //string //STATIC_DRAW, 
 	in_normalise //bool
 	){
-	const m_typeName = in_typeName;
-	const m_elementsPerVertex = in_elementsPerVertex;
-	const m_arrayData = in_arrayData.slice();
-	const m_usageName = in_usageName;
-	const m_normalise = in_normalise;
-
 	var m_bufferObject = undefined;
+	var m_type = undefined;
 
 	//public methods ==========================
 	const result = Object.create({
-		"aquireWebGLResources" : function(in_webGLContextWrapper){
-			m_bufferObject = WebGLContextWrapperHelper.createBuffer(in_webGLContextWrapper, m_arrayData, "ARRAY_BUFFER", m_usageName);
+		"aquireWebGLResources" : function(in_webGLState){
+			m_bufferObject = in_webGLState.createBuffer(in_arrayData, "ARRAY_BUFFER", in_usageName);
+			m_type = in_webGLContextWrapper.getEnum(in_typeName);
 		},
-		"releaseWebGLResources" : function(in_webGLContextWrapper){
-			WebGLContextWrapperHelper.deleteBuffer(in_webGLContextWrapper, m_bufferObject);
+		"releaseWebGLResources" : function(in_webGLState){
+			in_webGLState.deleteBuffer(m_bufferObject);
 			m_bufferObject = undefined;
 		},
 		"setupDraw" : function(in_webGLContextWrapper, in_position){
 			const bufferObjectType = in_webGLContextWrapper.getEnum("ARRAY_BUFFER");
 			in_webGLContextWrapper.callMethod("bindBuffer", bufferObjectType, m_bufferObject);
-			const type = in_webGLContextWrapper.getEnum(m_typeName);
 			const stride = 0;
 			const offset = 0;
-			in_webGLContextWrapper.callMethod("vertexAttribPointer", in_position, m_elementsPerVertex, type, m_normalise, stride, offset);
+			in_webGLContextWrapper.callMethod("vertexAttribPointer", in_position, in_elementsPerVertex, m_type, in_normalise, stride, offset);
 			in_webGLContextWrapper.callMethod("enableVertexAttribArray", in_position );
 
 		},
