@@ -97,13 +97,13 @@ const factory = function(
 }
 
 const factoryByteRGBA = function(
-	in_webGLContextWrapper,
+	in_webGLState,
 	in_width, 
 	in_height,
 	in_dataOrUndefined
 	){
 	return factory(
-		in_webGLContextWrapper,
+		in_webGLState,
 		in_width, 
 		in_height,
 		in_dataOrUndefined,
@@ -119,13 +119,13 @@ const factoryByteRGBA = function(
 }
 
 const factoryByteRGB = function(
-	in_webGLContextWrapper,
+	in_webGLState,
 	in_width, 
 	in_height,
 	in_dataOrUndefined
 	){
 	return factory(
-		in_webGLContextWrapper,
+		in_webGLState,
 		in_width, 
 		in_height,
 		in_dataOrUndefined,
@@ -144,13 +144,13 @@ const factoryByteRGB = function(
 //              0, gl.RGBA, gl.FLOAT, null);
 
 const factoryFloatRGBA = function(
-	in_webGLContextWrapper,
+	in_webGLState,
 	in_width, 
 	in_height,
 	in_dataOrUndefined
 	){
 	return factory(
-		in_webGLContextWrapper,
+		in_webGLState,
 		in_width, 
 		in_height,
 		in_dataOrUndefined,
@@ -165,13 +165,13 @@ const factoryFloatRGBA = function(
 	);
 }
 const factoryFloatRGB = function(
-	in_webGLContextWrapper,
+	in_webGLState,
 	in_width, 
 	in_height,
 	in_dataOrUndefined
 	){
 	return factory(
-		in_webGLContextWrapper,
+		in_webGLState,
 		in_width, 
 		in_height,
 		in_dataOrUndefined,

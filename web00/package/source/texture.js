@@ -1,4 +1,5 @@
 const Core = require("core");
+const ManipulateDom = require("manipulatedom");
 const WebGL = require("webgl");
 
 const sVertexShader = `
@@ -20,18 +21,15 @@ void main() {
 `;
 
 const sVertexAttributeNameArray = ["a_position", "a_uv"];
-const sUniformNameArray = ["u_sampler0"];
+const sUniformNameMap = {
+	"u_sampler0" : WebGL.ShaderUniformData.sInt
+};
 
 const onPageLoad = function(){
 	console.info("onPageLoad");
 
-	const html5CanvasElement = (undefined !== document) ? document.getElementById('html5CanvasElement') : undefined;
-
-	//a canvas width, height is 300,150 by default (coordinate space). lets change that to what size it is
-	if (undefined !== html5CanvasElement){
-		html5CanvasElement.width = html5CanvasElement.clientWidth;
-		html5CanvasElement.height = html5CanvasElement.clientHeight;
-	}
+	const m_canvaseElementWrapper = ManipulateDom.ComponentCanvas.factoryAppendBody(document, 256, 256);
+	const m_webGLState = WebGL.WebGLState.factory(m_canvaseElementWrapper.getElement());
 
 	const textureWidth = 256;
 	const textureHeight= 256;
@@ -47,20 +45,13 @@ const onPageLoad = function(){
 			textureRGBData[trace] = value2; ++trace;
 		}
 	}
-	const webGLContextWrapperParam = WebGL.WebGLContextWrapper.makeParamObject(false, false, false, []);
-	const webGLContextWrapper = WebGL.WebGLContextWrapper.factory(html5CanvasElement, webGLContextWrapperParam);
-	const uniformServer = {
-		"setUniform" : function(in_webGLContextWrapper, in_key, in_position){
-			if (in_key === "u_sampler0"){
-				//console.log("uniformServer:u_sampler0");
-				WebGL.WebGLContextWrapperHelper.setUniformInteger(in_webGLContextWrapper, in_position, 0);
-			}
-		}
+	const m_state = {
+		"u_sampler0" : 0
 	};
-	const shader = WebGL.ShaderWrapper.factory(webGLContextWrapper, sVertexShader, sFragmentShader, uniformServer, sVertexAttributeNameArray, sUniformNameArray);
-	const texture = WebGL.TextureWrapper.factoryByteRGB(webGLContextWrapper, textureWidth, textureHeight, textureRGBData)
-	const material = WebGL.MaterialWrapper.factoryDefault(shader, [texture]);
-	const webGLState = WebGL.WebGLState.factory(webGLContextWrapper);
+
+	const m_shader = WebGL.ShaderWrapper.factory(m_webGLState, sVertexShader, sFragmentShader, sVertexAttributeNameArray, sUniformNameMap);
+	const m_texture = WebGL.TextureWrapper.factoryByteRGB(m_webGLState, textureWidth, textureHeight, textureRGBData)
+	const m_material = WebGL.MaterialWrapper.factory([m_texture]);
 
 	const posDataStream = WebGL.ModelDataStream.factory(
 			"BYTE",
@@ -94,8 +85,8 @@ const onPageLoad = function(){
 			false
 			);
 
-	const model = WebGL.ModelWrapper.factory(
-		webGLContextWrapper, 
+	const m_model = WebGL.ModelWrapper.factory(
+		m_webGLState,
 		"TRIANGLES",
 		6,
 		{
@@ -105,10 +96,11 @@ const onPageLoad = function(){
 		);
 
 	const clearColour = Core.Colour4.factoryFloat32(0.1, 0.1, 0.1, 1.0);
-	WebGL.WebGLContextWrapperHelper.clear(webGLContextWrapper, clearColour);
+	m_webGLState.clear(clearColour);
 
-	material.apply(webGLContextWrapper, webGLState);
-	model.draw(webGLContextWrapper, shader.getMapVertexAttribute());
+	m_webGLState.applyShader(m_shader);
+	m_webGLState.applyMaterial(m_material);
+	m_webGLState.drawModel(m_model);
 
 	return;
 }

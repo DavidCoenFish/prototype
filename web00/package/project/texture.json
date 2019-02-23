@@ -1,11 +1,9 @@
 {
 	"name" : "texture",
 	"source" : "texture.js",
-	"template" : "template/simplecanvas.htm.template",
+	"template" : "template/blank.htm.template",
 	"templateParam" : {
 		"title" : "texture",
-		"canvasWidth" : "512px",
-		"canvasHeight" : "512px",
 		"bundleFilePath" : "js/texturebundle.js"
 	},
 	"outputRootDir": "output"

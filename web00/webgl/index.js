@@ -13,7 +13,5 @@ module.exports = {
 	"ShaderUniformData" : require("./source/shaderuniformdata.js"),
 	"ShaderWrapper" : require("./source/shaderwrapper.js"),
 	"TextureWrapper" : require("./source/texturewrapper.js"),
-	//"WebGLContextWrapper" : require("./source/webglcontextwrapper.js"),
-	//"WebGLContextWrapperHelper" : require("./source/webglcontextwrapperhelper.js"),
 	"WebGLState" : require("./source/webglstate.js")
 };
