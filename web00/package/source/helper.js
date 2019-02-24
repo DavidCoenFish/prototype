@@ -66,6 +66,7 @@ const makePromice = function(in_item){
 	const htmlPath = Path.join(in_item.outputRootDir, in_item.name + ".htm");
 	const bundlePath = Path.join(in_item.outputRootDir, in_item.templateParam.bundleFilePath);
 	return Q(true).then(function(){
+		console.log(in_item.name);
 		makeDirectory(htmlPath);
 	}).then(function(){
 		makeDirectory(bundlePath);

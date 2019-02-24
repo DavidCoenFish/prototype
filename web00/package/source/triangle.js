@@ -24,7 +24,7 @@ const sUniformNameMap = {
 const onPageLoad = function(){
 	console.info("onPageLoad");
 
-	const m_canvaseElementWrapper = ManipulateDom.ComponentCanvas.factoryAppendBody(document, 512, 256);
+	const m_canvaseElementWrapper = ManipulateDom.ComponentCanvas.factoryAppendBody(document, 512, 512);
 	const m_webGLState = WebGL.WebGLState.factory(m_canvaseElementWrapper.getElement());
 
 	const m_state = {

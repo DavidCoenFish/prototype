@@ -25,11 +25,14 @@ const factory = function(
 
 	//public methods ==========================
 	const that = Object.create({
-		"apply" : function(in_webGLContextWrapper){
-			const targetEnum = in_webGLContextWrapper.getEnum("FRAMEBUFFER");
-			in_webGLContextWrapper.callMethod("bindFramebuffer", targetEnum, m_frameBufferObject);
-			in_webGlState.setViewport(0, 0, in_width, in_height);
-			return;
+		"getFrameBufferObject" : function(){
+			return m_frameBufferObject;
+		},
+		"getWidth" : function(){
+			return in_width;
+		},
+		"getHeight" : function(){
+			return in_height;
 		},
 		"destroy" : function(){
 			in_webGLState.removeResourceContextCallbacks(restoredCallback, lostCallback);
@@ -46,7 +49,7 @@ const factory = function(
 		in_webGLContextWrapper.callMethod("bindFramebuffer", targetEnum, m_frameBufferObject);
 
 		for (var index = 0; index < in_renderTargetDataArray.length; ++index) { 
-			m_renderTargetDataArray[index].apply(in_webGLContextWrapper);
+			in_renderTargetDataArray[index].apply(in_webGLContextWrapper);
 		}
 
 		//glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
@@ -75,7 +78,7 @@ const factory = function(
 		return;
 	}
 
-	in_webGLContextWrapper.addResourceContextCallbacks(restoredCallback, lostCallback);
+	in_webGLState.addResourceContextCallbacks(restoredCallback, lostCallback);
 
 	return that;
 }

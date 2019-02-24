@@ -1,27 +1,25 @@
+const Core = require("core");
+const ManipulateDom = require("manipulatedom");
 const WebGL = require("webgl");
-const Stage0 = require("./rendertarget/stage0.js");
-const Stage1 = require("./rendertarget/stage1.js");
+
+const Task0 = require("./rendertarget/task0.js");
+const Task1 = require("./rendertarget/task1.js");
 
 const onPageLoad = function(){
 	console.info("onPageLoad");
 
-	const html5CanvasElement = (undefined !== document) ? document.getElementById('html5CanvasElement') : undefined;
+	const m_canvaseElementWrapper = ManipulateDom.ComponentCanvas.factoryAppendBody(document, 256, 256);
+	const m_webGLState = WebGL.WebGLState.factory(m_canvaseElementWrapper.getElement(), WebGL.WebGLState.makeParam(false));
+	//const m_webGLState = WebGL.WebGLState.factory(m_canvaseElementWrapper.getElement());
 
-	//a canvas width, height is 300,150 by default (coordinate space). lets change that to what size it is
-	if (undefined !== html5CanvasElement){
-		html5CanvasElement.width = html5CanvasElement.clientWidth;
-		html5CanvasElement.height = html5CanvasElement.clientHeight;
-	}
+	const state = {
+		"m_webGLState" : m_webGLState
+	};
 
-	const webGLContextWrapperParam = WebGL.WebGLContextWrapper.makeParamObject(false, false, false, []);
-	const webGLContextWrapper = WebGL.WebGLContextWrapper.factory(html5CanvasElement, webGLContextWrapperParam);
-	const webGLState = WebGL.WebGLState.factory(webGLContextWrapper);
+	const task0 = Task0.factory(state);
+	const task1 = Task1.factory(state);
 
-	const stage0 = Stage0.factory(webGLContextWrapper);
-	const stage1 = Stage1.factory(webGLContextWrapper, stage0.getTexture());
-
-	stage0.draw(webGLContextWrapper, webGLState);
-	stage1.draw(webGLContextWrapper, webGLState);
+	Core.TaskHelper.runArray([task0, task1]);
 
 	return;
 }

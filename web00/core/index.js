@@ -7,6 +7,7 @@ module.exports = {
 	"Radians" : require("./source/radians.js"),
 	"ResourceManager" : require("./source/resourcemanager.js"),
 	"StringUtil" : require("./source/stringUtil.js"),
+	"TaskHelper" : require("./source/taskhelper.js"),
 	"Vector2" : require("./source/vector2.js"),
 	"Vector3" : require("./source/vector3.js"),
 	"Vector4" : require("./source/vector4.js"),

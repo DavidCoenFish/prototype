@@ -131,6 +131,10 @@ const factory = function(
 			}
 			return in_colorMaskAlphaOrUndefined;
 		},
+		"setColorMaskAlpha" : function(in_value){
+			in_colorMaskAlphaOrUndefined = in_value;
+			return;
+		},
 		"getDepthMask" : function(){
 			if (undefined === in_depthMaskOrUndefined){
 				return false;

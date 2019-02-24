@@ -1,4 +1,5 @@
 const Core = require("core");
+const ManipulateDom = require("manipulatedom");
 const WebGL = require("webgl");
 
 const sVertexShader = `
@@ -83,27 +84,17 @@ void main() {
 `;
 
 const sVertexAttributeNameArray = ["a_position", "a_uv"];
-const sUniformNameArray = [];
 
 const onPageLoad = function(){
 	console.info("onPageLoad");
 
-	const html5CanvasElement = (undefined !== document) ? document.getElementById('html5CanvasElement') : undefined;
+	const m_canvaseElementWrapper = ManipulateDom.ComponentCanvas.factoryAppendBody(document, 256, 256);
+	const m_webGLState = WebGL.WebGLState.factory(m_canvaseElementWrapper.getElement());
 
-	//a canvas width, height is 300,150 by default (coordinate space). lets change that to what size it is
-	if (undefined !== html5CanvasElement){
-		html5CanvasElement.width = html5CanvasElement.clientWidth;
-		html5CanvasElement.height = html5CanvasElement.clientHeight;
-	}
+	const m_shader = WebGL.ShaderWrapper.factory(m_webGLState, sVertexShader, sFragmentShader, sVertexAttributeNameArray);
+	const m_material = WebGL.MaterialWrapper.factory();
 
-	const webGLContextWrapperParam = WebGL.WebGLContextWrapper.makeParamObject(false, false, false, []);
-	const webGLContextWrapper = WebGL.WebGLContextWrapper.factory(html5CanvasElement, webGLContextWrapperParam);
-	const uniformServer = undefined;
-	const shader = WebGL.ShaderWrapper.factory(webGLContextWrapper, sVertexShader, sFragmentShader, uniformServer, sVertexAttributeNameArray, sUniformNameArray);
-	const material = WebGL.MaterialWrapper.factoryDefault(shader);
-	const webGLState = WebGL.WebGLState.factory(webGLContextWrapper);
-
-	const posDataStream = WebGL.ModelDataStream.factory(
+	const m_posDataStream = WebGL.ModelDataStream.factory(
 			"BYTE",
 			2,
 			new Int8Array([
@@ -118,7 +109,7 @@ const onPageLoad = function(){
 			"STATIC_DRAW",
 			false
 			);
-	const uvDataStream = WebGL.ModelDataStream.factory(
+	const m_uvDataStream = WebGL.ModelDataStream.factory(
 			"BYTE",
 			2,
 			new Uint8Array([
@@ -134,21 +125,22 @@ const onPageLoad = function(){
 			false
 			);
 
-	const model = WebGL.ModelWrapper.factory(
-		webGLContextWrapper, 
+	const m_model = WebGL.ModelWrapper.factory(
+		m_webGLState, 
 		"TRIANGLES",
 		6,
 		{
-			"a_position" : posDataStream,
-			"a_uv" : uvDataStream
+			"a_position" : m_posDataStream,
+			"a_uv" : m_uvDataStream
 		}
 		);
 
 	const clearColour = Core.Colour4.factoryFloat32(0.1, 0.1, 0.1, 1.0);
-	WebGL.WebGLContextWrapperHelper.clear(webGLContextWrapper, clearColour);
+	m_webGLState.clear(clearColour);
 
-	material.apply(webGLContextWrapper, webGLState);
-	model.draw(webGLContextWrapper, shader.getMapVertexAttribute());
+	m_webGLState.applyShader(m_shader);
+	m_webGLState.applyMaterial(m_material);
+	m_webGLState.drawModel(m_model);
 
 	return;
 }

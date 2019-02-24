@@ -178,28 +178,31 @@ const factory = function(
 		"clear" : function(in_colourOrUndefined, in_depthOrUndefined, in_stencilOrUndefined){
 			var clearFlag = 0;
 
-			if ((undefined !== in_colourOrUndefined) && 
-				(false === stateValueCmpColour4("clearColor", in_colourOrUndefined))){
+			if (undefined !== in_colourOrUndefined){
 				clearFlag |= m_webGLContextWrapper.getEnum("COLOR_BUFFER_BIT");
-				m_webGLContextWrapper.callMethod(
-					"clearColor", 
-					in_colourOrUndefined.getRed(),
-					in_colourOrUndefined.getGreen(),
-					in_colourOrUndefined.getBlue(),
-					in_colourOrUndefined.getAlpha()
-					);
+				if (false === stateValueCmpColour4("clearColor", in_colourOrUndefined)){
+					m_webGLContextWrapper.callMethod(
+						"clearColor", 
+						in_colourOrUndefined.getRed(),
+						in_colourOrUndefined.getGreen(),
+						in_colourOrUndefined.getBlue(),
+						in_colourOrUndefined.getAlpha()
+						);
+				}
 			}
 
-			if ((undefined !== in_depthOrUndefined) &&
-				(false === stateValueCmp("clearDepth", in_depthOrUndefined))){
+			if (undefined !== in_depthOrUndefined){
 				clearFlag |= m_webGLContextWrapper.getEnum("DEPTH_BUFFER_BIT");
-				m_webGLContextWrapper.callMethod("clearDepth", in_depthOrUndefined);
+				if (false === stateValueCmp("clearDepth", in_depthOrUndefined)){
+					m_webGLContextWrapper.callMethod("clearDepth", in_depthOrUndefined);
+				}
 			}
 
-			if ((undefined !== in_stencilOrUndefined) &&
-				(false === stateValueCmp("clearStencil", in_stencilOrUndefined))){
+			if (undefined !== in_stencilOrUndefined){
 				clearFlag |= m_webGLContextWrapper.getEnum("STENCIL_BUFFER_BIT");
-				m_webGLContextWrapper.callMethod("clearStencil", in_stencilOrUndefined);
+				if (false === stateValueCmp("clearStencil", in_stencilOrUndefined)){
+					m_webGLContextWrapper.callMethod("clearStencil", in_stencilOrUndefined);
+				}
 			}
 
 			if (0 !== clearFlag){
@@ -213,9 +216,18 @@ const factory = function(
 			const targetEnum = m_webGLContextWrapper.getEnum("FRAMEBUFFER");
 			m_webGLContextWrapper.callMethod("bindFramebuffer", targetEnum, null);
 
-			that.setViewport(in_webGLContextWrapper, 
-				0, 0, in_webGLContextWrapper.getWindowWidth(), in_webGLContextWrapper.getWindowHeight());
+			that.setViewport(0, 0, m_webGLContextWrapper.getCanvasWidth(), m_webGLContextWrapper.getCanvasHeight());
 
+			return;
+		},
+
+		"applyRenderTarget" : function(in_renderTarget){
+			const targetEnum = m_webGLContextWrapper.getEnum("FRAMEBUFFER");
+			const frameBufferObject = in_renderTarget.getFrameBufferObject();
+			m_webGLContextWrapper.callMethod("bindFramebuffer", targetEnum, frameBufferObject);
+			const width = in_renderTarget.getWidth();
+			const height = in_renderTarget.getHeight();
+			that.setViewport(0, 0, width, height);
 			return;
 		},
 
@@ -323,5 +335,6 @@ const factory = function(
 }
 
 module.exports = {
-	"factory" : factory
+	"factory" : factory,
+	"makeParam" : WebGlContextWrapper.makeParam
 };

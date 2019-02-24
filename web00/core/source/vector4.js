@@ -64,12 +64,12 @@ const factoryInt32 = function(in_xOrUndefined, in_yOrUndefined, in_zOrUndefined,
 	return factory(x, y, z, w, Int32Array);
 }
 
-const cmpAlmost = function(in_lhs, in_rhs){
+const cmpAlmost = function(in_lhs, in_rhs, in_epsilonOrUndefined){
 	var dataLhs = in_lhs.getRaw();
 	var dataRhs = in_rhs.getRaw();
-	return ((true === CoreMath.cmpAlmost(dataLhs[0], dataRhs[0], in_epsilonOrUndefined)),
-		(true === CoreMath.cmpAlmost(dataLhs[1], dataRhs[1], in_epsilonOrUndefined)),
-		(true === CoreMath.cmpAlmost(dataLhs[2], dataRhs[2], in_epsilonOrUndefined)),
+	return ((true === CoreMath.cmpAlmost(dataLhs[0], dataRhs[0], in_epsilonOrUndefined)) &&
+		(true === CoreMath.cmpAlmost(dataLhs[1], dataRhs[1], in_epsilonOrUndefined)) &&
+		(true === CoreMath.cmpAlmost(dataLhs[2], dataRhs[2], in_epsilonOrUndefined)) &&
 		(true === CoreMath.cmpAlmost(dataLhs[3], dataRhs[3], in_epsilonOrUndefined)));
 }
 

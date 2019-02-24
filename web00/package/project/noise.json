@@ -1,11 +1,9 @@
 {
 	"name" : "noise",
 	"source" : "noise.js",
-	"template" : "template/simplecanvas.htm.template",
+	"template" : "template/blank.htm.template",
 	"templateParam" : {
 		"title" : "noise",
-		"canvasWidth" : "512px",
-		"canvasHeight" : "512px",
 		"bundleFilePath" : "js/noisebundle.js"
 	},
 	"outputRootDir": "output"
