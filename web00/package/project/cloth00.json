@@ -1,0 +1,11 @@
+
+{
+	"name" : "cloth00",
+	"source" : "cloth00.js",
+	"template" : "template/blank.htm.template",
+	"templateParam" : {
+		"title" : "cloth00",
+		"bundleFilePath" : "js/cloth00bundle.js"
+	},
+	"outputRootDir": "output"
+}

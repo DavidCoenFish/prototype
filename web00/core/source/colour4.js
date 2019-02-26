@@ -5,7 +5,7 @@ const CoreMath = require("./coremath.js")
 
 const factory = function(in_red, in_green, in_blue, in_alpha, in_baseArrayClass){
 	const data = new in_baseArrayClass([in_red, in_green, in_blue, in_alpha]);
-	const result = Object.create({
+	const that = Object.create({
 		"getRed" : function(){
 			return data[0];
 		},
@@ -42,9 +42,9 @@ const factory = function(in_red, in_green, in_blue, in_alpha, in_baseArrayClass)
 		}
 	});
 
-	//Object.assign(result, VectorPrototype);
+	//Object.assign(that, VectorPrototype);
 	
-	return result;
+	return that;
 }
 
 const factoryFloat32 = function(in_redOrUndefined, in_greenOrUndefined, in_blueOrUndefined, in_alphaOrUndefined){

@@ -79,13 +79,13 @@ const factory = function(
 		},
 		"getSourceBlendEnumName" : function(){
 			if (undefined === in_sourceBlendEnumNameOrUndefined){
-				return "ZERO";
+				return "ONE";
 			}
 			return in_sourceBlendEnumNameOrUndefined;
 		},
 		"getDestinationBlendEnumName" : function(){
 			if (undefined === in_destinationBlendEnumNameOrUndefined){
-				return "ONE";
+				return "ZERO";
 			}
 			return in_destinationBlendEnumNameOrUndefined;
 		},

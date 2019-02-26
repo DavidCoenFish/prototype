@@ -1,51 +1,46 @@
 const ManipulateDom = require("manipulatedom");
+const WebGL = require("webgl");
 
 const factory = function(
-	in_targetObject,
-	in_callbackPresent,
-	in_callbackStep,
-	in_callbackStopUpdate,
+	in_callbackPresent, // = function()
+	in_callbackStep, // = function(in_timeDeltaActual, in_timeDeltaAjusted)
+	in_callbackStopUpdate, // = function()
 	in_webGLContextParamObject,
 	in_document,
+	in_stepModeOrUndefined, //if true, we start paused, and only advance on clicking the step button
 	in_timeDeltaOverrideOrUndefined,
-	in_stepMode, //if true, we start paused, and only advance on clicking the step button
 	in_frameCountOrUndefined,
 	in_saveEachFrameFileNameOrUndefined
 ){
-	const m_html5CanvasElement = (undefined !== in_document) ? in_document.getElementById("html5CanvasElement") : undefined;
+	const m_canvaseElementWrapper = ManipulateDom.ComponentCanvas.factoryAppendBody(in_document, 256, 256);
+	const m_webGLState = WebGL.WebGLState.factory(m_canvaseElementWrapper.getElement(), in_webGLContextParamObject);
+	const m_stepMode = (undefined === in_stepModeOrUndefined) ? in_stepModeOrUndefined : false;
 
-	//a canvas width, height is 300,150 by default (coordinate space). lets change that to what size it is
-	if (undefined !== m_html5CanvasElement){
-		m_html5CanvasElement.width = m_html5CanvasElement.clientWidth;
-		m_html5CanvasElement.height = m_html5CanvasElement.clientHeight;
-	}
-
-	const m_webGLContextWrapper = WebGL.WebGLContextWrapper.factory(m_html5CanvasElement, in_webGLContextParamObject);
-	const m_webGLState = WebGL.WebGLState.factory(m_webGLContextWrapper);
-
-	var m_timeDelta = 0.0;
-	var m_paused = (true === in_stepMode);
+	var m_paused = (true === m_stepMode);
 	var m_prevTimeStamp = undefined;
 	var m_frameIndex = 0;
 
 	const animationFrameCallback = function(in_timestamp){
 		m_fpsElement.update(in_timestamp);
+		var timeDeltaActual = 0.0;
+		var timeDeltaAjusted = 0.0;
 
 		if (undefined !== m_prevTimeStamp){
-			m_timeDelta = (in_timestamp - m_prevTimeStamp) / 1000.0;
+			timeDeltaActual = (in_timestamp - m_prevTimeStamp) / 1000.0;
+			timeDeltaAjusted = timeDeltaActual;
 		}
 		m_prevTimeStamp = in_timestamp;
 		
 		if (undefined !== in_timeDeltaOverrideOrUndefined){
-			m_timeDelta = in_timeDeltaOverrideOrUndefined;
+			timeDeltaAjusted = in_timeDeltaOverrideOrUndefined;
 		}
 
 		if (false === m_paused){
-			if (0.0 < m_timeDelta){
+			if (0.0 < timeDeltaActual){
 				if (undefined !== in_callbackStep){
-					in_callbackStep(m_timeDelta);
+					in_callbackStep(timeDeltaActual, timeDeltaAjusted);
 				}
-				m_paused = (true === in_stepMode);
+				m_paused = (true === m_stepMode);
 			}
 		}
 
@@ -80,9 +75,10 @@ const factory = function(
 		if (undefined !== in_callbackStopUpdate){
 			in_callbackStopUpdate();
 		}
+		m_webGLState.destroy();
 		return;
 	});
-	if (true === in_stepMode){
+	if (true === m_stepMode){
 		ManipulateDom.Button.addSimpleButton(in_document, in_document.body, "step", function(){
 			m_paused = false;
 			return;
@@ -91,19 +87,16 @@ const factory = function(
 	const m_fpsElement = ManipulateDom.ComponentFps.factory(in_document);
 	in_document.body.appendChild(m_fpsElement.getElement());
 
-	Object.assign(in_targetObject, {
+	const that = Object.create({
 		"getCanvasElement" : function(){
-			return m_html5CanvasElement;
-		},
-		"getWebGLContextWrapper" : function(){
-			return m_webGLContextWrapper;
+			return m_canvaseElementWrapper.getElement();
 		},
 		"getWebGLState" : function(){
 			return m_webGLState;
 		},
 	});
 
-	return;
+	return that;
 }
 
 module.exports = {
