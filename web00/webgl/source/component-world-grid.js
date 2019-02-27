@@ -76,13 +76,12 @@ const factoryModelWorldGrid = function(in_gridStep, in_gridCount){
 	};
 }
 
-const factory = function(in_resourceManager, in_webGLContextWrapper, in_dataServer, in_gridStep, in_gridCount){
+const factory = function(in_resourceManager, in_webGLState, in_state, in_gridStep, in_gridCount){
 	var m_model = undefined;
 	var m_modelOldName = undefined;
-	var m_dataServer = Object.create({ "getModelOrigin" : function(){ return Core.Vector3.sZero(); }});
-	Object.assign(m_dataServer, in_dataServer);
-	var m_materialComponent = ComponentMaterialMacroPosColourLine.factory(in_resourceManager, in_webGLContextWrapper, m_dataServer);
+	var m_materialComponent = ComponentMaterialMacroPosColourLine.factory(in_resourceManager, in_webGLState, in_state);
 	var m_material = m_materialComponent.getMaterial();
+	var m_shader = m_materialComponent.getShader();
 
 	const release = function(){
 		if (undefined === m_modelOldName){
@@ -105,7 +104,7 @@ const factory = function(in_resourceManager, in_webGLContextWrapper, in_dataServ
 		}
 		release();
 		m_modelOldName = name;
-		m_model = in_resourceManager.getCommonReference(name, in_webGLContextWrapper);
+		m_model = in_resourceManager.getCommonReference(name, in_webGLState);
 
 		return;
 	}
@@ -117,9 +116,10 @@ const factory = function(in_resourceManager, in_webGLContextWrapper, in_dataServ
 		"changeGrid" : function(in_innerGridStep, in_innerGridCount){
 			updateModel(in_innerGridStep, in_innerGridCount);
 		},
-		"draw" : function(in_innerWebGLContextWrapper, in_innerWebGLState){
-			m_material.apply(in_innerWebGLContextWrapper, in_innerWebGLState);
-			m_model.draw(in_innerWebGLContextWrapper, in_innerWebGLState.getMapVertexAttribute());
+		"draw" : function(){
+			in_webGLState.applyShader(m_shader, in_state);
+			in_webGLState.applyMaterial(m_material);
+			in_webGLState.drawModel(m_model);
 		},
 		"destroy" : function(){
 			release();

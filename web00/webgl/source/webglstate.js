@@ -284,6 +284,7 @@ const factory = function(
 		},
 
 		"getViewport" : function(){
+			const viewportEnum = m_webGLContextWrapper.getEnum("VIEWPORT");
 			const param = m_webGLContextWrapper.callMethod("getParameter", viewportEnum);
 			var result;
 			if (undefined !== param){
@@ -310,6 +311,14 @@ const factory = function(
 		"getExtention" : function(in_extentionName){
 			const result = m_webGLContextWrapper.callMethod("getExtension", in_extentionName);
 			return result;
+		},
+
+		"getCanvasWidth" : function(){
+			return m_webGLContextWrapper.getCanvasWidth();
+		},
+
+		"getCanvasHeight" : function(){
+			return m_webGLContextWrapper.getCanvasHeight();
 		},
 
 		"destroy" : function(){
