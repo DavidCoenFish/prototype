@@ -14,7 +14,7 @@ const calculateRoll = function(in_x0, in_y0, in_x1, in_y1, in_originX, in_origin
 	const vectorPrev = Core.Vector2.factoryFloat32(in_x1 - in_originX, in_y1 - in_originY);
 	vectorPrev.normaliseSelf();
 	const dot = Math.max(-1.0, Math.min(1.0, vectorNew.dotProduct(vectorPrev)));
-	var cross = vectorNew.crossProduct();
+	var cross = Core.Vector2.crossProduct(vectorNew);
 	var angle = Math.acos(dot);
 	angle *= Math.sign(cross.dotProduct(vectorPrev));
 	//console.log(JSON.stringify([in_x0, in_y0, in_x1, in_y1]));
@@ -42,6 +42,7 @@ const undefinedParamHelper = function(in_name, inout_state, in_defaultX, in_defa
 /*
  */
 const factory = function(in_targetElement, inout_state){
+	in_targetElement.tabIndex = 0;
 	var m_lmbDown = undefined;
 	const m_keyMap = {}
 	var m_oldX = undefined;
@@ -54,6 +55,9 @@ const factory = function(in_targetElement, inout_state){
 	
 	const update = function(in_yawDeltaOrUndefined, in_pitchDeltaOrUndefined, in_rollDeltaOrUndefined,
 		in_posXDeltaOrUndefined, in_posYDeltaOrUndefined, in_posZDeltaOrUndefined){
+
+		//console.log(`update:${in_yawDeltaOrUndefined} ${in_pitchDeltaOrUndefined} ${in_rollDeltaOrUndefined}
+		//${in_posXDeltaOrUndefined} ${in_posYDeltaOrUndefined} ${in_posZDeltaOrUndefined}`);
 
 		if ((undefined !== in_yawDeltaOrUndefined) ||
 			(undefined !== in_pitchDeltaOrUndefined) ||
@@ -78,7 +82,7 @@ const factory = function(in_targetElement, inout_state){
 				const localAt = Core.Matrix33.transformVector3(matrix, m_cameraAt);
 				var localLeft = Core.Matrix33.transformVector3(matrix, m_cameraLeft);
 				const localUp = Core.Vector3.crossProduct(localAt, localLeft);
-				localLeft = Core.Vector3.crossProduct(localLeft, localUp);
+				localLeft = Core.Vector3.crossProduct(localUp, localAt);
 
 				localAt.normaliseSelf();
 				localUp.normaliseSelf();
@@ -87,6 +91,9 @@ const factory = function(in_targetElement, inout_state){
 				m_cameraAt.set(localAt.getX(), localAt.getY(), localAt.getZ());
 				m_cameraUp.set(localUp.getX(), localUp.getY(), localUp.getZ());
 				m_cameraLeft.set(localLeft.getX(), localLeft.getY(), localLeft.getZ());
+
+				//console.log(`update:${in_yawDeltaOrUndefined} ${in_pitchDeltaOrUndefined} ${in_rollDeltaOrUndefined}`);
+				//console.log(`m_cameraAt:${m_cameraAt.getX()} ${m_cameraAt.getY()} ${m_cameraAt.getZ()}`);
 			}
 		}
 
@@ -170,33 +177,31 @@ const factory = function(in_targetElement, inout_state){
 			return;
 		},
 		"tick" : function(in_timeDelta){
-			if (true === m_lmbDown){
-				const deltaTimeSinceLastUpdate = in_timeDelta / 10.0;
-				if (true === anyKeyDown(["KeyA", "ArrowLeft"])){
-					var cameraDeltaX = deltaTimeSinceLastUpdate;
-				}
-				if (true === anyKeyDown(["KeyD", "ArrowRight"])){
-					var cameraDeltaX = -deltaTimeSinceLastUpdate;
-				}
-				if (true === anyKeyDown(["KeyW", "ArrowUp"])){
-					var cameraDeltaZ = deltaTimeSinceLastUpdate;
-				}
-				if (true === anyKeyDown(["KeyS", "ArrowDown"])){
-					var cameraDeltaZ = -deltaTimeSinceLastUpdate;
-				}
-
-				if (true === anyKeyDown(["KeyE", "PageUp"])){
-					var cameraDeltaY = deltaTimeSinceLastUpdate;
-				}
-				if (true === anyKeyDown(["KeyQ", "PageDown"])){
-					var cameraDeltaY = -deltaTimeSinceLastUpdate;
-				}
-				var yaw = undefined;
-				var pitch = undefined;
-				var roll = undefined;
-
-				update(yaw, pitch, roll, cameraDeltaX, cameraDeltaY, cameraDeltaZ);
+			const deltaTimeSinceLastUpdate = in_timeDelta / 10.0;
+			if (true === anyKeyDown(["KeyA", "ArrowLeft"])){
+				var cameraDeltaX = deltaTimeSinceLastUpdate;
 			}
+			if (true === anyKeyDown(["KeyD", "ArrowRight"])){
+				var cameraDeltaX = -deltaTimeSinceLastUpdate;
+			}
+			if (true === anyKeyDown(["KeyW", "ArrowUp"])){
+				var cameraDeltaZ = deltaTimeSinceLastUpdate;
+			}
+			if (true === anyKeyDown(["KeyS", "ArrowDown"])){
+				var cameraDeltaZ = -deltaTimeSinceLastUpdate;
+			}
+
+			if (true === anyKeyDown(["KeyE", "PageUp"])){
+				var cameraDeltaY = deltaTimeSinceLastUpdate;
+			}
+			if (true === anyKeyDown(["KeyQ", "PageDown"])){
+				var cameraDeltaY = -deltaTimeSinceLastUpdate;
+			}
+			var yaw = undefined;
+			var pitch = undefined;
+			var roll = undefined;
+
+			update(yaw, pitch, roll, cameraDeltaX, cameraDeltaY, cameraDeltaZ);
 		}
 	});
 

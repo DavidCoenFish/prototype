@@ -23,8 +23,12 @@ const onPageLoad = function(){
 		console.info("stop");
 	}
 
-	const m_componentTestScene = ComponentTestScene.factory(callbackPresent, callbackStep, callbackStopUpdate, WebGL.WebGLState.makeParam(false), document);
-	const m_viewport = m_componentTestScene.getWebGLState().getViewport();
+	const m_componentTestScene = ComponentTestScene.factory(
+		callbackPresent, 
+		callbackStep, 
+		callbackStopUpdate, 
+		WebGL.WebGLState.makeParam(false, true, true), 
+		document);
 	const m_canvasWidth = m_componentTestScene.getWebGLState().getCanvasWidth();
 	const m_canvasHeight = m_componentTestScene.getWebGLState().getCanvasHeight();
 	const m_state = {

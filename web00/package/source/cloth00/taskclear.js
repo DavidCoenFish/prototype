@@ -1,7 +1,7 @@
 const Core = require("core");
 
 const factory = function(in_state){
-	const m_clearColour = Core.Colour4.factoryFloat32(1.0, 0.0, 0.0, 1.0);
+	const m_clearColour = Core.Colour4.factoryFloat32(0.5, 0.5, 0.5, 1.0);
 
 	const that = Object.create({
 		"run" : function(){

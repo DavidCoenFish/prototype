@@ -50,8 +50,8 @@ const factorySubtract = function(in_lhs, in_rhs){
 }
 
 const crossProduct = function(in_vector2){
-	const x = this.getY();
-	const y = -(this.getX());
+	const x = in_vector2.getY();
+	const y = -(in_vector2.getX());
 	return module.exports.factory(x, y, in_vector2.getRawClass());
 }
 
