@@ -1,5 +1,5 @@
 const Core = require("core");
-const ComponentMaterialMacroPosColourLine = require("./component-material-macro-pos-colour-line.js");
+const ComponentMaterialMacroPosColour = require("./component-material-macro-pos-colour.js");
 const ModelDataStream = require("./modeldatastream.js");
 const ModelWrapper = require("./modelwrapper.js");
 
@@ -79,7 +79,7 @@ const factoryModelWorldGrid = function(in_gridStep, in_gridCount){
 const factory = function(in_resourceManager, in_webGLState, in_state, in_gridStep, in_gridCount){
 	var m_model = undefined;
 	var m_modelOldName = undefined;
-	var m_materialComponent = ComponentMaterialMacroPosColourLine.factory(in_resourceManager, in_webGLState, in_state);
+	var m_materialComponent = ComponentMaterialMacroPosColour.factory(in_resourceManager, in_webGLState, in_state);
 	var m_material = m_materialComponent.getMaterial();
 	var m_shader = m_materialComponent.getShader();
 

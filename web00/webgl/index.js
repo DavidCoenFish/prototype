@@ -1,7 +1,7 @@
 module.exports = {
-	"ComponentMaterialMacroPosColourLine" : require("./source/component-material-macro-pos-colour-line.js"),
-	"ComponentMaterialMacroPosLine" : require("./source/component-material-macro-pos-line.js"),
-	"ComponentMaterialScreenPosUvTriangle" : require("./source/component-material-screen-pos-uv-triangle.js"),
+	"ComponentMaterialMacroPosColour" : require("./source/component-material-macro-pos-colour.js"),
+	"ComponentMaterialMacroPos" : require("./source/component-material-macro-pos.js"),
+	"ComponentMaterialScreenPosUv" : require("./source/component-material-screen-pos-uv.js"),
 	"ComponentModelLine" : require("./source/component-model-line.js"),
 	"ComponentScreenTextureQuad" : require("./source/component-screen-texture-quad.js"),
 	"ComponentWorldGrid" : require("./source/component-world-grid.js"),

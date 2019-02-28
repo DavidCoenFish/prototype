@@ -1,9 +1,17 @@
+/**
+ * component-material-macro-pos-colour.js
+ *  marco lens camera
+ *  use pos vertex attribute
+ *  use colour vertex attribute
+ */
+
 const ShaderWrapper = require("./shaderwrapper.js");
 const ShaderUniformData = require("./shaderuniformdata.js");
 const MaterialWrapper = require("./materialwrapper.js");
 
 const sVertexShader = `
 attribute vec3 a_position;
+attribute vec4 a_colour;
 
 uniform vec4 u_viewportWidthHeightWidthhalfHeighthalf;
 uniform vec3 u_cameraAt;
@@ -12,12 +20,16 @@ uniform vec3 u_cameraUp;
 uniform vec3 u_cameraPos;
 uniform vec3 u_cameraFovhFovvFar;
 
+varying vec4 v_colour;
+varying float v_keepOrDiscard;
+
 void main() {
-	vec3 cameraToAtom = a_position + u_modelOrigin - u_cameraPos;
+	vec3 cameraToAtom = a_position - u_cameraPos;
 
 	float cameraSpaceX = -dot(cameraToAtom, u_cameraLeft);
 	float cameraSpaceY = dot(cameraToAtom, u_cameraUp);
 	float cameraSpaceZ = dot(cameraToAtom, u_cameraAt);
+	v_keepOrDiscard = cameraSpaceZ;
 	float cameraSpaceXYLengthSquared = ((cameraSpaceX * cameraSpaceX) + (cameraSpaceY* cameraSpaceY));
 	float cameraSpaceLength = sqrt(cameraSpaceXYLengthSquared + (cameraSpaceZ * cameraSpaceZ));
 	float cameraSpaceXYLength = sqrt(cameraSpaceXYLengthSquared);
@@ -47,18 +59,23 @@ void main() {
 	float screenZ = (screenZRaw * 2.0) - 1.0;
 
 	gl_Position = vec4(screenX, screenY, screenZ, 1.0);
+	v_colour = a_colour;
 }
 `;
 
 const sFragmentShader = `
 precision mediump float;
-uniform vec4 u_modelColour;
+varying vec4 v_colour;
+varying float v_keepOrDiscard;
 void main() {
-	gl_FragColor = u_modelColour;
+	if (v_keepOrDiscard <= 0.0){
+		discard;
+	}
+	gl_FragColor = v_colour;
 }
 `;
 
-const sVertexAttributeNameArray = ["a_position"];
+const sVertexAttributeNameArray = ["a_position", "a_colour"];
 const sUniformNameMap = {
 	"u_viewportWidthHeightWidthhalfHeighthalf" : ShaderUniformData.sFloat4, 
 	"u_cameraAt" : ShaderUniformData.sFloat3, 
@@ -75,8 +92,8 @@ const shaderFactory = function(in_webGLState){
 		sVertexShader, 
 		sFragmentShader, 
 		sVertexAttributeNameArray, 
-		sUniformNameMap
-		);
+		sUniformNameMap);
+
 }
 
 const materialFactory = function(){
@@ -89,17 +106,21 @@ const materialFactory = function(){
 		"ONE_MINUS_SRC_ALPHA", //"ONE",  //in_destinationBlendEnumNameOrUndefined,
 		true, //in_depthFuncEnabledOrUndefined,
 		"LESS", //in_depthFuncEnumNameOrUndefined
+		undefined, //in_frontFaceEnumNameOrUndefined, //"CW", "CCW"
+		true, //in_colorMaskRedOrUndefined, //true
+		true, //in_colorMaskGreenOrUndefined, //true
+		true, //in_colorMaskBlueOrUndefined, //true
+		true, //in_colorMaskAlphaOrUndefined, //false
+		false, //in_depthMaskOrUndefined, //false
+		false, //in_stencilMaskOrUndefined //false
 	);
-	material.setDepthMask(false);
-	material.setColorMask(true, true, true, true);
 	return material;
 }
 
-const sShaderName = "componentShaderMacroPosLine";
-const sMaterialName = "componentMaterialMacroPosLine";
+const sShaderName = "componentShaderMacroPosColourLine";
+const sMaterialName = "componentMaterialMacroPosColourLine";
 
 const factory = function(in_resourceManager, in_webGLState){
-
 	if (false === in_resourceManager.hasFactory(sShaderName)){
 		in_resourceManager.addFactory(sShaderName, shaderFactory);
 	}

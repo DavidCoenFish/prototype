@@ -2,11 +2,12 @@
 const ModelWrapper = require("./modelwrapper.js");
 const ModelDataStream = require("./modeldatastream.js");
 
-const ComponentMaterialScreenPosUvTriangle = require("./component-material-screen-pos-uv-triangle.js");
+const ComponentMaterialScreenPosUv = require("./component-material-screen-pos-uv.js");
 
-const factory = function(in_resourceManager, in_webGLContextWrapper, in_texture, in_vec2Low, in_vec2High){
+const factory = function(in_resourceManager, in_webGLState, in_texture, in_vec2Low, in_vec2High){
 
-	var m_materialComponent = ComponentMaterialScreenPosUvTriangle.factory(in_resourceManager, in_webGLContextWrapper, in_texture);
+	var m_materialComponent = ComponentMaterialScreenPosUv.factory(in_resourceManager, in_webGLState, in_texture);
+	var m_material = m_materialComponent.getMaterial();
 	var m_material = m_materialComponent.getMaterial();
 
 	const m_posDataStream = ModelDataStream.factory(

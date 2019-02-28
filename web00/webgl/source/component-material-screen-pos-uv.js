@@ -2,8 +2,8 @@
 render in screen homogenius coordiantes the given triangles, using uvs (and texture)
  */
 
-const WebGLContextWrapperHelper = require("./webglcontextwrapperhelper.js");
 const ShaderWrapper = require("./shaderwrapper.js");
+const ShaderUniformData = require("./shaderuniformdata.js");
 const MaterialWrapper = require("./materialwrapper.js");
 
 const sVertexShader = `
@@ -28,16 +28,17 @@ void main() {
 `;
 
 const sVertexAttributeNameArray = ["a_position", "a_uv"];
-const sUniformNameArray = ["u_sampler0"];
+const sUniformNameMap = {
+	"u_sampler0" : ShaderUniformData.sInt
+};
 
-const shaderFactory = function(in_webGLContextWrapper, in_uniformServer){
+const shaderFactory = function(in_webGLState){
 	return ShaderWrapper.factory(
-		in_webGLContextWrapper, 
+		in_webGLState, 
 		sVertexShader, 
 		sFragmentShader, 
-		in_uniformServer, 
 		sVertexAttributeNameArray, 
-		sUniformNameArray);
+		sUniformNameMap);
 
 }
 

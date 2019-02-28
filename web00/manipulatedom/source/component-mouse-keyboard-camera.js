@@ -177,7 +177,7 @@ const factory = function(in_targetElement, inout_state){
 			return;
 		},
 		"tick" : function(in_timeDelta){
-			const deltaTimeSinceLastUpdate = in_timeDelta / 10.0;
+			const deltaTimeSinceLastUpdate = in_timeDelta;
 			if (true === anyKeyDown(["KeyA", "ArrowLeft"])){
 				var cameraDeltaX = deltaTimeSinceLastUpdate;
 			}
