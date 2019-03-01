@@ -65,11 +65,11 @@ const factory = function(in_targetElement, inout_state){
 		
 			var rotation = Core.Quaternion.factoryIdentity();
 			if (undefined !== in_yawDeltaOrUndefined){
-				const quat = Core.Quaternion.factoryAxisAngle(m_cameraUp, -in_yawDeltaOrUndefined);
+				const quat = Core.Quaternion.factoryAxisAngle(m_cameraUp, in_yawDeltaOrUndefined);
 				rotation = Core.Quaternion.multiplication(rotation, quat);
 			}
 			if (undefined !== in_pitchDeltaOrUndefined){
-				const quat = Core.Quaternion.factoryAxisAngle(m_cameraLeft, in_pitchDeltaOrUndefined);
+				const quat = Core.Quaternion.factoryAxisAngle(m_cameraLeft, -in_pitchDeltaOrUndefined);
 				rotation = Core.Quaternion.multiplication(rotation, quat);
 			}
 			if (undefined !== in_rollDeltaOrUndefined){

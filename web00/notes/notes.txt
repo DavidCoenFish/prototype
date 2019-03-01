@@ -1,14 +1,13 @@
 todo:
-_	texture sphere humanoid test
-		move pos into camera data
-		grid component
-		snapshot component
-		record component
-		romboid packing
-	sphere physics, gravity, ground plane
+	cloth test
+		present
+		2 points
+		sheet points drop ground
+		sheet points drop box
+	muscle test
 	ridgid body
 	joints
-
+	muscle move ridgid body
 
 x done
 _ underway

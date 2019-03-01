@@ -31,6 +31,9 @@ const factory = function(
 			in_webGLState.deleteBuffer(m_bufferObject);
 			m_bufferObject = undefined;
 		},
+		"getVertexCount" : function(){
+			return in_arrayData.length / in_elementsPerVertex
+		},
 		"setupDraw" : function(in_webGLContextWrapper, in_position){
 			const bufferObjectType = in_webGLContextWrapper.getEnum("ARRAY_BUFFER");
 			in_webGLContextWrapper.callMethod("bindBuffer", bufferObjectType, m_bufferObject);
