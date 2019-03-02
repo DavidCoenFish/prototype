@@ -10,6 +10,11 @@ const TaskPresent = require("./cloth00/taskpresent.js");
 const TaskPrepInput = require("./cloth00/taskprepinput.js");
 const TaskCalculateForce = require("./cloth00/taskcalculateforce.js");
 const TaskUpdatePosition = require("./cloth00/taskupdateposition.js");
+
+const TaskContraintCollision = require("./cloth00/taskconstraintcollision.js");
+const TaskContraintSpring = require("./cloth00/taskconstraintspring.js");
+const TaskContraintVelocityDampen = require("./cloth00/taskconstraintvelocitydampen.js");
+
 /*
 	aim is to test out a 2d grid (cloth) using a seperate pass to dampen the velocity
 
@@ -20,11 +25,11 @@ const TaskUpdatePosition = require("./cloth00/taskupdateposition.js");
 		in pos
 		in pos prev
 		out force
-	task constraint cloth spring
+	task constraint collision
 		in pos
 		in force
 		out force
-	task constraint collision
+	task constraint cloth spring
 		in pos
 		in force
 		out force
@@ -54,9 +59,12 @@ const onPageLoad = function(){
 		m_camera.tick(in_timeDeltaActual);
 		m_state.u_timeDelta = in_timeDeltaAjusted;
 		Core.TaskHelper.runArray([
-			//m_taskPrepInput,
-			//m_taskCalculateForce,
-			//m_taskUpdatePosition
+			m_taskPrepInput,
+			m_taskCalculateForce,
+			m_taskContraintCollision,
+			m_taskContraintSpring,
+			m_taskContraintVelocityDampen,
+			m_taskUpdatePosition
 			]);
 		return;
 	}
@@ -99,6 +107,10 @@ const onPageLoad = function(){
 	
 	const m_taskPrepInput = TaskPrepInput.factory(m_resourceManager, m_webGLState, m_state, Asset.sTexturePosName);
 	const m_taskCalculateForce = TaskCalculateForce.factory(m_resourceManager, m_webGLState, m_state, Asset.sModelName);
+	const m_taskContraintCollision = TaskContraintCollision.factory(m_resourceManager, m_webGLState, m_state, Asset.sModelName);
+	const m_taskContraintSpring = TaskContraintSpring.factory(m_resourceManager, m_webGLState, m_state, Asset.sModelName);
+	const m_taskContraintVelocityDampen = TaskContraintVelocityDampen.factory(m_resourceManager, m_webGLState, m_state, Asset.sModelName);
+
 	const m_taskUpdatePosition = TaskUpdatePosition.factory(m_resourceManager, m_webGLState, m_state, Asset.sModelName);
 
 	const m_taskClear = TaskClear.factory(m_resourceManager, m_webGLState, m_state);

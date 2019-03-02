@@ -16,6 +16,7 @@ void main() {
 	vec3 gravity = vec3(0.0, 0.0, -9.8);
 
 	v_force.xyz = vAccel + gravity;
+	//v_force.xyz = vAccel;
 	v_force.w = 0.0;
 
 	gl_Position = vec4((a_uv.x * 2.0) - 1.0, (a_uv.y * 2.0) - 1.0, 0.0, 1.0);

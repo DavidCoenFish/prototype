@@ -26,7 +26,7 @@ uniform vec3 u_cameraFovhFovvFar;
 void main() {
 	vec4 position = texture2D(u_sampler0, a_uv);
 	vec3 cameraToAtom = position.xyz - u_cameraPos;
-	float sphereRadius = position.w / 2.0;
+	float sphereRadius = position.w;
 
 	float cameraSpaceX = -dot(cameraToAtom, u_cameraLeft);
 	float cameraSpaceY = dot(cameraToAtom, u_cameraUp);

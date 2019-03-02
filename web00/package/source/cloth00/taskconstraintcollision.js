@@ -6,13 +6,28 @@ attribute vec2 a_uv;
 uniform sampler2D u_samplerPos;
 uniform sampler2D u_samplerForce;
 uniform float u_timeDelta;
-varying vec4 v_sphere;
+varying vec4 v_force;
 void main() {
 	vec4 pos = texture2D(u_samplerPos, a_uv);
 	vec4 force = texture2D(u_samplerForce, a_uv);
 
-	v_sphere.xyz = pos.xyz + (force.xyz * u_timeDelta * u_timeDelta);
-	v_sphere.w = pos.w;
+	float timeDeltaSquared = u_timeDelta * u_timeDelta;
+	float radius = pos.w;
+	vec3 predictedPos = pos.xyz + (force.xyz * timeDeltaSquared);
+
+	if (predictedPos.z < radius){
+		if (pos.z < radius){
+			//start inside case, push out
+			// target z = pos.z + (force.z * u_timeDelta * u_timeDelta)
+			force.z = (radius - pos.z) / timeDeltaSquared;
+		} else {
+			//stop movement at intersection point (friction)
+			float ratio = (radius - pos.z) / (predictedPos.z - pos.z);
+			force *= ratio;
+		}
+	}
+	
+	v_force = force;
 
 	gl_Position = vec4((a_uv.x * 2.0) - 1.0, (a_uv.y * 2.0) - 1.0, 0.0, 1.0);
 	gl_PointSize = 1.0; //point size is diameter
@@ -20,9 +35,9 @@ void main() {
 `;
 const sFragmentShader = `
 precision mediump float;
-varying vec4 v_sphere;
+varying vec4 v_force;
 void main() {
-	gl_FragColor = v_sphere;
+	gl_FragColor = v_force;
 }
 `;
 const sVertexAttributeNameArray = ["a_uv"];
@@ -59,14 +74,16 @@ const factory = function(in_resourceManager, in_webGLState, in_state, in_modelNa
 		"run" : function(in_taskState){
 			m_textureArray[0] = in_taskState.pos.getTexture(0);
 			m_textureArray[1] = in_taskState.force_in.getTexture(0);
-			var renderTarget = in_taskState.pos_new;
+			var renderTarget = in_taskState.force_out;
 
 			in_webGLState.applyRenderTarget(renderTarget);
-
 			m_state.u_timeDelta = in_state.u_timeDelta;
+
 			in_webGLState.applyShader(m_shader, m_state);
 			in_webGLState.applyMaterial(m_material);
 			in_webGLState.drawModel(m_model);
+
+			Core.Util.swap(in_taskState, "force_in", "force_out");
 
 			return in_taskState;
 		}

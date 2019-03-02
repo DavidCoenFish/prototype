@@ -44,7 +44,6 @@ const undefinedParamHelper = function(in_name, inout_state, in_defaultX, in_defa
  */
 const factory = function(in_targetElement, inout_state){
 	in_targetElement.tabIndex = 0;
-	var m_lmbDown = undefined;
 	const m_keyMap = {}
 	var m_oldX = undefined;
 	var m_oldY = undefined;
@@ -130,7 +129,6 @@ const factory = function(in_targetElement, inout_state){
 		m_oldY = y;
 
 		const lmb = (0 !== (in_event.buttons & 1));
-		m_lmbDown = lmb;
 
 		if (true === lmb){ //if in circle, do yaw and pitch, else roll
 			const innerRadius = Math.min(rect.width, rect.height) * 0.45;
@@ -150,13 +148,19 @@ const factory = function(in_targetElement, inout_state){
 	}
 
 	const keyDownCallback = function(in_event){
-		m_keyMap[in_event.code] = 1;
+		var code = (undefined !== in_event.code) ? in_event.code : in_event.key;
+		if (undefined !== code){
+			m_keyMap[code] = 1;
+		}
 		//console.log("keyDown:" + in_event.code);
 		return;
 	}
 	const keyUpCallback = function(in_event){
-		m_keyMap[in_event.code] = 0;
-		//console.log("keyUp:" + in_event.code);
+		var code = (undefined !== in_event.code) ? in_event.code : in_event.key;
+		if (undefined !== code){
+			m_keyMap[code] = 0;
+		}
+		console.log("keyUp code:" + code + " code:" + in_event.code + " key:" + in_event.key + " char:" + in_event.char + " charCode:" + in_event.charCode);
 		return;
 	}
 	const anyKeyDown = function(in_keys){
@@ -173,29 +177,31 @@ const factory = function(in_targetElement, inout_state){
 	const that = Object.create({
 		"destroy" : function(){
 			in_targetElement.removeEventListener("mousemove", mouseMoveCallback);
-			in_targetElement.removeEventListener("keydown", keyDownCallback);
-			in_targetElement.removeEventListener("keyup", keyUpCallback);
+			// in_targetElement.removeEventListener("keydown", keyDownCallback);
+			// in_targetElement.removeEventListener("keyup", keyUpCallback);
+			in_targetElement.ownerDocument.removeEventListener("keydown", keyDownCallback);
+			in_targetElement.ownerDocument.removeEventListener("keyup", keyUpCallback);
 			return;
 		},
 		"tick" : function(in_timeDelta){
 			const deltaTimeSinceLastUpdate = in_timeDelta;
-			if (true === anyKeyDown(["KeyA", "ArrowLeft"])){
+			if (true === anyKeyDown(["a", "KeyA", "ArrowLeft"])){
 				var cameraDeltaX = deltaTimeSinceLastUpdate;
 			}
-			if (true === anyKeyDown(["KeyD", "ArrowRight"])){
+			if (true === anyKeyDown(["d", "KeyD", "ArrowRight"])){
 				var cameraDeltaX = -deltaTimeSinceLastUpdate;
 			}
-			if (true === anyKeyDown(["KeyW", "ArrowUp"])){
+			if (true === anyKeyDown(["w", "KeyW", "ArrowUp"])){
 				var cameraDeltaZ = deltaTimeSinceLastUpdate;
 			}
-			if (true === anyKeyDown(["KeyS", "ArrowDown"])){
+			if (true === anyKeyDown(["s", "KeyS", "ArrowDown"])){
 				var cameraDeltaZ = -deltaTimeSinceLastUpdate;
 			}
 
-			if (true === anyKeyDown(["KeyE", "PageUp"])){
+			if (true === anyKeyDown(["e", "KeyE", "PageUp"])){
 				var cameraDeltaY = deltaTimeSinceLastUpdate;
 			}
-			if (true === anyKeyDown(["KeyQ", "PageDown"])){
+			if (true === anyKeyDown(["q", "KeyQ", "PageDown"])){
 				var cameraDeltaY = -deltaTimeSinceLastUpdate;
 			}
 			var yaw = undefined;
@@ -207,8 +213,12 @@ const factory = function(in_targetElement, inout_state){
 	});
 
 	in_targetElement.addEventListener("mousemove", mouseMoveCallback);
-	in_targetElement.addEventListener("keydown", keyDownCallback);
-	in_targetElement.addEventListener("keyup", keyUpCallback);
+	//in_targetElement.addEventListener("keydown", keyDownCallback);
+	//in_targetElement.addEventListener("keyup", keyUpCallback);
+	in_targetElement.ownerDocument.addEventListener("keydown", keyDownCallback); 
+	in_targetElement.ownerDocument.addEventListener("keyup", keyUpCallback); 
+
+	in_targetElement.ownerDocument.focus();
 
 	return that;
 }
