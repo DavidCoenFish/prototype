@@ -45,6 +45,13 @@ const factory = function(in_resourceManager, in_webGLState, in_state, in_texture
 		"getTextureForceB" : function(){
 			return m_renderTargetArray[4].getTexture(0);
 		},
+		"getTextureArray" : function(){
+			var result = [];
+			for (var index = 0; index < m_renderTargetArray.length; ++index){
+				result.push(m_renderTargetArray[index].getTexture(0));
+			}
+			return result;
+		}
 	});
 
 	in_state.m_texturePos = that.getTexturePos();

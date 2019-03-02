@@ -103,7 +103,7 @@ const onPageLoad = function(){
 
 	const m_taskClear = TaskClear.factory(m_resourceManager, m_webGLState, m_state);
 	const m_taskDrawGrid = TaskDrawGrid.factory(m_resourceManager, m_webGLState, m_state);
-	const m_taskDebugScreenTexture = TaskDebugScreenTexture.factory(m_resourceManager, m_webGLState, m_state);
+	const m_taskDebugScreenTexture = TaskDebugScreenTexture.factory(m_resourceManager, m_webGLState, m_taskPrepInput);
 	const m_taskPresent = TaskPresent.factory(m_resourceManager, m_webGLState, m_state, Asset.sModelName);
 
 	return;
