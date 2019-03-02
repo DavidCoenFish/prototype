@@ -2,6 +2,7 @@
  */
 const Core = require("core");
 const WebGlContextWrapper = require("./webglcontextwrapper.js");
+const TextureWrapper = require("./texturewrapper.js");
 
 const sTextureStateName = [];
 for (var index = 0; index < 128; ++index){
@@ -63,7 +64,7 @@ const factory = function(
 			if (undefined !== in_textureOrUndefined){
 				in_textureOrUndefined.apply(m_webGLContextWrapper, in_index);
 			} else {
-				m_webGLContextWrapper.callMethod("deactivateTexture", in_index);
+				console.assert(false, "setTexture undefined:" + in_index);
 			}
 		}
 	}

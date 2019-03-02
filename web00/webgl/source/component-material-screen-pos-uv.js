@@ -39,23 +39,19 @@ const shaderFactory = function(in_webGLState){
 		sFragmentShader, 
 		sVertexAttributeNameArray, 
 		sUniformNameMap);
-
 }
 
-const materialFactory = function(in_shader, in_textureArray){
+const materialFactory = function(in_textureArray){
 	const material = MaterialWrapper.factory(
-		in_shader,
 		in_textureArray
 	);
-	material.setDepthMask(false);
-	material.setColorMask(true, true, true, true);
 	return material;
 }
 
 const sShaderName = "componentShaderScreenPosUvTriangle";
 const sMaterialName = "componentMaterialScreenPosUvTriangle";
 
-const factory = function(in_resourceManager, in_webGLContextWrapper, in_texture){
+const factory = function(in_resourceManager, in_webGLState, in_textureArray){
 
 	if (false === in_resourceManager.hasFactory(sShaderName)){
 		in_resourceManager.addFactory(sShaderName, shaderFactory);
@@ -65,20 +61,16 @@ const factory = function(in_resourceManager, in_webGLContextWrapper, in_texture)
 		in_resourceManager.addFactory(sMaterialName, materialFactory);
 	}
 
-	const m_uniformServer = {
-		"setUniform" : function(localWebGLContextWrapper, in_key, in_position){
-			if (in_key === "u_sampler0"){
-				WebGLContextWrapperHelper.setUniformInteger(localWebGLContextWrapper, in_position, 0);
-			}
-		}
-	}
-	var m_shader = in_resourceManager.getCommonReference(sShaderName, in_webGLContextWrapper, m_uniformServer);
-	var m_material = in_resourceManager.getUniqueReference(sMaterialName, m_shader, [in_texture]);
+	var m_shader = in_resourceManager.getCommonReference(sShaderName, in_webGLState);
+	var m_material = in_resourceManager.getUniqueReference(sMaterialName, in_textureArray);
 
 	//public methods ==========================
 	const result = Object.create({
 		"getMaterial" : function(){
 			return m_material;
+		},
+		"getShader" : function(){
+			return m_shader;
 		},
 		"destroy" : function(){
 			m_shader = undefined;

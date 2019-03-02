@@ -37,6 +37,9 @@ const factory = function(
 		"destroy" : function(){
 			in_webGLState.removeResourceContextCallbacks(restoredCallback, lostCallback);
 		},
+		"getTexture" : function(in_renderTargetDataIndex){
+			return in_renderTargetDataArray[in_renderTargetDataIndex].getTexture();
+		}
 	});
 
 	//private methods ==========================

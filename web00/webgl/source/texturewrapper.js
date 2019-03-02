@@ -9,6 +9,14 @@ TEXTURE_WRAP_T	REPEAT (default value), CLAMP_TO_EDGE, MIRRORED_REPEAT
 
  */
 
+// const disableTexture = function(in_webGLContextWrapper, in_index, in_nullTexture){
+// 	const textureEnum = in_webGLContextWrapper.getEnum("TEXTURE0") + in_index;
+// 	in_webGLContextWrapper.callMethod("activeTexture", textureEnum);
+// 	const targetEnum = in_webGLContextWrapper.getEnum("TEXTURE_2D");
+// 	in_webGLContextWrapper.callMethod("bindTexture", targetEnum, in_nullTexture);
+// 	return;
+// }
+
 const factory = function(
 	in_webGLState, 
 	in_width, 
@@ -192,4 +200,5 @@ module.exports = {
 	"factoryByteRGB" : factoryByteRGB,
 	"factoryFloatRGBA" : factoryFloatRGBA,
 	"factoryFloatRGB" : factoryFloatRGB,
+//	"disableTexture" : disableTexture
 };

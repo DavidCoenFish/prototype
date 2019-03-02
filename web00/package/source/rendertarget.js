@@ -10,7 +10,6 @@ const onPageLoad = function(){
 
 	const m_canvaseElementWrapper = ManipulateDom.ComponentCanvas.factoryAppendBody(document, 256, 256);
 	const m_webGLState = WebGL.WebGLState.factory(m_canvaseElementWrapper.getElement(), WebGL.WebGLState.makeParam(false));
-	//const m_webGLState = WebGL.WebGLState.factory(m_canvaseElementWrapper.getElement());
 
 	const state = {
 		"m_webGLState" : m_webGLState

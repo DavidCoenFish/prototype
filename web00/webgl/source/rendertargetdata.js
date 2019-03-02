@@ -22,6 +22,9 @@ const factory = function(
 				0 //in_levelOrUndefined docs says it must be zero
 			);
 		},
+		"getTexture" : function(){
+			return in_textureWrapper;
+		}
 	});
 
 	return that;

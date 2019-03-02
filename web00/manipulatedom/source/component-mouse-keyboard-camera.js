@@ -31,8 +31,9 @@ const undefinedParamHelper = function(in_name, inout_state, in_defaultX, in_defa
 	if (in_name in inout_state){
 		var stateValue = inout_state[in_name];
 		result = Core.Vector3.factoryFloat32(stateValue[0], stateValue[1], stateValue[2]);
+	} else {
+		result = Core.Vector3.factoryFloat32(in_defaultX, in_defaultY, in_defaultZ);
 	}
-	result = Core.Vector3.factoryFloat32(in_defaultX, in_defaultY, in_defaultZ);
 
 	inout_state[in_name] = result.getRaw();
 

@@ -82,8 +82,7 @@ const sUniformNameMap = {
 	"u_cameraUp" : ShaderUniformData.sFloat3, 
 	"u_cameraLeft" : ShaderUniformData.sFloat3, 
 	"u_cameraPos" : ShaderUniformData.sFloat3, 
-	"u_cameraFovhFovvFar" : ShaderUniformData.sFloat3,
-	"u_modelColour" : ShaderUniformData.sFloat4
+	"u_cameraFovhFovvFar" : ShaderUniformData.sFloat3
 };
 
 const shaderFactory = function(in_webGLState){

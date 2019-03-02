@@ -112,7 +112,7 @@ const factory = function(in_resourceManager, in_webGLState, in_state, in_gridSte
 	updateModel(in_gridStep, in_gridCount);
 
 	//public methods ==========================
-	const result = Object.create({
+	const that = Object.create({
 		"changeGrid" : function(in_innerGridStep, in_innerGridCount){
 			updateModel(in_innerGridStep, in_innerGridCount);
 		},
@@ -126,7 +126,7 @@ const factory = function(in_resourceManager, in_webGLState, in_state, in_gridSte
 		}
 	})
 
-	return result;
+	return that;
 }
 
 module.exports = {

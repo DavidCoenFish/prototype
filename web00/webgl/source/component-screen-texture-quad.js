@@ -4,11 +4,12 @@ const ModelDataStream = require("./modeldatastream.js");
 
 const ComponentMaterialScreenPosUv = require("./component-material-screen-pos-uv.js");
 
-const factory = function(in_resourceManager, in_webGLState, in_texture, in_vec2Low, in_vec2High){
+const factory = function(in_resourceManager, in_webGLState, in_vec2Low, in_vec2High, in_textureOrUndefined){
 
-	var m_materialComponent = ComponentMaterialScreenPosUv.factory(in_resourceManager, in_webGLState, in_texture);
+	const m_textureArray = [in_textureOrUndefined];
+	var m_materialComponent = ComponentMaterialScreenPosUv.factory(in_resourceManager, in_webGLState, m_textureArray);
 	var m_material = m_materialComponent.getMaterial();
-	var m_material = m_materialComponent.getMaterial();
+	var m_shader = m_materialComponent.getShader();
 
 	const m_posDataStream = ModelDataStream.factory(
 			"FLOAT",
@@ -39,8 +40,8 @@ const factory = function(in_resourceManager, in_webGLState, in_texture, in_vec2L
 			false
 			);
 
-	var m_model = ModelWrapper.factory(
-		in_webGLContextWrapper, 
+	const m_model = ModelWrapper.factory(
+		in_webGLState, 
 		"TRIANGLES", 
 		6, 
 		{
@@ -48,23 +49,26 @@ const factory = function(in_resourceManager, in_webGLState, in_texture, in_vec2L
 			"a_uv" : m_uvDataStream
 		}
 	);
+	const m_state = {
+		"u_sampler0" : 0
+	};
 
 	//public methods ==========================
-	const result = Object.create({
+	const that = Object.create({
 		"setTexture" : function(in_texture){
-			m_material.setTextureArray([in_texture]);
+			m_textureArray[0] = in_texture;
 		},
-		"draw" : function(in_innerWebGLContextWrapper, in_innerWebGLState){
-			m_material.apply(in_innerWebGLContextWrapper, in_innerWebGLState);
-			m_model.draw(in_innerWebGLContextWrapper, in_innerWebGLState.getMapVertexAttribute());
+		"draw" : function(){
+			in_webGLState.applyShader(m_shader, m_state);
+			in_webGLState.applyMaterial(m_material);
+			in_webGLState.drawModel(m_model);
 		},
 		"destroy" : function(){
-			m_materialComponent.destroy();
-			m_model.destroy();
+			release();
 		}
 	})
 
-	return result;
+	return that;
 }
 
 module.exports = {

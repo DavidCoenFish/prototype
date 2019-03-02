@@ -31,8 +31,13 @@ const debugTexturePosFactory = function(in_webGLState){
 	);
 }
 
+//const materialFactory = function(){
+//	return WebGL.MaterialWrapper.factory();
+//}
+
 const sModelName = "model";
 const sTexturePosName = "texturePos";
+//const sMaterial = "material";
 
 const registerAssets = function(in_resourceManager){
 	if (false === in_resourceManager.hasFactory(sModelName)){
@@ -41,6 +46,9 @@ const registerAssets = function(in_resourceManager){
 	if (false === in_resourceManager.hasFactory(sTexturePosName)){
 		in_resourceManager.addFactory(sTexturePosName, debugTexturePosFactory);
 	}
+	//if (false === in_resourceManager.hasFactory(sMaterial)){
+	//	in_resourceManager.addFactory(sMaterial, materialFactory);
+	//}
 
 	return;
 }
@@ -49,5 +57,6 @@ const registerAssets = function(in_resourceManager){
 module.exports = {
 	"registerAssets" : registerAssets,
 	"sModelName" : sModelName,
-	"sTexturePosName" : sTexturePosName
+	"sTexturePosName" : sTexturePosName,
+	//"sMaterial" : sMaterial
 };
