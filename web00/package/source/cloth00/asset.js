@@ -6,13 +6,18 @@ const debugModelFactory = function(in_webGLState){
 		0.25, 0.25,
 		0.75, 0.25,
 	]), "STATIC_DRAW", false);
+	const m_uvLink0DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array([
+		0.75, 0.25, 1.0,
+		0.25, 0.25, 1.0,
+	]), "STATIC_DRAW", false);
 
 	return WebGL.ModelWrapper.factory(
 		in_webGLState, 
 		"POINTS",
 		m_uvDataStream.getVertexCount(),
 		{
-			"a_uv" : m_uvDataStream
+			"a_uv" : m_uvDataStream,
+			"a_uvLink0" : m_uvLink0DataStream
 		}
 	);
 }
@@ -23,8 +28,8 @@ const debugTexturePosFactory = function(in_webGLState){
 		2, 
 		2,
 		new Float32Array([
-			-0.5, 0.0, 1.0, 0.5, //0.25, 0.25
-			0.5, 0.0, 1.0, 0.5, //0.75, 0.25
+			-0.75, 0.0, 1.0, 0.5, //0.25, 0.25
+			0.75, 0.0, 1.0, 0.5, //0.75, 0.25
 			0.0, 0.0, 0.0, 0.0, 
 			0.0, 0.0, 0.0, 0.0,
 		])

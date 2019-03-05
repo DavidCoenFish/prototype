@@ -3,13 +3,34 @@ const WebGL = require("webgl");
 
 const sVertexShader = `
 attribute vec2 a_uv;
+attribute vec3 a_uvLink0;
+
 uniform sampler2D u_samplerPos;
 uniform sampler2D u_samplerForce;
 uniform float u_timeDelta;
 varying vec4 v_force;
+
+vec3 SpringForce(vec3 in_uvd, vec3 in_predictedPos){
+	vec4 linkPos = texture2D(u_samplerPos, in_uvd.xy);
+	vec4 linkForce = texture2D(u_samplerForce, in_uvd.xy);
+	vec3 linkPredictedPos = linkPos.xyz + (linkForce.xyz * (u_timeDelta * u_timeDelta));
+
+	vec3 offset = linkPredictedPos - in_predictedPos;
+	float linkLength = length(offset);
+	vec3 springNormal = offset / linkLength;
+	float springLength = linkLength - in_uvd.z;
+	float k = -1000.0;
+	vec3 accel = (k * springLength) * springNormal;
+	vec3 force = accel * (-0.5);
+	return force;
+}
+
 void main() {
 	vec4 pos = texture2D(u_samplerPos, a_uv);
 	vec4 force = texture2D(u_samplerForce, a_uv);
+	vec3 predictedPos = pos.xyz + (force.xyz * (u_timeDelta * u_timeDelta));
+
+	force.xyz += SpringForce(a_uvLink0, predictedPos);
 
 	v_force = force;
 
@@ -24,7 +45,7 @@ void main() {
 	gl_FragColor = v_force;
 }
 `;
-const sVertexAttributeNameArray = ["a_uv"];
+const sVertexAttributeNameArray = ["a_uv", "a_uvLink0"];
 const sUniformNameMap = {
 	"u_samplerPos" : WebGL.ShaderUniformData.sInt,
 	"u_samplerForce" : WebGL.ShaderUniformData.sInt,

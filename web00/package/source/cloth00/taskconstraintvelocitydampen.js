@@ -3,15 +3,52 @@ const WebGL = require("webgl");
 
 const sVertexShader = `
 attribute vec2 a_uv;
+attribute vec3 a_uvLink0;
 uniform sampler2D u_samplerPos;
 uniform sampler2D u_samplerForce;
 uniform float u_timeDelta;
 varying vec4 v_force;
+
+vec3 VelocityDampen(vec3 in_uvd, vec3 in_pos, vec3 in_velocity){
+	vec4 linkPos = texture2D(u_samplerPos, in_uvd.xy);
+	vec4 linkForce = texture2D(u_samplerForce, in_uvd.xy);
+	vec3 linkVelocity = linkForce.xyz * u_timeDelta;
+
+	vec3 relativeVelocity = linkVelocity - in_velocity;
+
+	vec3 posOffset = linkPos.xyz - in_pos;
+	float posLength = length(posOffset);
+	vec3 springNormal = posOffset / posLength;
+	float relativeDot = dot(springNormal, relativeVelocity);
+
+	
+	//case 0
+	//float k = -1.0;
+	//vec3 accel = (k * relativeDot) * springNormal;
+	//vec3 force = accel * (-0.5);
+
+	//case 1
+	//float k = 10.0;
+	//vec3 force = (k * relativeDot) * springNormal;
+
+	//case 2
+	//at most, our velocity dampen should reduce our relative velocity to zero
+	float k = 0.25;
+	vec3 force = (k * relativeDot / u_timeDelta) * springNormal;
+
+	return force;
+}
+
+
 void main() {
 	vec4 pos = texture2D(u_samplerPos, a_uv);
 	vec4 force = texture2D(u_samplerForce, a_uv);
+	vec3 predictedVelocity = force.xyz * u_timeDelta;
 
-	v_force = force;
+	vec4 resultForce = force;
+	resultForce.xyz += VelocityDampen(a_uvLink0, pos.xyz, predictedVelocity);
+
+	v_force = resultForce;
 
 	gl_Position = vec4((a_uv.x * 2.0) - 1.0, (a_uv.y * 2.0) - 1.0, 0.0, 1.0);
 	gl_PointSize = 1.0; //point size is diameter
@@ -24,7 +61,7 @@ void main() {
 	gl_FragColor = v_force;
 }
 `;
-const sVertexAttributeNameArray = ["a_uv"];
+const sVertexAttributeNameArray = ["a_uv", "a_uvLink0"];
 const sUniformNameMap = {
 	"u_samplerPos" : WebGL.ShaderUniformData.sInt,
 	"u_samplerForce" : WebGL.ShaderUniformData.sInt,

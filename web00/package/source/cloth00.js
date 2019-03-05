@@ -66,6 +66,7 @@ const onPageLoad = function(){
 			m_taskContraintVelocityDampen,
 			m_taskUpdatePosition
 			]);
+		m_state.u_timeDeltaPrev = m_state.u_timeDelta;
 		return;
 	}
 	const callbackStopUpdate = function(){
@@ -94,6 +95,7 @@ const onPageLoad = function(){
 
 	const m_state = {
 		"u_timeDelta" : 0.0,
+		"u_timeDeltaPrev" : 0.0,
 		"u_viewportWidthHeightWidthhalfHeighthalf" : Core.Vector4.factoryFloat32(m_canvasWidth, m_canvasHeight, m_canvasWidth / 2.0, m_canvasHeight / 2.0).getRaw(),
 		"u_cameraFovhFovvFar" : Core.Vector3.factoryFloat32(90.0, 90.0, 100.0).getRaw(),
 		"u_cameraPos" : [-0.7398508191108704, 2.9275126457214355, 0.9037196040153503],
