@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node --nolazy --inspect-brk=5858 index.js test",
+	"cloth_model_texture_link12": "node --nolazy --inspect-brk=5858 index.js output\\asset_cloth_model_texture_link12.js output\\data_cloth_model_texture_link12.js input\\cloth.json model_texture_link12",
     "female_anatomy_10k_model": "node --nolazy --inspect-brk=5858 index.js output\\asset_female_anatomy_10k_model.js output\\data_female_anatomy_10k_model.js input\\spheres_female_anatomy_10k.json model",
 	"male_anatomy_10k_model": "node --nolazy --inspect-brk=5858 index.js output\\asset_male_anatomy_10k_model.js output\\data_male_anatomy_10k_model.js input\\spheres_male_anatomy_10k.json model",
     "skeleton_10k_model": "node --nolazy --inspect-brk=5858 index.js output\\asset_skeleton_10k_model.js output\\data_skeleton_10k_model.js input\\spheres_skeleton_10k.json model",

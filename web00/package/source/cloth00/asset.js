@@ -1,5 +1,6 @@
 const Core = require("core");
 const WebGL = require("webgl");
+const AssetCloth = require("./asset_cloth_model_texture_link12.js");
 
 const debugModelFactory = function(in_webGLState){
 	const m_uvDataStream = WebGL.ModelDataStream.factory("FLOAT", 2, new Float32Array([
@@ -36,24 +37,18 @@ const debugTexturePosFactory = function(in_webGLState){
 	);
 }
 
-//const materialFactory = function(){
-//	return WebGL.MaterialWrapper.factory();
-//}
-
 const sModelName = "model";
 const sTexturePosName = "texturePos";
-//const sMaterial = "material";
 
 const registerAssets = function(in_resourceManager){
 	if (false === in_resourceManager.hasFactory(sModelName)){
-		in_resourceManager.addFactory(sModelName, debugModelFactory);
+		//in_resourceManager.addFactory(sModelName, debugModelFactory);
+		in_resourceManager.addFactory(sModelName, AssetCloth.factoryModel);
 	}
 	if (false === in_resourceManager.hasFactory(sTexturePosName)){
-		in_resourceManager.addFactory(sTexturePosName, debugTexturePosFactory);
+		//in_resourceManager.addFactory(sTexturePosName, debugTexturePosFactory);
+		in_resourceManager.addFactory(sTexturePosName, AssetCloth.factoryTexture);
 	}
-	//if (false === in_resourceManager.hasFactory(sMaterial)){
-	//	in_resourceManager.addFactory(sMaterial, materialFactory);
-	//}
 
 	return;
 }
@@ -63,5 +58,4 @@ module.exports = {
 	"registerAssets" : registerAssets,
 	"sModelName" : sModelName,
 	"sTexturePosName" : sTexturePosName,
-	//"sMaterial" : sMaterial
 };

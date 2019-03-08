@@ -350,9 +350,9 @@ const getAssetText = function(in_uvDataArrayName, in_linkUvNameArray, in_texture
 
 	for (var index = 0; index < in_textureDataNameArray.length; ++index){
 		factoryDataText += `	"factory${in_textureNameArray[index]}" : factory${in_textureNameArray[index]},\n`;
-		textureData += `const factory${in_textureNameArray[index]} = function(in_webGLContextWrapper){
+		textureData += `const factory${in_textureNameArray[index]} = function(in_webGLState){
 	return WebGL.TextureWrapper.factoryFloatRGBA(
-		in_webGLContextWrapper, 
+		in_webGLState, 
 		${in_textureDim}, 
 		${in_textureDim},
 		new Float32Array(${in_textureDataNameArray[index]})
@@ -363,12 +363,12 @@ const getAssetText = function(in_uvDataArrayName, in_linkUvNameArray, in_texture
 
 	return `const WebGL = require("webgl");
 
-const factoryModel = function(in_webGLContextWrapper){
+const factoryModel = function(in_webGLState){
 	const m_uvDataStream = WebGL.ModelDataStream.factory("FLOAT", 2, new Float32Array(${in_uvDataArrayName}), "STATIC_DRAW", false);
 ${dataStreamText}
 
 	return WebGL.ModelWrapper.factory(
-		in_webGLContextWrapper, 
+		in_webGLState, 
 		"POINTS",
 		Math.floor(${in_uvDataArrayName}.length / 2),
 		{

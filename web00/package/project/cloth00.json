@@ -7,5 +7,9 @@
 		"title" : "cloth00",
 		"bundleFilePath" : "js/cloth00bundle.js"
 	},
+	"copyFileDest" : "js/cloth00", 
+	"copyFileArray" :  [
+		"source/cloth00/data_cloth_model_texture_link12.js"
+		],
 	"outputRootDir": "output"
 }

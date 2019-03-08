@@ -3,13 +3,27 @@ const WebGL = require("webgl");
 
 const sVertexShader = `
 attribute vec2 a_uv;
-attribute vec3 a_uvLink0;
+attribute vec3 a_link0;
+attribute vec3 a_link1;
+attribute vec3 a_link2;
+attribute vec3 a_link3;
+attribute vec3 a_link4;
+attribute vec3 a_link5;
+attribute vec3 a_link6;
+attribute vec3 a_link7;
+attribute vec3 a_link8;
+attribute vec3 a_link9;
+attribute vec3 a_link10;
+attribute vec3 a_link11;
 uniform sampler2D u_samplerPos;
 uniform sampler2D u_samplerForce;
 uniform float u_timeDelta;
 varying vec4 v_force;
 
 vec3 VelocityDampen(vec3 in_uvd, vec3 in_pos, vec3 in_velocity){
+	if (0.0 == in_uvd.x){
+		return vec3(0.0, 0.0, 0.0);
+	}
 	vec4 linkPos = texture2D(u_samplerPos, in_uvd.xy);
 	vec4 linkForce = texture2D(u_samplerForce, in_uvd.xy);
 	vec3 linkVelocity = linkForce.xyz * u_timeDelta;
@@ -20,7 +34,6 @@ vec3 VelocityDampen(vec3 in_uvd, vec3 in_pos, vec3 in_velocity){
 	float posLength = length(posOffset);
 	vec3 springNormal = posOffset / posLength;
 	float relativeDot = dot(springNormal, relativeVelocity);
-
 	
 	//case 0
 	//float k = -1.0;
@@ -46,7 +59,18 @@ void main() {
 	vec3 predictedVelocity = force.xyz * u_timeDelta;
 
 	vec4 resultForce = force;
-	resultForce.xyz += VelocityDampen(a_uvLink0, pos.xyz, predictedVelocity);
+	resultForce.xyz += VelocityDampen(a_link0, pos.xyz, predictedVelocity);
+	resultForce.xyz += VelocityDampen(a_link1, pos.xyz, predictedVelocity);
+	resultForce.xyz += VelocityDampen(a_link2, pos.xyz, predictedVelocity);
+	resultForce.xyz += VelocityDampen(a_link3, pos.xyz, predictedVelocity);
+	resultForce.xyz += VelocityDampen(a_link4, pos.xyz, predictedVelocity);
+	resultForce.xyz += VelocityDampen(a_link5, pos.xyz, predictedVelocity);
+	resultForce.xyz += VelocityDampen(a_link6, pos.xyz, predictedVelocity);
+	resultForce.xyz += VelocityDampen(a_link7, pos.xyz, predictedVelocity);
+	resultForce.xyz += VelocityDampen(a_link8, pos.xyz, predictedVelocity);
+	resultForce.xyz += VelocityDampen(a_link9, pos.xyz, predictedVelocity);
+	resultForce.xyz += VelocityDampen(a_link10, pos.xyz, predictedVelocity);
+	resultForce.xyz += VelocityDampen(a_link11, pos.xyz, predictedVelocity);
 
 	v_force = resultForce;
 
@@ -61,7 +85,21 @@ void main() {
 	gl_FragColor = v_force;
 }
 `;
-const sVertexAttributeNameArray = ["a_uv", "a_uvLink0"];
+const sVertexAttributeNameArray = [
+	"a_uv", 
+	"a_link0",
+	"a_link1",
+	"a_link2",
+	"a_link3",
+	"a_link4",
+	"a_link5",
+	"a_link6",
+	"a_link7",
+	"a_link8",
+	"a_link9",
+	"a_link10",
+	"a_link11",
+	];
 const sUniformNameMap = {
 	"u_samplerPos" : WebGL.ShaderUniformData.sInt,
 	"u_samplerForce" : WebGL.ShaderUniformData.sInt,

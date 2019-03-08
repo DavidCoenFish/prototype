@@ -94,7 +94,7 @@ const visit = function(in_spaceInvestigator, in_sphereDiameter, in_min, in_dim, 
 					floatArray.push(localX);
 					floatArray.push(localY);
 					floatArray.push(localZ);
-					floatArray.push(in_sphereDiameter);
+					floatArray.push(in_sphereDiameter / 2.0);
 
 					in_debugIndexArray.push(xIndex);
 					in_debugIndexArray.push(yIndex);
@@ -118,7 +118,7 @@ const visitDebug = function(in_sphereDiameter, in_dimCount, in_debugIndexArray){
 				floatArray.push(localX);
 				floatArray.push(localY);
 				floatArray.push(localZ);
-				floatArray.push(in_sphereDiameter);
+				floatArray.push(in_sphereDiameter / 2.0);
 
 				in_debugIndexArray.push(xIndex);
 				in_debugIndexArray.push(yIndex);
@@ -203,7 +203,7 @@ const visitDebugSphere = function(in_sphereDiameter, in_dimCount, in_debugIndexA
 					floatArray.push(localX);
 					floatArray.push(localY);
 					floatArray.push(localZ + radius);
-					floatArray.push(in_sphereDiameter);
+					floatArray.push(in_sphereDiameter / 2.0);
 
 					in_debugIndexArray.push(xIndex);
 					in_debugIndexArray.push(yIndex);
@@ -215,9 +215,38 @@ const visitDebugSphere = function(in_sphereDiameter, in_dimCount, in_debugIndexA
 	return floatArray;
 }
 
+const visitDebugCloth = function(in_sphereDiameter, in_xCount, in_yCount, in_zCount, in_debugIndexArray, in_origin){
+	const floatArray = [];
+	// const in_origin = [
+	// 	-(in_xCount * in_sphereDiameter * 0.5), 
+	// 	-(in_yCount * in_sphereDiameter * gSqrt0_75 * 0.5), 
+	// 	-(in_zCount * in_sphereDiameter * gSqrt0_66666 * 0.5)
+	// 	];
+
+	for (var zIndex = 0; zIndex < in_zCount; ++zIndex){
+		const localZ = calculateZ(in_origin, zIndex, in_sphereDiameter);
+		for (var yIndex = 0; yIndex < in_yCount; ++yIndex){
+			const localY = calculateY(in_origin, yIndex, zIndex, in_sphereDiameter);
+			for (var xIndex = 0; xIndex < in_xCount; ++xIndex){
+				const localX = calculateX(in_origin, xIndex, yIndex, zIndex, in_sphereDiameter);
+				floatArray.push(localX);
+				floatArray.push(localY);
+				floatArray.push(localZ);
+				floatArray.push(in_sphereDiameter / 2.0);
+
+				in_debugIndexArray.push(xIndex);
+				in_debugIndexArray.push(yIndex);
+				in_debugIndexArray.push(zIndex);
+			}
+		}
+	}
+	return floatArray;
+}
+
 module.exports = {
 	"visit" : visit,
 	"visitDebug" : visitDebug,
 	"visitDebugSimple" : visitDebugSimple,
 	"visitDebugSphere" : visitDebugSphere, 
+	"visitDebugCloth" : visitDebugCloth, 
 }

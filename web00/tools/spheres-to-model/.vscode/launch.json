@@ -24,6 +24,23 @@
 		{
 			"type": "node",
 			"request": "launch",
+			"name": "cloth_model_texture_link12",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"cloth_model_texture_link12"
+			],
+			"port": 5858,
+			"timeout": 100000
+			//"console": "externalTerminal"
+		},
+
+		{
+			"type": "node",
+			"request": "launch",
 			"name": "female_anatomy_10k_model",
 			"runtimeExecutable": "npm",
 			"windows": {

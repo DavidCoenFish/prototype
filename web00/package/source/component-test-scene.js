@@ -12,7 +12,7 @@ const factory = function(
 	in_frameCountOrUndefined,
 	in_saveEachFrameFileNameOrUndefined
 ){
-	const m_canvaseElementWrapper = ManipulateDom.ComponentCanvas.factoryAppendBody(in_document, 256, 256);
+	const m_canvaseElementWrapper = ManipulateDom.ComponentCanvas.factoryAppendBody(in_document, 512, 512);
 	const m_webGLState = WebGL.WebGLState.factory(m_canvaseElementWrapper.getElement(), in_webGLContextParamObject);
 	const m_stepMode = (undefined === in_stepModeOrUndefined) ? in_stepModeOrUndefined : false;
 

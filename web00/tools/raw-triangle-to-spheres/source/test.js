@@ -162,8 +162,8 @@ const testSampleGeneratorBbcSimple = function(){
 	const debugIndexArray = [];
 	const sphereArray = SpaceGeneratorBbc.visitDebugSimple(1.0, 3, debugIndexArray);
 
-	console.log(JSON.stringify(debugIndexArray));
-	console.log(JSON.stringify(sphereArray));
+	FsExtra.writeJSONSync(".\\output\\simple.json", sphereArray);
+	FsExtra.writeJSONSync(".\\output\\simple_index.json", debugIndexArray);
 }
 
 const testSampleGeneratorBbcSphere = function(){
@@ -178,14 +178,29 @@ const testSampleGeneratorBbcSphere = function(){
 	return;
 }
 
+const testSampleGeneratorBbcCloth = function(){
+	console.log("testSampleGeneratorBbcSphere");
+
+	const debugIndexArray = [];
+	const in_origin = [-0.5, -0.5, 1.0];
+	const sphereArray = SpaceGeneratorBbc.visitDebugCloth(0.01, 128, 128, 1, debugIndexArray, in_origin);
+
+	FsExtra.writeJSONSync(".\\output\\cloth.json", sphereArray);
+	FsExtra.writeJSONSync(".\\output\\cloth_index.json", debugIndexArray);
+
+	return;
+}
+
+
 const run = function(){
 	testGeometryRayPlaneIntersect();
 	testBarycentricTriangle0();
 	testRayDistance();
 	testInside();
 	testSampleGeneratorBbc();
-	//testSampleGeneratorBbcSimple();
+	testSampleGeneratorBbcSimple();
 	testSampleGeneratorBbcSphere();
+	testSampleGeneratorBbcCloth();
 
 	console.log("done");
 }

@@ -64,7 +64,7 @@ const visit = function(in_spaceInvestigator, in_sphereDiameter, in_min, in_dim, 
 					floatArray.push(localX);
 					floatArray.push(localY);
 					floatArray.push(localZ);
-					floatArray.push(in_sphereDiameter);
+					floatArray.push(in_sphereDiameter / 2.0);
 
 					in_debugIndexArray.push(xIndex);
 					in_debugIndexArray.push(yIndex);

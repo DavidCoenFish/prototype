@@ -12,6 +12,7 @@ const TaskCalculateForce = require("./cloth00/taskcalculateforce.js");
 const TaskUpdatePosition = require("./cloth00/taskupdateposition.js");
 
 const TaskContraintCollision = require("./cloth00/taskconstraintcollision.js");
+const TaskContraintCollisionSphere = require("./cloth00/taskconstraintcollisionsphere.js");
 const TaskContraintSpring = require("./cloth00/taskconstraintspring.js");
 const TaskContraintVelocityDampen = require("./cloth00/taskconstraintvelocitydampen.js");
 
@@ -62,6 +63,7 @@ const onPageLoad = function(){
 			m_taskPrepInput,
 			m_taskCalculateForce,
 			m_taskContraintCollision,
+			m_taskContraintCollisionSphere,
 			m_taskContraintSpring,
 			m_taskContraintVelocityDampen,
 			m_taskUpdatePosition
@@ -98,10 +100,10 @@ const onPageLoad = function(){
 		"u_timeDeltaPrev" : 0.0,
 		"u_viewportWidthHeightWidthhalfHeighthalf" : Core.Vector4.factoryFloat32(m_canvasWidth, m_canvasHeight, m_canvasWidth / 2.0, m_canvasHeight / 2.0).getRaw(),
 		"u_cameraFovhFovvFar" : Core.Vector3.factoryFloat32(90.0, 90.0, 100.0).getRaw(),
-		"u_cameraPos" : [-0.7398508191108704, 2.9275126457214355, 0.9037196040153503],
-		"u_cameraAt" : [0.3491857945919037, -0.9339750409126282, -0.0758940726518631],
-		"u_cameraLeft" : [0.9350206851959229, 0.3526155948638916, -0.0373971126973629],
-		"u_cameraUp" : [0.06168940290808678, -0.05790398642420769, 0.9964143633842468],
+		"u_cameraPos" : [-1.1863007545471191, 2.558333396911621, 0.8409501910209656],
+		"u_cameraAt" : [0.5639726519584656, -0.8254567384719849, 0.023579280823469162],
+		"u_cameraLeft" : [0.8256853818893433, 0.5641308426856995, 0.0000689975859131664],
+		"u_cameraUp" : [-0.013358754105865955, 0.01943015493452549, 0.9997219443321228],
 	};
 	Asset.registerAssets(m_resourceManager, m_webGLState);
 
@@ -110,6 +112,7 @@ const onPageLoad = function(){
 	const m_taskPrepInput = TaskPrepInput.factory(m_resourceManager, m_webGLState, m_state, Asset.sTexturePosName);
 	const m_taskCalculateForce = TaskCalculateForce.factory(m_resourceManager, m_webGLState, m_state, Asset.sModelName);
 	const m_taskContraintCollision = TaskContraintCollision.factory(m_resourceManager, m_webGLState, m_state, Asset.sModelName);
+	const m_taskContraintCollisionSphere = TaskContraintCollisionSphere.factory(m_resourceManager, m_webGLState, m_state, Asset.sModelName);
 	const m_taskContraintSpring = TaskContraintSpring.factory(m_resourceManager, m_webGLState, m_state, Asset.sModelName);
 	const m_taskContraintVelocityDampen = TaskContraintVelocityDampen.factory(m_resourceManager, m_webGLState, m_state, Asset.sModelName);
 

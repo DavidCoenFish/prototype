@@ -14,12 +14,12 @@ const getAssetText = function(in_uvDataArrayName, in_uvLinkArrayName, in_texture
 
 	return `const WebGL = require("webgl");
 
-const factoryModel = function(in_webGLContextWrapper){
+const factoryModel = function(in_webGLState){
 	const m_uvDataStream = WebGL.ModelDataStream.factory("FLOAT", 2, new Float32Array(${in_uvDataArrayName}), "STATIC_DRAW", false);
 ${dataStreamText}
 
 	return WebGL.ModelWrapper.factory(
-		in_webGLContextWrapper, 
+		in_webGLState, 
 		"POINTS",
 		Math.floor(${in_uvDataArrayName}.length / 2),
 		{
@@ -29,9 +29,9 @@ ${dataStreamMap}
 	);
 }
 
-const factoryTexture = function(in_webGLContextWrapper){
+const factoryTexture = function(in_webGLState){
 	return WebGL.TextureWrapper.factoryFloatRGBA(
-		in_webGLContextWrapper, 
+		in_webGLState, 
 		${in_textureDim}, 
 		${in_textureDim},
 		new Float32Array(${in_textureDataArrayName})
