@@ -160,7 +160,7 @@ const factory = function(in_targetElement, inout_state){
 		if (undefined !== code){
 			m_keyMap[code] = 0;
 		}
-		console.log("keyUp code:" + code + " code:" + in_event.code + " key:" + in_event.key + " char:" + in_event.char + " charCode:" + in_event.charCode);
+		//console.log("keyUp code:" + code + " code:" + in_event.code + " key:" + in_event.key + " char:" + in_event.char + " charCode:" + in_event.charCode);
 		return;
 	}
 	const anyKeyDown = function(in_keys){
