@@ -3,6 +3,7 @@ const WebGL = require("webgl");
 
 const sVertexShader = `
 attribute vec2 a_uv;
+//attribute float a_canMove;
 uniform sampler2D u_samplerPos;
 uniform sampler2D u_samplerForce;
 uniform float u_timeDelta;
@@ -11,7 +12,8 @@ void main() {
 	vec4 pos = texture2D(u_samplerPos, a_uv);
 	vec4 force = texture2D(u_samplerForce, a_uv);
 
-	v_sphere.xyz = pos.xyz + (force.xyz * u_timeDelta * u_timeDelta);
+	//v_sphere.xyz = pos.xyz + (force.xyz * (u_timeDelta * u_timeDelta * a_canMove));
+	v_sphere.xyz = pos.xyz + (force.xyz * (u_timeDelta * u_timeDelta));
 	v_sphere.w = pos.w;
 
 	gl_Position = vec4((a_uv.x * 2.0) - 1.0, (a_uv.y * 2.0) - 1.0, 0.0, 1.0);
@@ -25,7 +27,7 @@ void main() {
 	gl_FragColor = v_sphere;
 }
 `;
-const sVertexAttributeNameArray = ["a_uv"];
+const sVertexAttributeNameArray = ["a_uv"]; //, "a_canMove"];
 const sUniformNameMap = {
 	"u_samplerPos" : WebGL.ShaderUniformData.sInt,
 	"u_samplerForce" : WebGL.ShaderUniformData.sInt,

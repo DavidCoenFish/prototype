@@ -59,18 +59,19 @@ void main() {
 	vec3 predictedVelocity = force.xyz * u_timeDelta;
 
 	vec4 resultForce = force;
-	resultForce.xyz += VelocityDampen(a_link0, pos.xyz, predictedVelocity);
-	resultForce.xyz += VelocityDampen(a_link1, pos.xyz, predictedVelocity);
-	resultForce.xyz += VelocityDampen(a_link2, pos.xyz, predictedVelocity);
-	resultForce.xyz += VelocityDampen(a_link3, pos.xyz, predictedVelocity);
-	resultForce.xyz += VelocityDampen(a_link4, pos.xyz, predictedVelocity);
-	resultForce.xyz += VelocityDampen(a_link5, pos.xyz, predictedVelocity);
-	resultForce.xyz += VelocityDampen(a_link6, pos.xyz, predictedVelocity);
-	resultForce.xyz += VelocityDampen(a_link7, pos.xyz, predictedVelocity);
-	resultForce.xyz += VelocityDampen(a_link8, pos.xyz, predictedVelocity);
-	resultForce.xyz += VelocityDampen(a_link9, pos.xyz, predictedVelocity);
-	resultForce.xyz += VelocityDampen(a_link10, pos.xyz, predictedVelocity);
-	resultForce.xyz += VelocityDampen(a_link11, pos.xyz, predictedVelocity);
+	// resultForce.xyz += VelocityDampen(a_link0, pos.xyz, predictedVelocity);
+	// resultForce.xyz += VelocityDampen(a_link1, pos.xyz, predictedVelocity);
+	// resultForce.xyz += VelocityDampen(a_link2, pos.xyz, predictedVelocity);
+	// resultForce.xyz += VelocityDampen(a_link3, pos.xyz, predictedVelocity);
+	// resultForce.xyz += VelocityDampen(a_link4, pos.xyz, predictedVelocity);
+	// resultForce.xyz += VelocityDampen(a_link5, pos.xyz, predictedVelocity);
+	// resultForce.xyz += VelocityDampen(a_link6, pos.xyz, predictedVelocity);
+	// resultForce.xyz += VelocityDampen(a_link7, pos.xyz, predictedVelocity);
+	// resultForce.xyz += VelocityDampen(a_link8, pos.xyz, predictedVelocity);
+	// resultForce.xyz += VelocityDampen(a_link9, pos.xyz, predictedVelocity);
+	// resultForce.xyz += VelocityDampen(a_link10, pos.xyz, predictedVelocity);
+	// resultForce.xyz += VelocityDampen(a_link11, pos.xyz, predictedVelocity);
+	resultForce.xyz *= max(0.0, (1.0 - u_timeDelta));
 
 	v_force = resultForce;
 

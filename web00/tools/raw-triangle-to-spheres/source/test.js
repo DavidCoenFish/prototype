@@ -184,6 +184,8 @@ const testSampleGeneratorBbcCloth = function(){
 	const debugIndexArray = [];
 	const in_origin = [-0.5, -0.5, 1.0];
 	const sphereArray = SpaceGeneratorBbc.visitDebugCloth(0.01, 128, 128, 1, debugIndexArray, in_origin);
+	//const in_origin = [0, 0, 5];
+	//const sphereArray = SpaceGeneratorBbc.visitDebugCloth(1, 4, 4, 1, debugIndexArray, in_origin);
 
 	FsExtra.writeJSONSync(".\\output\\cloth.json", sphereArray);
 	FsExtra.writeJSONSync(".\\output\\cloth_index.json", debugIndexArray);

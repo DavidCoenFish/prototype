@@ -152,7 +152,7 @@ const factory = function(in_targetElement, inout_state){
 		if (undefined !== code){
 			m_keyMap[code] = 1;
 		}
-		//console.log("keyDown:" + in_event.code);
+		//console.log("keyDown code:" + code + " code:" + in_event.code + " key:" + in_event.key + " char:" + in_event.char + " charCode:" + in_event.charCode);
 		return;
 	}
 	const keyUpCallback = function(in_event){

@@ -5,6 +5,7 @@ const sVertexShader = `
 attribute vec2 a_uv;
 uniform sampler2D u_samplerPos;
 uniform sampler2D u_samplerPosPrev;
+uniform float u_timeDelta;
 uniform float u_timeDeltaPrev;
 varying vec4 v_force;
 void main() {
@@ -14,7 +15,7 @@ void main() {
 	vec3 acceleration = vec3(0.0, 0.0, 0.0);
 	if (0.0 < u_timeDeltaPrev){
 		vec3 velocity = (pos.xyz - posPrev.xyz) / u_timeDeltaPrev;
-		acceleration = velocity / u_timeDeltaPrev;
+		acceleration = velocity / u_timeDelta;
 	}
 	vec3 gravity = vec3(0.0, 0.0, -9.8);
 
@@ -37,6 +38,7 @@ const sVertexAttributeNameArray = ["a_uv"];
 const sUniformNameMap = {
 	"u_samplerPos" : WebGL.ShaderUniformData.sInt,
 	"u_samplerPosPrev" : WebGL.ShaderUniformData.sInt,
+	"u_timeDelta" : WebGL.ShaderUniformData.sFloat,
 	"u_timeDeltaPrev" : WebGL.ShaderUniformData.sFloat
 };
 
@@ -60,6 +62,7 @@ const factory = function(in_resourceManager, in_webGLState, in_state, in_modelNa
 	const m_state = {
 		"u_samplerPos" : 0,
 		"u_samplerPosPrev" : 1,
+		"u_timeDelta" : undefined,
 		"u_timeDeltaPrev" : undefined
 	};
 
@@ -67,9 +70,12 @@ const factory = function(in_resourceManager, in_webGLState, in_state, in_modelNa
 		"run" : function(in_taskState){
 			m_textureArray[0] = in_taskState.pos.getTexture(0);
 			m_textureArray[1] = in_taskState.pos_prev.getTexture(0);
+
+			//we assume we are the first to write to focre, so just use input rather than output
 			var renderTarget = in_taskState.force_in;
 
 			in_webGLState.applyRenderTarget(renderTarget);
+			m_state.u_timeDelta = in_state.u_timeDelta;
 			m_state.u_timeDeltaPrev = in_state.u_timeDeltaPrev;
 
 			in_webGLState.applyShader(m_shader, m_state);

@@ -29,14 +29,24 @@ vec3 SpringForce(vec3 in_uvd, vec3 in_predictedPos){
 	vec4 linkForce = texture2D(u_samplerForce, in_uvd.xy);
 	vec3 linkPredictedPos = linkPos.xyz + (linkForce.xyz * (u_timeDelta * u_timeDelta));
 
+	//case 0 spring force
 	vec3 offset = linkPredictedPos - in_predictedPos;
 	float linkLength = length(offset);
 	vec3 springNormal = offset / linkLength;
 	float springLength = linkLength - in_uvd.z;
-	float k = -1000.0 * in_uvd.z;
+	float k = -1000.0; // * in_uvd.z;
 	vec3 accel = (k * springLength) * springNormal;
 	vec3 force = accel * (-0.5);
 	return force;
+
+	//case 1 move point to target
+	// vec3 vecOffset = linkPredictedPos - in_predictedPos;
+	// float d = length(vecOffset);
+	// vec3 norm = vecOffset / d;
+	// vec3 targetAdjust = -((d - in_uvd.z) * 0.5) + norm;
+	// vec3 force = targetAdjust / (u_timeDelta * u_timeDelta);
+	// return force;
+
 }
 
 void main() {

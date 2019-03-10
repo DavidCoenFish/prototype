@@ -58,17 +58,19 @@ const onPageLoad = function(){
 	}
 	const callbackStep = function(in_timeDeltaActual, in_timeDeltaAjusted){
 		m_camera.tick(in_timeDeltaActual);
-		m_state.u_timeDelta = in_timeDeltaAjusted;
-		Core.TaskHelper.runArray([
-			m_taskPrepInput,
-			m_taskCalculateForce,
-			m_taskContraintCollision,
-			m_taskContraintCollisionSphere,
-			m_taskContraintSpring,
-			m_taskContraintVelocityDampen,
-			m_taskUpdatePosition
-			]);
-		m_state.u_timeDeltaPrev = m_state.u_timeDelta;
+		if (0 < in_timeDeltaAjusted){
+			m_state.u_timeDelta = in_timeDeltaAjusted;
+			Core.TaskHelper.runArray([
+				m_taskPrepInput,
+				m_taskCalculateForce,
+				m_taskContraintCollision,
+				m_taskContraintCollisionSphere,
+				m_taskContraintSpring,
+				m_taskContraintVelocityDampen,
+				m_taskUpdatePosition
+				]);
+			m_state.u_timeDeltaPrev = in_timeDeltaAjusted;
+		}
 		return;
 	}
 	const callbackStopUpdate = function(){
@@ -88,7 +90,10 @@ const onPageLoad = function(){
 		callbackStep, 
 		callbackStopUpdate, 
 		WebGL.WebGLState.makeParam(false, true, true, ["OES_texture_float"]), 
-		document);
+		document, 
+		//true,
+		//0.016666, //undefined//0.01
+		);
 	const m_webGLState = m_componentTestScene.getWebGLState();
 	const m_resourceManager = Core.ResourceManager.factory();
 
@@ -100,10 +105,14 @@ const onPageLoad = function(){
 		"u_timeDeltaPrev" : 0.0,
 		"u_viewportWidthHeightWidthhalfHeighthalf" : Core.Vector4.factoryFloat32(m_canvasWidth, m_canvasHeight, m_canvasWidth / 2.0, m_canvasHeight / 2.0).getRaw(),
 		"u_cameraFovhFovvFar" : Core.Vector3.factoryFloat32(90.0, 90.0, 100.0).getRaw(),
-		"u_cameraPos" : [-1.1863007545471191, 2.558333396911621, 0.8409501910209656],
-		"u_cameraAt" : [0.5639726519584656, -0.8254567384719849, 0.023579280823469162],
-		"u_cameraLeft" : [0.8256853818893433, 0.5641308426856995, 0.0000689975859131664],
-		"u_cameraUp" : [-0.013358754105865955, 0.01943015493452549, 0.9997219443321228],
+		// "u_cameraPos" : [-1.0719465017318725, 8.465320587158203, 6.531123638153076],
+		// "u_cameraAt" : [0.4652847945690155, -0.8222289681434631, -0.3277950882911682],
+		// "u_cameraLeft" : [0.8832346796989441, 0.4556824564933777, 0.1106799840927124],
+		// "u_cameraUp" : [0.05836617946624756, -0.3410176932811737, 0.9382432103157043],
+		"u_cameraPos" : [-0.5422263145446777, 2.572321891784668, 2.031367540359497],
+		"u_cameraAt" : [0.39100712537765503, -0.7689058780670166, -0.505862832069397],
+		"u_cameraLeft" : [0.9099526405334473, 0.4054783284664154, 0.08702617883682251],
+		"u_cameraUp" : [0.13820147514343262, -0.49433907866477966, 0.8582128286361694],
 	};
 	Asset.registerAssets(m_resourceManager, m_webGLState);
 

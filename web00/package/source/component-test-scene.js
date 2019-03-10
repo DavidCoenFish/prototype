@@ -14,7 +14,7 @@ const factory = function(
 ){
 	const m_canvaseElementWrapper = ManipulateDom.ComponentCanvas.factoryAppendBody(in_document, 512, 512);
 	const m_webGLState = WebGL.WebGLState.factory(m_canvaseElementWrapper.getElement(), in_webGLContextParamObject);
-	const m_stepMode = (undefined === in_stepModeOrUndefined) ? in_stepModeOrUndefined : false;
+	var m_stepMode = (undefined !== in_stepModeOrUndefined) ? in_stepModeOrUndefined : false;
 
 	var m_paused = (true === m_stepMode);
 	var m_prevTimeStamp = undefined;
@@ -35,12 +35,15 @@ const factory = function(
 			timeDeltaAjusted = in_timeDeltaOverrideOrUndefined;
 		}
 
-		if (false === m_paused){
-			if (0.0 < timeDeltaActual){
-				if (undefined !== in_callbackStep){
-					in_callbackStep(timeDeltaActual, timeDeltaAjusted);
-				}
+		if (0.0 < timeDeltaActual){
+			if (true === m_paused){
+				timeDeltaAjusted = 0.0;
+			} else {
 				m_paused = (true === m_stepMode);
+			}
+
+			if (undefined !== in_callbackStep){
+				in_callbackStep(timeDeltaActual, timeDeltaAjusted);
 			}
 		}
 
@@ -81,6 +84,10 @@ const factory = function(
 	if (true === m_stepMode){
 		ManipulateDom.Button.addSimpleButton(in_document, in_document.body, "step", function(){
 			m_paused = false;
+			return;
+		});
+		ManipulateDom.Button.addSimpleButton(in_document, in_document.body, "toggle step mode", function(){
+			m_stepMode = (1 === (m_stepMode ^ true));
 			return;
 		});
 	}

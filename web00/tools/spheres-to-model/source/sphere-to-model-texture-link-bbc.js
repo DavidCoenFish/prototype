@@ -4,12 +4,17 @@ const FileSystem = require("fs");
 const FsExtra = require("fs-extra");
 const CamelCase = require("./camel-case.js");
 
-const getAssetText = function(in_uvDataArrayName, in_uvLinkArrayName, in_textureDataArrayName, in_textureDim){
+const getAssetText = function(in_uvDataArrayName, in_uvLinkArrayName, in_textureDataArrayName, in_textureDim, in_canMoveArrayName){
 	var dataStreamText = "";
 	var dataStreamMap = "";
 	for (var index = 0; index < in_uvLinkArrayName.length; ++index){
 		dataStreamText += `	const m_link${index}DataStream = WebGL.ModelDataStream.factory("FLOAT", 3, new Float32Array(${in_uvLinkArrayName[index]}), "STATIC_DRAW", false);\n`;
 		dataStreamMap += `			"a_link${index}" : m_link${index}DataStream,\n`;
+	}
+
+	if (undefined != in_canMoveArrayName){
+		dataStreamText += `	const m_canMove = WebGL.ModelDataStream.factory("FLOAT", 1, new Float32Array(${in_canMoveArrayName}), "STATIC_DRAW", false);\n`;
+		dataStreamMap += `			"a_canMove" : m_canMove,\n`;
 	}
 
 	return `const WebGL = require("webgl");
@@ -44,7 +49,7 @@ module.exports = {
 };`; 
 }
 
-const getDataArrayText = function(in_sphereArray, in_uvDataArrayName, in_textureDataArrayName, in_textureDim, in_arrayArrayLinkData, in_uvLinkArrayName){
+const getDataArrayText = function(in_sphereArray, in_uvDataArrayName, in_textureDataArrayName, in_textureDim, in_arrayArrayLinkData, in_uvLinkArrayName, in_canMoveArray, in_canMoveArrayName){
 	//uv
 	var sphereCount = in_sphereArray.length / 4;
 	var traceX = 0;
@@ -84,6 +89,18 @@ const getDataArrayText = function(in_sphereArray, in_uvDataArrayName, in_texture
 		}
 	}
 	result += `]\n`;
+
+	//can move array
+	if (undefined !== in_canMoveArrayName){
+		result += `const ${in_canMoveArrayName} = [`;
+		for (var index = 0; index < in_canMoveArray.length; index++){
+			if ((index % 4) === 0){
+				result += `\n`;
+			}
+			result += String(in_canMoveArray[index]) + ",";
+		}
+		result += `]\n`;
+	}
 
 	return result;
 }
@@ -135,7 +152,7 @@ const linkPoint = function(inout_arrayLinkData, in_sourceX, in_sourceY, in_sourc
 	return;
 }
 
-const makeLinkData = function(inout_arrayArrayLinkData, in_linkArray, in_sphereArray, in_linkMap, in_textureDim){
+const makeLinkData = function(inout_arrayArrayLinkData, in_linkArray, in_sphereArray, in_linkMap, in_textureDim, in_canMoveArray){
 	var sphereCount = in_sphereArray.length / 4;
 	for (var sphereIndex = 0; sphereIndex < sphereCount; ++sphereIndex){
 		var sourceX = in_linkArray[(sphereIndex * 3) + 0];
@@ -143,6 +160,10 @@ const makeLinkData = function(inout_arrayArrayLinkData, in_linkArray, in_sphereA
 		var sourceZ = in_linkArray[(sphereIndex * 3) + 2];
 		var evenY = (0 === (sourceY & 1));
 		var evenZ = (0 === (sourceZ & 1));
+
+		if (undefined !== in_canMoveArray){
+			in_canMoveArray.push(((sourceY === 0) && (sourceZ === 0)) ? 0.0 : 1.0);
+		}
 
 		if ((true === evenY) && (true === evenZ)){
 			// {"linkB":[-1,1,0]}
@@ -339,16 +360,18 @@ const run12 = function(in_sphereArray, in_linkArray, in_fileAssetPath, in_fileDa
 		uvLinkArrayName.push("gLink" + index + rootName);
 		arrayArrayLinkData.push([]);
 	}
+	var canMoveArrayName = undefined; //"gCanMove" + rootName;
+	var canMoveArray = undefined; //[];
 
 	var textureDataArrayName ="gTex" + rootName;
 	var textureDim = Math.pow(2, Math.ceil(Math.log2(Math.sqrt(in_sphereArray.length / 4))));
 	console.log("textureDim:" + textureDim + " sphereCount:" + in_sphereArray.length / 4);
 
 	const linkMap = makeLinkMap(in_linkArray);
-	makeLinkData(arrayArrayLinkData, in_linkArray, in_sphereArray, linkMap, textureDim);
+	makeLinkData(arrayArrayLinkData, in_linkArray, in_sphereArray, linkMap, textureDim, canMoveArray);
 
-	var assetText = getAssetText(uvDataArrayName, uvLinkArrayName, textureDataArrayName, textureDim);
-	var dataText = getDataArrayText(in_sphereArray, uvDataArrayName, textureDataArrayName, textureDim, arrayArrayLinkData, uvLinkArrayName);
+	var assetText = getAssetText(uvDataArrayName, uvLinkArrayName, textureDataArrayName, textureDim, canMoveArrayName);
+	var dataText = getDataArrayText(in_sphereArray, uvDataArrayName, textureDataArrayName, textureDim, arrayArrayLinkData, uvLinkArrayName, canMoveArray, canMoveArrayName);
 
 	return FsExtra.writeFile(in_fileAssetPath, assetText).then(function(){
 		return FsExtra.writeFile(in_fileDataPath, dataText);
