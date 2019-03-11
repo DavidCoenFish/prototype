@@ -223,6 +223,10 @@ const factory = function(
 		},
 
 		"applyRenderTarget" : function(in_renderTarget){
+			if (undefined === in_renderTarget){
+				that.resetRenderTarget()
+				return;
+			}
 			const targetEnum = m_webGLContextWrapper.getEnum("FRAMEBUFFER");
 			const frameBufferObject = in_renderTarget.getFrameBufferObject();
 			m_webGLContextWrapper.callMethod("bindFramebuffer", targetEnum, frameBufferObject);

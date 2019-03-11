@@ -1,5 +1,5 @@
 
-const KnotTexture = require("./knot_tex8_64_64.js");
+const KnotTexture = require("./knot_tex8_32_32.js");
 const sTextureName = "knot_texture";
 const Core = require("core");
 const WebGL = require("webgl");
@@ -224,7 +224,7 @@ const makeModel = function(in_webGLState, in_screenWidth, in_screenHeight, in_ti
 	);
 }
 
-const factory = function(in_webGLState, in_resourceManager, in_screenWidth, in_screenHeight, in_tileWidth, in_tileHeight){
+const factory = function(in_resourceManager, in_webGLState, in_screenWidth, in_screenHeight, in_tileWidth, in_tileHeight){
 	if (false === in_resourceManager.hasFactory(sTextureName)){
 		in_resourceManager.addFactory(sTextureName, KnotTexture.factoryTexture);
 	}
@@ -238,9 +238,14 @@ const factory = function(in_webGLState, in_resourceManager, in_screenWidth, in_s
 		"u_timeDelta" : undefined
 	};
 
+	const m_clearColour = Core.Colour4.factoryFloat32(0.0, 0.0, 0.0, 1.0);
 	const that = Object.create({
-		"draw" : function(){
+		"draw" : function(in_renderTarget){
 			var model = makeModel(in_webGLState, in_screenWidth, in_screenHeight, in_tileWidth, in_tileHeight);
+
+			in_webGLState.applyRenderTarget(in_renderTarget);
+
+			in_webGLState.clear(m_clearColour);
 
 			in_webGLState.applyShader(m_shader, m_state);
 			in_webGLState.applyMaterial(m_material);

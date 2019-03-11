@@ -4,6 +4,7 @@ module.exports = {
 	"ComponentMaterialMacroSphereUv" : require("./source/component-material-macro-sphere-uv.js"),
 	"ComponentMaterialScreenPosUv" : require("./source/component-material-screen-pos-uv.js"),
 	"ComponentModelLine" : require("./source/component-model-line.js"),
+	"ComponentModelScreenQuad" : require("./source/component-model-screen-quad.js"),
 	"ComponentScreenTextureArray" : require("./source/component-screen-texture-array.js"),
 	"ComponentScreenTextureQuad" : require("./source/component-screen-texture-quad.js"),
 	"ComponentWorldGrid" : require("./source/component-world-grid.js"),

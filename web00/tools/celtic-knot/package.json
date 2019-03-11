@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "node --nolazy --inspect-brk=5858 index.js test",
+    "tex8_32_32": "node --nolazy --inspect-brk=5858 index.js texturebyte output\\knot_tex8_32_32.js 32 32",
+    "tex8_48_48": "node --nolazy --inspect-brk=5858 index.js texturebyte output\\knot_tex8_48_48.js 48 48",
     "tex8_64_64": "node --nolazy --inspect-brk=5858 index.js texturebyte output\\knot_tex8_64_64.js 64 64"
   },
   "dependencies": {
