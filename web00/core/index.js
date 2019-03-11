@@ -1,4 +1,5 @@
 module.exports = {
+	"Base64" : require("./source/base64.js"),
 	"Colour4" : require("./source/colour4.js"),
 	"EventDispatcherDecorate" : require("./source/eventdispatcherdecorate.js"),
 	"CoreMath" : require("./source/coremath.js"),

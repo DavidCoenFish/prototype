@@ -22,7 +22,7 @@ const Core = require("core");
 const CelticKnotLine = require("./celticknotline.js");
 const CelticKnotCircle = require("./celticknotcircle.js");
 
-const factory = function(){
+const factory = function(in_distanceFunction){
 	const m_halfWidth = (Math.sqrt((0.25 * 0.25) * 2)) / 2;
 	const result = Object.create({
 		"sampleHeight" : function(in_accumulator, in_xRatio, in_yRatio, in_stampType){
@@ -100,46 +100,27 @@ const factory = function(){
 		return;
 	}
 
-	//m_halfWidth
-	const distanceFunction = function(in_accumulator, in_distance){
-		if (in_distance < (m_halfWidth - 0.0001)){
-			var temp = in_distance / m_halfWidth;
-			temp = (temp * temp);
-			var height = 1.0 - (0.5 * temp);
-			in_accumulator.setKnotHeight(height);
-		} else if (in_distance < (m_halfWidth * 2.0)){
-			//"shadow" case
-			var temp = in_distance - m_halfWidth;
-			temp = (m_halfWidth - temp) / m_halfWidth;
-			var temp2 = (temp * temp * temp);
-			var height = temp2 * 0.5;
-			in_accumulator.setSubtractBackgroundHeight(height);
-			in_accumulator.setSubtractKnotHeight(temp * 0.25);
-		}
-		return;
-	}
-
 	//1 soild
 	const m_tileOneCorner = [
-		CelticKnotLine.factory(Core.Vector2.factoryFloat32(0.375, 0.875), Core.Vector2.factoryFloat32(-0.25, 0.25), distanceFunction),		
+		CelticKnotLine.factory(Core.Vector2.factoryFloat32(0.375, 0.875), Core.Vector2.factoryFloat32(-0.25, 0.25), in_distanceFunction),		
 	
-		CelticKnotLine.factory(Core.Vector2.factoryFloat32(0.625, 0.875), Core.Vector2.factoryFloat32(0.25, 1.25), distanceFunction),
-		CelticKnotCircle.factory(Core.Vector2.factoryFloat32(0.375, 0.625), m_halfWidth * 2.0, Core.Radians.fromDegrees(-135.0), Core.Radians.fromDegrees(45.0), distanceFunction),
+		CelticKnotLine.factory(Core.Vector2.factoryFloat32(0.625, 0.875), Core.Vector2.factoryFloat32(0.25, 1.25), in_distanceFunction),
+		CelticKnotCircle.factory(Core.Vector2.factoryFloat32(0.375, 0.625), m_halfWidth * 2.0, Core.Radians.fromDegrees(-135.0), Core.Radians.fromDegrees(45.0), in_distanceFunction),
 	];
 	//1,2 solid
 	const m_tileTwoCorner = [
-		CelticKnotLine.factory(Core.Vector2.factoryFloat32(0.375, 0.875), Core.Vector2.factoryFloat32(-0.25, 0.25), distanceFunction),		
-		CelticKnotLine.factory(rotateUv90(Core.Vector2.factoryFloat32(0.375, 0.875)), rotateUv90(Core.Vector2.factoryFloat32(-0.25, 0.25)), distanceFunction),
+		CelticKnotLine.factory(Core.Vector2.factoryFloat32(0.375, 0.875), Core.Vector2.factoryFloat32(-0.25, 0.25), in_distanceFunction),		
+		CelticKnotLine.factory(rotateUv90(Core.Vector2.factoryFloat32(0.375, 0.875)), rotateUv90(Core.Vector2.factoryFloat32(-0.25, 0.25)), in_distanceFunction),
 
-		CelticKnotCircle.factory(Core.Vector2.factoryFloat32(0.5, 0.75), m_halfWidth * 3.0, Core.Radians.fromDegrees(-135.0), Core.Radians.fromDegrees(-45.0), distanceFunction),
-		CelticKnotLine.factory(Core.Vector2.factoryFloat32(0.875, 0.375), Core.Vector2.factoryFloat32(1.25, 0.75), distanceFunction),
+		CelticKnotCircle.factory(Core.Vector2.factoryFloat32(0.5, 0.75), m_halfWidth * 3.0, Core.Radians.fromDegrees(-135.0), Core.Radians.fromDegrees(-45.0), in_distanceFunction),
+		CelticKnotLine.factory(Core.Vector2.factoryFloat32(0.875, 0.375), Core.Vector2.factoryFloat32(1.25, 0.75), in_distanceFunction),
 	];
 	//1,2,3,4 solid
 	const m_tileSolid = [
-		CelticKnotLine.factory(Core.Vector2.factoryFloat32(-0.375, 0.125), Core.Vector2.factoryFloat32(0.375, 0.875), distanceFunction),
-		CelticKnotLine.factory(rotateUv90(Core.Vector2.factoryFloat32(-0.375, 0.125)), rotateUv90(Core.Vector2.factoryFloat32(0.375, 0.875)), distanceFunction),
-		CelticKnotLine.factory(rotateUv180(Core.Vector2.factoryFloat32(-0.375, 0.125)), rotateUv180(Core.Vector2.factoryFloat32(0.375, 0.875)), distanceFunction),
-		CelticKnotLine.factory(rotateUv270(Core.Vector2.factoryFloat32(-0.375, 0.125)), rotateUv270(Core.Vector2.factoryFloat32(0.375, 0.875)), distanceFunction)
+		CelticKnotLine.factory(Core.Vector2.factoryFloat32(-0.375, 0.125), Core.Vector2.factoryFloat32(0.375, 0.875), in_distanceFunction),
+		CelticKnotLine.factory(rotateUv90(Core.Vector2.factoryFloat32(-0.375, 0.125)), rotateUv90(Core.Vector2.factoryFloat32(0.375, 0.875)), in_distanceFunction),
+		CelticKnotLine.factory(rotateUv180(Core.Vector2.factoryFloat32(-0.375, 0.125)), rotateUv180(Core.Vector2.factoryFloat32(0.375, 0.875)), in_distanceFunction),
+		CelticKnotLine.factory(rotateUv270(Core.Vector2.factoryFloat32(-0.375, 0.125)), rotateUv270(Core.Vector2.factoryFloat32(0.375, 0.875)), in_distanceFunction)
 	];
 
 	return result;

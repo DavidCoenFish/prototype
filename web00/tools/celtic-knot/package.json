@@ -1,0 +1,17 @@
+{
+  "name": "celtic-knot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --nolazy --inspect-brk=5858 index.js test",
+    "tex8_64_64": "node --nolazy --inspect-brk=5858 index.js texturebyte output\\knot_tex8_64_64.js 64 64"
+  },
+  "dependencies": {
+    "fs-extra": "^7.0.1",
+    "q": "^1.5.1",
+    "core": "file:./../../core"
+  },
+  "author": "David Coen",
+  "license": "ISC"
+}

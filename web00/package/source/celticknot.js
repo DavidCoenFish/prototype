@@ -5,7 +5,18 @@ const CelticKnotTile = require("./celticknot/celticknottile.js");
 const ModelCelticKnot = require("./celticknot/modelcelticknot.js");
 const Shader0 = require("./celticknot/shader0.js");
 
-/* */
+/* 
+generate tile data
+
+goal - 
+	have a pattern of celtic knots, hold for 1.5 sec, then over 0.5 transition to a new 
+	pattern of celtic knots. ripple in background?
+
+tile data
+	3 variations [1000, 1100, 1111] as rgb 8bit
+
+
+*/
 const onPageLoad = function(){
 	console.info("onPageLoad");
 

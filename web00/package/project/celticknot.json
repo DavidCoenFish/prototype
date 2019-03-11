@@ -1,11 +1,9 @@
 {
 	"name" : "celticknot",
 	"source" : "celticknot.js",
-	"template" : "template/simplecanvas.htm.template",
+	"template" : "template/blank.htm.template",
 	"templateParam" : {
 		"title" : "celticknot",
-		"canvasWidth" : "512px",
-		"canvasHeight" : "512px",
 		"bundleFilePath" : "js/celticknotbundle.js"
 	},
 	"outputRootDir": "output"
