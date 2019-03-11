@@ -1,9 +1,7 @@
 const Core = require("core");
 const WebGL = require("webgl");
-const Stage0 = require("./celticknot/stage0.js");
-const CelticKnotTile = require("./celticknot/celticknottile.js");
-const ModelCelticKnot = require("./celticknot/modelcelticknot.js");
-const Shader0 = require("./celticknot/shader0.js");
+const DrawCelticKnot = require("./celticknot/drawcelticknot.js");
+const ComponentTestScene = require("./component-test-scene.js");
 
 /* 
 generate tile data
@@ -15,38 +13,36 @@ goal -
 tile data
 	3 variations [1000, 1100, 1111] as rgb 8bit
 
+drawcelticknot
+	draw to the current/input render target a set of celtic knot tiles
 
 */
 const onPageLoad = function(){
 	console.info("onPageLoad");
 
-	const html5CanvasElement = (undefined !== document) ? document.getElementById('html5CanvasElement') : undefined;
-
-	//a canvas width, height is 300,150 by default (coordinate space). lets change that to what size it is
-	var width = undefined;
-	var height = undefined;
-	if (undefined !== html5CanvasElement){
-		html5CanvasElement.width = html5CanvasElement.clientWidth;
-		html5CanvasElement.height = html5CanvasElement.clientHeight;
-		width = html5CanvasElement.width;
-		height = html5CanvasElement.height;
+	const callbackPresent = function(){
+	}
+	const callbackStep = function(in_timeDeltaActual, in_timeDeltaAjusted){
+		if (0.0 < in_timeDeltaAjusted){
+			m_drawCelticKnot.draw();
+		}
+	}
+	const callbackStopUpdate = function(){
 	}
 
-	const webGLContextWrapperParam = WebGL.WebGLContextWrapper.makeParamObject(false, false, false, [
-		"OES_texture_float"
-	]);
-	const webGLContextWrapper = WebGL.WebGLContextWrapper.factory(html5CanvasElement, webGLContextWrapperParam);
-	const webGLState = WebGL.WebGLState.factory(webGLContextWrapper);
+	const m_componentTestScene = ComponentTestScene.factory(
+		callbackPresent, 
+		callbackStep, 
+		callbackStopUpdate, 
+		WebGL.WebGLState.makeParam(false, true, true, ["OES_texture_float"]), 
+		document, 
+		true,
+		//0.016666, //undefined//0.01
+		);
+	const m_webGLState = m_componentTestScene.getWebGLState();
+	const m_resourceManager = Core.ResourceManager.factory();
 
-	const resourceManager = Core.ResourceManager.factory({
-		"celticKnotTile" : CelticKnotTile.factory,
-		"modelCelticKnot" : ModelCelticKnot.factory,
-		"shader0" : Shader0.factory,
-	});
-
-	const stage0 = Stage0.factory(webGLContextWrapper, resourceManager, width, height, 32, 32);
-
-	stage0.draw(webGLContextWrapper, webGLState);
+	var m_drawCelticKnot = DrawCelticKnot.factory(m_webGLState, m_resourceManager, 512, 512, 64, 64);
 
 	return;
 }

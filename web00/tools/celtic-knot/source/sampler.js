@@ -27,14 +27,14 @@ const distanceFunction = function(in_accumulator, in_distance){
 		in_accumulator.setKnotHeight(height);
 	} else if (in_distance < (m_halfWidth * 2.0)){
 		//"shadow" case
-		var temp = (in_distance - m_halfWidth) / m_halfWidth;
-		var height = 1.0 - (temp * temp);
+		var temp = (1.0 - (in_distance - m_halfWidth) / m_halfWidth);
+		var height = (1.0 - (temp * temp));
 		in_accumulator.setSubtractKnotHeight(height);
 	}
 	return;
 }
 
-const sampleKnot = function(in_distanceFunction, in_accumulator, in_width, in_height, in_subSampleLevel){
+const sampleKnot = function(in_distanceFunction, in_accumulatorFactory, in_width, in_height, in_subSampleLevel){
 	const celticKnot = CelticKnot.factory(in_distanceFunction);
 
 	const arrayHeight = [];
@@ -45,9 +45,9 @@ const sampleKnot = function(in_distanceFunction, in_accumulator, in_width, in_he
 			const highX = (indexWidth + 1) / in_width;
 			const lowY = indexHeight / in_height;
 			const highY = (indexHeight + 1) / in_height;
-			const heightRed = sampleKnotInternal(celticKnot, in_accumulator, lowX, lowY, highX, highY, 1, in_subSampleLevel);
-			const heightGreen = sampleKnotInternal(celticKnot, in_accumulator, lowX, lowY, highX, highY, 3, in_subSampleLevel);
-			const heightBlue = sampleKnotInternal(celticKnot, in_accumulator, lowX, lowY, highX, highY, 15, in_subSampleLevel);
+			const heightRed = sampleKnotInternal(celticKnot, in_accumulatorFactory, lowX, lowY, highX, highY, 1, in_subSampleLevel);
+			const heightGreen = sampleKnotInternal(celticKnot, in_accumulatorFactory, lowX, lowY, highX, highY, 3, in_subSampleLevel);
+			const heightBlue = sampleKnotInternal(celticKnot, in_accumulatorFactory, lowX, lowY, highX, highY, 15, in_subSampleLevel);
 			arrayHeight.push(heightRed);
 			arrayHeight.push(heightGreen);
 			arrayHeight.push(heightBlue);
@@ -57,7 +57,7 @@ const sampleKnot = function(in_distanceFunction, in_accumulator, in_width, in_he
 }
 
 
-const sampleKnotInternal = function(in_celticKnot, in_accumulator, in_lowX, in_lowY, in_highX, in_highY, in_tile, in_subsampleLevel){
+const sampleKnotInternal = function(in_celticKnot, in_accumulatorFactory, in_lowX, in_lowY, in_highX, in_highY, in_tile, in_subsampleLevel){
 	var count = 0;
 	var sum = 0.0;
 
@@ -67,8 +67,9 @@ const sampleKnotInternal = function(in_celticKnot, in_accumulator, in_lowX, in_l
 			var uvX = (subRatioX * (in_highX - in_lowX)) + in_lowX;
 			var subRatioY = ((indexHeight * 2) + 1) / (in_subsampleLevel * 2);
 			var uvY = (subRatioY * (in_highY - in_lowY)) + in_lowY;
-			in_celticKnot.sampleHeight(in_accumulator, uvX, uvY, in_tile);
-			sum += in_accumulator.getHeight();
+			var accumulator = in_accumulatorFactory();
+			in_celticKnot.sampleHeight(accumulator, uvX, uvY, in_tile);
+			sum += accumulator.getHeight();
 			count += 1;
 		}
 	}
