@@ -65,7 +65,7 @@ const factory = function(in_resourceManager, in_webGLState, in_textureArray){
 	var m_material = in_resourceManager.getUniqueReference(sMaterialName, in_textureArray);
 
 	//public methods ==========================
-	const result = Object.create({
+	const that = Object.create({
 		"getMaterial" : function(){
 			return m_material;
 		},
@@ -79,8 +79,7 @@ const factory = function(in_resourceManager, in_webGLState, in_textureArray){
 		}
 	})
 
-	return result;
-
+	return that;
 }
 
 module.exports = {

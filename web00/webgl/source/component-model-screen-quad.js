@@ -1,7 +1,7 @@
 const ModelWrapper = require("./modelwrapper.js");
 const ModelDataStream = require("./modeldatastream.js");
 
-const factory = function(in_webGLState){
+const modelFactory = function(in_webGLState){
 	const posDataStream = ModelDataStream.factory(
 		"FLOAT",
 		2,
@@ -42,6 +42,30 @@ const factory = function(in_webGLState){
 	);
 }
 
+const sModelName = "componentModelScreenQuad";
+const factory = function(in_resourceManager, in_webGLState){
+	if (false === in_resourceManager.hasFactory(sModelName)){
+		in_resourceManager.addFactory(sModelName, modelFactory);
+	}
+
+	var m_model = in_resourceManager.getCommonReference(sModelName, in_webGLState);
+
+	//public methods ==========================
+	const that = Object.create({
+		"getModel" : function(){
+			return m_model;
+		},
+		"destroy" : function(){
+			m_model = undefined;
+			in_resourceManager.releaseCommonReference(sModelName);
+		}
+	})
+
+	return that;
+}
+
 module.exports = {
+	"modelFactory" : modelFactory, 
+	"sModelName" : sModelName,
 	"factory" : factory
 }

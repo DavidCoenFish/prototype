@@ -73,7 +73,8 @@ const factory = function(in_resourceManager, in_webGLState, in_screenWidth, in_s
 
 	const m_textureArray = [m_renderTargetA.getTexture(0), m_renderTargetB.getTexture(0)];
 	const m_material = WebGL.MaterialWrapper.factory(m_textureArray);
-	const m_model = in_resourceManager.getCommonReference("modelScreenQuad", in_webGLState);
+	const m_modelComponent = WebGL.ComponentModelScreenQuad.factory(in_resourceManager, in_webGLState);
+	const m_model = m_modelComponent.getModel();
 	const m_state = {
 		"u_samplerA" : 0,
 		"u_samplerB" : 1,
