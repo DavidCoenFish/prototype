@@ -113,17 +113,29 @@ const factory = function(
 			}
 			return in_colorMaskRedOrUndefined;
 		},
+		"setColorMaskRed" : function(in_value){
+			in_colorMaskRedOrUndefined = in_value;
+			return;
+		},
 		"getColorMaskGreen" : function(){
 			if (undefined === in_colorMaskGreenOrUndefined){
 				return true;
 			}
 			return in_colorMaskGreenOrUndefined;
 		},
+		"setColorMaskGreen" : function(in_value){
+			in_colorMaskGreenOrUndefined = in_value;
+			return;
+		},
 		"getColorMaskBlue" : function(){
 			if (undefined === in_colorMaskBlueOrUndefined){
 				return true;
 			}
 			return in_colorMaskBlueOrUndefined;
+		},
+		"setColorMaskBlue" : function(in_value){
+			in_colorMaskBlueOrUndefined = in_value;
+			return;
 		},
 		"getColorMaskAlpha" : function(){
 			if (undefined === in_colorMaskAlphaOrUndefined){

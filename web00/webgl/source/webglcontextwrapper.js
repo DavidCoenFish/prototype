@@ -83,7 +83,59 @@ const factory = function(
 	in_html5CanvasElement,
 	in_param
 	){
+	//private members ==========================
 	var m_webGLContext = getWebGLContext(in_html5CanvasElement, in_param);
+
+	//private methods ==========================
+	const getError = function(){
+		if (undefined === m_webGLContext){
+			return;
+		}
+		var error = m_webGLContext.getError();
+		var assert = true;
+		var message;
+
+		switch (error){
+		default:
+			message = "WebGLContetWrapper.GetError:unknown:" + error;
+			break;
+		case m_webGLContext.NO_ERROR: // 0: //NO_ERROR:
+			return;
+		case m_webGLContext.INVALID_ENUM: // 0x0500: //INVALID_ENUM:
+			message = "WebGLContetWrapper.GetError:INVALID_ENUM";
+			break;
+		case m_webGLContext.INVALID_VALUE: // 0x0501: //INVALID_VALUE:
+			message = "WebGLContetWrapper.GetError:INVALID_VALUE";
+			break;
+		case m_webGLContext.INVALID_OPERATION: //0x0502: //INVALID_OPERATION:
+			message = "WebGLContetWrapper.GetError:INVALID_OPERATION";
+			break;
+		case m_webGLContext.OUT_OF_MEMORY: //0x0505: //OUT_OF_MEMORY:
+			message = "WebGLContetWrapper.GetError:OUT_OF_MEMORY";
+			break;
+			//0x0506: //1286
+		case m_webGLContext.CONTEXT_LOST_WEBGL:// 0x9242: //CONTEXT_LOST_WEBGL:
+			assert = false;
+			message = "WebGLContetWrapper.GetError:CONTEXT_LOST_WEBGL";
+			return;
+		}
+		m_webGLContext = undefined;
+		console.info(message);
+		if (true === assert){
+			alert(message);
+		}
+		return;
+	};
+	const contextLostCallback = function(in_event){
+		in_event.preventDefault();
+		m_webGLContext = undefined;
+		that.triggerEvent(sTokenWebglContextLost, that);
+	};
+	const contextRestoredCallback = function(in_event){
+		m_webGLContext = undefined;
+		m_webGLContext = getWebGLContext(in_html5CanvasElement, in_param);
+		that.triggerEvent(sTokenWebglContextRestored, that);
+	};
 
 	//public methods ==========================
 	const that = Object.create({
@@ -159,57 +211,6 @@ const factory = function(
 	});
 
 	Core.EventDispatcherDecorate(that);
-
-	//private methods ==========================
-	const getError = function(){
-		if (undefined === m_webGLContext){
-			return;
-		}
-		var error = m_webGLContext.getError();
-		var assert = true;
-		var message;
-
-		switch (error){
-		default:
-			message = "WebGLContetWrapper.GetError:unknown:" + error;
-			break;
-		case m_webGLContext.NO_ERROR: // 0: //NO_ERROR:
-			return;
-		case m_webGLContext.INVALID_ENUM: // 0x0500: //INVALID_ENUM:
-			message = "WebGLContetWrapper.GetError:INVALID_ENUM";
-			break;
-		case m_webGLContext.INVALID_VALUE: // 0x0501: //INVALID_VALUE:
-			message = "WebGLContetWrapper.GetError:INVALID_VALUE";
-			break;
-		case m_webGLContext.INVALID_OPERATION: //0x0502: //INVALID_OPERATION:
-			message = "WebGLContetWrapper.GetError:INVALID_OPERATION";
-			break;
-		case m_webGLContext.OUT_OF_MEMORY: //0x0505: //OUT_OF_MEMORY:
-			message = "WebGLContetWrapper.GetError:OUT_OF_MEMORY";
-			break;
-			//0x0506: //1286
-		case m_webGLContext.CONTEXT_LOST_WEBGL:// 0x9242: //CONTEXT_LOST_WEBGL:
-			assert = false;
-			message = "WebGLContetWrapper.GetError:CONTEXT_LOST_WEBGL";
-			return;
-		}
-		m_webGLContext = undefined;
-		console.info(message);
-		if (true === assert){
-			alert(message);
-		}
-		return;
-	};
-	const contextLostCallback = function(in_event){
-		in_event.preventDefault();
-		m_webGLContext = undefined;
-		that.triggerEvent(sTokenWebglContextLost, that);
-	};
-	const contextRestoredCallback = function(in_event){
-		m_webGLContext = undefined;
-		m_webGLContext = getWebGLContext(in_html5CanvasElement, in_param);
-		that.triggerEvent(sTokenWebglContextRestored, that);
-	};
 
 	//these event names are matching the webgl canvas contract, internally we just use sTokenWebglContextLost...
 	in_html5CanvasElement.addEventListener("webglcontextlost", contextLostCallback, false);

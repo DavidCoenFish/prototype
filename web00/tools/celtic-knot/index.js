@@ -38,6 +38,8 @@ const run = function(in_mode, in_outputFilePath, in_width, in_height){
 		}).then(function(in_sphereArray) {
 			if (in_mode === "texturebyte"){
 				return Asset.runTextureByte(in_outputFilePath, in_width, in_height);
+			} else if (in_mode === "texturealphabyte"){
+				return Asset.runTextureAlphaByte(in_outputFilePath, in_width, in_height);
 			} else {
 				throw new Error("unknown mode:" + in_mode);
 			}

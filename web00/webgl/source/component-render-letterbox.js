@@ -1,5 +1,6 @@
 /* 
 	render over the current render target
+alpha = bx + c;
 */
 
 const Core = require("core");
@@ -11,9 +12,7 @@ const ShaderUniformData = require("./shaderuniformdata.js");
 const sVertexShader = `
 attribute vec2 a_position;
 attribute vec2 a_uv;
-
 varying vec2 v_uv;
-
 void main() {
 	gl_Position = vec4(a_position.x, a_position.y, 0.0, 1.0);
 	v_uv = a_uv;
@@ -26,21 +25,18 @@ varying vec2 v_uv;
 
 uniform vec3 u_colour;
 uniform vec2 u_widthHeightPercentage;
-
-//http://iquilezles.org/www/articles/distfunctions/distfunctions.htm
-float distanceFunction(vec2 in_uv, vec2 in_widthHeightPercentage){
-	float r = in_widthHeightPercentage.x * 2.0;
-	vec2 p = vec2((in_uv.x - 0.5) * 2.0, (in_uv.y - 0.5) * 2.0);
-	vec2 b = vec2(1.0 - r, 1.0 - r);
-	vec2 d = abs(p) - b;
-	return max(0.0, length(max(d,0.0)));
-}
+uniform vec4 u_viewport;
 
 float alphaFunction(vec2 in_uv, vec2 in_widthHeightPercentage){
-	float d = (distanceFunction(in_uv, in_widthHeightPercentage)) / (in_widthHeightPercentage.x * 2.0);
-	float temp = d * 0.70710678118654752440084436210485;
-	float alpha = (temp * temp);
-	//float alpha = temp;
+	float widthB = 1.0 / u_viewport.z;
+	float widthLowA = ((-widthB) * in_uv.x) + in_widthHeightPercentage.x;
+	float widthHighA = ((-widthB) * (1.0 - in_uv.x)) + in_widthHeightPercentage.x;
+	float heightB = 1.0 / u_viewport.w;
+	float heightLowA = ((-heightB) * in_uv.y) + in_widthHeightPercentage.y;
+	float heightHighA = ((-heightB) * (1.0 - in_uv.y)) + in_widthHeightPercentage.y;
+
+	float alpha = max(0.0, min(1.0, max(widthLowA, max(widthHighA, max(heightLowA, hightHighA)))));
+
 	return alpha;
 }
 
@@ -54,6 +50,7 @@ const sVertexAttributeNameArray = ["a_position", "a_uv"];
 const sUniformNameMap = {
 	"u_colour" : ShaderUniformData.sFloat3, 
 	"u_widthHeightPercentage" : ShaderUniformData.sFloat2,
+	"u_viewport" : ShaderUniformData.sFloat4,
 };
 
 const shaderFactory = function(in_webGLState){
@@ -64,10 +61,11 @@ const shaderFactory = function(in_webGLState){
 		sVertexAttributeNameArray, 
 		sUniformNameMap);
 }
-const sShaderName = "componentRenderVignetteShader";
-
+const sShaderName = "componentRenderLetterboxShader";
 
 const factory = function(in_resourceManager, in_webGLState, in_colourRGB, in_widthPercentage, in_heightPercentage){
+	const m_widthInterpolator = Core.LinearInterpolator.factory(in_widthPercentage);
+	const m_heightInterpolator = Core.LinearInterpolator.factory(in_heightPercentage);
 
 	const m_modelComponent = ComponentModelScreenQuad.factory(in_resourceManager, in_webGLState);
 	const m_model = m_modelComponent.getModel();
@@ -78,21 +76,14 @@ const factory = function(in_resourceManager, in_webGLState, in_colourRGB, in_wid
 		true, //in_blendModeEnabledOrUndefined,
 		"SRC_ALPHA", //in_sourceBlendEnumNameOrUndefined,
 		"ONE_MINUS_SRC_ALPHA", //in_destinationBlendEnumNameOrUndefined,
-		//in_depthFuncEnabledOrUndefined,
-		//in_depthFuncEnumNameOrUndefined, 
-		//in_frontFaceEnumNameOrUndefined, //"CW", "CCW"
-		//in_colorMaskRedOrUndefined, //true
-		//in_colorMaskGreenOrUndefined, //true
-		//in_colorMaskBlueOrUndefined, //true
-		//in_colorMaskAlphaOrUndefined, //false
-		//in_depthMaskOrUndefined, //false
-		//in_stencilMaskOrUndefined //false
 		);
 	const m_widthHeightPercentage = Core.Vector2.factoryFloat32(in_widthPercentage, in_heightPercentage);
 	const m_colour = Core.Vector3.factoryFloat32(in_colourRGB.getRed(), in_colourRGB.getGreen(), in_colourRGB.getBlue());
+	const m_viewport = Core.Vector4.factoryFloat32();
 	const m_state = {
 		"u_colour" : m_colour.getRaw(),
-		"u_widthHeightPercentage" : m_widthHeightPercentage.getRaw()
+		"u_widthHeightPercentage" : m_widthHeightPercentage.getRaw(),
+		"u_viewport" : m_viewport.getRaw()
 	};
 
 	if (false === in_resourceManager.hasFactory(sShaderName)){
@@ -102,17 +93,31 @@ const factory = function(in_resourceManager, in_webGLState, in_colourRGB, in_wid
 
 	//public methods ==========================
 	const that = Object.create({
+		"setWidth" : function(in_width, in_time){
+			m_widthInterpolator.setValue(in_width, in_time);
+			return;
+		},
+		"setHeight" : function(in_height, in_time){
+			m_heightInterpolator.setValue(in_height, in_time);
+			return;
+		},
+		"tick" : function(in_timeDelta){
+			m_widthInterpolator.tick(in_timeDelta);
+			m_heightInterpolator.tick(in_timeDelta);
+			return;
+		},
 		"draw" : function(){
+			m_widthHeightPercentage.setX(m_widthInterpolator.getValue());
+			m_widthHeightPercentage.setY(m_heightInterpolator.getValue());
+			in_webGLState.getViewport(m_viewport);
+
 			in_webGLState.applyShader(m_shader, m_state);
 			in_webGLState.applyMaterial(m_material);
 			in_webGLState.drawModel(m_model);
 		},
 		"destroy" : function(){
-			m_shader = undefined;
-			in_resourceManager.releaseCommonReference(sShaderName);
-			m_model = undefined;
 			m_modelComponent.destroy();
-			m_modelComponent = undefined;
+			release();
 		}
 	})
 

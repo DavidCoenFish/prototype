@@ -32,11 +32,21 @@ const factory = function(
 			setupDraw(in_webGLContextWrapper, in_mapVertexAttribute);
 			internalDraw(in_webGLContextWrapper, in_firstOrUndefined, in_countOrUndefined);
 			tearDownDraw(in_webGLContextWrapper, in_mapVertexAttribute);
-
 			return;
+		},
+		"setElementCount" : function(in_newElementCount){
+			in_elementCount = in_newElementCount;
+			return;
+		},
+		"getDataStream" : function(in_name){
+			if (in_name in in_mapDataStream){
+				return in_mapDataStream[in_name];
+			}
+			return undefined;
 		},
 		"destroy" : function(){
 			in_webGLState.removeResourceContextCallbacks(aquireWebGLResources, releaseWebGLResources);
+			return;
 		},
 	});
 
@@ -57,7 +67,9 @@ const factory = function(
 		}
 
 		if (undefined !== m_elementIndexOrUndefined) {
-			m_elementIndexHandle = in_webGLState.createBuffer(
+			m_elementIndexHandle = in_webGLState.createBuffer();
+			in_webGLState.updateBuffer(
+				m_elementIndexHandle,
 				m_elementIndexOrUndefined,
 				"ELEMENT_ARRAY_BUFFER",
 				"STATIC_DRAW"

@@ -288,24 +288,34 @@ const factory = function(
 			return;
 		},
 
-		"getViewport" : function(){
+		"getViewport" : function(in_vec4OrUndefined){
 			const viewportEnum = m_webGLContextWrapper.getEnum("VIEWPORT");
 			const param = m_webGLContextWrapper.callMethod("getParameter", viewportEnum);
 			var result;
 			if (undefined !== param){
-				result = Core.Vector4.factoryInt32(param[0], param[1], param[2], param[3]);
+				if (undefined !== in_vec4OrUndefined){
+					in_vec4OrUndefined.setX(param[0]);
+					in_vec4OrUndefined.setY(param[1]);
+					in_vec4OrUndefined.setZ(param[2]);
+					in_vec4OrUndefined.setW(param[3]);
+				}
+				result = Core.Vector4.factoryInt32(param[0], param[1], param[2], param[3], m_state["viewport"]);
 				m_state["viewport"] = result;
 			}
 			return result;
 		},
 
-		"createBuffer" : function(in_arrayData, in_bufferObjectTypeName, in_usageName){
+		"createBuffer" : function(){
 			const bufferHandle = m_webGLContextWrapper.callMethod("createBuffer");
+			return bufferHandle;
+		},
+
+		"updateBuffer" : function(in_bufferHandle, in_arrayData, in_bufferObjectTypeName, in_usageName){
 			const bufferObjectType = m_webGLContextWrapper.getEnum(in_bufferObjectTypeName);
-			m_webGLContextWrapper.callMethod("bindBuffer", bufferObjectType, bufferHandle);
+			m_webGLContextWrapper.callMethod("bindBuffer", bufferObjectType, in_bufferHandle);
 			const usage = m_webGLContextWrapper.getEnum(in_usageName);
 			m_webGLContextWrapper.callMethod("bufferData", bufferObjectType, in_arrayData, usage);
-			return bufferHandle;
+			return;
 		},
 
 		"deleteBuffer" : function(in_bufferHandle){

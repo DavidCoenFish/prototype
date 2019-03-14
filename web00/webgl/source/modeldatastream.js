@@ -25,7 +25,8 @@ const factory = function(
 	//public methods ==========================
 	const result = Object.create({
 		"aquireWebGLResources" : function(in_webGLState){
-			m_bufferObject = in_webGLState.createBuffer(in_arrayData, "ARRAY_BUFFER", in_usageName);
+			m_bufferObject = in_webGLState.createBuffer();
+			in_webGLState.updateBuffer(m_bufferObject, in_arrayData, "ARRAY_BUFFER", in_usageName);
 		},
 		"releaseWebGLResources" : function(in_webGLState){
 			in_webGLState.deleteBuffer(m_bufferObject);
@@ -33,6 +34,11 @@ const factory = function(
 		},
 		"getVertexCount" : function(){
 			return in_arrayData.length / in_elementsPerVertex
+		},
+		"updateData" : function(in_webGLState, in_newArrayData){
+			in_arrayData = in_newArrayData;
+			in_webGLState.updateBuffer(m_bufferObject, in_arrayData, "ARRAY_BUFFER", in_usageName);
+			return;
 		},
 		"setupDraw" : function(in_webGLContextWrapper, in_position){
 			const bufferObjectType = in_webGLContextWrapper.getEnum("ARRAY_BUFFER");

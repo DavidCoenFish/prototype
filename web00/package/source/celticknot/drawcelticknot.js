@@ -1,8 +1,10 @@
-
 const KnotTexture = require("./knot_tex8_32_32.js");
-const sTextureName = "knot_texture";
+const KnotAlphaTexture = require("./knot_texa8_32_32.js");
 const Core = require("core");
 const WebGL = require("webgl");
+
+const sSolidChance = 0.4;
+const sHoldTime = 2.0;
 
 const sVertexShader = `
 attribute vec2 a_pos;
@@ -21,19 +23,23 @@ precision mediump float;
 varying vec2 v_uv;
 varying vec3 v_colorMask;
 uniform sampler2D u_sampler;
+uniform sampler2D u_samplerAlpha;
 void main() {
-	vec4 texel = texture2D(u_sampler, v_uv);
-	float value = dot(texel.xyz, v_colorMask);
-	gl_FragColor = vec4(value, value, value, 1.0);
+	vec4 texelValue = texture2D(u_sampler, v_uv);
+	float value = dot(texelValue.xyz, v_colorMask);
+	vec4 texelAlpha = texture2D(u_samplerAlpha, v_uv);
+	float alpha = dot(texelAlpha.xyz, v_colorMask);
+	gl_FragColor = vec4(value, value, value, alpha);
 }
 `;
 const sVertexAttributeNameArray = [
-	"a_pos", 
+	"a_position", 
 	"a_uv", 
 	"a_colorMask"
 ];
 const sUniformNameMap = {
 	"u_sampler" : WebGL.ShaderUniformData.sInt,
+	"u_samplerAlpha" : WebGL.ShaderUniformData.sInt,
 };
 
 const shaderFactory = function(in_webGLState){
@@ -176,21 +182,47 @@ const addTile = function(inout_posDataArray, inout_uvDataArray, inout_colorMaskD
 	return true;
 }
 
-const makeModel = function(in_webGLState, in_screenWidth, in_screenHeight, in_tileWidth, in_tileHeight){
+const updateModel = function(in_webGLState, in_model, in_screenWidth, in_screenHeight, in_tileWidth, in_tileHeight, m_cellData, in_timeDelta){
 	const tileWidthCount = Math.ceil(in_screenWidth / in_tileWidth);
 	const tileHeightCount = Math.ceil(in_screenHeight / in_tileHeight);
 
-	const cellData = [];
+	var change = false;
 	for (var index = 0; index < ((tileWidthCount + 1) * (tileHeightCount + 1)); ++index){
-		cellData.push(Math.random() < 0.33);
+		if (index < inout_cellData.length){
+			var state = inout_cellData[index];
+			var holdTime = (true === state) ? sHoldTime * sSolidChance : sHoldTime;
+			if (Math.random() < (2.0 * in_timeDelta)){
+				state = (false === state);
+				inout_cellData[index] = state;
+				change = true;
+			}
+		} else {
+			change = true;
+			inout_cellData.push(Math.random() < sSolidChance);
+		}
 	}
 
+	if (false === change){
+		return;
+	}
+
+	const posDataArray = []; //Float32Array
+	const uvDataArray = []; //Uint8Array
+	const colourMaskDataArray = []; //Uint8Array
+	const elementCount = makeModelData(posDataArray, uvDataArray, colourMaskDataArray, tileWidthCount, tileHeightCount);
+
+	in_model.setElementCount(elementCount);
+	in_model.getDataStream("a_position").updateData(in_webGLState, posDataArray);
+	in_model.getDataStream("a_uv").updateData(in_webGLState, uvDataArray);
+	in_model.getDataStream("a_colourMask").updateData(in_webGLState, colourMaskDataArray);
+
+	return;
+}
+
+const makeModelData = function(in_posDataArray, in_uvDataArray, in_colourMaskDataArray, in_tileWidthCount, in_tileHeightCount){
 	var elementCount = 0;
-	var posDataArray = []; //Float32Array
-	var uvDataArray = []; //Uint8Array
-	var colorMaskDataArray = []; //Uint8Array
-	for (var indexHeight = 0; indexHeight < tileHeightCount; ++indexHeight){
-		for (var indexWidth = 0; indexWidth < tileWidthCount; ++indexWidth){
+	for (var indexHeight = 0; indexHeight < in_tileHeightCount; ++indexHeight){
+		for (var indexWidth = 0; indexWidth < in_tileWidthCount; ++indexWidth){
 			var tile = 0;
 
 			//	1 ---- 2
@@ -198,58 +230,77 @@ const makeModel = function(in_webGLState, in_screenWidth, in_screenHeight, in_ti
 			//	|	   |
 			//	3 ---- 4
 			// cell data is from bottom left
-			tile += (cellData[(indexWidth + 0) + (indexHeight * (tileWidthCount + 1))]) ? 4 : 0;
-			tile += (cellData[(indexWidth + 1) + (indexHeight * (tileWidthCount + 1))]) ? 8 : 0;
-			tile += (cellData[(indexWidth + 0) + ((indexHeight + 1) * (tileWidthCount + 1))]) ? 1 : 0;
-			tile += (cellData[(indexWidth + 1) + ((indexHeight + 1) * (tileWidthCount + 1))]) ? 2 : 0;
-			if (true === addTile(posDataArray, uvDataArray, colorMaskDataArray, indexWidth, indexHeight, tile, in_screenWidth, in_screenHeight, in_tileWidth, in_tileHeight)){
+			tile += (inout_cellData[(indexWidth + 0) + (indexHeight * (tileWidthCount + 1))]) ? 4 : 0;
+			tile += (inout_cellData[(indexWidth + 1) + (indexHeight * (tileWidthCount + 1))]) ? 8 : 0;
+			tile += (inout_cellData[(indexWidth + 0) + ((indexHeight + 1) * (tileWidthCount + 1))]) ? 1 : 0;
+			tile += (inout_cellData[(indexWidth + 1) + ((indexHeight + 1) * (tileWidthCount + 1))]) ? 2 : 0;
+			if (true === addTile(in_posDataArray, in_uvDataArray, in_colourMaskDataArray, indexWidth, indexHeight, tile, in_screenWidth, in_screenHeight, in_tileWidth, in_tileHeight)){
 				elementCount += 6;
 			}
 		}
 	}
+	return elementCount;
+}
+
+const makeModel = function(in_webGLState, in_screenWidth, in_screenHeight, in_tileWidth, in_tileHeight, inout_cellData){
+	const tileWidthCount = Math.ceil(in_screenWidth / in_tileWidth);
+	const tileHeightCount = Math.ceil(in_screenHeight / in_tileHeight);
+
+	for (var index = 0; index < ((tileWidthCount + 1) * (tileHeightCount + 1)); ++index){
+		//inout_cellData.push(Math.random() < 0.33);
+		inout_cellData.push(Math.random() < sSolidChance);
+	}
+
+	const posDataArray = []; //Float32Array
+	const uvDataArray = []; //Uint8Array
+	const colourMaskDataArray = []; //Uint8Array
+	const elementCount = makeModelData(posDataArray, uvDataArray, colourMaskDataArray, tileWidthCount, tileHeightCount);
 
 	const m_posDataStream = WebGL.ModelDataStream.factory("FLOAT", 2, new Float32Array(posDataArray), "STATIC_DRAW", false);
 	const m_uvDataStream = WebGL.ModelDataStream.factory("BYTE", 2, new Uint8Array(uvDataArray), "STATIC_DRAW", false);
-	const m_colorMaskDataStream = WebGL.ModelDataStream.factory("BYTE", 3, new Uint8Array(colorMaskDataArray), "STATIC_DRAW", false);
+	const m_colourMaskDataStream = WebGL.ModelDataStream.factory("BYTE", 3, new Uint8Array(colourMaskDataArray), "STATIC_DRAW", false);
 
 	return WebGL.ModelWrapper.factory(
 		in_webGLState, 
 		"TRIANGLES",
 		elementCount,
 		{
-			"a_pos" : m_posDataStream,
+			"a_position" : m_posDataStream,
 			"a_uv" : m_uvDataStream,
-			"a_colorMask" : m_colorMaskDataStream
+			"a_colourMask" : m_colourMaskDataStream
 		}
 	);
 }
 
 const factory = function(in_resourceManager, in_webGLState, in_screenWidth, in_screenHeight, in_tileWidth, in_tileHeight){
-	if (false === in_resourceManager.hasFactory(sTextureName)){
-		in_resourceManager.addFactory(sTextureName, KnotTexture.factoryTexture);
-	}
-	const m_texture = in_resourceManager.getCommonReference(sTextureName, in_webGLState);
+	const m_texture = KnotTexture.factoryTexture(in_webGLState);
+	const m_textureAlpha = KnotAlphaTexture.factoryTexture(in_webGLState);
 	const m_shader = shaderFactory(in_webGLState);
-	const m_material = WebGL.MaterialWrapper.factory([m_texture]);
+	const m_material = WebGL.MaterialWrapper.factory([m_texture, m_textureAlpha]);
+	m_material.setColorMaskAlpha(true);
+
+	const m_cellData = [];
+	const m_model = makeModel(in_webGLState, in_screenWidth, in_screenHeight, in_tileWidth, in_tileHeight, m_cellData);
 
 	const m_state = {
-		"u_samplerPos" : 0,
-		"u_samplerForce" : 1,
-		"u_timeDelta" : undefined
+		"u_sampler" : 0,
+		"u_samplerAlpha" : 1
 	};
 
 	const m_clearColour = Core.Colour4.factoryFloat32(0.0, 0.0, 0.0, 1.0);
 	const that = Object.create({
+		"update" : function(in_timeDelta){
+			updateModel(in_webGLState, m_model, in_screenWidth, in_screenHeight, in_tileWidth, in_tileHeight, m_cellData, in_timeDelta);
+			return;
+		},
 		"draw" : function(in_renderTarget){
-			var model = makeModel(in_webGLState, in_screenWidth, in_screenHeight, in_tileWidth, in_tileHeight);
-
 			in_webGLState.applyRenderTarget(in_renderTarget);
 
 			in_webGLState.clear(m_clearColour);
 
 			in_webGLState.applyShader(m_shader, m_state);
 			in_webGLState.applyMaterial(m_material);
-			in_webGLState.drawModel(model);
+			in_webGLState.drawModel(m_model);
 		}
 	});
 

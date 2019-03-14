@@ -31,14 +31,34 @@ const floatToByte = function(in_float){
 }
 
 const runTextureByte = function(in_outputFilePath, in_width, in_height){
+	const sampleCount = 4;
 	const floatArray = Sampler.sampleKnot(
 		Sampler.distanceFunction, 
 		Accumulator.factory,
 		in_width, 
 		in_height,
-		4
+		sampleCount
 	);
-	
+
+	var dataArray = [];
+	for (var index = 0; index < floatArray.length; ++index){
+		dataArray.push(floatToByte(floatArray[index]));
+	}
+	const byteArray = new Uint8Array(dataArray);
+	const base64TextureData = Core.Base64.byteArrayToBase64(byteArray);
+	return saveTexture(in_outputFilePath, in_width, in_height, base64TextureData);
+}
+
+const runTextureAlphaByte = function(in_outputFilePath, in_width, in_height){
+	const sampleCount = 4;
+	const floatArray = Sampler.sampleKnotAlpha(
+		Sampler.distanceFunction, 
+		Accumulator.factory,
+		in_width, 
+		in_height,
+		sampleCount
+	);
+
 	var dataArray = [];
 	for (var index = 0; index < floatArray.length; ++index){
 		dataArray.push(floatToByte(floatArray[index]));
@@ -49,5 +69,6 @@ const runTextureByte = function(in_outputFilePath, in_width, in_height){
 }
 
 module.exports = {
-	"runTextureByte" : runTextureByte
+	"runTextureByte" : runTextureByte,
+	"runTextureAlphaByte" : runTextureAlphaByte
 }

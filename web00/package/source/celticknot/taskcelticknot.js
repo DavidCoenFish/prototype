@@ -26,8 +26,6 @@ void main() {
 	vec4 texelA = texture2D(u_samplerA, v_uv);
 	vec4 texelB = texture2D(u_samplerB, v_uv);
 	gl_FragColor = mix(texelA, texelB, u_ratio);
-	//gl_FragColor = mix(texelA, texelB, 0.5);
-	//gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
 }
 `;
 const sVertexAttributeNameArray = [
@@ -51,7 +49,7 @@ const shaderFactory = function(in_webGLState){
 
 
 const makeRenderTarget = function(in_webGLState, in_screenWidth, in_screenHeight){
-	var texture = WebGL.TextureWrapper.factoryByteRGB(in_webGLState, in_screenWidth, in_screenHeight);
+	var texture = WebGL.TextureWrapper.factoryByteRGBA(in_webGLState, in_screenWidth, in_screenHeight);
 	var renderTarget = WebGL.RenderTargetWrapper.factory(in_webGLState, texture.getWidth(), texture.getHeight(),
 		[ WebGL.RenderTargetData.factory(texture, "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D") ]
 	);
@@ -73,6 +71,7 @@ const factory = function(in_resourceManager, in_webGLState, in_screenWidth, in_s
 
 	const m_textureArray = [m_renderTargetA.getTexture(0), m_renderTargetB.getTexture(0)];
 	const m_material = WebGL.MaterialWrapper.factory(m_textureArray);
+	m_material.setColorMaskAlpha(true);
 	const m_modelComponent = WebGL.ComponentModelScreenQuad.factory(in_resourceManager, in_webGLState);
 	const m_model = m_modelComponent.getModel();
 	const m_state = {

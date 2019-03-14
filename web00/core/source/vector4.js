@@ -35,6 +35,13 @@ const factory = function(in_x, in_y, in_z, in_w, in_baseArrayClass){
 			data[3] = in_value;
 			return;
 		},
+		"set" : function(in_vector4){
+			data[0] = in_vector4.getX();
+			data[1] = in_vector4.getY();
+			data[2] = in_vector4.getZ();
+			data[3] = in_vector4.getW();
+			return;
+		},
 		"getRaw" : function(){
 			return data;
 		},
@@ -56,11 +63,18 @@ const factoryFloat32 = function(in_xOrUndefined, in_yOrUndefined, in_zOrUndefine
 	return factory(x, y, z, w, Float32Array);
 }
 
-const factoryInt32 = function(in_xOrUndefined, in_yOrUndefined, in_zOrUndefined, in_wOrUndefined){
+const factoryInt32 = function(in_xOrUndefined, in_yOrUndefined, in_zOrUndefined, in_wOrUndefined, in_vector4OrUndefined){
 	const x = (undefined === in_xOrUndefined) ? 0.0 : in_xOrUndefined;
 	const y = (undefined === in_yOrUndefined) ? 0.0 : in_yOrUndefined;
 	const z = (undefined === in_zOrUndefined) ? 0.0 : in_zOrUndefined;
 	const w = (undefined === in_wOrUndefined) ? 0.0 : in_wOrUndefined;
+	if (undefined !== in_vector4OrUndefined){
+		in_vector4OrUndefined.setX(x);
+		in_vector4OrUndefined.setY(y);
+		in_vector4OrUndefined.setZ(z);
+		in_vector4OrUndefined.setW(w);
+		return in_vector4OrUndefined;
+	}
 	return factory(x, y, z, w, Int32Array);
 }
 
