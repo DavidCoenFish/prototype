@@ -3,39 +3,39 @@ const KnotAlphaTexture = require("./knot_texa8_32_32.js");
 const Core = require("core");
 const WebGL = require("webgl");
 
-const sSolidChance = 0.4;
-const sHoldTime = 2.0;
+const sSolidChance = 0.3;
+const sHoldTime = 50.0;
 
 const sVertexShader = `
-attribute vec2 a_pos;
+attribute vec2 a_position;
 attribute vec2 a_uv;
-attribute vec3 a_colorMask;
+attribute vec3 a_colourMask;
 varying vec2 v_uv;
-varying vec3 v_colorMask;
+varying vec3 v_colourMask;
 void main() {
-	gl_Position = vec4(a_pos.x, a_pos.y, 0.0, 1.0);
+	gl_Position = vec4(a_position.x, a_position.y, 0.0, 1.0);
 	v_uv = a_uv;
-	v_colorMask = a_colorMask;
+	v_colourMask = a_colourMask;
 }
 `;
 const sFragmentShader = `
 precision mediump float;
 varying vec2 v_uv;
-varying vec3 v_colorMask;
+varying vec3 v_colourMask;
 uniform sampler2D u_sampler;
 uniform sampler2D u_samplerAlpha;
 void main() {
 	vec4 texelValue = texture2D(u_sampler, v_uv);
-	float value = dot(texelValue.xyz, v_colorMask);
+	float value = dot(texelValue.xyz, v_colourMask);
 	vec4 texelAlpha = texture2D(u_samplerAlpha, v_uv);
-	float alpha = dot(texelAlpha.xyz, v_colorMask);
+	float alpha = dot(texelAlpha.xyz, v_colourMask);
 	gl_FragColor = vec4(value, value, value, alpha);
 }
 `;
 const sVertexAttributeNameArray = [
 	"a_position", 
 	"a_uv", 
-	"a_colorMask"
+	"a_colourMask"
 ];
 const sUniformNameMap = {
 	"u_sampler" : WebGL.ShaderUniformData.sInt,
@@ -90,7 +90,9 @@ const addTile = function(inout_posDataArray, inout_uvDataArray, inout_colorMaskD
 	switch (in_tile){
 		default:
 		case 0:
-			return false;
+			colorMaskX = 0; colorMaskY = 0; colorMaskZ = 0;
+			break;
+			//return false;
 		case 1://0001 //m_tileOneCorner
 			colorMaskX = 1; colorMaskY = 0; colorMaskZ = 0;
 			break;
@@ -182,7 +184,7 @@ const addTile = function(inout_posDataArray, inout_uvDataArray, inout_colorMaskD
 	return true;
 }
 
-const updateModel = function(in_webGLState, in_model, in_screenWidth, in_screenHeight, in_tileWidth, in_tileHeight, m_cellData, in_timeDelta){
+const updateModel = function(in_webGLState, in_model, in_screenWidth, in_screenHeight, in_tileWidth, in_tileHeight, inout_cellData, in_timeDelta){
 	const tileWidthCount = Math.ceil(in_screenWidth / in_tileWidth);
 	const tileHeightCount = Math.ceil(in_screenHeight / in_tileHeight);
 
@@ -190,8 +192,8 @@ const updateModel = function(in_webGLState, in_model, in_screenWidth, in_screenH
 	for (var index = 0; index < ((tileWidthCount + 1) * (tileHeightCount + 1)); ++index){
 		if (index < inout_cellData.length){
 			var state = inout_cellData[index];
-			var holdTime = (true === state) ? sHoldTime * sSolidChance : sHoldTime;
-			if (Math.random() < (2.0 * in_timeDelta)){
+			var holdTime = (true === state) ? (in_timeDelta / sHoldTime) : (in_timeDelta / sHoldTime) * sSolidChance;
+			if (Math.random() < holdTime){
 				state = (false === state);
 				inout_cellData[index] = state;
 				change = true;
@@ -209,17 +211,17 @@ const updateModel = function(in_webGLState, in_model, in_screenWidth, in_screenH
 	const posDataArray = []; //Float32Array
 	const uvDataArray = []; //Uint8Array
 	const colourMaskDataArray = []; //Uint8Array
-	const elementCount = makeModelData(posDataArray, uvDataArray, colourMaskDataArray, tileWidthCount, tileHeightCount);
+	const elementCount = makeModelData(posDataArray, uvDataArray, colourMaskDataArray, tileWidthCount, tileHeightCount, inout_cellData, in_screenWidth, in_screenHeight, in_tileWidth, in_tileHeight);
 
 	in_model.setElementCount(elementCount);
-	in_model.getDataStream("a_position").updateData(in_webGLState, posDataArray);
-	in_model.getDataStream("a_uv").updateData(in_webGLState, uvDataArray);
-	in_model.getDataStream("a_colourMask").updateData(in_webGLState, colourMaskDataArray);
+	in_model.getDataStream("a_position").updateData(in_webGLState, new Float32Array(posDataArray));
+	in_model.getDataStream("a_uv").updateData(in_webGLState, new Uint8Array(uvDataArray));
+	in_model.getDataStream("a_colourMask").updateData(in_webGLState, new Uint8Array(colourMaskDataArray));
 
 	return;
 }
 
-const makeModelData = function(in_posDataArray, in_uvDataArray, in_colourMaskDataArray, in_tileWidthCount, in_tileHeightCount){
+const makeModelData = function(in_posDataArray, in_uvDataArray, in_colourMaskDataArray, in_tileWidthCount, in_tileHeightCount, inout_cellData, in_screenWidth, in_screenHeight, in_tileWidth, in_tileHeight){
 	var elementCount = 0;
 	for (var indexHeight = 0; indexHeight < in_tileHeightCount; ++indexHeight){
 		for (var indexWidth = 0; indexWidth < in_tileWidthCount; ++indexWidth){
@@ -230,10 +232,10 @@ const makeModelData = function(in_posDataArray, in_uvDataArray, in_colourMaskDat
 			//	|	   |
 			//	3 ---- 4
 			// cell data is from bottom left
-			tile += (inout_cellData[(indexWidth + 0) + (indexHeight * (tileWidthCount + 1))]) ? 4 : 0;
-			tile += (inout_cellData[(indexWidth + 1) + (indexHeight * (tileWidthCount + 1))]) ? 8 : 0;
-			tile += (inout_cellData[(indexWidth + 0) + ((indexHeight + 1) * (tileWidthCount + 1))]) ? 1 : 0;
-			tile += (inout_cellData[(indexWidth + 1) + ((indexHeight + 1) * (tileWidthCount + 1))]) ? 2 : 0;
+			tile += (inout_cellData[(indexWidth + 0) + (indexHeight * (in_tileWidthCount + 1))]) ? 4 : 0;
+			tile += (inout_cellData[(indexWidth + 1) + (indexHeight * (in_tileWidthCount + 1))]) ? 8 : 0;
+			tile += (inout_cellData[(indexWidth + 0) + ((indexHeight + 1) * (in_tileWidthCount + 1))]) ? 1 : 0;
+			tile += (inout_cellData[(indexWidth + 1) + ((indexHeight + 1) * (in_tileWidthCount + 1))]) ? 2 : 0;
 			if (true === addTile(in_posDataArray, in_uvDataArray, in_colourMaskDataArray, indexWidth, indexHeight, tile, in_screenWidth, in_screenHeight, in_tileWidth, in_tileHeight)){
 				elementCount += 6;
 			}
@@ -254,11 +256,13 @@ const makeModel = function(in_webGLState, in_screenWidth, in_screenHeight, in_ti
 	const posDataArray = []; //Float32Array
 	const uvDataArray = []; //Uint8Array
 	const colourMaskDataArray = []; //Uint8Array
-	const elementCount = makeModelData(posDataArray, uvDataArray, colourMaskDataArray, tileWidthCount, tileHeightCount);
+	const elementCount = makeModelData(posDataArray, uvDataArray, colourMaskDataArray, tileWidthCount, tileHeightCount, inout_cellData, in_screenWidth, in_screenHeight, in_tileWidth, in_tileHeight);
 
-	const m_posDataStream = WebGL.ModelDataStream.factory("FLOAT", 2, new Float32Array(posDataArray), "STATIC_DRAW", false);
-	const m_uvDataStream = WebGL.ModelDataStream.factory("BYTE", 2, new Uint8Array(uvDataArray), "STATIC_DRAW", false);
-	const m_colourMaskDataStream = WebGL.ModelDataStream.factory("BYTE", 3, new Uint8Array(colourMaskDataArray), "STATIC_DRAW", false);
+	//DYNAMIC_DRAW
+	//STATIC_DRAW
+	const m_posDataStream = WebGL.ModelDataStream.factory("FLOAT", 2, new Float32Array(posDataArray), "DYNAMIC_DRAW", false);
+	const m_uvDataStream = WebGL.ModelDataStream.factory("BYTE", 2, new Uint8Array(uvDataArray), "DYNAMIC_DRAW", false);
+	const m_colourMaskDataStream = WebGL.ModelDataStream.factory("BYTE", 3, new Uint8Array(colourMaskDataArray), "DYNAMIC_DRAW", false);
 
 	return WebGL.ModelWrapper.factory(
 		in_webGLState, 
@@ -287,16 +291,16 @@ const factory = function(in_resourceManager, in_webGLState, in_screenWidth, in_s
 		"u_samplerAlpha" : 1
 	};
 
-	const m_clearColour = Core.Colour4.factoryFloat32(0.0, 0.0, 0.0, 1.0);
+	//const m_clearColour = Core.Colour4.factoryFloat32(0.0, 0.0, 0.0, 1.0);
 	const that = Object.create({
-		"update" : function(in_timeDelta){
+		"tick" : function(in_timeDelta){
 			updateModel(in_webGLState, m_model, in_screenWidth, in_screenHeight, in_tileWidth, in_tileHeight, m_cellData, in_timeDelta);
 			return;
 		},
 		"draw" : function(in_renderTarget){
 			in_webGLState.applyRenderTarget(in_renderTarget);
 
-			in_webGLState.clear(m_clearColour);
+			//in_webGLState.clear(m_clearColour);
 
 			in_webGLState.applyShader(m_shader, m_state);
 			in_webGLState.applyMaterial(m_material);

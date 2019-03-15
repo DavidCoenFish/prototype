@@ -12,7 +12,6 @@ mode name
 
  */
 const Core = require("core");
-const WebGLContextWrapperHelper = require("./webglcontextwrapperhelper.js");
 
 const factory = function(
 		in_webGLState,

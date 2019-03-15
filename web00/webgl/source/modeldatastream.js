@@ -1,6 +1,4 @@
 
-const WebGLContextWrapperHelper = require("./webglcontextwrapperhelper.js")
-
 /*
 the data needed to construct a model data stream buffer object
 

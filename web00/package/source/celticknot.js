@@ -3,6 +3,7 @@ const WebGL = require("webgl");
 //const DrawCelticKnot = require("./celticknot/drawcelticknot.js");
 const ComponentTestScene = require("./component-test-scene.js");
 const TaskCelticKnot = require("./celticknot/taskcelticknot.js");
+const TaskDropShadow = require("./celticknot/taskdropshadow.js");
 const TaskPresent = require("./celticknot/taskpresent.js");
 
 /* 
@@ -27,6 +28,7 @@ const onPageLoad = function(){
 	const callbackStep = function(in_timeDeltaActual, in_timeDeltaAjusted){
 		Core.TaskHelper.runArray([
 			m_taskCelticKnot,
+			m_taskDropShadow,
 			m_taskPresent
 			], in_timeDeltaAjusted);
 	}
@@ -38,9 +40,7 @@ const onPageLoad = function(){
 		callbackStep, 
 		callbackStopUpdate, 
 		WebGL.WebGLState.makeParam(false, true, true, ["OES_texture_float"]), 
-		document, 
-		//true,
-		//0.016666, //undefined//0.01
+		document
 		);
 	const m_webGLState = m_componentTestScene.getWebGLState();
 	const m_resourceManager = Core.ResourceManager.factory({
@@ -49,6 +49,7 @@ const onPageLoad = function(){
 
 	const m_tileSize = 32;
 	const m_taskCelticKnot = TaskCelticKnot.factory(m_resourceManager, m_webGLState, 512, 512, m_tileSize, m_tileSize);
+	const m_taskDropShadow = TaskDropShadow.factory(m_resourceManager, m_webGLState, 512, 512);
 	const m_taskPresent = TaskPresent.factory(m_resourceManager, m_webGLState);
 
 	return;

@@ -66,7 +66,7 @@ const onPageLoad = function(){
 				m_taskContraintCollision,
 				m_taskContraintCollisionSphere,
 				m_taskContraintSpring,
-				m_taskContraintVelocityDampen,
+				//m_taskContraintVelocityDampen,
 				m_taskUpdatePosition
 				]);
 			m_state.u_timeDeltaPrev = in_timeDeltaAjusted;

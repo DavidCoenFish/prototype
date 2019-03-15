@@ -85,4 +85,6 @@ module.exports = {
 	"sGreen" : factoryFloat32(0.0, 1.0, 0.0, 1.0),
 	"sBlue" : factoryFloat32(0.0, 0.0, 1.0, 1.0),
 	"sBlack" : factoryFloat32(0.0, 0.0, 0.0, 1.0),
+	"sGrey" : factoryFloat32(0.5, 0.5, 0.5, 1.0),
+	"sWhite" : factoryFloat32(1.0, 1.0, 1.0, 1.0),
 }

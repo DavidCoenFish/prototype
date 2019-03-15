@@ -21,51 +21,101 @@ uniform sampler2D u_samplerForce;
 uniform float u_timeDelta;
 varying vec4 v_force;
 
-vec3 SpringForce(vec3 in_uvd, vec3 in_predictedPos){
-	if (0.0 == in_uvd.x){
+vec3 SpringForce(float in_targetDistance, float in_actualDistance, vec3 in_predictedPos, vec3 in_normal, vec3 in_predictedVel){
+	if (0.0 == in_targetDistance){
 		return vec3(0.0, 0.0, 0.0);
 	}
-	vec4 linkPos = texture2D(u_samplerPos, in_uvd.xy);
-	vec4 linkForce = texture2D(u_samplerForce, in_uvd.xy);
+	float springLength = in_actualDistance - in_targetDistance;
+	float k = -1000.0; // * in_uvd.z;
+	vec3 accel = (k * springLength) * in_normal;
+	vec3 force = accel * (-0.5);
+	return force;
+}
+
+vec4 makeNormalDistance(vec2 in_uv, vec3 in_predictedPos){
+	if (0.0 == in_uv.x){
+		return vec4(0.0, 0.0, 0.0, 0.0);
+	}
+	vec4 linkPos = texture2D(u_samplerPos, in_uv);
+	vec4 linkForce = texture2D(u_samplerForce, in_uv);
 	vec3 linkPredictedPos = linkPos.xyz + (linkForce.xyz * (u_timeDelta * u_timeDelta));
 
-	//case 0 spring force
 	vec3 offset = linkPredictedPos - in_predictedPos;
 	float linkLength = length(offset);
 	vec3 springNormal = offset / linkLength;
-	float springLength = linkLength - in_uvd.z;
-	float k = -1000.0; // * in_uvd.z;
-	vec3 accel = (k * springLength) * springNormal;
-	vec3 force = accel * (-0.5);
-	return force;
+	return vec4(springNormal, linkLength);
+}
 
-	//case 1 move point to target
-	// vec3 vecOffset = linkPredictedPos - in_predictedPos;
-	// float d = length(vecOffset);
-	// vec3 norm = vecOffset / d;
-	// vec3 targetAdjust = -((d - in_uvd.z) * 0.5) + norm;
-	// vec3 force = targetAdjust / (u_timeDelta * u_timeDelta);
-	// return force;
+vec4 minMaxConstraint(float in_targetDistance, float in_actualDistance, vec3 in_predictedPos, vec3 in_normal){
+	if (0.0 == in_targetDistance){
+		return vec4(0.0, 0.0, 0.0, 0.0);
+	}
+	float correctionMax = in_actualDistance - (in_targetDistance * 1.1);
+	if (0.0 < correctionMax){
+		return vec4(in_predictedPos + (in_normal * (correctionMax * 0.5)), 1.0);
+	}
+	float correctionMin = in_actualDistance - (in_targetDistance * 0.9);
+	if (correctionMin < 0.0){
+		return vec4(in_predictedPos + (in_normal * (correctionMin * 0.5)), 1.0);
+	}
 
+	return vec4(0.0, 0.0, 0.0, 0.0);
 }
 
 void main() {
 	vec4 pos = texture2D(u_samplerPos, a_uv);
 	vec4 force = texture2D(u_samplerForce, a_uv);
-	vec3 predictedPos = pos.xyz + (force.xyz * (u_timeDelta * u_timeDelta));
+	vec3 predictedVel = force.xyz * u_timeDelta;
+	vec3 predictedPos = pos.xyz + (predictedVel * u_timeDelta);
 
-	force.xyz += SpringForce(a_link0, predictedPos);
-	force.xyz += SpringForce(a_link1, predictedPos);
-	force.xyz += SpringForce(a_link2, predictedPos);
-	force.xyz += SpringForce(a_link3, predictedPos);
-	force.xyz += SpringForce(a_link4, predictedPos);
-	force.xyz += SpringForce(a_link5, predictedPos);
-	force.xyz += SpringForce(a_link6, predictedPos);
-	force.xyz += SpringForce(a_link7, predictedPos);
-	force.xyz += SpringForce(a_link8, predictedPos);
-	force.xyz += SpringForce(a_link9, predictedPos);
-	force.xyz += SpringForce(a_link10, predictedPos);
-	force.xyz += SpringForce(a_link11, predictedPos);
+	//calculate state
+	vec4 normalDistance0 = makeNormalDistance(a_link0.xy, predictedPos);
+	vec4 normalDistance1 = makeNormalDistance(a_link1.xy, predictedPos);
+	vec4 normalDistance2 = makeNormalDistance(a_link2.xy, predictedPos);
+	vec4 normalDistance3 = makeNormalDistance(a_link3.xy, predictedPos);
+	vec4 normalDistance4 = makeNormalDistance(a_link4.xy, predictedPos);
+	vec4 normalDistance5 = makeNormalDistance(a_link5.xy, predictedPos);
+	vec4 normalDistance6 = makeNormalDistance(a_link6.xy, predictedPos);
+	vec4 normalDistance7 = makeNormalDistance(a_link7.xy, predictedPos);
+	vec4 normalDistance8 = makeNormalDistance(a_link8.xy, predictedPos);
+	vec4 normalDistance9 = makeNormalDistance(a_link9.xy, predictedPos);
+	vec4 normalDistance10 = makeNormalDistance(a_link10.xy, predictedPos);
+	vec4 normalDistance11 = makeNormalDistance(a_link11.xy, predictedPos);
+
+	//add all the spring force
+	force.xyz += SpringForce(a_link0.z, normalDistance0.w, predictedPos, normalDistance0.xyz, predictedVel);
+	force.xyz += SpringForce(a_link1.z, normalDistance1.w, predictedPos, normalDistance1.xyz, predictedVel);
+	force.xyz += SpringForce(a_link2.z, normalDistance2.w, predictedPos, normalDistance2.xyz, predictedVel);
+	force.xyz += SpringForce(a_link3.z, normalDistance3.w, predictedPos, normalDistance3.xyz, predictedVel);
+	force.xyz += SpringForce(a_link4.z, normalDistance4.w, predictedPos, normalDistance4.xyz, predictedVel);
+	force.xyz += SpringForce(a_link5.z, normalDistance5.w, predictedPos, normalDistance5.xyz, predictedVel);
+	force.xyz += SpringForce(a_link6.z, normalDistance6.w, predictedPos, normalDistance6.xyz, predictedVel);
+	force.xyz += SpringForce(a_link7.z, normalDistance7.w, predictedPos, normalDistance7.xyz, predictedVel);
+	force.xyz += SpringForce(a_link8.z, normalDistance8.w, predictedPos, normalDistance8.xyz, predictedVel);
+	force.xyz += SpringForce(a_link9.z, normalDistance9.w, predictedPos, normalDistance9.xyz, predictedVel);
+	force.xyz += SpringForce(a_link10.z, normalDistance10.w, predictedPos, normalDistance10.xyz, predictedVel);
+	force.xyz += SpringForce(a_link11.z, normalDistance11.w, predictedPos, normalDistance11.xyz, predictedVel);
+
+	force.xyz *= max(0.0, (1.0 - (u_timeDelta * 0.1)));
+	
+	//take the average of the max/ min constraint and move to it, if there is one
+	vec4 sumTarget = vec4(0.0, 0.0, 0.0, 0.0);
+	sumTarget += minMaxConstraint(a_link0.z, normalDistance0.w, predictedPos, normalDistance0.xyz);
+	sumTarget += minMaxConstraint(a_link1.z, normalDistance1.w, predictedPos, normalDistance1.xyz);
+	sumTarget += minMaxConstraint(a_link2.z, normalDistance2.w, predictedPos, normalDistance2.xyz);
+	sumTarget += minMaxConstraint(a_link3.z, normalDistance3.w, predictedPos, normalDistance3.xyz);
+	sumTarget += minMaxConstraint(a_link4.z, normalDistance4.w, predictedPos, normalDistance4.xyz);
+	sumTarget += minMaxConstraint(a_link5.z, normalDistance5.w, predictedPos, normalDistance5.xyz);
+	sumTarget += minMaxConstraint(a_link6.z, normalDistance6.w, predictedPos, normalDistance6.xyz);
+	sumTarget += minMaxConstraint(a_link7.z, normalDistance7.w, predictedPos, normalDistance7.xyz);
+	sumTarget += minMaxConstraint(a_link8.z, normalDistance8.w, predictedPos, normalDistance8.xyz);
+	sumTarget += minMaxConstraint(a_link9.z, normalDistance9.w, predictedPos, normalDistance9.xyz);
+	sumTarget += minMaxConstraint(a_link10.z, normalDistance10.w, predictedPos, normalDistance10.xyz);
+	sumTarget += minMaxConstraint(a_link11.z, normalDistance11.w, predictedPos, normalDistance11.xyz);
+	if (0.0 < sumTarget.w){
+		sumTarget.xyz /= sumTarget.w;
+		force.xyz = (sumTarget.xyz - pos.xyz) / (u_timeDelta * u_timeDelta);
+	}
 
 	v_force = force;
 

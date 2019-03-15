@@ -3,6 +3,7 @@ const WebGL = require("webgl");
 
 const sVertexShader = `
 attribute vec2 a_uv;
+attribute float a_canMove;
 uniform sampler2D u_samplerPos;
 uniform sampler2D u_samplerPosPrev;
 uniform float u_timeDelta;
@@ -19,9 +20,8 @@ void main() {
 	}
 	vec3 gravity = vec3(0.0, 0.0, -9.8);
 
-	v_force.xyz = acceleration + gravity;
-	//v_force.xyz = acceleration;
-	v_force.w = 0.0;
+	float canMove = 1.0; //a_canMove
+	v_force = vec4(canMove * (acceleration + gravity), canMove);
 
 	gl_Position = vec4((a_uv.x * 2.0) - 1.0, (a_uv.y * 2.0) - 1.0, 0.0, 1.0);
 	gl_PointSize = 1.0; //point size is diameter
@@ -34,7 +34,7 @@ void main() {
 	gl_FragColor = v_force;
 }
 `;
-const sVertexAttributeNameArray = ["a_uv"];
+const sVertexAttributeNameArray = ["a_uv", "a_canMove"];
 const sUniformNameMap = {
 	"u_samplerPos" : WebGL.ShaderUniformData.sInt,
 	"u_samplerPosPrev" : WebGL.ShaderUniformData.sInt,
