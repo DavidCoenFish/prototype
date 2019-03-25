@@ -26,11 +26,18 @@ void main() {
 	vec4 foreground = texture2D(u_samplerForeground, v_uv);
 	vec4 background = texture2D(u_samplerBackground, v_uv);
 	vec4 dropshadow = texture2D(u_samplerDropshadow, v_uv);
-	gl_FragColor.xyz = (foreground.xyz * foreground.w) + 
-		(background.xyz * (1.0 - foreground.w - dropshadow.w));
-	gl_FragColor.w = 1.0;
-	gl_FragColor = vec4(foreground.w, foreground.w, foreground.w, 1.0);
+	//gl_FragColor.xyz = (foreground.xyz * foreground.w) + 
+	//	(background.xyz * (1.0 - foreground.w - dropshadow.w));
+	//gl_FragColor.w = 1.0;
+	//gl_FragColor = vec4(foreground.w, foreground.w, foreground.w, 1.0);
 	//gl_FragColor = vec4(dropshadow.w, dropshadow.w, dropshadow.w, 1.0);
+	float value = foreground.w;
+	if (0.0 == value){
+		value = background.x * dropshadow.w;
+		value = 0.5; //background.x * dropshadow.w;
+		value = 1.0 - dropshadow.w;
+	}
+	gl_FragColor = vec4(value, value, value, 1.0);
 }
 `;
 const sVertexAttributeNameArray = [

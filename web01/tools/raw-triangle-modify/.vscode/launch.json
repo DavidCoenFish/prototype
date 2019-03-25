@@ -1,0 +1,58 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "female_anatomy_adjust_height",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"female_anatomy_adjust_height"
+			],
+			"port": 5858,
+			"timeout": 100000
+			//"console": "externalTerminal"
+		},
+
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "male_anatomy_adjust_height",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"male_anatomy_adjust_height"
+			],
+			"port": 5858,
+			"timeout": 100000
+			//"console": "externalTerminal"
+		},
+
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "skeleton_adjust_height",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"skeleton_adjust_height"
+			],
+			"port": 5858,
+			"timeout": 100000
+			//"console": "externalTerminal"
+		},
+	]
+}

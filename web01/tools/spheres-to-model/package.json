@@ -1,0 +1,29 @@
+{
+  "name": "sphere-to-model",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --nolazy --inspect-brk=5858 index.js test",
+	"cloth_model_texture_link12": "node --nolazy --inspect-brk=5858 index.js output\\asset_cloth_model_texture_link12.js output\\data_cloth_model_texture_link12.js input\\cloth.json model_texture_link12",
+    "female_anatomy_10k_model": "node --nolazy --inspect-brk=5858 index.js output\\asset_female_anatomy_10k_model.js output\\data_female_anatomy_10k_model.js input\\spheres_female_anatomy_10k.json model",
+	"male_anatomy_10k_model": "node --nolazy --inspect-brk=5858 index.js output\\asset_male_anatomy_10k_model.js output\\data_male_anatomy_10k_model.js input\\spheres_male_anatomy_10k.json model",
+    "skeleton_10k_model": "node --nolazy --inspect-brk=5858 index.js output\\asset_skeleton_10k_model.js output\\data_skeleton_10k_model.js input\\spheres_skeleton_10k.json model",
+    "skeleton_10k_model_texture": "node --nolazy --inspect-brk=5858 index.js output\\asset_skeleton_10k_model_texture.js output\\data_skeleton_10k_model_texture.js input\\spheres_skeleton_10k.json model_texture",
+    "skeleton_10k_model_texture_link8": "node --nolazy --inspect-brk=5858 index.js output\\asset_skeleton_10k_model_texture_link8.js output\\data_skeleton_10k_model_texture_link8.js input\\spheres_skeleton_10k.json model_texture_link8",
+    "skeleton_10k_model_texture_link12": "node --nolazy --inspect-brk=5858 index.js output\\asset_skeleton_10k_model_texture_link12.js output\\data_skeleton_10k_model_texture_link12.js input\\spheres_skeleton_10k.json model_texture_link12",
+    "skeleton_10k_model_texture_link14": "node --nolazy --inspect-brk=5858 index.js output\\asset_skeleton_10k_model_texture_link14.js output\\data_skeleton_10k_model_texture_link14.js input\\spheres_skeleton_10k.json model_texture_link14",
+    "skeleton_50k_model": "node --nolazy --inspect-brk=5858 index.js output\\asset_skeleton_50k_model.js output\\data_skeleton_50k_model.js input\\spheres_skeleton_50k.json model",
+    "skeleton_50k_model_texture": "node --nolazy --inspect-brk=5858 index.js output\\asset_skeleton_50k_model_texture.js output\\data_skeleton_50k_model_texture.js input\\spheres_skeleton_50k.json model_texture",
+    "skeleton_50k_model_texture_link12": "node --nolazy --inspect-brk=5858 index.js output\\asset_skeleton_50k_model_texture_link12.js output\\data_skeleton_50k_model_texture_link12.js input\\spheres_skeleton_50k.json model_texture_link12",
+    "10x10x10_link12": "node --nolazy --inspect-brk=5858 index.js output\\asset_10x10x10_model_texture_link12.js output\\data_10x10x10_model_texture_link12.js input\\spheres_10x10x10.json model_texture_link12",
+	"sphere_link12": "node --nolazy --inspect-brk=5858 index.js output\\asset_sphere_model_texture_link12.js output\\data_sphere_model_texture_link12.js input\\sphere.json model_texture_link12",
+	"sphere_volume12": "node --nolazy --inspect-brk=5858 index.js output\\asset_sphere_model_texture_volume12.js output\\data_sphere_model_texture_volume12.js input\\sphere.json model_texture_volume12"
+  },
+  "dependencies": {
+    "fs-extra": "^7.0.1",
+    "q": "^1.5.1"
+  },
+  "author": "David Coen",
+  "license": "ISC"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "raw-triangle-modify",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "female_anatomy_adjust_height": "node --nolazy --inspect-brk=5858 index.js output\\raw_triangle_female_anatomy.json input\\raw_triangle_female_anatomy.json -adjust_height 1.75",
+    "male_anatomy_adjust_height": "node --nolazy --inspect-brk=5858 index.js output\\raw_triangle_male_anatomy.json input\\raw_triangle_male_anatomy.json -adjust_height 1.75",
+    "skeleton_adjust_height": "node --nolazy --inspect-brk=5858 index.js output\\raw_triangle_skeleton.json input\\raw_triangle_skeleton.json -adjust_height 1.75"
+  },
+  "dependencies": {
+    "fs-extra": "^7.0.1",
+    "q": "^1.5.1"
+  },
+  "author": "David Coen",
+  "license": "ISC"
+}

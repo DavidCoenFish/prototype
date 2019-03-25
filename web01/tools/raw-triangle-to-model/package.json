@@ -1,0 +1,18 @@
+{
+  "name": "raw-triangle-to-model",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "box_edge": "node --nolazy --inspect-brk=5858 index.js output\\model_box_edge.js output\\data_box_edge.js input\\raw_triangle_box.json edge",
+    "female_anatomy_edge": "node --nolazy --inspect-brk=5858 index.js output\\model_female_anatomy_edge.js output\\data_female_anatomy_edge.js input\\raw_triangle_female_anatomy.json edge",
+    "male_anatomy_edge": "node --nolazy --inspect-brk=5858 index.js output\\model_male_anatomy_edge.js output\\data_male_anatomy_edge.js input\\raw_triangle_male_anatomy.json edge",
+    "skeleton_edge": "node --nolazy --inspect-brk=5858 index.js output\\model_skeleton_edge.js output\\data_skeleton_edge.js input\\raw_triangle_skeleton.json edge"
+  },
+  "dependencies": {
+    "fs-extra": "^7.0.1",
+    "q": "^1.5.1"
+  },
+  "author": "David Coen",
+  "license": "ISC"
+}

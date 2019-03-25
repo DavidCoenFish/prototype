@@ -96,7 +96,7 @@ void main() {
 	force.xyz += SpringForce(a_link10.z, normalDistance10.w, predictedPos, normalDistance10.xyz, predictedVel);
 	force.xyz += SpringForce(a_link11.z, normalDistance11.w, predictedPos, normalDistance11.xyz, predictedVel);
 
-	force.xyz *= max(0.0, (1.0 - (u_timeDelta * 0.1)));
+	//force.xyz *= max(0.0, (1.0 - (u_timeDelta * 0.1)));
 	
 	//take the average of the max/ min constraint and move to it, if there is one
 	vec4 sumTarget = vec4(0.0, 0.0, 0.0, 0.0);
@@ -114,7 +114,10 @@ void main() {
 	sumTarget += minMaxConstraint(a_link11.z, normalDistance11.w, predictedPos, normalDistance11.xyz);
 	if (0.0 < sumTarget.w){
 		sumTarget.xyz /= sumTarget.w;
-		force.xyz = (sumTarget.xyz - pos.xyz) / (u_timeDelta * u_timeDelta);
+		vec3 targetForce = (sumTarget.xyz - pos.xyz) / (u_timeDelta * u_timeDelta);
+		//force.xyz = (0.8 * targetForce) + (0.2 * force.xyz);
+		force.xyz = (0.9 * targetForce) + (0.1 * force.xyz);
+		//force.xyz = targetForce;
 	}
 
 	v_force = force;
