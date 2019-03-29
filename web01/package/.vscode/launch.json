@@ -16,9 +16,30 @@
 				"run-script",
 				"packagevsc"
 			],
+			"env": {
+				"NODE_ENV": "production"
+			},
 			"port": 5858,
 			"timeout": 100000
 			//"console": "externalTerminal"
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "package debug",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"packagevsc"
+			],
+			"env": {
+				"NODE_ENV": "development"
+			},
+			"port": 5858,
+			"timeout": 100000,
 		}
 	]
 }

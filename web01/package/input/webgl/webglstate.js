@@ -7,7 +7,7 @@ for (var index = 0; index < 128; ++index){
 	sTextureStateName.push("TEXTURE" + index);
 }
 
-export const factory = function(
+export default function(
 	in_html5CanvasElement,
 	in_alphaOrUndefined, 
 	in_depthOrUndefined, 
@@ -356,7 +356,3 @@ export const factory = function(
 	return that;
 }
 
-module.exports = {
-	"factory" : factory,
-	"makeParam" : WebGlContextWrapper.makeParam
-};

@@ -1,4 +1,4 @@
-const factory = function(in_document, in_width, in_height){
+export const factory = function(in_document, in_width, in_height){
 	var m_element = in_document.createElement("CANVAS");
 
 	m_element.setAttribute("style",`display:block;width:${in_width}px;height:${in_height}px`);
@@ -17,14 +17,8 @@ const factory = function(in_document, in_width, in_height){
 	return that;
 }
 
-const factoryAppendBody = function(in_document, in_width, in_height){
+export const factoryAppendBody = function(in_document, in_width, in_height){
 	var result = factory(in_document, in_width, in_height);
 	in_document.body.appendChild(result.getElement());
 	return result;
 }
-
-
-module.exports = {
-	"factory" : factory,
-	"factoryAppendBody" : factoryAppendBody,
-};

@@ -153,7 +153,7 @@ export default function(
 				return undefined;
 			}
 			const parameter = m_webGLContext.getParameter(in_enum);
-			getError();
+			if (DEVELOPMENT) getError();
 			return parameter;
 		},
 		
@@ -162,7 +162,7 @@ export default function(
 				return undefined;
 			}
 			const supportedExtensions = m_webGLContext.getSupportedExtensions();
-			getError();
+			if (DEVELOPMENT) getError();
 			return supportedExtensions;
 		},
 
@@ -188,7 +188,7 @@ export default function(
 				//if (undefined !== output){
 				//	console.log("output:" + output);
 				//}
-				getError();
+				if (DEVELOPMENT) getError();
 			}
 			return output;
 		},
