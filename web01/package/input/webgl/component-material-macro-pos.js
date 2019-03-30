@@ -1,6 +1,6 @@
-const ShaderWrapper = require("./shaderwrapper.js");
+import ShaderWrapperFactory from "./shaderwrapper.js";
 const ShaderUniformData = require("./shaderuniformdata.js");
-const MaterialWrapper = require("./materialwrapper.js");
+import MaterialWrapperFactory from "./materialwrapper.js";
 
 const sVertexShader = `
 attribute vec3 a_position;
@@ -76,7 +76,7 @@ const sUniformNameMap = {
 };
 
 const shaderFactory = function(in_webGLState){
-	return ShaderWrapper.factory(
+	return ShaderWrapperFactory(
 		in_webGLState, 
 		sVertexShader, 
 		sFragmentShader, 
@@ -86,7 +86,7 @@ const shaderFactory = function(in_webGLState){
 }
 
 const materialFactory = function(){
-	const material = MaterialWrapper.factory(
+	const material = MaterialWrapperFactory(
 		undefined, //in_textureArrayOrUndefined,
 		undefined, //in_triangleCullEnabledOrUndefined,
 		undefined, //in_triangleCullEnumNameOrUndefined,

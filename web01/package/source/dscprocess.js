@@ -18,7 +18,7 @@ const dealHtmlTemplate = function(in_htmlTemplatePath, in_outputHtmlPath, in_ent
 	FileSystem.readFile(in_htmlTemplatePath, "utf8", function(error, data) {
 		if (error) throw error;
 
-		const title = Path.basename(in_entryPointPath, '.js');
+		const title = Path.basename(in_entryPointPath, '.js') + " " + (new Date().toLocaleTimeString());
 		const htmlDir = Path.dirname(in_outputHtmlPath);
 		const bundlePath = Path.relative(htmlDir, in_outputBundelPath);
 		const scriptArray = ""
@@ -82,7 +82,7 @@ const dealBundle = function(in_entryPointPath, in_outputBundelPath){
 			[
 				"babel-preset-minify",
 				{
-					"removeConsole": { "exclude": [ "error" ] },
+					"removeConsole": development ? false : { "exclude": [ "error" ] },
 					//"mangle" : { "topLevel" : false, "exclude" : {"window" : true} },
 					"deadcode" : {},
 					"builtIns": false,

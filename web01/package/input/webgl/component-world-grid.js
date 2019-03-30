@@ -1,9 +1,9 @@
 //const Core = require("core");
-import { factory as ComponentMaterialMacroPosColourFactory } from "./component-material-macro-pos-colour.js";
-import { factory as ModelDataStreamFactory } from "./modeldatastream.js";
-import { factory as ModelWrapperFactory } from "./modelwrapper.js";
+import ComponentMaterialMacroPosColourFactory from "./component-material-macro-pos-colour.js";
 import { factoryUnsignedByte as Colour4FactoryUnsignedByte } from "./../core/colour4.js";
 import { factoryFloat32 as CoreVector3FactoryFloat32, addition as CoreVector3Addition, multiplyScalar as CoreVector3MultiplyScalar } from "./../core/vector3.js";
+import ModelDataStreamFactory from "./modeldatastream.js";
+import ModelWrapperFactory from "./modelwrapper.js";
 
 const sColourAxis = Colour4FactoryUnsignedByte(0, 0, 0, 255);
 const sColourGridDark = Colour4FactoryUnsignedByte(0, 0, 0, 128);
@@ -37,7 +37,6 @@ const addLine = function(inout_posDataArray, inout_colourDataArray, in_colour, i
 	}
 	return;
 }
-
 
 const populateGeometry = function(inout_posDataArray, inout_colourDataArray, in_gridStep, in_gridCount){
 	//make axis
@@ -82,7 +81,7 @@ const factoryModelWorldGrid = function(in_gridStep, in_gridCount){
 	};
 }
 
-export const factory = function(in_resourceManager, in_webGLState, in_state, in_gridStep, in_gridCount){
+export default function(in_resourceManager, in_webGLState, in_state, in_gridStep, in_gridCount){
 	var m_model = undefined;
 	var m_modelOldName = undefined;
 	var m_materialComponent = ComponentMaterialMacroPosColourFactory(in_resourceManager, in_webGLState, in_state);

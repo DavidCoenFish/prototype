@@ -1,11 +1,11 @@
-import { factory } from "./shaderuniformdata.js";
+import {factory} from "./shaderuniformdata.js";
 
 export default function(
 	in_webGLState, 
 	in_vertexShaderSource, 
 	in_fragmentShaderSource, 
 	in_vertexAttributeNameArrayOrUndefined, 
-	in_uniformNameNameTypeMapOrUndefined,
+	in_uniformNameNameTypeMapOrUndefined
 	){
 	var m_shaderProgramObject = undefined;
 	var m_vertexWebGLShader = undefined;

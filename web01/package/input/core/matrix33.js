@@ -128,9 +128,10 @@ export const transformVector3 = function(in_matrix, in_vector3){
 	const x = in_vector3.getX();
 	const y = in_vector3.getY();
 	const z = in_vector3.getZ();
-	return Vector3.factoryFloat32(
+	return Vector3Factory(
 		(x * in_matrix.get00()) + (y * in_matrix.get01()) + (z * in_matrix.get02()),
 		(x * in_matrix.get10()) + (y * in_matrix.get11()) + (z * in_matrix.get12()),
-		(x * in_matrix.get20()) + (y * in_matrix.get21()) + (z * in_matrix.get22())
-	);
+		(x * in_matrix.get20()) + (y * in_matrix.get21()) + (z * in_matrix.get22()),
+		in_vector3.getRawClass()
+		);
 }

@@ -5,9 +5,9 @@
  *  use colour vertex attribute
  */
 
-import {factory as ShaderWrapperFactory } from "./shaderwrapper.js";
+import ShaderWrapperFactory from "./shaderwrapper.js";
 import {sFloat3 as ShaderUniformDataFloat3, sFloat4 as ShaderUniformDataFloat4 } from "./shaderuniformdata.js";
-import {factory as MaterialWrapperFactory } from "./materialwrapper.js";
+import MaterialWrapperFactory from "./materialwrapper.js";
 
 const sVertexShader = `
 attribute vec3 a_position;
@@ -111,7 +111,7 @@ const materialFactory = function(){
 		true, //in_colorMaskBlueOrUndefined, //true
 		true, //in_colorMaskAlphaOrUndefined, //false
 		false, //in_depthMaskOrUndefined, //false
-		false, //in_stencilMaskOrUndefined //false
+		false //in_stencilMaskOrUndefined //false
 	);
 	return material;
 }
@@ -119,7 +119,7 @@ const materialFactory = function(){
 const sShaderName = "componentShaderMacroPosColourLine";
 const sMaterialName = "componentMaterialMacroPosColourLine";
 
-export const factory = function(in_resourceManager, in_webGLState){
+export default function(in_resourceManager, in_webGLState){
 	if (false === in_resourceManager.hasFactory(sShaderName)){
 		in_resourceManager.addFactory(sShaderName, shaderFactory);
 	}
@@ -149,8 +149,4 @@ export const factory = function(in_resourceManager, in_webGLState){
 
 	return result;
 
-}
-
-module.exports = {
-	"factory" : factory
 }

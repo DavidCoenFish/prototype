@@ -16,14 +16,16 @@ export default function(
 	in_alphaOrUndefined, 
 	in_depthOrUndefined, 
 	in_antialiasOrUndefined, 
-	in_extentionsOrUndefined
+	in_extentionsOrUndefined,
+	in_preserveDrawingBufferOrUndefined
 ){
 	var m_webGLContextWrapper = WebGLContextWrapper(
 		in_html5CanvasElement, 
 		in_alphaOrUndefined, 
 		in_depthOrUndefined, 
 		in_antialiasOrUndefined, 
-		in_extentionsOrUndefined
+		in_extentionsOrUndefined,
+		in_preserveDrawingBufferOrUndefined
 		);
 
 	// keep a copy of what we think the webgl state is, if values don't change, we don't need to tell webgl to change

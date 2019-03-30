@@ -5,7 +5,7 @@
  *  use uv vertex attribute
  */
 
-const ShaderWrapper = require("./shaderwrapper.js");
+import ShaderWrapperFactory from "./shaderwrapper.js";
 const ShaderUniformData = require("./shaderuniformdata.js");
 const MaterialWrapper = require("./materialwrapper.js");
 

@@ -2,9 +2,8 @@
 render in screen homogenius coordiantes the given triangles, using uvs (and texture)
  */
 
-const ShaderWrapper = require("./shaderwrapper.js");
 const ShaderUniformData = require("./shaderuniformdata.js");
-const MaterialWrapper = require("./materialwrapper.js");
+import ShaderWrapperFactory from "./shaderwrapper.js";
 
 const sVertexShader = `
 attribute vec2 a_position;

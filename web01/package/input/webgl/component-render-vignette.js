@@ -2,11 +2,12 @@
 	render over the current render target
 */
 
-const Core = require("core");
-const ComponentModelScreenQuad = require("./component-model-screen-quad.js");
-const MaterialWrapper = require("./materialwrapper.js");
-const ShaderWrapper = require("./shaderwrapper.js");
-const ShaderUniformData = require("./shaderuniformdata.js");
+import { factoryFloat32 as Vector2FactoryFloat32 } from './../core/vector2.js';
+import { factoryFloat32 as Vector3FactoryFloat32 } from './../core/vector3.js';
+import ComponentModelScreenQuadFactory from './component-model-screen-quad.js"';
+import MaterialWrapperFactory from './materialwrapper.js';
+import ShaderWrapperFactory from './shaderwrapper.js';
+import {sFloat3 as ShaderUniformDataFloat3, sFloat2 as ShaderUniformDataFloat2 } from "./shaderuniformdata.js";
 
 const sVertexShader = `
 attribute vec2 a_position;
@@ -52,12 +53,12 @@ void main() {
 
 const sVertexAttributeNameArray = ["a_position", "a_uv"];
 const sUniformNameMap = {
-	"u_colour" : ShaderUniformData.sFloat3, 
-	"u_widthHeightPercentage" : ShaderUniformData.sFloat2,
+	"u_colour" : ShaderUniformDataFloat3, 
+	"u_widthHeightPercentage" : ShaderUniformDataFloat2,
 };
 
 const shaderFactory = function(in_webGLState){
-	return ShaderWrapper.factory(
+	return ShaderWrapperFactory(
 		in_webGLState, 
 		sVertexShader, 
 		sFragmentShader, 
@@ -67,11 +68,11 @@ const shaderFactory = function(in_webGLState){
 const sShaderName = "componentRenderVignetteShader";
 
 
-const factory = function(in_resourceManager, in_webGLState, in_colourRGB, in_widthPercentage, in_heightPercentage){
+export default function(in_resourceManager, in_webGLState, in_colourRGB, in_widthPercentage, in_heightPercentage){
 
-	const m_modelComponent = ComponentModelScreenQuad.factory(in_resourceManager, in_webGLState);
+	const m_modelComponent = ComponentModelScreenQuadFactory(in_resourceManager, in_webGLState);
 	const m_model = m_modelComponent.getModel();
-	const m_material = MaterialWrapper.factory(
+	const m_material = MaterialWrapperFactory(
 		undefined, //in_textureArrayOrUndefined,
 		undefined, //in_triangleCullEnabledOrUndefined,
 		undefined, //in_triangleCullEnumNameOrUndefined, //"FRONT", "BACK", "FRONT_AND_BACK"
@@ -88,8 +89,8 @@ const factory = function(in_resourceManager, in_webGLState, in_colourRGB, in_wid
 		//in_depthMaskOrUndefined, //false
 		//in_stencilMaskOrUndefined //false
 		);
-	const m_widthHeightPercentage = Core.Vector2.factoryFloat32(in_widthPercentage, in_heightPercentage);
-	const m_colour = Core.Vector3.factoryFloat32(in_colourRGB.getRed(), in_colourRGB.getGreen(), in_colourRGB.getBlue());
+	const m_widthHeightPercentage = Vector2FactoryFloat32(in_widthPercentage, in_heightPercentage);
+	const m_colour = Vector3FactoryFloat32(in_colourRGB.getRed(), in_colourRGB.getGreen(), in_colourRGB.getBlue());
 	const m_state = {
 		"u_colour" : m_colour.getRaw(),
 		"u_widthHeightPercentage" : m_widthHeightPercentage.getRaw()
@@ -117,8 +118,4 @@ const factory = function(in_resourceManager, in_webGLState, in_colourRGB, in_wid
 	})
 
 	return that;
-}
-
-module.exports = {
-	"factory" : factory
 }

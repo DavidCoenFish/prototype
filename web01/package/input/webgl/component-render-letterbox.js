@@ -6,7 +6,7 @@ alpha = bx + c;
 const Core = require("core");
 const ComponentModelScreenQuad = require("./component-model-screen-quad.js");
 const MaterialWrapper = require("./materialwrapper.js");
-const ShaderWrapper = require("./shaderwrapper.js");
+import ShaderWrapperFactory from "./shaderwrapper.js";
 const ShaderUniformData = require("./shaderuniformdata.js");
 
 const sVertexShader = `

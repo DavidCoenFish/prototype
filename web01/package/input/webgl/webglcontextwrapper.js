@@ -49,7 +49,8 @@ const makeParam = function(
 	in_alphaOrUndefined, 
 	in_depthOrUndefined, 
 	in_antialiasOrUndefined, 
-	in_extentionsOrUndefined
+	in_extentionsOrUndefined,
+	in_preserveDrawingBufferOrUndefined
 	){
 	var param = undefined;
 	if (undefined !== in_alphaOrUndefined){
@@ -76,7 +77,12 @@ const makeParam = function(
 		}
 		param["extentions"] = in_extentionsOrUndefined;
 	}
-
+	if (undefined !== in_preserveDrawingBufferOrUndefined){
+		if (undefined === param){
+			param = {};
+		}
+		param["preserveDrawingBuffer"] = in_preserveDrawingBufferOrUndefined;
+	}
 	return param;
 }
 
@@ -85,14 +91,16 @@ export default function(
 	in_alphaOrUndefined, 
 	in_depthOrUndefined, 
 	in_antialiasOrUndefined, 
-	in_extentionsOrUndefined
+	in_extentionsOrUndefined,
+	in_preserveDrawingBufferOrUndefined
 	){
 	//private members ==========================
 	var m_webGLContext = getWebGLContext(in_html5CanvasElement, makeParam(
 		in_alphaOrUndefined, 
 		in_depthOrUndefined, 
 		in_antialiasOrUndefined, 
-		in_extentionsOrUndefined
+		in_extentionsOrUndefined,
+		in_preserveDrawingBufferOrUndefined
 		));
 
 	//private methods ==========================

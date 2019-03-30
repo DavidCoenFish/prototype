@@ -1,4 +1,11 @@
-const Core = require("core");
+import { factoryFloat32 as Vector2Factory, crossProduct as Vector2CrossProduct } from './../core/vector2.js'
+import { factoryFloat32 as Vector3Factory, crossProduct as Vector3CrossProduct } from './../core/vector3.js'
+import { factoryQuaternion as Matrix33FactoryQuaternion, transformVector3 as Matrix33TransformVector3 } from './../core/matrix33.js'
+import { 
+	factoryIdentity as QuaternionFactoryIdentity,
+	factoryAxisAngle as QuaternionFactoryAxisAngle,
+	multiplication as QuaternionMultiplication
+	} from './../core/quaternion.js'
 
 const getInside = function(in_radius, in_x0, in_y0, in_x1, in_y1){
 	const offsetX = in_x0 - in_x1;
@@ -9,12 +16,12 @@ const getInside = function(in_radius, in_x0, in_y0, in_x1, in_y1){
 }
 
 const calculateRoll = function(in_x0, in_y0, in_x1, in_y1, in_originX, in_originY){
-	const vectorNew = Core.Vector2.factoryFloat32(in_x0 - in_originX, in_y0 - in_originY);
+	const vectorNew = Vector2Factory(in_x0 - in_originX, in_y0 - in_originY);
 	vectorNew.normaliseSelf();
-	const vectorPrev = Core.Vector2.factoryFloat32(in_x1 - in_originX, in_y1 - in_originY);
+	const vectorPrev = Vector2Factory(in_x1 - in_originX, in_y1 - in_originY);
 	vectorPrev.normaliseSelf();
 	const dot = Math.max(-1.0, Math.min(1.0, vectorNew.dotProduct(vectorPrev)));
-	var cross = Core.Vector2.crossProduct(vectorNew);
+	var cross = Vector2CrossProduct(vectorNew);
 	var angle = Math.acos(dot);
 	angle *= Math.sign(cross.dotProduct(vectorPrev));
 	//console.log(JSON.stringify([in_x0, in_y0, in_x1, in_y1]));
@@ -30,9 +37,9 @@ const undefinedParamHelper = function(in_name, inout_state, in_defaultX, in_defa
 	var result = undefined;
 	if (in_name in inout_state){
 		var stateValue = inout_state[in_name];
-		result = Core.Vector3.factoryFloat32(stateValue[0], stateValue[1], stateValue[2]);
+		result = Vector3Factory(stateValue[0], stateValue[1], stateValue[2]);
 	} else {
-		result = Core.Vector3.factoryFloat32(in_defaultX, in_defaultY, in_defaultZ);
+		result = Vector3Factory(in_defaultX, in_defaultY, in_defaultZ);
 	}
 
 	inout_state[in_name] = result.getRaw();
@@ -42,7 +49,7 @@ const undefinedParamHelper = function(in_name, inout_state, in_defaultX, in_defa
 
 /*
  */
-const factory = function(in_targetElement, inout_state){
+export default function(in_targetElement, inout_state){
 	in_targetElement.tabIndex = 0;
 	const m_keyMap = {}
 	var m_oldX = undefined;
@@ -63,26 +70,26 @@ const factory = function(in_targetElement, inout_state){
 			(undefined !== in_pitchDeltaOrUndefined) ||
 			(undefined !== in_rollDeltaOrUndefined)){
 		
-			var rotation = Core.Quaternion.factoryIdentity();
+			var rotation = QuaternionFactoryIdentity();
 			if (undefined !== in_yawDeltaOrUndefined){
-				const quat = Core.Quaternion.factoryAxisAngle(m_cameraUp, in_yawDeltaOrUndefined);
-				rotation = Core.Quaternion.multiplication(rotation, quat);
+				const quat = QuaternionFactoryAxisAngle(m_cameraUp, in_yawDeltaOrUndefined);
+				rotation = QuaternionMultiplication(rotation, quat);
 			}
 			if (undefined !== in_pitchDeltaOrUndefined){
-				const quat = Core.Quaternion.factoryAxisAngle(m_cameraLeft, -in_pitchDeltaOrUndefined);
-				rotation = Core.Quaternion.multiplication(rotation, quat);
+				const quat = QuaternionFactoryAxisAngle(m_cameraLeft, -in_pitchDeltaOrUndefined);
+				rotation = QuaternionMultiplication(rotation, quat);
 			}
 			if (undefined !== in_rollDeltaOrUndefined){
-				const quat = Core.Quaternion.factoryAxisAngle(m_cameraAt, -in_rollDeltaOrUndefined);
-				rotation = Core.Quaternion.multiplication(rotation, quat);
+				const quat = QuaternionFactoryAxisAngle(m_cameraAt, -in_rollDeltaOrUndefined);
+				rotation = QuaternionMultiplication(rotation, quat);
 			}
 
 			{
-				const matrix = Core.Matrix33.factoryQuaternion(rotation);
-				const localAt = Core.Matrix33.transformVector3(matrix, m_cameraAt);
-				var localLeft = Core.Matrix33.transformVector3(matrix, m_cameraLeft);
-				const localUp = Core.Vector3.crossProduct(localAt, localLeft);
-				localLeft = Core.Vector3.crossProduct(localUp, localAt);
+				const matrix = Matrix33FactoryQuaternion(rotation);
+				const localAt = Matrix33TransformVector3(matrix, m_cameraAt);
+				var localLeft = Matrix33TransformVector3(matrix, m_cameraLeft);
+				const localUp = Vector3CrossProduct(localAt, localLeft);
+				localLeft = Vector3CrossProduct(localUp, localAt);
 
 				localAt.normaliseSelf();
 				localUp.normaliseSelf();
@@ -183,7 +190,7 @@ const factory = function(in_targetElement, inout_state){
 			in_targetElement.ownerDocument.removeEventListener("keyup", keyUpCallback);
 			return;
 		},
-		"tick" : function(in_timeDelta){
+		"update" : function(in_timeDelta){
 			const deltaTimeSinceLastUpdate = in_timeDelta;
 			if (true === anyKeyDown(["a", "KeyA", "ArrowLeft"])){
 				var cameraDeltaX = deltaTimeSinceLastUpdate;
@@ -222,7 +229,3 @@ const factory = function(in_targetElement, inout_state){
 
 	return that;
 }
-
-module.exports = {
-	"factory" : factory
-};

@@ -1,5 +1,5 @@
 import { factoryFloat32 as Vector2Factory } from './../core/vector2.js'
-import { factoryFloat32 as QuaternionFactory, 
+import { 
 	factoryIdentity as QuaternionFactoryIdentity,
 	factoryAxisAngle as QuaternionFactoryAxisAngle,
 	multiplication as QuaternionMultiplication

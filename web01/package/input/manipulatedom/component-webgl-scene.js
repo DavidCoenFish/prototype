@@ -14,6 +14,7 @@ export default function(
 	in_depthOrUndefined, 
 	in_antialiasOrUndefined, 
 	in_extentionsOrUndefined,
+	in_preserveDrawingBufferOrUndefined,
 	in_stepModeOrUndefined, //if true, we start paused, and only advance on clicking the step button
 	in_timeDeltaOverrideOrUndefined,
 	in_frameCountOrUndefined,
@@ -25,7 +26,8 @@ export default function(
 		in_alphaOrUndefined, 
 		in_depthOrUndefined, 
 		in_antialiasOrUndefined, 
-		in_extentionsOrUndefined
+		in_extentionsOrUndefined,
+		in_preserveDrawingBufferOrUndefined
 		);
 	var m_stepMode = (undefined !== in_stepModeOrUndefined) ? in_stepModeOrUndefined : false;
 
@@ -61,7 +63,7 @@ export default function(
 		}
 
 		if (undefined !== in_saveEachFrameFileNameOrUndefined){
-			ManipulateDom.AutoDownload.autoSnapShot(in_document, m_html5CanvasElement, in_saveEachFrameFileNameOrUndefined + m_frameIndex + ".png");
+			autoSnapShot(in_document, m_canvaseElementWrapper.getElement(), in_saveEachFrameFileNameOrUndefined + m_frameIndex + ".png");
 		}
 
 		if (undefined !== in_frameCountOrUndefined){
@@ -82,7 +84,7 @@ export default function(
 
 	brAppendBody(in_document);
 	buttonAppendBody(in_document, "snapshot", function(in_event){
-		autoSnapShot(in_document, m_canvaseElementWrapper.getCanvasElement(), "snapshot.png");
+		autoSnapShot(in_document, m_canvaseElementWrapper.getElement(), "C:/development/snapshot.png");
 	});
 	buttonAppendBody(in_document, "stop", function(in_event){
 		cancelAnimationFrame(m_requestId);

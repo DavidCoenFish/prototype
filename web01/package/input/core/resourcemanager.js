@@ -2,21 +2,21 @@
 public
 collect resources factories, and create unique instances or reuesable constant resource
  */
-import ResourceManagerData from "./resourcemanagerdata.js";
+import ResourceManagerDataFactory from "./resourcemanagerdata.js";
 
-export const factory = function(in_mapNameFactoryOrUndefined){
+export default function(in_mapNameFactoryOrUndefined){
 	const m_dataMap = {};
 	if (undefined !== in_mapNameFactoryOrUndefined){
 		for (var key in in_mapNameFactoryOrUndefined) {
 			if (true !== in_mapNameFactoryOrUndefined.hasOwnProperty(key)){ continue; }
-			m_dataMap[key] = ResourceManagerData(in_mapNameFactoryOrUndefined[key]);
+			m_dataMap[key] = ResourceManagerDataFactory(in_mapNameFactoryOrUndefined[key]);
 		}
 	}
 
 	//public methods ==========================
 	const result = Object.create({
 		"addFactory" : function(in_name, in_factory){
-			m_dataMap[in_name] = ResourceManagerData.factory(in_factory);
+			m_dataMap[in_name] = ResourceManagerDataFactory(in_factory);
 			return;
 		},
 		
