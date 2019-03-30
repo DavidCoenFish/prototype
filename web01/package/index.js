@@ -10,12 +10,14 @@ Q().then(function(){
 }).then(function(){
 	//return DscProcess.processFile("./input/test.js", outputDir + "/test/test.js");
 }).then(function(){
+	/**/
 	return DscProcess.processProject(
 		"./template/blank.html.template", 
 		outputDir + "triangle/index.html",
 		"./input/triangle.js",
 		outputDir + "triangle/triangle.js"
 		);
+	/**/
 }).done(function(){
 	console.log(new Date().toLocaleTimeString());
 });

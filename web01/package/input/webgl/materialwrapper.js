@@ -28,7 +28,7 @@ GEQUAL (pass if the incoming value is greater than or equal to the depth buffer 
 ALWAYS (always pass)
 
  */
-export const factory = function(
+export default function(
 		in_textureArrayOrUndefined,
 		in_triangleCullEnabledOrUndefined,
 		in_triangleCullEnumNameOrUndefined, //"FRONT", "BACK", "FRONT_AND_BACK"

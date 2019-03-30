@@ -1,4 +1,4 @@
-const factory = function(in_document){
+export const factory = function(in_document){
 	var m_timeStamp = undefined;
 	var m_textElement = in_document.createTextNode("");
 	var m_div = in_document.createElement("DIV");
@@ -24,7 +24,8 @@ const factory = function(in_document){
 	return result;
 }
 
-
-module.exports = {
-	"factory" : factory
-};
+export const factoryAppendBody = function(in_document){
+	var result = factory(in_document);
+	in_document.body.appendChild(result.getElement());
+	return result;
+}

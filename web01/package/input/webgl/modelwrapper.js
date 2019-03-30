@@ -11,9 +11,8 @@ mode name
 	TRIANGLES: Draws a triangle for a group of three vertices
 
  */
-const Core = require("core");
 
-const factory = function(
+export default function(
 		in_webGLState,
 		in_modeName,
 		in_elementCount,
@@ -143,8 +142,3 @@ const factory = function(
 
 	return that;
 }
-
-
-module.exports = {
-	"factory" : factory
-};

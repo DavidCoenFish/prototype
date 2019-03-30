@@ -1,4 +1,4 @@
-const autoDownload = function(in_document, in_urlEncodedData, in_fileName){
+export const autoDownload = function(in_document, in_urlEncodedData, in_fileName){
 	var element = in_document.createElement('a');
 	element.setAttribute('href', in_urlEncodedData);
 	element.setAttribute('download', in_fileName);
@@ -12,12 +12,7 @@ const autoDownload = function(in_document, in_urlEncodedData, in_fileName){
 	return;
 }
 
-const autoSnapShot = function(in_document, in_html5CanvasElement, in_fileName){
+export const autoSnapShot = function(in_document, in_html5CanvasElement, in_fileName){
 	const capturedImage = in_html5CanvasElement.toDataURL("image/png");
 	autoDownload(in_document, capturedImage, in_fileName);
-}
-
-module.exports = {
-	"autoDownload" : autoDownload,
-	"autoSnapShot" : autoSnapShot
 }

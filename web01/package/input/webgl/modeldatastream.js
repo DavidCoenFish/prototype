@@ -11,7 +11,7 @@ FLOAT: Float32Array
 HALF_FLOAT
 
  */
-export const factory = function(
+export default function(
 	in_webGLState,
 	in_typeName, //string
 	in_elementsPerVertex, //int

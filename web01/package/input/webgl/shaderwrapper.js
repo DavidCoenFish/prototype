@@ -1,6 +1,6 @@
-import ShaderUniformData from "./shaderuniformdata.js";
+import { factory } from "./shaderuniformdata.js";
 
-export const factory = function(
+export default function(
 	in_webGLState, 
 	in_vertexShaderSource, 
 	in_fragmentShaderSource, 
@@ -135,7 +135,7 @@ export const factory = function(
 			for (var name in in_uniformNameNameTypeMapOrUndefined){
 				var typeName = in_uniformNameNameTypeMapOrUndefined[name];
 				var location = in_webGLContextWrapper.callMethod("getUniformLocation", programHandle, name);
-				m_mapUniform[name] = ShaderUniformData.factory(typeName, location);
+				m_mapUniform[name] = factory(typeName, location);
 			}
 		}
 			
@@ -146,8 +146,3 @@ export const factory = function(
 
 	return that;
 }
-
-
-module.exports = {
-	"factory" : factory
-};
