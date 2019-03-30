@@ -1,4 +1,9 @@
-const Core = require("core");
+import { factoryFloat32 as Vector2Factory } from './../core/vector2.js'
+import { factoryFloat32 as QuaternionFactory, 
+	factoryIdentity as QuaternionFactoryIdentity,
+	factoryAxisAngle as QuaternionFactoryAxisAngle,
+	multiplication as QuaternionMultiplication
+	} from './../core/quaternion.js'
 
 const getInside = function(in_radius, in_x0, in_y0, in_x1, in_y1){
 	const offsetX = in_x0 - in_x1;
@@ -8,14 +13,11 @@ const getInside = function(in_radius, in_x0, in_y0, in_x1, in_y1){
 	return inside;
 }
 
-const claculateBoomLength = function(in_zoom){
-	return (1.0 / in_zoom);
-}
 
 const calculateRoll = function(in_x0, in_y0, in_x1, in_y1, in_originX, in_originY){
-	const vectorNew = Core.Vector2.factoryFloat32(in_x0 - in_originX, in_y0 - in_originY);
+	const vectorNew = Vector2Factory(in_x0 - in_originX, in_y0 - in_originY);
 	vectorNew.normaliseSelf();
-	const vectorPrev = Core.Vector2.factoryFloat32(in_x1 - in_originX, in_y1 - in_originY);
+	const vectorPrev = Vector2Factory(in_x1 - in_originX, in_y1 - in_originY);
 	vectorPrev.normaliseSelf();
 	const dot = Math.max(-1.0, Math.min(1.0, vectorNew.dotProduct(vectorPrev)));
 	var cross = vectorNew.crossProduct();
@@ -29,7 +31,7 @@ const calculateYawPitch = function(in_delta){
 }
 
 /* */
-const factory = function(in_targetElement, inout_state){
+export default function(in_targetElement, inout_state){
 	var m_oldX = undefined;
 	var m_oldY = undefined;
 
@@ -45,18 +47,18 @@ const factory = function(in_targetElement, inout_state){
 			(undefined !== in_pitchDeltaOrUndefined) ||
 			(undefined !== in_rollDeltaOrUndefined)){
 		
-			var rotation = Core.Quaternion.factoryIdentity();
+			var rotation = QuaternionFactoryIdentity();
 			if (undefined !== in_yawDeltaOrUndefined){
-				const quat = Core.Quaternion.factoryAxisAngle(m_cameraUp, -in_yawDeltaOrUndefined);
-				rotation = Core.Quaternion.multiplication(rotation, quat);
+				const quat = QuaternionFactoryAxisAngle(m_cameraUp, -in_yawDeltaOrUndefined);
+				rotation = QuaternionMultiplication(rotation, quat);
 			}
 			if (undefined !== in_pitchDeltaOrUndefined){
-				const quat = Core.Quaternion.factoryAxisAngle(m_cameraLeft, in_pitchDeltaOrUndefined);
-				rotation = Core.Quaternion.multiplication(rotation, quat);
+				const quat = QuaternionFactoryAxisAngle(m_cameraLeft, in_pitchDeltaOrUndefined);
+				rotation = QuaternionMultiplication(rotation, quat);
 			}
 			if (undefined !== in_rollDeltaOrUndefined){
-				const quat = Core.Quaternion.factoryAxisAngle(m_cameraAt, -in_rollDeltaOrUndefined);
-				rotation = Core.Quaternion.multiplication(rotation, quat);
+				const quat = QuaternionFactoryAxisAngle(m_cameraAt, -in_rollDeltaOrUndefined);
+				rotation = QuaternionMultiplication(rotation, quat);
 			}
 
 			{
@@ -156,7 +158,3 @@ const factory = function(in_targetElement, inout_state){
 
 	return result;
 }
-
-module.exports = {
-	"factory" : factory
-};

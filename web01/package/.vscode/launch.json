@@ -7,7 +7,7 @@
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "package",
+			"name": "package production",
 			"runtimeExecutable": "npm",
 			"windows": {
 				"runtimeExecutable": "npm.cmd"
@@ -26,7 +26,7 @@
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "package debug",
+			"name": "package development",
 			"runtimeExecutable": "npm",
 			"windows": {
 				"runtimeExecutable": "npm.cmd"

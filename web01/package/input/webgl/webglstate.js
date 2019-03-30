@@ -1,6 +1,10 @@
 /*
  */
-import WebGLContextWrapper from "./webglcontextwrapper.js"
+import WebGLContextWrapper from './webglcontextwrapper.js';
+import { cmpAlmost as Colour4CmpAlmost } from './../core/colour4.js';
+import { cmpAlmost as Vector2CmpAlmost } from './../core/vector2';
+import { cmpAlmost as Vector3CmpAlmost } from './../core/vector3';
+import { cmpAlmost as Vector4CmpAlmost } from './../core/vector4';
 
 const sTextureStateName = [];
 for (var index = 0; index < 128; ++index){
@@ -38,7 +42,7 @@ export default function(
 	const stateValueCmpColour4 = function(in_valueName, in_value){
 		if (in_valueName in m_state){
 			var stateValue = m_state[in_valueName];
-			if (true === Core.Colour4.cmpAlmost(stateValue, in_value)){
+			if (true === Colour4CmpAlmost(stateValue, in_value)){
 				return true;
 			}
 		}
@@ -49,7 +53,7 @@ export default function(
 	const stateValueCmpVector4 = function(in_valueName, in_value){
 		if (in_valueName in m_state){
 			var stateValue = m_state[in_valueName];
-			if (true === Core.Vector4.cmpAlmost(stateValue, in_value)){
+			if (true === Vector4CmpAlmost(stateValue, in_value)){
 				return true;
 			}
 		}

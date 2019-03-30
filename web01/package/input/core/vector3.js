@@ -1,7 +1,7 @@
 /*
 Float32Array
  */
-import VectorPrototype from ("./vectorprototype.js");
+import VectorPrototype from "./vectorprototype.js";
 
 export const factory = function(in_x, in_y, in_z, in_baseArrayClass){
 	const data = new in_baseArrayClass([in_x, in_y, in_z]);
@@ -84,3 +84,12 @@ export const addition = function(in_vecA, in_vecB){
 		in_vecA.getRawClass()
 	);
 }
+
+export const cmpAlmost = function(in_lhs, in_rhs, in_epsilonOrUndefined){
+	var dataLhs = in_lhs.getRaw();
+	var dataRhs = in_rhs.getRaw();
+	return ((true === CoreMathCmpAlmost(dataLhs[0], dataRhs[0], in_epsilonOrUndefined)) &&
+		(true === CoreMathCmpAlmost(dataLhs[1], dataRhs[1], in_epsilonOrUndefined)) &&
+		(true === CoreMathCmpAlmost(dataLhs[2], dataRhs[2], in_epsilonOrUndefined)));
+}
+

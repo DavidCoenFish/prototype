@@ -1,15 +1,15 @@
 import { factoryAppendBody as componentCanvasFactory } from './component-canvas.js'
 import { factoryAppendBody as componentFpsFactory } from './component-fps.js'
-import { factoryAppendBody as brAppendBody } from './format.js'
+import { factoryAppendBody as brAppendBody } from './br.js'
 import { factoryAppendBody as buttonAppendBody } from './button.js'
 import { autoSnapShot } from './autodownload.js'
-import webGLStateFactory from './webgl/webglstate.js'
+import webGLStateFactory from './../webgl/webglstate.js'
 
 
 export default function(
 	in_document,
-	in_callbackUpdate, // = function(in_timeDeltaActual, in_timeDeltaAjusted)
-	in_callbackStop, // = function()
+	in_callbackUpdateOrUndefined, // = function(in_timeDeltaActual, in_timeDeltaAjusted)
+	in_callbackStopOrUndefined, // = function()
 	in_alphaOrUndefined, 
 	in_depthOrUndefined, 
 	in_antialiasOrUndefined, 
@@ -25,7 +25,7 @@ export default function(
 		in_alphaOrUndefined, 
 		in_depthOrUndefined, 
 		in_antialiasOrUndefined, 
-		in_extentionsOrUndefined,
+		in_extentionsOrUndefined
 		);
 	var m_stepMode = (undefined !== in_stepModeOrUndefined) ? in_stepModeOrUndefined : false;
 
@@ -56,8 +56,8 @@ export default function(
 			}
 		}
 
-		if (undefined !== in_callbackUpdate){
-			in_callbackUpdate(timeDeltaActual, timeDeltaAjusted);
+		if (undefined !== in_callbackUpdateOrUndefined){
+			in_callbackUpdateOrUndefined(timeDeltaActual, timeDeltaAjusted);
 		}
 
 		if (undefined !== in_saveEachFrameFileNameOrUndefined){
@@ -87,8 +87,8 @@ export default function(
 	buttonAppendBody(in_document, "stop", function(in_event){
 		cancelAnimationFrame(m_requestId);
 		m_requestId = undefined;
-		if (undefined !== in_callbackStopUpdate){
-			in_callbackStopUpdate();
+		if (undefined !== in_callbackStopOrUndefined){
+			in_callbackStopOrUndefined();
 		}
 		m_webGLState.destroy();
 		return;

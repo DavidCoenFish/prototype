@@ -7,7 +7,7 @@ export const factory = function(in_document, in_elementToAppend){
 }
 
 export const factoryAppendBody = function(in_document){
-	factoryAppendElement(in_document, in_document.body);
+	factory(in_document, in_document.body);
 	return;
 }
 

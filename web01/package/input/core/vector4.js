@@ -2,7 +2,7 @@
 Float32Array
  */
 import {cmpAlmost as CoreMathCmpAlmost} from "./coremath.js"
-import VectorPrototype from ("./vectorprototype.js");
+import VectorPrototype from "./vectorprototype.js";
 
 export const factory = function(in_x, in_y, in_z, in_w, in_baseArrayClass){
 	const data = new in_baseArrayClass([in_x, in_y, in_z, in_w]);

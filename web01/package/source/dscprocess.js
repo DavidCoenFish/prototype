@@ -2,8 +2,10 @@ const FileSystem = require("fs");
 const Path = require("path");
 const Rollup = require("rollup");
 const RollupPluginBabel = require("rollup-plugin-babel");
-const RollupPluginUglify = require("rollup-plugin-uglify");
+const RollupPluginEslint = require("rollup-plugin-eslint");
 const RollupPluginReplace = require("rollup-plugin-replace");
+const RollupPluginUglify = require("rollup-plugin-uglify");
+
 const Q = require("q");
 
 const templateReplaceTokens = function(in_sourcedata, in_key, in_value){
@@ -45,13 +47,30 @@ const dealHtmlTemplate = function(in_htmlTemplatePath, in_outputHtmlPath, in_ent
 
 const dealBundle = function(in_entryPointPath, in_outputBundelPath){
 	const development = ("development" === process.env.NODE_ENV);
+	const production = ("production" === process.env.NODE_ENV);
 	const plugins = [];
 	plugins.push(RollupPluginReplace({
-		"DEVELOPMENT" : development
+		"DEVELOPMENT" : development,
+		"PRODUCTION" : production
 	}));
+	plugins.push(RollupPluginEslint.eslint({
+		"useEslintrc": false,
+		"throwOnError": true,
+		"throwOnWarning": true,
+		"parserOptions": {
+			"sourceType": "module"
+		},
+		"env": {
+			"browser": true,
+			"node": true
+		},
+		"extends": [
+			"eslint:recommended",
+			"plugin:react/recommended"
+		],
+	}));	
 	plugins.push(RollupPluginBabel({
 		"exclude": 'node_modules/**',
-		//"minified": true,
 		"comments": false,
 		"presets": [
 			[
@@ -66,6 +85,9 @@ const dealBundle = function(in_entryPointPath, in_outputBundelPath){
 					"removeConsole": { "exclude": [ "error" ] },
 					//"mangle" : { "topLevel" : false, "exclude" : {"window" : true} },
 					"deadcode" : {},
+					"builtIns": false,
+//   evaluate: false,
+//   mangle: false,
 				}
 			]
 		]
@@ -81,7 +103,7 @@ const dealBundle = function(in_entryPointPath, in_outputBundelPath){
 	const outputOptions = {
 		"format" : "iife", //"esm", //"iife",
 		"name" : "onPageLoad",
-		"dir" : Path.dirname(in_outputBundelPath),
+		"file" : in_outputBundelPath,
 		"sourcemap": development ? 'inline' : false,
 	};
 
@@ -118,7 +140,7 @@ const dealOutputFolder = function(in_filePath){
 	}
 	var deferred = Q.defer();
 	//console.log("makeDirectory:" + in_filePath);
-	FileSystem.mkdir(in_filePath, { recursive: true }, function(error){
+	FileSystem.mkdir(in_filePath, {recursive: true}, function(error){
 		if (error && (error.code !== 'EEXIST')){
 			//console.log("error:" + error);
 			throw error;
