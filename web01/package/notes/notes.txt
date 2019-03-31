@@ -1,3 +1,4 @@
 todo:
 	celticknot01
+		32x32 texture (outline, alpha)
 	cloth01

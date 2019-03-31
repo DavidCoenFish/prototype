@@ -15,11 +15,11 @@ const makeProject = function(in_sourceSubDir, in_sourceName){
 Q().then(function(){
 	console.log(new Date().toLocaleTimeString() + ":" + process.env.NODE_ENV);
 }).then(function(){
-	return DscProcess.processFile("./input/test/test.js", outputDir + "/test/test.js");
+	//return DscProcess.processFile("./input/test/test.js", outputDir + "/test/test.js");
 }).then(function(){
-	return makeProject("test", "triangle");
+	//return makeProject("test", "triangle");
 }).then(function(){
-	return makeProject("test", "scene");
+	//return makeProject("test", "scene");
 }).then(function(){
 	return makeProject("celticknot01", "celticknot01");
 }).done(function(){

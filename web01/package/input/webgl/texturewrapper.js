@@ -29,7 +29,7 @@ export const factory = function(
 	in_magFilterEnumName,
 	in_minFilterEnumName,
 	in_wrapSEnumName,
-	in_wrapTEnumName,
+	in_wrapTEnumName
 	){
 	var m_webglTexture = undefined;
 
