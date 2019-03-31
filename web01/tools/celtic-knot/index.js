@@ -13,9 +13,9 @@ if ((3 == process.argv.length) && ("test" === process.argv[2])){
 	process.exit(0);
 }
 
-if (6 != process.argv.length){
+if (7 != process.argv.length){
 	console.log("usage");
-	console.log("\tceltic-knot [mode] [output data path] [width] [height]");
+	console.log("\tceltic-knot [mode] [output data path] [output alpha path] [width] [height]");
 	process.exit(0);
 }
 
@@ -32,14 +32,12 @@ const makeDirectory = function(in_filePath){
 	return deferred.promise;
 }
 
-const run = function(in_mode, in_outputFilePath, in_width, in_height){
+const run = function(in_mode, in_outputFilePath, in_outputAlphaPath, in_width, in_height){
 	return Q(true).then(function(){
 			return makeDirectory(in_outputFilePath);
 		}).then(function(in_sphereArray) {
-			if (in_mode === "texturebyte"){
-				return Asset.runTextureByte(in_outputFilePath, in_width, in_height);
-			} else if (in_mode === "texturealphabyte"){
-				return Asset.runTextureAlphaByte(in_outputFilePath, in_width, in_height);
+			if (in_mode === "outlinebyte"){
+				return Asset.runOutlineByte(in_outputFilePath, in_outputAlphaPath, in_width, in_height);
 			} else {
 				throw new Error("unknown mode:" + in_mode);
 			}
@@ -50,4 +48,4 @@ const run = function(in_mode, in_outputFilePath, in_width, in_height){
 		});
 }
 
-run(process.argv[2], process.argv[3], process.argv[4], process.argv[5]);
+run(process.argv[2], process.argv[3], process.argv[4], process.argv[5], process.argv[6]);

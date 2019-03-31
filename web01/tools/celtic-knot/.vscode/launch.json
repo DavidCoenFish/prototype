@@ -24,70 +24,18 @@
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "texture byte 64 64",
+			"name": "outline byte 32 32",
 			"runtimeExecutable": "npm",
 			"windows": {
 				"runtimeExecutable": "npm.cmd"
 			},
 			"runtimeArgs": [
 				"run-script",
-				"tex8_64_64"
+				"outlinebyte_32_32"
 			],
 			"port": 5858,
 			"timeout": 100000
 			//"console": "externalTerminal"
 		},
-
-		{
-			"type": "node",
-			"request": "launch",
-			"name": "texture byte 48 48",
-			"runtimeExecutable": "npm",
-			"windows": {
-				"runtimeExecutable": "npm.cmd"
-			},
-			"runtimeArgs": [
-				"run-script",
-				"tex8_48_48"
-			],
-			"port": 5858,
-			"timeout": 100000
-			//"console": "externalTerminal"
-		},
-
-		{
-			"type": "node",
-			"request": "launch",
-			"name": "texture byte 32 32",
-			"runtimeExecutable": "npm",
-			"windows": {
-				"runtimeExecutable": "npm.cmd"
-			},
-			"runtimeArgs": [
-				"run-script",
-				"tex8_32_32"
-			],
-			"port": 5858,
-			"timeout": 100000
-			//"console": "externalTerminal"
-		},
-
-		{
-			"type": "node",
-			"request": "launch",
-			"name": "texture alpha byte 32 32",
-			"runtimeExecutable": "npm",
-			"windows": {
-				"runtimeExecutable": "npm.cmd"
-			},
-			"runtimeArgs": [
-				"run-script",
-				"texa8_32_32"
-			],
-			"port": 5858,
-			"timeout": 100000
-			//"console": "externalTerminal"
-		},
-
 	]
 }

@@ -14,7 +14,7 @@ export default function(in_mapNameFactoryOrUndefined){
 	}
 
 	//public methods ==========================
-	const result = Object.create({
+	const that = Object.create({
 		"addFactory" : function(in_name, in_factory){
 			m_dataMap[in_name] = ResourceManagerDataFactory(in_factory);
 			return;
@@ -49,5 +49,5 @@ export default function(in_mapNameFactoryOrUndefined){
 		}
 	});
 
-	return result;
+	return that;
 }

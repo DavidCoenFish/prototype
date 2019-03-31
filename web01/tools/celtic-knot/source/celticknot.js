@@ -18,15 +18,16 @@ in_stampType binary enum of [0 ... 15] 0b00004321
 	3 ---- 4
 
  */
-const Core = require("core");
+const Vector2 = require("./vector2.js");
+const Radians = require("./radians.js");
 const CelticKnotLine = require("./celticknotline.js");
 const CelticKnotCircle = require("./celticknotcircle.js");
 
-const factory = function(in_distanceFunction){
+const factory = function(){
 	const m_halfWidth = (Math.sqrt((0.25 * 0.25) * 2)) / 2;
 	const result = Object.create({
-		"sampleHeight" : function(in_accumulator, in_xRatio, in_yRatio, in_stampType){
-			const uv = Core.Vector2.factoryFloat32(in_xRatio, in_yRatio);
+		"sample" : function(in_accumulator, in_xRatio, in_yRatio, in_stampType){
+			const uv = Vector2.factoryFloat32(in_xRatio, in_yRatio);
 			switch (in_stampType){
 			default:
 				break;
@@ -84,43 +85,43 @@ const factory = function(in_distanceFunction){
 	//private methods
 
 	const rotateUv90 = function(in_uv){
-		return Core.Vector2.factoryFloat32(in_uv.getY(), 1.0 - in_uv.getX());
+		return Vector2.factoryFloat32(in_uv.getY(), 1.0 - in_uv.getX());
 	}
 	const rotateUv180 = function(in_uv){
-		return Core.Vector2.factoryFloat32(1.0 - in_uv.getX(), 1.0 - in_uv.getY());
+		return Vector2.factoryFloat32(1.0 - in_uv.getX(), 1.0 - in_uv.getY());
 	}
 	const rotateUv270 = function(in_uv){
-		return Core.Vector2.factoryFloat32(1.0 - in_uv.getY(), in_uv.getX());
+		return Vector2.factoryFloat32(1.0 - in_uv.getY(), in_uv.getX());
 	}
 
 	const sampleTile = function(in_accumulator, in_tileDataArray, in_uv){
 		for (var index = 0; index < in_tileDataArray.length; index++) { 
-			in_tileDataArray[index].sampleHeight(in_accumulator, in_uv);
+			in_tileDataArray[index].sample(in_accumulator, in_uv);
 		}
 		return;
 	}
 
 	//1 soild
 	const m_tileOneCorner = [
-		CelticKnotLine.factory(Core.Vector2.factoryFloat32(0.375, 0.875), Core.Vector2.factoryFloat32(-0.25, 0.25), in_distanceFunction),		
+		CelticKnotLine.factory(Vector2.factoryFloat32(0.375, 0.875), Vector2.factoryFloat32(-0.25, 0.25)),		
 	
-		CelticKnotLine.factory(Core.Vector2.factoryFloat32(0.625, 0.875), Core.Vector2.factoryFloat32(0.25, 1.25), in_distanceFunction),
-		CelticKnotCircle.factory(Core.Vector2.factoryFloat32(0.375, 0.625), m_halfWidth * 2.0, Core.Radians.fromDegrees(-135.0), Core.Radians.fromDegrees(45.0), in_distanceFunction),
+		CelticKnotLine.factory(Vector2.factoryFloat32(0.625, 0.875), Vector2.factoryFloat32(0.25, 1.25)),
+		CelticKnotCircle.factory(Vector2.factoryFloat32(0.375, 0.625), m_halfWidth * 2.0, Radians.fromDegrees(-135.0), Radians.fromDegrees(45.0)),
 	];
 	//1,2 solid
 	const m_tileTwoCorner = [
-		CelticKnotLine.factory(Core.Vector2.factoryFloat32(0.375, 0.875), Core.Vector2.factoryFloat32(-0.25, 0.25), in_distanceFunction),		
-		CelticKnotLine.factory(rotateUv90(Core.Vector2.factoryFloat32(0.375, 0.875)), rotateUv90(Core.Vector2.factoryFloat32(-0.25, 0.25)), in_distanceFunction),
+		CelticKnotLine.factory(Vector2.factoryFloat32(0.375, 0.875), Vector2.factoryFloat32(-0.25, 0.25)),		
+		CelticKnotLine.factory(rotateUv90(Vector2.factoryFloat32(0.375, 0.875)), rotateUv90(Vector2.factoryFloat32(-0.25, 0.25))),
 
-		CelticKnotCircle.factory(Core.Vector2.factoryFloat32(0.5, 0.75), m_halfWidth * 3.0, Core.Radians.fromDegrees(-135.0), Core.Radians.fromDegrees(-45.0), in_distanceFunction),
-		CelticKnotLine.factory(Core.Vector2.factoryFloat32(0.875, 0.375), Core.Vector2.factoryFloat32(1.25, 0.75), in_distanceFunction),
+		CelticKnotCircle.factory(Vector2.factoryFloat32(0.5, 0.75), m_halfWidth * 3.0, Radians.fromDegrees(-135.0), Radians.fromDegrees(-45.0)),
+		CelticKnotLine.factory(Vector2.factoryFloat32(0.875, 0.375), Vector2.factoryFloat32(1.25, 0.75)),
 	];
 	//1,2,3,4 solid
 	const m_tileSolid = [
-		CelticKnotLine.factory(Core.Vector2.factoryFloat32(-0.375, 0.125), Core.Vector2.factoryFloat32(0.375, 0.875), in_distanceFunction),
-		CelticKnotLine.factory(rotateUv90(Core.Vector2.factoryFloat32(-0.375, 0.125)), rotateUv90(Core.Vector2.factoryFloat32(0.375, 0.875)), in_distanceFunction),
-		CelticKnotLine.factory(rotateUv180(Core.Vector2.factoryFloat32(-0.375, 0.125)), rotateUv180(Core.Vector2.factoryFloat32(0.375, 0.875)), in_distanceFunction),
-		CelticKnotLine.factory(rotateUv270(Core.Vector2.factoryFloat32(-0.375, 0.125)), rotateUv270(Core.Vector2.factoryFloat32(0.375, 0.875)), in_distanceFunction)
+		CelticKnotLine.factory(Vector2.factoryFloat32(-0.375, 0.125), Vector2.factoryFloat32(0.375, 0.875)),
+		CelticKnotLine.factory(rotateUv90(Vector2.factoryFloat32(-0.375, 0.125)), rotateUv90(Vector2.factoryFloat32(0.375, 0.875))),
+		CelticKnotLine.factory(rotateUv180(Vector2.factoryFloat32(-0.375, 0.125)), rotateUv180(Vector2.factoryFloat32(0.375, 0.875))),
+		CelticKnotLine.factory(rotateUv270(Vector2.factoryFloat32(-0.375, 0.125)), rotateUv270(Vector2.factoryFloat32(0.375, 0.875)))
 	];
 
 	return result;
