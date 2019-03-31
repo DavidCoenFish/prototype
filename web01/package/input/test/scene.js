@@ -1,10 +1,10 @@
-import ComponentWebGLSceneFactory from './manipulatedom/component-webgl-scene.js';
-import {factoryFloat32 as Colour4FactoryFloat32} from './core/colour4.js';
-import WorldGridFactory from './webgl/component-world-grid.js';
-import ComponentCameraFactory from './manipulatedom/component-mouse-keyboard-camera.js';
-import ResourceManagerFactory from './core/resourcemanager.js';
-import {factoryFloat32 as Vector3FactoryFloat32} from './core/vector3.js';
-import {factoryFloat32 as Vector4FactoryFloat32} from './core/vector4.js';
+import ComponentWebGLSceneFactory from './../manipulatedom/component-webgl-scene.js';
+import {factoryFloat32 as Colour4FactoryFloat32} from './../core/colour4.js';
+import WorldGridFactory from './../webgl/component-world-grid.js';
+import ComponentCameraFactory from './../manipulatedom/component-mouse-keyboard-camera.js';
+import ResourceManagerFactory from './../core/resourcemanager.js';
+import {factoryFloat32 as Vector3FactoryFloat32} from './../core/vector3.js';
+import {factoryFloat32 as Vector4FactoryFloat32} from './../core/vector4.js';
 
 export default function () {
 	const backgroundColour = Colour4FactoryFloat32(0.5,0.5,0.5,1.0);

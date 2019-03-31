@@ -1,10 +1,10 @@
-import {factoryAppendBody} from './manipulatedom/component-canvas.js'
-import {factoryFloat32 as Colour4FactoryFloat32} from './core/colour4.js';
-import WebGLStateFactory from './webgl/webglstate.js'
-import MaterialWrapperFactory from './webgl/materialwrapper.js';
-import ModelWrapperFactory from './webgl/modelwrapper.js';
-import ModelDataStream from './webgl/modeldatastream.js';
-import ShaderWrapper from './webgl/shaderwrapper.js';
+import {factoryAppendBody} from './../manipulatedom/component-canvas.js'
+import {factoryFloat32 as Colour4FactoryFloat32} from './../core/colour4.js';
+import WebGLStateFactory from './../webgl/webglstate.js'
+import MaterialWrapperFactory from './../webgl/materialwrapper.js';
+import ModelWrapperFactory from './../webgl/modelwrapper.js';
+import ModelDataStream from './../webgl/modeldatastream.js';
+import ShaderWrapper from './../webgl/shaderwrapper.js';
 
 const sVertexShader = `
 attribute vec2 a_position;
