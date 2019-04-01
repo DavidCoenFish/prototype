@@ -4,7 +4,7 @@ import WebGLContextWrapper from './webglcontextwrapper.js';
 import { cmpAlmost as Colour4CmpAlmost } from './../core/colour4.js';
 import { cmpAlmost as Vector2CmpAlmost } from './../core/vector2';
 import { cmpAlmost as Vector3CmpAlmost } from './../core/vector3';
-import { cmpAlmost as Vector4CmpAlmost } from './../core/vector4';
+import { cmpAlmost as Vector4CmpAlmost, factoryInt32 as Vector4FactoryInt32 } from './../core/vector4';
 
 const sTextureStateName = [];
 for (var index = 0; index < 128; ++index){
@@ -284,7 +284,7 @@ export default function(
 		},
 		
 		"setViewport" : function(in_x, in_y, in_width, in_height){
-			var param = Core.Vector4.factoryInt32(in_x, in_y, in_width, in_height);
+			var param = Vector4FactoryInt32(in_x, in_y, in_width, in_height);
 			if (false === stateValueCmpVector4("viewport", param)){
 				m_webGLContextWrapper.callMethod("viewport", in_x, in_y, in_width, in_height);
 			}

@@ -1,17 +1,17 @@
 // draw a quad on screen with a texture
-const ModelWrapper = require("./modelwrapper.js");
-const ModelDataStream = require("./modeldatastream.js");
+import ComponentMaterialScreenPosUvFactory from "./component-material-screen-pos-uv.js";
+import ModelDataStreamFactory from "./modeldatastream.js";
+import ModelWrapperFactory from "./modelwrapper.js";
 
-const ComponentMaterialScreenPosUv = require("./component-material-screen-pos-uv.js");
-
-const factory = function(in_resourceManager, in_webGLState, in_vec2Low, in_vec2High, in_textureOrUndefined){
+export default function(in_resourceManager, in_webGLState, in_vec2Low, in_vec2High, in_textureOrUndefined){
 
 	const m_textureArray = [in_textureOrUndefined];
-	var m_materialComponent = ComponentMaterialScreenPosUv.factory(in_resourceManager, in_webGLState, m_textureArray);
+	var m_materialComponent = ComponentMaterialScreenPosUvFactory(in_resourceManager, in_webGLState, m_textureArray);
 	var m_material = m_materialComponent.getMaterial();
 	var m_shader = m_materialComponent.getShader();
 
-	const m_posDataStream = ModelDataStream.factory(
+	const m_posDataStream = ModelDataStreamFactory(
+			in_webGLState,
 			"FLOAT",
 			2,
 			new Float32Array([
@@ -25,7 +25,8 @@ const factory = function(in_resourceManager, in_webGLState, in_vec2Low, in_vec2H
 			"STATIC_DRAW",
 			false
 			);
-	const m_uvDataStream = ModelDataStream.factory(
+	const m_uvDataStream = ModelDataStreamFactory(
+			in_webGLState,
 			"UNSIGNED_BYTE",
 			2,
 			new Uint8Array([
@@ -40,7 +41,7 @@ const factory = function(in_resourceManager, in_webGLState, in_vec2Low, in_vec2H
 			false
 			);
 
-	const m_model = ModelWrapper.factory(
+	const m_model = ModelWrapperFactory(
 		in_webGLState, 
 		"TRIANGLES", 
 		6, 
@@ -64,13 +65,10 @@ const factory = function(in_resourceManager, in_webGLState, in_vec2Low, in_vec2H
 			in_webGLState.drawModel(m_model);
 		},
 		"destroy" : function(){
-			release();
+			m_materialComponent.destroy();
+			m_model.destroy();
 		}
 	})
 
 	return that;
-}
-
-module.exports = {
-	"factory" : factory
 }

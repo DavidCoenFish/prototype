@@ -1,25 +1,22 @@
 /**
-	this.m_initialRenderTargetColour = in_framework.m_asset.NewTexture("RGBAByte", in_framework.m_context, textureMag);
+import RenderTargetWrapperFactory from './../webgl/rendertargetwrapper.js';
+import RenderTargetDataFactory from './../webgl/rendertargetdata.js';
 
-	this.m_initialRenderTarget = in_framework.m_asset.NewRenderTarget(
-		"Default", 
-		in_framework.m_context, 
-		{
-			m_width : Task.QuadDefered00.s_offscreenWidth,
-			m_height : Task.QuadDefered00.s_offscreenHeight			
-		},
-		{
-			"colour0" : DSC.Framework.Asset.RenderTarget.Data.FactoryRaw(this.m_initialRenderTargetColour)
-		}
+const m_texture = factoryByteRGBA(in_webGLState, 512, 512);
+const m_renderTargetWrapper = RenderTargetWrapperFactory(
+	in_webGLState, 
+	512,
+	512,
+	[RenderTargetDataFactory(m_texture, "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D")]
 	);
 
  */
 
-export const factory = function(
+export default function(
 	in_webGLState, 
 	in_width,
 	in_height,
-	in_renderTargetDataArray,
+	in_renderTargetDataArray
 	){
 	var m_frameBufferObject = undefined; //WebGLFramebuffer
 
@@ -33,6 +30,14 @@ export const factory = function(
 		},
 		"getHeight" : function(){
 			return in_height;
+		},
+		"setWidth" : function(in_newWidth){
+			in_width = in_newWidth;
+			return;
+		},
+		"setHeight" : function(in_newHeight){
+			in_height = in_newHeight;
+			return;
 		},
 		"destroy" : function(){
 			in_webGLState.removeResourceContextCallbacks(restoredCallback, lostCallback);
@@ -69,7 +74,6 @@ export const factory = function(
 		if (true !== isFrameBuffer){
 			console.log("isFrameBuffer:" + isFrameBuffer);
 		}
-
 
 		return;
 	}

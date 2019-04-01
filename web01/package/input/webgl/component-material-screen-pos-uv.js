@@ -2,8 +2,9 @@
 render in screen homogenius coordiantes the given triangles, using uvs (and texture)
  */
 
-const ShaderUniformData = require("./shaderuniformdata.js");
 import ShaderWrapperFactory from "./shaderwrapper.js";
+import {sInt} from "./shaderuniformdata.js";
+import MaterialWrapperFactory from "./materialwrapper.js";
 
 const sVertexShader = `
 attribute vec2 a_position;
@@ -28,11 +29,11 @@ void main() {
 
 const sVertexAttributeNameArray = ["a_position", "a_uv"];
 const sUniformNameMap = {
-	"u_sampler0" : ShaderUniformData.sInt
+	"u_sampler0" : sInt
 };
 
 const shaderFactory = function(in_webGLState){
-	return ShaderWrapper.factory(
+	return ShaderWrapperFactory(
 		in_webGLState, 
 		sVertexShader, 
 		sFragmentShader, 
@@ -41,7 +42,7 @@ const shaderFactory = function(in_webGLState){
 }
 
 const materialFactory = function(in_textureArray){
-	const material = MaterialWrapper.factory(
+	const material = MaterialWrapperFactory(
 		in_textureArray
 	);
 	return material;
@@ -50,7 +51,7 @@ const materialFactory = function(in_textureArray){
 const sShaderName = "componentShaderScreenPosUvTriangle";
 const sMaterialName = "componentMaterialScreenPosUvTriangle";
 
-const factory = function(in_resourceManager, in_webGLState, in_textureArray){
+export default function(in_resourceManager, in_webGLState, in_textureArray){
 
 	if (false === in_resourceManager.hasFactory(sShaderName)){
 		in_resourceManager.addFactory(sShaderName, shaderFactory);
@@ -79,8 +80,4 @@ const factory = function(in_resourceManager, in_webGLState, in_textureArray){
 	})
 
 	return that;
-}
-
-module.exports = {
-	"factory" : factory
 }

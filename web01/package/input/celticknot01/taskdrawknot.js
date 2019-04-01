@@ -1,10 +1,16 @@
 /* */
 import {factoryFloat32 as Colour4FactoryFloat32} from './../core/colour4.js';
+//import {roundNextPowerOfTwo} from './../core/coremath.js';
+import {factoryByteRGBA as TextureWrapperFactoryByteRGBA } from './../webgl/texturewrapper.js';
 import ModelWrapperFactory from './../webgl/modelwrapper.js';
 import ModelDataStream from './../webgl/modeldatastream.js';
 import MaterialWrapperFactory from './../webgl/materialwrapper.js';
+import RenderTargetWrapperFactory from './../webgl/rendertargetwrapper.js';
+import RenderTargetDataFactory from './../webgl/rendertargetdata.js';
 import ShaderWrapperFactory from './../webgl/shaderwrapper.js';
 import {sInt} from './../webgl/shaderuniformdata.js';
+
+
 
 const sSolidChance = 0.3;
 const sHoldTime = 50.0;
@@ -324,6 +330,17 @@ export default function (in_resourceManager, in_webGLState, in_width, in_height,
 		m_textureAlpha
 	]);
 
+	//m_textureWidth = roundNearestPowerOfTwo(in_width);
+	//m_textureWidth = roundNearestPowerOfTwo(in_height);
+	const m_texture = TextureWrapperFactoryByteRGBA(in_webGLState, in_width, in_height);
+	const m_renderTargetWrapper = RenderTargetWrapperFactory(
+		in_webGLState, 
+		in_width, 
+		in_height,
+		[RenderTargetDataFactory(m_texture, "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D")]
+		);
+
+
 	const m_shaderUniforms = {
 		"u_samplerColour" : 0,
 		"u_samplerAlpha" : 1
@@ -337,12 +354,15 @@ export default function (in_resourceManager, in_webGLState, in_width, in_height,
 			generateModel(width, height);
 			updateModel(width, height);
 
+			in_webGLState.applyRenderTarget(m_renderTargetWrapper);
+
 			in_webGLState.clear(m_backgroundColour);
 
 			in_webGLState.applyShader(m_shader, m_shaderUniforms);
 			in_webGLState.applyMaterial(m_material);
 			in_webGLState.drawModel(m_model);
 
+			in_state["texture"] = m_texture;
 			return in_state;
 		},
 		"destroy" : function(){

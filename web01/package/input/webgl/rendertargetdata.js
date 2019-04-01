@@ -1,4 +1,4 @@
-export const factory = function(
+export default function(
 	in_textureWrapper, //ref to texture wrapper
 	in_targetEnumName,
 	in_attachmentEnumName,
@@ -24,6 +24,10 @@ export const factory = function(
 		},
 		"getTexture" : function(){
 			return in_textureWrapper;
+		},
+		"setTexture" : function(in_newTextureWrapper){
+			in_textureWrapper = in_newTextureWrapper;
+			return;
 		}
 	});
 
