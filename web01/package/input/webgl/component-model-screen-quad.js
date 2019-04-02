@@ -1,8 +1,9 @@
-const ModelWrapper = require("./modelwrapper.js");
-const ModelDataStream = require("./modeldatastream.js");
+import ModelDataStreamFactory from "./modeldatastream.js";
+import ModelWrapperFactory from "./modelwrapper.js";
 
 const modelFactory = function(in_webGLState){
-	const posDataStream = ModelDataStream.factory(
+	const posDataStream = ModelDataStreamFactory(
+		in_webGLState, 
 		"FLOAT",
 		2,
 		new Float32Array([
@@ -16,7 +17,8 @@ const modelFactory = function(in_webGLState){
 		"STATIC_DRAW",
 		false
 		);
-	const uvDataStream = ModelDataStream.factory(
+	const uvDataStream = ModelDataStreamFactory(
+		in_webGLState, 
 		"UNSIGNED_BYTE",
 		2,
 		new Uint8Array([
@@ -31,7 +33,7 @@ const modelFactory = function(in_webGLState){
 		false
 		);
 
-	return ModelWrapper.factory(
+	return ModelWrapperFactory(
 		in_webGLState, 
 		"TRIANGLES", 
 		6, 
@@ -43,7 +45,7 @@ const modelFactory = function(in_webGLState){
 }
 
 const sModelName = "componentModelScreenQuad";
-const factory = function(in_resourceManager, in_webGLState){
+export default function(in_resourceManager, in_webGLState){
 	if (false === in_resourceManager.hasFactory(sModelName)){
 		in_resourceManager.addFactory(sModelName, modelFactory);
 	}
@@ -62,10 +64,4 @@ const factory = function(in_resourceManager, in_webGLState){
 	})
 
 	return that;
-}
-
-module.exports = {
-	"modelFactory" : modelFactory, 
-	"sModelName" : sModelName,
-	"factory" : factory
 }

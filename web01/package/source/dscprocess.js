@@ -69,16 +69,16 @@ const dealBundle = function(in_entryPointPath, in_outputBundelPath){
 			"plugin:react/recommended"
 		],
 	}));	
-	plugins.push(RollupPluginBabel({
-		"exclude": 'node_modules/**',
-		"comments": false,
-		"presets": [
+	const rollupPluginBablePresetArray = [
 			[
 				"@babel/preset-env", 
 				{
 					"targets": "> 0.25%, not dead",
-				},
-			],
+				}
+			]
+		];
+	if (false === development){
+		rollupPluginBablePresetArray.push(
 			[
 				"babel-preset-minify",
 				{
@@ -90,11 +90,19 @@ const dealBundle = function(in_entryPointPath, in_outputBundelPath){
 //   mangle: false,
 				}
 			]
-		]
+		);
+	}
+
+	plugins.push(RollupPluginBabel({
+		"exclude": 'node_modules/**',
+		"comments": false,
+		"presets": rollupPluginBablePresetArray
 	}));
-	plugins.push(RollupPluginUglify.uglify({
-		"sourcemap": development
-	}));
+	if (false === development){
+		plugins.push(RollupPluginUglify.uglify({
+			"sourcemap": development
+		}));
+	}
 
 	const inputOptions = {
 		"input" : in_entryPointPath,

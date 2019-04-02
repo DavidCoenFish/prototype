@@ -1,8 +1,8 @@
-// draw a quad on screen with a texture
+// draw an array of quads on screen with textures
 const Core = require("core");
 const ComponentScreenTextureQuad = require("./component-screen-texture-quad.js");
 
-const factory = function(in_resourceManager, in_webGLState, in_textureArray, in_screenDivisionCountOrUndefined){
+export default function(in_resourceManager, in_webGLState, in_textureArray, in_screenDivisionCountOrUndefined){
 	const m_screenQuadArray = [];
 
 	//private methods ==========================
@@ -39,8 +39,4 @@ const factory = function(in_resourceManager, in_webGLState, in_textureArray, in_
 	})
 
 	return that;
-}
-
-module.exports = {
-	"factory" : factory
 }

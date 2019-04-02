@@ -2,7 +2,7 @@
 	translate distance into colour/ alpha
  */
 const distanceThreshold = Math.sqrt((Math.sqrt(0.25 * 0.25)) / 2.0) / 2.0;
-const edgeThickness = 0.75 / 32.0;
+const edgeThickness = 0.4 / 32.0;
 
 const factory = function(){
 	var m_distance;
@@ -19,7 +19,10 @@ const factory = function(){
 			if (undefined === m_distance){
 				return 1.0;
 			}
-			var temp = Math.abs(m_distance - distanceThreshold);
+			if (distanceThreshold < m_distance){
+				return 1.0;
+			}
+			var temp = Math.max(0.0, distanceThreshold - m_distance);
 			return (temp < edgeThickness) ? 0.0 : 1.0;
 		},
 		"getAlpha" : function(){

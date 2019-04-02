@@ -329,6 +329,7 @@ export default function (in_resourceManager, in_webGLState, in_width, in_height,
 		m_textureColour,
 		m_textureAlpha
 	]);
+	m_material.setColorMaskAlpha(true);
 
 	//m_textureWidth = roundNearestPowerOfTwo(in_width);
 	//m_textureWidth = roundNearestPowerOfTwo(in_height);
@@ -345,7 +346,6 @@ export default function (in_resourceManager, in_webGLState, in_width, in_height,
 		"u_samplerColour" : 0,
 		"u_samplerAlpha" : 1
 	};
-	const m_backgroundColour = Colour4FactoryFloat32(1.0,0.0,0.0,1.0);
 	const that = Object.create({
 		"run" : function(in_state){
 			const width = in_state["width"];
@@ -355,8 +355,6 @@ export default function (in_resourceManager, in_webGLState, in_width, in_height,
 			updateModel(width, height);
 
 			in_webGLState.applyRenderTarget(m_renderTargetWrapper);
-
-			in_webGLState.clear(m_backgroundColour);
 
 			in_webGLState.applyShader(m_shader, m_shaderUniforms);
 			in_webGLState.applyMaterial(m_material);

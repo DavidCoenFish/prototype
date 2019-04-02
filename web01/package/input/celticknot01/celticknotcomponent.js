@@ -2,6 +2,7 @@ import KnotColourFactory from './outline_32_32.js';
 import KnotAlphaFactory from './outlinea_32_32.js';
 import { runArray } from './../core/taskhelper.js';
 import TaskDrawKnotFactory from './taskdrawknot.js';
+import TaskCatchUpFactory from './taskcatchup.js';
 import TaskPresentFactory from './taskpresent.js';
 
 export default function(in_resourceManager, in_webGLState, in_width, in_height, in_stepWidth, in_stepHeight){
@@ -9,6 +10,7 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 	in_resourceManager.addFactory("knotAlpha", KnotAlphaFactory);
 
 	const taskDrawKnot = TaskDrawKnotFactory(in_resourceManager, in_webGLState, in_width, in_height, in_stepWidth, in_stepHeight);
+	const taskCatchUpFactory = TaskCatchUpFactory(in_resourceManager, in_webGLState, in_width, in_height);
 	const taskPresent = TaskPresentFactory(in_resourceManager, in_webGLState);
 	const state = {};
 
@@ -21,7 +23,7 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 			state["dontWidth"] = 0; 
 			state["dontHeight"] = 0; 
 
-			runArray([taskDrawKnot, taskPresent], state);
+			runArray([taskDrawKnot, taskCatchUpFactory, taskPresent], state);
 
 			return;
 		},
