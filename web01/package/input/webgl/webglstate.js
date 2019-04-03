@@ -303,7 +303,7 @@ export default function(
 					in_vec4OrUndefined.setZ(param[2]);
 					in_vec4OrUndefined.setW(param[3]);
 				}
-				result = Core.Vector4.factoryInt32(param[0], param[1], param[2], param[3], m_state["viewport"]);
+				result = Vector4FactoryInt32(param[0], param[1], param[2], param[3], m_state["viewport"]);
 				m_state["viewport"] = result;
 			}
 			return result;

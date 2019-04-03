@@ -1,3 +1,4 @@
+import {factoryFloat32 as Colour4FactoryFloat32} from './../core/colour4.js';
 import ComponentFactory from './../webgl/component-screen-texture-quad.js'
 import {factoryFloat32 as Vector2FactoryFloat32} from './../core/vector2.js'
 
@@ -7,10 +8,12 @@ export default function (in_resourceManager, in_webGLState) {
 		in_webGLState,
 		Vector2FactoryFloat32(-1.0, -1.0), 
 		Vector2FactoryFloat32(1.0, 1.0));
-		
+	const m_background = Colour4FactoryFloat32(1.0, 1.0, 1.0, 1.0);
 	const that = Object.create({
 		"run" : function(in_state){
+			
 			in_webGLState.applyRenderTarget();
+			in_webGLState.clear(m_background);
 			m_component.setTexture(in_state["texture"]);
 			m_component.draw();
 

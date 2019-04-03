@@ -1,5 +1,5 @@
 /* */
-import {factoryFloat32 as Colour4FactoryFloat32} from './../core/colour4.js';
+//import {factoryFloat32 as Colour4FactoryFloat32} from './../core/colour4.js';
 //import {roundNextPowerOfTwo} from './../core/coremath.js';
 import {factoryByteRGBA as TextureWrapperFactoryByteRGBA } from './../webgl/texturewrapper.js';
 import ModelWrapperFactory from './../webgl/modelwrapper.js';
@@ -346,6 +346,7 @@ export default function (in_resourceManager, in_webGLState, in_width, in_height,
 		"u_samplerColour" : 0,
 		"u_samplerAlpha" : 1
 	};
+	//const m_background = Colour4FactoryFloat32(1.0, 1.0, 1.0, 1.0);
 	const that = Object.create({
 		"run" : function(in_state){
 			const width = in_state["width"];
@@ -356,6 +357,7 @@ export default function (in_resourceManager, in_webGLState, in_width, in_height,
 
 			in_webGLState.applyRenderTarget(m_renderTargetWrapper);
 
+			//in_webGLState.clear(m_background);
 			in_webGLState.applyShader(m_shader, m_shaderUniforms);
 			in_webGLState.applyMaterial(m_material);
 			in_webGLState.drawModel(m_model);
