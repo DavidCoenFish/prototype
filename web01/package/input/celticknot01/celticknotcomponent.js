@@ -13,7 +13,7 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 	const taskDrawKnot = TaskDrawKnotFactory(in_resourceManager, in_webGLState, in_width, in_height, in_stepWidth, in_stepHeight);
 	const taskCatchUpFactory = TaskCatchUpFactory(in_resourceManager, in_webGLState, in_width, in_height);
 	const taskDropShadow = TaskDropShadowFactory(in_resourceManager, in_webGLState, in_width, in_height);
-	const taskPresent = TaskPresentFactory(in_resourceManager, in_webGLState);
+	const taskPresent = TaskPresentFactory(in_resourceManager, in_webGLState, in_width, in_height);
 	const state = {};
 
 	//public methods ==========================

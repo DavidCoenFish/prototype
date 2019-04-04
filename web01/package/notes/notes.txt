@@ -1,4 +1,9 @@
 todo:
 	celticknot01
-		32x32 texture (outline, alpha)
+		vienyet
+		resize
+		fullscreen
+		
+	gameplay field
+		gl point concave hull
 	cloth01
