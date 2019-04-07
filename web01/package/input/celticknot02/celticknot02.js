@@ -69,7 +69,7 @@ export default function () {
 	const celticknotcomponent = CelticKnotComponentFactory(resourceManager, webGLState, 32, 32);
 
 
-	/* View in fullscreen */
+	/* View in fullscreen, document.fullScreenElement is non-null when full screen */
 	var m_fullScreen = 0;
 	function openFullscreen() {
 		if (canvasElement.requestFullscreen) {
