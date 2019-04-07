@@ -333,16 +333,33 @@ export default function (in_resourceManager, in_webGLState, in_tileWidth, in_til
 	]);
 	m_material.setColorMaskAlpha(true);
 
-	//m_textureWidth = roundNearestPowerOfTwo(in_width);
-	//m_textureWidth = roundNearestPowerOfTwo(in_height);
-	// const m_texture = TextureWrapperFactoryByteRGBA(in_webGLState, in_webGLState.getCanvasWidth(), in_webGLState.getCanvasHeight());
-	// const m_renderTargetWrapper = RenderTargetWrapperFactory(
-	// 	in_webGLState, 
-	// 	in_webGLState.getCanvasWidth(), 
-	// 	in_webGLState.getCanvasHeight(), 
-	// 	[RenderTargetDataFactory(m_texture, "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D")]
-	// 	);
+	var m_textureWidth = undefined; //roundNearestPowerOfTwo(in_width);
+	var m_textureHeight = undefined; //roundNearestPowerOfTwo(in_height);
+	var m_texture = undefined;
+	var m_renderTargetWrapper = undefined;
+	const updateTexture = function(in_textureWidth, in_textureHeight){
+		if ((m_textureWidth === in_textureWidth) && (m_textureHeight === in_textureHeight)){
+			return;
+		}
+		m_textureWidth = in_textureWidth;
+		m_textureHeight = in_textureHeight;
+		if (m_texture !== undefined ){
+			m_texture.destroy();
+		}
+		m_texture = TextureWrapperFactoryByteRGBA(in_webGLState, m_textureWidth, m_textureHeight);
 
+		if (m_renderTargetWrapper !== undefined ){
+			m_renderTargetWrapper.destroy();
+		}
+		m_renderTargetWrapper = RenderTargetWrapperFactory(
+			in_webGLState, 
+			m_textureWidth, 
+			m_textureHeight, 
+			[RenderTargetDataFactory(m_texture, "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D")]
+			);
+		return;
+	}
+	updateTexture(in_webGLState.getCanvasWidth(), in_webGLState.getCanvasHeight());
 
 	const m_shaderUniforms = {
 		"u_samplerColour" : 0,
@@ -355,15 +372,16 @@ export default function (in_resourceManager, in_webGLState, in_tileWidth, in_til
 			funcUpdateGrid(width, height, in_state["dontWidth"], in_state["dontHeight"], in_state["timeDelta"]);
 			generateModel(width, height);
 			updateModel(width, height);
+			updateTexture(width, height);
 
-			//in_webGLState.applyRenderTarget(m_renderTargetWrapper);
-			in_webGLState.applyRenderTarget();
+			in_webGLState.applyRenderTarget(m_renderTargetWrapper);
+			//in_webGLState.applyRenderTarget();
 
 			in_webGLState.applyShader(m_shader, m_shaderUniforms);
 			in_webGLState.applyMaterial(m_material);
 			in_webGLState.drawModel(m_model);
 
-			//in_state["texture"] = m_texture;
+			in_state["texture"] = m_texture;
 			return in_state;
 		},
 		"destroy" : function(){

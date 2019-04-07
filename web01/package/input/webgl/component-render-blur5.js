@@ -99,13 +99,32 @@ export default function(in_resourceManager, in_webGLState, in_texture, in_width,
 	}
 	var m_shader = in_resourceManager.getCommonReference(sShaderName, in_webGLState);
 
-	const m_textureOutput = TextureWrapperFactoryByteRGBA(in_webGLState, in_width, in_height);
-	const m_renderTargetWrapper = RenderTargetWrapperFactory(
-		in_webGLState, 
-		in_width, 
-		in_height,
-		[RenderTargetDataFactory(m_textureOutput, "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D")]
-		);
+	var m_textureWidth = undefined;
+	var m_textureHeight = undefined;
+	var m_textureOutput = undefined;
+	var m_renderTargetWrapper = undefined;
+	const updateRenderTexture = function(in_textureWidth, in_textureHeight){
+		if ((m_textureWidth === in_textureWidth) && (m_textureHeight === in_textureHeight)){
+			return;
+		}
+		m_textureWidth = in_textureWidth;
+		m_textureHeight = in_textureHeight;
+		if (m_textureOutput !== undefined ){
+			m_textureOutput.destroy();
+		}
+		m_textureOutput = TextureWrapperFactoryByteRGBA(in_webGLState, m_textureWidth, m_textureHeight);
+
+		if (m_renderTargetWrapper !== undefined ){
+			m_renderTargetWrapper.destroy();
+		}
+		m_renderTargetWrapper = RenderTargetWrapperFactory(
+			in_webGLState, 
+			m_textureWidth, 
+			m_textureHeight, 
+			[RenderTargetDataFactory(m_textureOutput, "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D")]
+			);
+	}
+	updateRenderTexture(in_width, in_height);
 
 	//public methods ==========================
 	const that = Object.create({
@@ -122,6 +141,9 @@ export default function(in_resourceManager, in_webGLState, in_texture, in_width,
 		},
 		"getOutputTexture" : function(){
 			return m_textureOutput;
+		},
+		"updateSize" : function(in_textureWidth, in_textureHeight){
+			updateRenderTexture(in_textureWidth, in_textureHeight);
 		},
 		"draw" : function(){
 			in_webGLState.applyRenderTarget(m_renderTargetWrapper);

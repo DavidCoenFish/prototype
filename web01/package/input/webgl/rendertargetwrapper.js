@@ -41,9 +41,14 @@ export default function(
 		},
 		"destroy" : function(){
 			in_webGLState.removeResourceContextCallbacks(restoredCallback, lostCallback);
+			return;
 		},
 		"getTexture" : function(in_renderTargetDataIndex){
 			return in_renderTargetDataArray[in_renderTargetDataIndex].getTexture();
+		},
+		"setTexture" : function(in_renderTargetDataIndex, in_texture){
+			in_renderTargetDataArray[in_renderTargetDataIndex].setTexture(in_texture);
+			return;
 		}
 	});
 

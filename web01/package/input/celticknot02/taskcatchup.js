@@ -50,7 +50,7 @@ const sUniformNameMap = {
 };
 
 
-export default function (in_resourceManager, in_webGLState, in_width, in_height) {
+export default function (in_resourceManager, in_webGLState) {
 	const m_modelComponent = ComponentFactory(in_resourceManager, in_webGLState);
 
 	const m_materialTextureArray = []
@@ -64,27 +64,41 @@ export default function (in_resourceManager, in_webGLState, in_width, in_height)
 	const m_material = MaterialWrapperFactory(m_materialTextureArray);
 	m_material.setColorMaskAlpha(true);
 
-	//m_textureWidth = roundNearestPowerOfTwo(in_width);
-	//m_textureWidth = roundNearestPowerOfTwo(in_height);
+	var m_textureWidth = undefined;
+	var m_textureHeight = undefined;
 	var m_renderTargetIndex = 0;
-	const m_renderTargetWrapper = [
-		RenderTargetWrapperFactory(
-			in_webGLState, 
-			in_width, 
-			in_height,
-			[RenderTargetDataFactory(TextureWrapperFactoryByteRGBA(in_webGLState, in_width, in_height), "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D")]
-			),
-		RenderTargetWrapperFactory(
-			in_webGLState, 
-			in_width, 
-			in_height,
-			[RenderTargetDataFactory(TextureWrapperFactoryByteRGBA(in_webGLState, in_width, in_height), "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D")]
-			)
-		];
-	in_webGLState.applyRenderTarget(m_renderTargetWrapper[m_renderTargetIndex]);
-	const m_backgroundColour = Colour4FactoryFloat32(1.0,1.0,1.0,0.0);
-	in_webGLState.clear(m_backgroundColour);
-	in_webGLState.applyRenderTarget();
+	const m_textureArray = [undefined, undefined];
+	const m_renderTargetWrapper = [undefined, undefined];
+	const updateRenderTexture = function(in_textureWidth, in_textureHeight){
+		if ((m_textureWidth === in_textureWidth) && (m_textureHeight === in_textureHeight)){
+			return;
+		}
+		m_textureWidth = in_textureWidth;
+		m_textureHeight = in_textureHeight;
+		for (var index = 0; index < 2; ++index){
+			if (m_textureArray[index] !== undefined ){
+				m_textureArray[index].destroy();
+			}
+			m_textureArray[index] = TextureWrapperFactoryByteRGBA(in_webGLState, m_textureWidth, m_textureHeight);
+
+			if (m_renderTargetWrapper[index] !== undefined ){
+				m_renderTargetWrapper[index].destroy();
+			}
+			m_renderTargetWrapper[index] = RenderTargetWrapperFactory(
+				in_webGLState, 
+				m_textureWidth, 
+				m_textureHeight, 
+				[RenderTargetDataFactory(m_textureArray[index], "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D")]
+				);
+		}
+
+		in_webGLState.applyRenderTarget(m_renderTargetWrapper[m_renderTargetIndex]);
+		const m_backgroundColour = Colour4FactoryFloat32(1.0,1.0,1.0,0.0);
+		in_webGLState.clear(m_backgroundColour);
+		in_webGLState.applyRenderTarget();
+	}
+	updateRenderTexture(in_webGLState.getCanvasWidth(), in_webGLState.getCanvasHeight());
+
 
 	const m_shaderUniforms = {
 		"u_samplerState" : 0,
@@ -95,6 +109,10 @@ export default function (in_resourceManager, in_webGLState, in_width, in_height)
 	};
 	const that = Object.create({
 		"run" : function(in_state){
+			const width = in_webGLState.getCanvasWidth();
+			const height = in_webGLState.getCanvasHeight();
+			updateRenderTexture(width, height);
+
 			m_materialTextureArray[0] = m_renderTargetWrapper[m_renderTargetIndex].getTexture(0);
 			m_materialTextureArray[1] = in_state["texture"];
 

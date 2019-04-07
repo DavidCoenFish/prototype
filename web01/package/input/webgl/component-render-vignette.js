@@ -61,7 +61,7 @@ const shaderFactory = function(in_webGLState){
 const sShaderName = "componentRenderVignetteShader";
 
 
-export default function(in_resourceManager, in_webGLState, in_colourRGBA, in_width, in_height, in_radius1, in_radius2){
+export default function(in_resourceManager, in_webGLState, in_colourRGBA, in_widthHeightRadius1Radius2){
 
 	const m_modelComponent = ComponentModelScreenQuadFactory(in_resourceManager, in_webGLState);
 	const m_model = m_modelComponent.getModel();
@@ -73,10 +73,10 @@ export default function(in_resourceManager, in_webGLState, in_colourRGBA, in_wid
 		"SRC_ALPHA", //in_sourceBlendEnumNameOrUndefined,
 		"ONE_MINUS_SRC_ALPHA" //in_destinationBlendEnumNameOrUndefined
 		);
-	const m_widthHeightRadius1Radius2 = Vector4FactoryFloat32(in_width, in_height, in_radius1, in_radius2);
+	//const m_widthHeightRadius1Radius2 = Vector4FactoryFloat32(in_width, in_height, in_radius1, in_radius2);
 	const m_state = {
 		"u_colour" : in_colourRGBA.getRaw(),
-		"u_widthHeightRadius1Radius2" : m_widthHeightRadius1Radius2.getRaw()
+		"u_widthHeightRadius1Radius2" : in_widthHeightRadius1Radius2.getRaw()
 	};
 
 	if (false === in_resourceManager.hasFactory(sShaderName)){

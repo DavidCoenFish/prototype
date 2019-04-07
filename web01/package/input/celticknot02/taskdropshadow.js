@@ -60,13 +60,15 @@ const sUniformNameMap = {
 };
 
 
-export default function (in_resourceManager, in_webGLState, in_width, in_height) {
+export default function (in_resourceManager, in_webGLState) {
 	const m_modelComponent = ComponentModelFactory(in_resourceManager, in_webGLState);
-	const m_blurComponent0 = ComponentBlurFactory(in_resourceManager, in_webGLState, undefined, in_width, in_height);
-	const m_blurComponent1 = ComponentBlurFactory(in_resourceManager, in_webGLState, m_blurComponent0.getOutputTexture(), in_width, in_height);
-	const m_blurComponent2 = ComponentBlurFactory(in_resourceManager, in_webGLState, m_blurComponent1.getOutputTexture(), in_width, in_height);
-	const m_blurComponent3 = ComponentBlurFactory(in_resourceManager, in_webGLState, m_blurComponent2.getOutputTexture(), in_width, in_height);
-	const m_blurComponent4 = ComponentBlurFactory(in_resourceManager, in_webGLState, m_blurComponent3.getOutputTexture(), in_width, in_height);
+	var width = in_webGLState.getCanvasWidth();
+	var height = in_webGLState.getCanvasHeight();
+	const m_blurComponent0 = ComponentBlurFactory(in_resourceManager, in_webGLState, undefined, width, height);
+	const m_blurComponent1 = ComponentBlurFactory(in_resourceManager, in_webGLState, m_blurComponent0.getOutputTexture(), width, height);
+	const m_blurComponent2 = ComponentBlurFactory(in_resourceManager, in_webGLState, m_blurComponent1.getOutputTexture(), width, height);
+	const m_blurComponent3 = ComponentBlurFactory(in_resourceManager, in_webGLState, m_blurComponent2.getOutputTexture(), width, height);
+	const m_blurComponent4 = ComponentBlurFactory(in_resourceManager, in_webGLState, m_blurComponent3.getOutputTexture(), width, height);
 
 	const m_materialTextureArray = []
 
@@ -79,14 +81,32 @@ export default function (in_resourceManager, in_webGLState, in_width, in_height)
 	const m_material = MaterialWrapperFactory(m_materialTextureArray);
 	m_material.setColorMaskAlpha(true);
 
-	//m_textureWidth = roundNearestPowerOfTwo(in_width);
-	//m_textureWidth = roundNearestPowerOfTwo(in_height);
-	const m_renderTargetWrapper = RenderTargetWrapperFactory(
+	var m_textureWidth = undefined;
+	var m_textureHeight = undefined;
+	var m_textureOutput = undefined;
+	var m_renderTargetWrapper = undefined;
+	const updateRenderTexture = function(in_textureWidth, in_textureHeight){
+		if ((m_textureWidth === in_textureWidth) && (m_textureHeight === in_textureHeight)){
+			return;
+		}
+		m_textureWidth = in_textureWidth;
+		m_textureHeight = in_textureHeight;
+		if (m_textureOutput !== undefined ){
+			m_textureOutput.destroy();
+		}
+		m_textureOutput = TextureWrapperFactoryByteRGBA(in_webGLState, m_textureWidth, m_textureHeight);
+
+		if (m_renderTargetWrapper !== undefined ){
+			m_renderTargetWrapper.destroy();
+		}
+		m_renderTargetWrapper = RenderTargetWrapperFactory(
 			in_webGLState, 
-			in_width, 
-			in_height,
-			[RenderTargetDataFactory(TextureWrapperFactoryByteRGBA(in_webGLState, in_width, in_height), "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D")]
+			m_textureWidth, 
+			m_textureHeight, 
+			[RenderTargetDataFactory(m_textureOutput, "FRAMEBUFFER", "COLOR_ATTACHMENT0", "TEXTURE_2D")]
 			);
+	}
+	updateRenderTexture(in_webGLState.getCanvasWidth(), in_webGLState.getCanvasHeight());
 
 	const m_shaderUniforms = {
 		"u_samplerSource" : 0,
@@ -98,11 +118,25 @@ export default function (in_resourceManager, in_webGLState, in_width, in_height)
 	};
 	const that = Object.create({
 		"run" : function(in_state){
+			var width = in_webGLState.getCanvasWidth();
+			var height = in_webGLState.getCanvasHeight();
+			updateRenderTexture(width, height);
+
+			m_blurComponent0.updateSize(width, height);
+			m_blurComponent1.updateSize(width, height);
+			m_blurComponent2.updateSize(width, height);
+			m_blurComponent3.updateSize(width, height);
+			m_blurComponent4.updateSize(width, height);
+
 			m_blurComponent0.setInputTexture(in_state["texture"]);
 			m_blurComponent0.draw();
+			m_blurComponent1.setInputTexture(m_blurComponent0.getOutputTexture());
 			m_blurComponent1.draw();
+			m_blurComponent2.setInputTexture(m_blurComponent1.getOutputTexture());
 			m_blurComponent2.draw();
+			m_blurComponent3.setInputTexture(m_blurComponent2.getOutputTexture());
 			m_blurComponent3.draw();
+			m_blurComponent4.setInputTexture(m_blurComponent3.getOutputTexture());
 			m_blurComponent4.draw();
 
 			m_materialTextureArray[0] = in_state["texture"];

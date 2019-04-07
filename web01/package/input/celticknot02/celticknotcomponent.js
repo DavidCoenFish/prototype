@@ -11,22 +11,19 @@ export default function(in_resourceManager, in_webGLState, in_stepWidth, in_step
 	in_resourceManager.addFactory("knotAlpha", KnotAlphaFactory);
 
 	const taskDrawKnot = TaskDrawKnotFactory(in_resourceManager, in_webGLState, in_stepWidth, in_stepHeight);
-	// const taskCatchUpFactory = TaskCatchUpFactory(in_resourceManager, in_webGLState);
-	// const taskDropShadow = TaskDropShadowFactory(in_resourceManager, in_webGLState);
-	// const taskPresent = TaskPresentFactory(in_resourceManager, in_webGLState);
+	const taskCatchUpFactory = TaskCatchUpFactory(in_resourceManager, in_webGLState);
+	const taskDropShadow = TaskDropShadowFactory(in_resourceManager, in_webGLState);
+	const taskPresent = TaskPresentFactory(in_resourceManager, in_webGLState);
 	const state = {};
 
 	//public methods ==========================
 	const that = Object.create({
 		"draw" : function(in_timeDelta){
 			state["timeDelta"] = in_timeDelta;
-			state["width"] = in_webGLState.getCanvasWidth(); 
-			state["height"] = in_webGLState.getCanvasHeight();
 			state["dontWidth"] = 0; 
 			state["dontHeight"] = 0; 
 
-			runArray([taskDrawKnot], state);
-			//runArray([taskDrawKnot, taskCatchUpFactory, taskDropShadow, taskPresent], state);
+			runArray([taskDrawKnot, taskCatchUpFactory, taskDropShadow, taskPresent], state);
 
 			return;
 		},
