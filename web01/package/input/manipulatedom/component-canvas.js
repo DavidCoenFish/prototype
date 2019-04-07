@@ -1,11 +1,13 @@
-export const factory = function(in_document, in_width, in_height){
+export const factory = function(in_document, in_canvasStyleDictionaryOrUndefined){
 	var m_element = in_document.createElement("CANVAS");
 
-	m_element.setAttribute("style",`display:block;width:${in_width}px;height:${in_height}px`);
-	m_element.style.width=`${in_width}px`;
-	m_element.style.height=`${in_height}px`;
-	m_element.width = in_width;
-	m_element.height = in_height;
+	if (undefined !== in_canvasStyleDictionaryOrUndefined){
+		for (var key in in_canvasStyleDictionaryOrUndefined) {
+			if (in_canvasStyleDictionaryOrUndefined.hasOwnProperty(key)) {
+				m_element.style[key] = in_canvasStyleDictionaryOrUndefined[key];
+			}
+		}
+	}
 
 	//public methods ==========================
 	const that = Object.create({
@@ -17,8 +19,11 @@ export const factory = function(in_document, in_width, in_height){
 	return that;
 }
 
-export const factoryAppendBody = function(in_document, in_width, in_height){
-	var result = factory(in_document, in_width, in_height);
-	in_document.body.appendChild(result.getElement());
+export const factoryAppendBody = function(in_document, in_canvasStyleDictionaryOrUndefined){
+	var result = factory(in_document, in_canvasStyleDictionaryOrUndefined);
+	var element = result.getElement();
+	in_document.body.appendChild(element);
+	element.width = element.offsetWidth;
+	element.height = element.offsetHeight;
 	return result;
 }

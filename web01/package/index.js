@@ -17,11 +17,15 @@ Q().then(function(){
 }).then(function(){
 	//return DscProcess.processFile("./input/test/test.js", outputDir + "/test/test.js");
 }).then(function(){
+	//return makeProject("test", "capablity");
+}).then(function(){
 	//return makeProject("test", "triangle");
 }).then(function(){
 	//return makeProject("test", "scene");
 }).then(function(){
-	return makeProject("celticknot01", "celticknot01");
+	//return makeProject("celticknot01", "celticknot01");
+}).then(function(){
+	return makeProject("celticknot02", "celticknot02");
 }).done(function(){
 	console.log(new Date().toLocaleTimeString());
 });

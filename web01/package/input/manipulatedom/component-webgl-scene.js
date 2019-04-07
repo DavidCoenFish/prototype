@@ -8,8 +8,10 @@ import webGLStateFactory from './../webgl/webglstate.js'
 
 export default function(
 	in_document,
+	in_addButtons,
 	in_callbackUpdateOrUndefined, // = function(in_timeDeltaActual, in_timeDeltaAjusted)
 	in_callbackStopOrUndefined, // = function()
+	in_canvasStyleDictionaryOrUndefined,
 	in_alphaOrUndefined, 
 	in_depthOrUndefined, 
 	in_antialiasOrUndefined, 
@@ -20,7 +22,7 @@ export default function(
 	in_frameCountOrUndefined,
 	in_saveEachFrameFileNameOrUndefined
 ){
-	const m_canvaseElementWrapper = componentCanvasFactory(in_document, 512, 512);
+	const m_canvaseElementWrapper = componentCanvasFactory(in_document, in_canvasStyleDictionaryOrUndefined);
 	const m_webGLState = webGLStateFactory(
 		m_canvaseElementWrapper.getElement(), 
 		in_alphaOrUndefined, 
@@ -34,9 +36,12 @@ export default function(
 	var m_paused = (true === m_stepMode);
 	var m_prevTimeStamp = undefined;
 	var m_frameIndex = 0;
+	var m_fpsElement = undefined;
 
 	const animationFrameCallback = function(in_timestamp){
-		m_fpsElement.update(in_timestamp);
+		if (undefined != m_fpsElement){
+			m_fpsElement.update(in_timestamp);
+		}
 		var timeDeltaActual = 0.0;
 		var timeDeltaAjusted = 0.0;
 
@@ -82,31 +87,37 @@ export default function(
 
 	var m_requestId = requestAnimationFrame(animationFrameCallback);
 
-	brAppendBody(in_document);
-	buttonAppendBody(in_document, "snapshot", function(in_event){
-		autoSnapShot(in_document, m_canvaseElementWrapper.getElement(), "C:/development/snapshot.png");
-	});
-	buttonAppendBody(in_document, "stop", function(in_event){
+	const stop = function(){
 		cancelAnimationFrame(m_requestId);
 		m_requestId = undefined;
 		if (undefined !== in_callbackStopOrUndefined){
 			in_callbackStopOrUndefined();
 		}
 		m_webGLState.destroy();
-		return;
-	});
-	if (true === m_stepMode){
-		buttonAppendBody(in_document, "step", function(){
-			m_paused = false;
-			return;
-		});
-		buttonAppendBody(in_document, "toggle step mode", function(){
-			m_stepMode = (1 === (m_stepMode ^ true));
-			return;
-		});
 	}
-	brAppendBody(in_document);
-	const m_fpsElement = componentFpsFactory(in_document);
+
+	if (true == in_addButtons) {
+		brAppendBody(in_document);
+		buttonAppendBody(in_document, "snapshot", function(in_event){
+			autoSnapShot(in_document, m_canvaseElementWrapper.getElement(), "C:/development/snapshot.png");
+		});
+		buttonAppendBody(in_document, "stop", function(in_event){
+			stop();
+			return;
+		});
+		if (true === m_stepMode){
+			buttonAppendBody(in_document, "step", function(){
+				m_paused = false;
+				return;
+			});
+			buttonAppendBody(in_document, "toggle step mode", function(){
+				m_stepMode = (1 === (m_stepMode ^ true));
+				return;
+			});
+		}
+		brAppendBody(in_document);
+		m_fpsElement = componentFpsFactory(in_document);
+	}
 
 	const that = Object.create({
 		"getCanvasElement" : function(){
@@ -115,6 +126,9 @@ export default function(
 		"getWebGLState" : function(){
 			return m_webGLState;
 		},
+		"stop" : function(){
+			stop();
+		}
 	});
 
 	return that;
