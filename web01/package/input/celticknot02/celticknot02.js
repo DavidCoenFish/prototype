@@ -54,13 +54,47 @@ export default function () {
 	const webGLState = componentScene.getWebGLState();
 	const canvasElement = componentScene.getCanvasElement();
 	canvasElement.onclick = function(){
-		console.log("canvasElement.onClick");
-		componentScene.stop();
+		//console.log("canvasElement.onClick");
+		//componentScene.stop();
+		if (0 == m_fullScreen){
+			openFullscreen();
+		} else {
+			closeFullscreen();
+		}
+		m_fullScreen ^= 1;
 	}
 
 	const resourceManager = ResourceManagerFactory();
 
 	const celticknotcomponent = CelticKnotComponentFactory(resourceManager, webGLState, 32, 32);
+
+
+	/* View in fullscreen */
+	var m_fullScreen = 0;
+	function openFullscreen() {
+		if (canvasElement.requestFullscreen) {
+			canvasElement.requestFullscreen();
+		} else if (canvasElement.mozRequestFullScreen) { /* Firefox */
+			canvasElement.mozRequestFullScreen();
+		} else if (canvasElement.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+			canvasElement.webkitRequestFullscreen();
+		} else if (canvasElement.msRequestFullscreen) { /* IE/Edge */
+			canvasElement.msRequestFullscreen();
+		}
+	}
+
+	/* Close fullscreen */
+	function closeFullscreen() {
+		if (document.exitFullscreen) {
+			document.exitFullscreen();
+		} else if (document.mozCancelFullScreen) { /* Firefox */
+			document.mozCancelFullScreen();
+		} else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+			document.webkitExitFullscreen();
+		} else if (document.msExitFullscreen) { /* IE/Edge */
+			document.msExitFullscreen();
+		}
+	}
 
 	return;
 }
