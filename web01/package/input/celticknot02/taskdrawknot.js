@@ -217,8 +217,8 @@ export default function (in_resourceManager, in_webGLState, in_tileWidth, in_til
 			var rowArray = m_subFieldArray[indexHeight];
 			for (var indexWidth = 0; indexWidth <= widthHalf; ++indexWidth){
 				var dontTouch = (((heightHalf - dontHeightHalf) < indexHeight) && ((widthHalf - dontWidthHalf) < indexWidth))
-				dontTouch |= (0 === indexWidth);
-				dontTouch |= (0 === indexHeight);
+				dontTouch |= (widthHalf === indexWidth);
+				dontTouch |= (heightHalf === indexHeight);
 				if (true == dontTouch){
 					rowArray[indexWidth] = false;
 				} else {
@@ -238,7 +238,10 @@ export default function (in_resourceManager, in_webGLState, in_tileWidth, in_til
 			for (var indexWidth = 0; indexWidth <= width; ++indexWidth){
 				var subIndexWidth = (indexWidth <= widthHalf) ? indexWidth : widthHalf - (indexWidth - widthHalf);
 				var subIndexHeight = (indexHeight <= heightHalf) ? indexHeight : heightHalf - (indexHeight - heightHalf);
-				rowArray[indexWidth] = m_subFieldArray[subIndexHeight][subIndexWidth];
+				//invert 
+				var subIndexWidth2 = widthHalf - subIndexWidth;
+				var subIndexHeight2 = heightHalf - subIndexHeight;
+				rowArray[indexWidth] = m_subFieldArray[subIndexHeight2][subIndexWidth2];
 			}
 		}
 	}
@@ -354,6 +357,7 @@ export default function (in_resourceManager, in_webGLState, in_tileWidth, in_til
 			updateModel(width, height);
 
 			//in_webGLState.applyRenderTarget(m_renderTargetWrapper);
+			in_webGLState.applyRenderTarget();
 
 			in_webGLState.applyShader(m_shader, m_shaderUniforms);
 			in_webGLState.applyMaterial(m_material);
