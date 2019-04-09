@@ -1,9 +1,8 @@
 todo:
-	celticknot01
-		vienyet
-		resize
-		fullscreen
-		
 	gameplay field
+		tool make gamefield
+			object id, colour, visual data (type [sphere, convex]
+		tool gamefield to convex hull particle model
+		tool gamefield to sphere particle model
 		gl point concave hull
 	cloth01

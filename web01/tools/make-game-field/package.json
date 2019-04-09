@@ -1,0 +1,16 @@
+{
+  "name": "make-game-field",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --nolazy --inspect-brk=5858 index.js test",
+    "basic": "node --nolazy --inspect-brk=5858 index.js basic output\\basic.json"
+  },
+  "dependencies": {
+    "fs-extra": "^7.0.1",
+    "q": "^1.5.1"
+  },
+  "author": "David Coen",
+  "license": "ISC"
+}
