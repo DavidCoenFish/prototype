@@ -1,4 +1,4 @@
-const Test = require("./test.js");
+const UnitTest = require("./unittest.js");
 
 // output = {
 // 	background : { colour:|,gradient:|,envSphere:|,},
@@ -37,6 +37,9 @@ const makePlane = function(in_nX, in_nY, in_nZ, in_pX, in_pY, in_pZ){
 	return [in_nX, in_nY, in_nZ, d];
 }
 
+const sHalfSqrt3 = 0.86602540378443864676372317075294;
+const sQuaterSqrt3 = 0.43301270189221932338186158537647;
+
 const makeNode = function(in_nodeOrigin, in_objectId, in_radius, in_low, in_high){
 	const result = {
 		"objectid" : in_objectId,
@@ -50,11 +53,11 @@ const makeNode = function(in_nodeOrigin, in_objectId, in_radius, in_low, in_high
 	result.convexhull.push(makePlane(1.0, 0.0, 0.0, in_nodeOrigin.x + (0.5 * in_radius), 0, 0));
 	result.convexhull.push(makePlane(-1.0, 0.0, 0.0, in_nodeOrigin.x - (0.5 * in_radius), 0, 0));
 
-	result.convexhull.push(makePlane(0.5, 0.28867513459481288225457439025098, 0.0, in_nodeOrigin.x + (0.25 * in_radius), in_nodeOrigin.y + (0.14433756729740644112728719512549 * in_radius), 0));
-	result.convexhull.push(makePlane(0.5, -0.28867513459481288225457439025098, 0.0, in_nodeOrigin.x + (0.25 * in_radius), in_nodeOrigin.y - (0.14433756729740644112728719512549 * in_radius), 0));
+	result.convexhull.push(makePlane(0.5, sHalfSqrt3, 0.0, in_nodeOrigin.x + (0.25 * in_radius), in_nodeOrigin.y + (sQuaterSqrt3 * in_radius), 0));
+	result.convexhull.push(makePlane(0.5, -sHalfSqrt3, 0.0, in_nodeOrigin.x + (0.25 * in_radius), in_nodeOrigin.y - (sQuaterSqrt3 * in_radius), 0));
 
-	result.convexhull.push(makePlane(-0.5, 0.28867513459481288225457439025098, 0.0, in_nodeOrigin.x - (0.25 * in_radius), in_nodeOrigin.y + (0.14433756729740644112728719512549 * in_radius), 0));
-	result.convexhull.push(makePlane(-0.5, -0.28867513459481288225457439025098, 0.0, in_nodeOrigin.x - (0.25 * in_radius), in_nodeOrigin.y - (0.14433756729740644112728719512549 * in_radius), 0));
+	result.convexhull.push(makePlane(-0.5, sHalfSqrt3, 0.0, in_nodeOrigin.x - (0.25 * in_radius), in_nodeOrigin.y + (sQuaterSqrt3 * in_radius), 0));
+	result.convexhull.push(makePlane(-0.5, -sHalfSqrt3, 0.0, in_nodeOrigin.x - (0.25 * in_radius), in_nodeOrigin.y - (sQuaterSqrt3 * in_radius), 0));
 
 	return result;
 }
@@ -67,6 +70,21 @@ const makeShere = function(in_objectIDorUndefined, in_x, in_y, in_z, in_radius){
 	if (undefined !== in_objectIDorUndefined){
 		result["objectid"] = in_objectIDorUndefined;
 	}
+	return result;
+}
+
+const test = function(){
+	const result = {
+		"background" : [0.5, 0.5, 0.5],
+		"nodearray" : []
+	};
+
+	var radius = 1.0;
+	const nodeOrigin = {
+		"x" : 0,
+		"y" : 0
+	};
+	result.nodearray.push(makeNode(nodeOrigin, 1, radius, -1, 1));
 	return result;
 }
 
@@ -105,29 +123,30 @@ const run = function(){
 const runTestMakeNodeOrigin0 = function(){
 	console.log("runTestMakeNodeOrigin0");
 	const result0 = makeNodeOrigin(1.0, 0, 0, 2, 2);
-	Test.dealTestAlmost("runTestMakeNodeOrigin000", result0.x, -0.75);
-	Test.dealTestAlmost("runTestMakeNodeOrigin001", result0.y, 0.86602540378443864676372317075294 * (-0.5));
+	UnitTest.dealTestAlmost("runTestMakeNodeOrigin000", result0.x, -0.75);
+	UnitTest.dealTestAlmost("runTestMakeNodeOrigin001", result0.y, 0.86602540378443864676372317075294 * (-0.5));
 
 	const result1 = makeNodeOrigin(1.0, 1, 0, 2, 2);
-	Test.dealTestAlmost("runTestMakeNodeOrigin010", result1.x, 0.25);
-	Test.dealTestAlmost("runTestMakeNodeOrigin011", result1.y, 0.86602540378443864676372317075294 * (-0.5));
+	UnitTest.dealTestAlmost("runTestMakeNodeOrigin010", result1.x, 0.25);
+	UnitTest.dealTestAlmost("runTestMakeNodeOrigin011", result1.y, 0.86602540378443864676372317075294 * (-0.5));
 
 	const result2 = makeNodeOrigin(1.0, 0, 1, 2, 2);
-	Test.dealTestAlmost("runTestMakeNodeOrigin020", result2.x, -0.25);
-	Test.dealTestAlmost("runTestMakeNodeOrigin021", result2.y, 0.86602540378443864676372317075294 * (0.5));
+	UnitTest.dealTestAlmost("runTestMakeNodeOrigin020", result2.x, -0.25);
+	UnitTest.dealTestAlmost("runTestMakeNodeOrigin021", result2.y, 0.86602540378443864676372317075294 * (0.5));
 
 	const result3 = makeNodeOrigin(1.0, 1, 1, 2, 2);
-	Test.dealTestAlmost("runTestMakeNodeOrigin030", result3.x, 0.75);
-	Test.dealTestAlmost("runTestMakeNodeOrigin031", result3.y, 0.86602540378443864676372317075294 * (0.5));
+	UnitTest.dealTestAlmost("runTestMakeNodeOrigin030", result3.x, 0.75);
+	UnitTest.dealTestAlmost("runTestMakeNodeOrigin031", result3.y, 0.86602540378443864676372317075294 * (0.5));
 }
 
-const test = function(){
-	console.log("basic test start");
+const unittest = function(){
+	console.log("basic unittest start");
 	runTestMakeNodeOrigin0();
-	console.log("basic test end");
+	console.log("basic unittest end");
 }
 
 module.exports = {
 	"run" : run,
+	"unittest" : unittest,
 	"test" : test
 }

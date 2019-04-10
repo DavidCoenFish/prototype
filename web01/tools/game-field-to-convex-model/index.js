@@ -39,4 +39,9 @@ const run = function(in_cmd, in_outputFilePath, in_inputFilePath){
 		});
 }
 
-loadGltr(process.argv[2], process.argv[3], process.argv[4]);
+console.log(new Date().toLocaleTimeString());
+console.log(process.argv[2]);
+if ("unittest" === process.argv[2]){
+} else {
+	run(process.argv[2], process.argv[3], process.argv[4]);
+}

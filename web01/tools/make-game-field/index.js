@@ -39,7 +39,9 @@ const run = function(in_type, in_outputFilePath){
 	return Q(true).then(function(){
 			return makeDirectory(in_outputFilePath);
 		}).then(function() {	
-			if ("basic" === in_type){
+			if ("test" === in_type){
+				return Basic.test();
+			} else if ("basic" === in_type){
 				return Basic.run();
 			}
 			throw new Error(`unknown type ${in_type}`);
@@ -53,10 +55,10 @@ const run = function(in_type, in_outputFilePath){
 		});
 }
 
-if ("test" === process.argv[2]){
-	console.log("test");
+if ("unittest" === process.argv[2]){
+	console.log("unittest");
 	console.log(new Date().toLocaleTimeString());
-	Basic.test();
+	Basic.unittest();
 } else {
 	run(process.argv[2], process.argv[3]);
 }

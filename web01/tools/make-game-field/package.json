@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node --nolazy --inspect-brk=5858 index.js test",
+    "unittest": "node --nolazy --inspect-brk=5858 index.js unittest",
+    "test": "node --nolazy --inspect-brk=5858 index.js test output\\test.json",
     "basic": "node --nolazy --inspect-brk=5858 index.js basic output\\basic.json"
   },
   "dependencies": {

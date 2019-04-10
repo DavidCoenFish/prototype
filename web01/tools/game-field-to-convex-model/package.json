@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "basic": "node --nolazy --inspect-brk=5858 index.js output\\basic.json"
+    "unittest": "node --nolazy --inspect-brk=5858 index.js unittest",
+    "test": "node --nolazy --inspect-brk=5858 index.js objectidmodel input\\test.json output\\objectidhulltest.js",
+    "basic": "node --nolazy --inspect-brk=5858 index.js objectidmodel input\\basic.json output\\objectidhullbasic.js"
   },
   "dependencies": {
     "fs-extra": "^7.0.1",

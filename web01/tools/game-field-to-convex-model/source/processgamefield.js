@@ -123,10 +123,44 @@ const intersectPlanePlanePlane = function(in_planeA, in_planeB, in_planeC){
 	return result;
 }
 
+const appendArray = function(in_dest, in_src){
+	for (var index = 0; index < in_src.length; ++index){
+		in_dest.push(in_src[index])
+	}
+}
+
 const appendNodeToModel = function(inout_model, in_node){
+	const pointCloud = convexHullToPointCloud(in_node.convexhull);
+	const sphere = makeSphereToFitPointColud(pointCloud);
+
+	appendArray(inout_model.modelSphereData, sphere);
+	inout_model.objectID.push(in_node.objectid);
+	appendArray(inout_model.colour, in_node.colour);
+	appendArray(inout_model.modelPlane0, in_node.convexhull[0]);
+	appendArray(inout_model.modelPlane1, in_node.convexhull[1]);
+	appendArray(inout_model.modelPlane2, in_node.convexhull[2]);
+	appendArray(inout_model.modelPlane3, in_node.convexhull[3]);
+	appendArray(inout_model.modelPlane4, in_node.convexhull[4]);
+	appendArray(inout_model.modelPlane5, in_node.convexhull[5]);
+	appendArray(inout_model.modelPlane6, in_node.convexhull[6]);
+	appendArray(inout_model.modelPlane7, in_node.convexhull[7]);
+
+	return;
 }
 
 const printModel = function(in_model){
+	const result = `
+import { base64ToByteArray } from './../core/base64.js';
+import ModelWrapperFactory from './../webgl/modelwrapper.js';
+import ModelDataStream from './../webgl/modeldatastream.js';
+
+export default function(in_webGLState){
+	return factoryByteRGB(
+		in_webGLState, 
+		32, 
+		32, 
+		base64ToByteArray("
+`;
 }
 
 const runObjectIDModel = function(in_gameField){
