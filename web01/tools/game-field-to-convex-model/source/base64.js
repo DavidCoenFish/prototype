@@ -37,7 +37,7 @@ function _byteLength (b64, validLen, placeHoldersLen) {
   return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
 }
 
-export function Base64ToFloat32Array (b64) {
+const Base64ToFloat32Array = function (b64) {
 	var data = Base64ToUint8Array(b64);
 	var buf = new ArrayBuffer(data.length);
 	var view = new DataView(buf);
@@ -52,7 +52,7 @@ export function Base64ToFloat32Array (b64) {
 	return result;
 }
 
-export function Base64ToUint8Array (b64) {
+const Base64ToUint8Array = function (b64) {
   var tmp
   var lens = getLens(b64)
   var validLen = lens[0]
@@ -117,7 +117,7 @@ function encodeChunk (uint8, start, end) {
   return output.join('')
 }
 
-export function Float32ArrayToBase64 (float32) {
+const Float32ArrayToBase64 = function(float32) {
 	const uint8Count = float32.length * 4;
 	var buf = new ArrayBuffer(uint8Count);
 	var view = new DataView(buf);
@@ -134,7 +134,7 @@ export function Float32ArrayToBase64 (float32) {
 }
 
 
-export function Uint8ArrayToBase64 (uint8) {
+const Uint8ArrayToBase64 = function(uint8) {
   var tmp
   var len = uint8.length
   var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
@@ -168,3 +168,10 @@ export function Uint8ArrayToBase64 (uint8) {
 
   return parts.join('')
 }
+
+module.exports = {
+	"Base64ToFloat32Array" : Base64ToFloat32Array,
+	"Base64ToUint8Array" : Base64ToUint8Array,
+	"Float32ArrayToBase64" : Float32ArrayToBase64,
+	"Uint8ArrayToBase64" : Uint8ArrayToBase64
+};

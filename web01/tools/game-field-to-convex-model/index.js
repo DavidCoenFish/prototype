@@ -6,10 +6,10 @@ const ProcessGameField = require("./source/processgamefield.js");
 
 const makeDirectory = function(in_filePath){
 	var deferred = Q.defer();
-	//console.log("makeDirectory:" + in_filePath + " dirname:" + Path.dirname(in_filePath));
+	console.log("makeDirectory:" + in_filePath + " dirname:" + Path.dirname(in_filePath));
 	FileSystem.mkdir(Path.dirname(in_filePath), { recursive: true }, function(error){
 		if (error && (error.code !== 'EEXIST')){
-			//console.log("error:" + error);
+			console.log("error:" + error);
 			throw error;
 		}
 		deferred.resolve(true);
@@ -17,7 +17,7 @@ const makeDirectory = function(in_filePath){
 	return deferred.promise;
 }
 
-const run = function(in_cmd, in_outputFilePath, in_inputFilePath){
+const run = function(in_cmd, in_inputFilePath, in_outputFilePath){
 	console.log(new Date().toLocaleTimeString());
 
 	return Q(true).then(function(){
@@ -26,7 +26,7 @@ const run = function(in_cmd, in_outputFilePath, in_inputFilePath){
 			return FsExtra.readJson(in_inputFilePath);
 		}).then(function(in_gameField) {
 			if (in_cmd == "objectidmodel"){
-				return ProcessGameField.runObjectIDModel(in_gameField, in_param, true);
+				return ProcessGameField.runObjectIDModel(in_gameField);
 			}
 			throw new Error("unknown cmd:" + in_cmd);
 		}).then(function(in_saveData) {	

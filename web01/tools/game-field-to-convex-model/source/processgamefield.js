@@ -1,86 +1,5 @@
-const determinant2x2 = function(in_matrix2x2){
-	return (in_matrix2x2[0] * in_matrix2x2[3]) - (in_matrix2x2[1] * in_matrix2x2[2]);
-}
-/*
-0 1 2
-3 4 5
-6 7 8
-*/
-const determinant3x3 = function(in_matrix3x3){
-	return (in_matrix3x3[0] * determinant2x2([in_matrix3x3[4], in_matrix3x3[5], in_matrix3x3[7], in_matrix3x3[8]])) 
-		- (in_matrix3x3[1] * determinant2x2([in_matrix3x3[3], in_matrix3x3[5], in_matrix3x3[6], in_matrix3x3[8]]))
-		+ (in_matrix3x3[2] * determinant2x2([in_matrix3x3[3], in_matrix3x3[4], in_matrix3x3[6], in_matrix3x3[7]]));
-}
-
-/*
- 0  1  2  3
- 4  5  6  7
- 8  9 10 11
-12 13 14 15
-*/
-const determinant4x4 = function(m){
-	return m[12] * m[9]  * m[6]  * m[3]   -  m[8] * m[13] * m[6]  * m[3]   -
-         m[12] * m[5]  * m[10] * m[3]   +  m[4] * m[13] * m[10] * m[3]   +
-         m[8]  * m[5]  * m[14] * m[3]   -  m[4] * m[9]  * m[14] * m[3]   -
-         m[12] * m[9]  * m[2]  * m[7]   +  m[8] * m[13] * m[2]  * m[7]   +
-         m[12] * m[1]  * m[10] * m[7]   -  m[0] * m[13] * m[10] * m[7]   -
-         m[8]  * m[1]  * m[14] * m[7]   +  m[0] * m[9]  * m[14] * m[7]   +
-         m[12] * m[5]  * m[2]  * m[11]  -  m[4] * m[13] * m[2]  * m[11]  -
-         m[12] * m[1]  * m[6]  * m[11]  +  m[0] * m[13] * m[6]  * m[11]  +
-         m[4]  * m[1]  * m[14] * m[11]  -  m[0] * m[5]  * m[14] * m[11]  -
-         m[8]  * m[5]  * m[2]  * m[15]  +  m[4] * m[9]  * m[2]  * m[15]  +
-         m[8]  * m[1]  * m[6]  * m[15]  -  m[0] * m[9]  * m[6]  * m[15]  -
-         m[4]  * m[1]  * m[10] * m[15]  +  m[0] * m[5]  * m[10] * m[15];
-}
-
-const makeSphere = function(in_vecA, in_vecB, in_vecC, in_vecD){
-	const tA = -(in_vecA[0] * in_vecA[0] + in_vecA[1] * in_vecA[1] + in_vecA[2] * in_vecA[2]);
-	const tB = -(in_vecB[0] * in_vecB[0] + in_vecB[1] * in_vecB[1] + in_vecB[2] * in_vecB[2]);
-	const tC = -(in_vecC[0] * in_vecC[0] + in_vecC[1] * in_vecC[1] + in_vecC[2] * in_vecC[2]);
-	const tD = -(in_vecD[0] * in_vecD[0] + in_vecD[1] * in_vecD[1] + in_vecD[2] * in_vecD[2]);
-	const determinant = determinant4x4([
-		in_vecA[0], in_vecA[1], in_vecA[2], 1,
-		in_vecB[0], in_vecB[1], in_vecB[2], 1,
-		in_vecC[0], in_vecC[1], in_vecC[2], 1,
-		in_vecD[0], in_vecD[1], in_vecD[2], 1
-		]);
-	if (Math.abs(determinant) <= Number.EPSILON){
-		return undefined;
-	}
-
-	const D = determinant4x4([
-		tA, in_vecA[1], in_vecA[2], 1,
-		tB, in_vecB[1], in_vecB[2], 1,
-		tC, in_vecC[1], in_vecC[2], 1,
-		tD, in_vecD[1], in_vecD[2], 1
-		]);
-	const E = determinant4x4([
-		in_vecA[0], tA, in_vecA[2], 1,
-		in_vecB[0], tB, in_vecB[2], 1,
-		in_vecC[0], tC, in_vecC[2], 1,
-		in_vecD[0], tD, in_vecD[2], 1
-		]);
-	const F = determinant4x4([
-		in_vecA[0], in_vecA[1], tA, 1,
-		in_vecB[0], in_vecB[1], tB, 1,
-		in_vecC[0], in_vecC[1], tC, 1,
-		in_vecD[0], in_vecD[1], tD, 1
-		]);
-	const G = determinant4x4([
-		in_vecA[0], in_vecA[1], in_vecA[2], tA,
-		in_vecB[0], in_vecB[1], in_vecB[2], tB,
-		in_vecC[0], in_vecC[1], in_vecC[2], tC,
-		in_vecD[0], in_vecD[1], in_vecD[2], tD
-		]);
-
-	const result = [
-		D * (-0.5),
-		E * (-0.5),
-		F * (-0.5),
-		0.5 * Math.sqrt((D * D) + (E * E) + (F * F) - (4 * G))
-	];
-	return result;
-}
+const Q = require("q");
+const Base64 = require("./base64.js");
 
 const dotProduct = function(in_vecA, in_vecB){
 	return (in_vecA[0] * in_vecB[0]) + (in_vecA[1] * in_vecB[1]) + (in_vecA[2] * in_vecB[2]);
@@ -102,6 +21,46 @@ const vecScalarMultiply = function(in_vec, in_scalar){
 	];
 }
 
+/*
+https://www.gamedev.net/forums/topic/90414-calculate-where-3-planes-intersect/
+	D3DXVECTOR3 Normal = (&Plane->a, &Plane->b, &Plane->c);
+	D3DXVECTOR3 Normal2 = (&Plane2->a, &Plane2->b, &Plane2->c);
+	D3DXVECTOR3 Normal3 = (&Plane3->a, &Plane3->b, &Plane3->c);
+	D3DXVECTOR3 CrossProduct;
+	D3DXVECTOR3 CrossProduct2;
+	D3DXVECTOR3 CrossProduct3;
+	D3DXVECTOR3 DotProduct;
+	float DotProduct2;
+	float DotProduct3;
+	D3DXVECTOR3 IntersectCoordinate;
+	D3DXVECTOR3 Num1, Num2, Num3;
+	D3DXVec3Cross( &CrossProduct , &Normal2 , &Normal3 );
+	D3DXVec3Cross( &CrossProduct2 , &Normal3 , &Normal );
+	D3DXVec3Cross( &CrossProduct3 , &Normal , &Normal2 );
+
+	float XPos;
+	float YPos;
+	float ZPos;
+
+	float denom = D3DXVec3Dot (&Normal, &CrossProduct);
+	if( denom == 0 ) {
+		return FALSE;
+	}
+	
+	Num1 = -(Plane->d * CrossProduct);
+	Num2 = -(Plane2->d * CrossProduct2);
+	Num3 = -(Plane3->d * CrossProduct3);
+	
+	IntersectCoordinate =  (Num1 + Num2 + Num3) / denom;
+
+	X = IntersectCoordinate.x;
+	Y = IntersectCoordinate.y;
+	Z = IntersectCoordinate.z;
+
+	return TRUE;
+
+
+ */
 const intersectPlanePlanePlane = function(in_planeA, in_planeB, in_planeC){
 	const crossA = crossProduct(in_planeB, in_planeC);
 	const denom = dotProduct(in_planeA, crossA);
@@ -111,9 +70,9 @@ const intersectPlanePlanePlane = function(in_planeA, in_planeB, in_planeC){
 	const crossB = crossProduct(in_planeC, in_planeA);
 	const crossC = crossProduct(in_planeA, in_planeB);
 
-	const vecA = vecScalarMultiply(crossA, -in_planeA[3]);
-	const vecB = vecScalarMultiply(crossB, -in_planeB[3]);
-	const vecC = vecScalarMultiply(crossC, -in_planeC[3]);
+	const vecA = vecScalarMultiply(crossA, in_planeA[3]);
+	const vecB = vecScalarMultiply(crossB, in_planeB[3]);
+	const vecC = vecScalarMultiply(crossC, in_planeC[3]);
 
 	const result = [
 		(vecA[0] + vecB[0] + vecC[0]) / denom,
@@ -123,9 +82,111 @@ const intersectPlanePlanePlane = function(in_planeA, in_planeB, in_planeC){
 	return result;
 }
 
+const pointInsideAllOtherPlanes = function(in_point, in_convexhullArray, in_ignoreA, in_ignoreB, in_ignoreC){
+	const count = in_convexhullArray.length;
+	for (var i = 0; i < count; ++i){
+		if ((in_ignoreA === i) ||
+			(in_ignoreB === i) ||
+			(in_ignoreC === i)){
+			continue;
+		}
+
+		var plane = in_convexhullArray[i];
+		var d = dotProduct(plane, in_point);
+		if (plane[3] <= d){
+			return false;
+		}
+	}
+	return true;
+}
+
+const convexHullToPointCloud = function(in_convexhullArray){
+	var pointCloud = [];
+	const count = in_convexhullArray.length;
+	for (var i = 0; i < count; ++i){
+		for (var j = i + 1; j < count; ++j){
+			for (var k = j + 1; k < count; ++k){
+				var intersectionPoint = intersectPlanePlanePlane(in_convexhullArray[i], in_convexhullArray[j], in_convexhullArray[k]);
+				if (undefined === intersectionPoint){
+					continue;
+				}
+				if (true !== pointInsideAllOtherPlanes(intersectionPoint, in_convexhullArray, i, j, k)){
+					continue;
+				}
+				pointCloud.push(intersectionPoint);
+			}
+		}
+	}
+	return pointCloud;
+}
+
+const pointDistanceSquared = function(in_pointA, in_pointB){
+	var AB = [in_pointB[0] - in_pointA[0], in_pointB[1] - in_pointA[1], in_pointB[2] - in_pointA[2]];
+	var dSquared = dotProduct(AB, AB);
+	return dSquared;
+}
+
+const expandSphere = function(inout_sphere, in_point){
+	var AB = pointDistanceSquared(inout_sphere, in_point);
+	var rSquared = inout_sphere[3] * inout_sphere[3];
+	if (rSquared < AB){
+		inout_sphere[3] = Math.sqrt(AB);
+	}
+	return;
+}
+
+const makeSphereToFitPointColud = function(in_pointCloud){
+	const count = in_pointCloud.length;
+	var pointA = undefined;
+	var pointB = undefined;
+	var pointC = undefined;
+	var pointD = undefined;
+	var bestDistance;
+	var bestIndexA;
+	var bestIndexB;
+	for (var index = 0; index < count; ++index){
+		for (var subIndex = index + 1; subIndex < count; ++subIndex){
+			var d = pointDistanceSquared(in_pointCloud[index], in_pointCloud[subIndex]);
+			if ((bestDistance === undefined) || 
+				(bestDistance < d)){
+				bestDistance = d;
+				pointA = in_pointCloud[index];
+				bestIndexA = index;
+				pointB = in_pointCloud[subIndex];
+				bestIndexB = subIndex;
+			}
+		}
+	}
+	//just expand from midpoint
+	var sphere = [(pointA[0] + pointB[0]) * 0.5, (pointA[1] + pointB[1]) * 0.5, (pointA[2] + pointB[2]) * 0.5, Math.sqrt(bestDistance) * 0.5];
+	//want the 2 points furthest away from the mid other than the best index
+	for (var index = 0; index < count; ++index){
+		if ((bestIndexA === index) ||
+			(bestIndexB === index)){
+			continue;
+		}
+		expandSphere(sphere, in_pointCloud[index]); 
+	}
+	return sphere;
+}
+
+
 const appendArray = function(in_dest, in_src){
 	for (var index = 0; index < in_src.length; ++index){
 		in_dest.push(in_src[index])
+	}
+}
+
+const appendArrayUint16ToUint8 = function(in_dest, in_src){
+	in_dest.push(in_src >> 8);
+	in_dest.push(in_src & 255);
+}
+
+const appendArrayColourToUint8 = function(in_dest, in_src){
+	for (var index = 0; index < in_src.length; ++index){
+		var value = Math.round(in_src[index] * 255);
+		value = Math.max(0, Math.min(255, value));
+		in_dest.push(value)
 	}
 }
 
@@ -134,8 +195,8 @@ const appendNodeToModel = function(inout_model, in_node){
 	const sphere = makeSphereToFitPointColud(pointCloud);
 
 	appendArray(inout_model.modelSphereData, sphere);
-	inout_model.objectID.push(in_node.objectid);
-	appendArray(inout_model.colour, in_node.colour);
+	appendArrayUint16ToUint8(inout_model.objectID, in_node.objectid);
+	appendArrayColourToUint8(inout_model.colour, in_node.colour);
 	appendArray(inout_model.modelPlane0, in_node.convexhull[0]);
 	appendArray(inout_model.modelPlane1, in_node.convexhull[1]);
 	appendArray(inout_model.modelPlane2, in_node.convexhull[2]);
@@ -149,18 +210,31 @@ const appendNodeToModel = function(inout_model, in_node){
 }
 
 const printModel = function(in_model){
+	const elementCount = Math.round(in_model.modelSphereData.length / 4);
 	const result = `
-import { base64ToByteArray } from './../core/base64.js';
+import { Base64ToUint8Array, Base64ToFloat32Array } from './../core/base64.js';
 import ModelWrapperFactory from './../webgl/modelwrapper.js';
 import ModelDataStream from './../webgl/modeldatastream.js';
 
 export default function(in_webGLState){
-	return factoryByteRGB(
-		in_webGLState, 
-		32, 
-		32, 
-		base64ToByteArray("
+	return ModelWrapperFactory(
+		in_webGLState, "POINTS", ${elementCount}, {
+			"a_sphere" : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("${Base64.Float32ArrayToBase64(in_model.modelSphereData)}"), "STATIC_DRAW", false),
+			"a_objectID" : ModelDataStream(in_webGLState, "BYTE", 2, Base64ToUint8Array("${Base64.Uint8ArrayToBase64(in_model.objectID)}"), "STATIC_DRAW", true),
+			"a_colour" : ModelDataStream(in_webGLState, "BYTE", 3, Base64ToUint8Array("${Base64.Uint8ArrayToBase64(in_model.colour)}"), "STATIC_DRAW", true),
+			"a_plane0" : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("${Base64.Float32ArrayToBase64(in_model.modelPlane0)}"), "STATIC_DRAW", false),
+			"a_plane1" : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("${Base64.Float32ArrayToBase64(in_model.modelPlane1)}"), "STATIC_DRAW", false),
+			"a_plane2" : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("${Base64.Float32ArrayToBase64(in_model.modelPlane2)}"), "STATIC_DRAW", false),
+			"a_plane3" : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("${Base64.Float32ArrayToBase64(in_model.modelPlane3)}"), "STATIC_DRAW", false),
+			"a_plane4" : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("${Base64.Float32ArrayToBase64(in_model.modelPlane4)}"), "STATIC_DRAW", false),
+			"a_plane5" : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("${Base64.Float32ArrayToBase64(in_model.modelPlane5)}"), "STATIC_DRAW", false),
+			"a_plane6" : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("${Base64.Float32ArrayToBase64(in_model.modelPlane6)}"), "STATIC_DRAW", false),
+			"a_plane7" : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("${Base64.Float32ArrayToBase64(in_model.modelPlane7)}"), "STATIC_DRAW", false)
+		}
+	);
+}
 `;
+	return result;
 }
 
 const runObjectIDModel = function(in_gameField){

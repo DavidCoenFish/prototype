@@ -225,7 +225,9 @@ export default function(in_targetElement, inout_state){
 	in_targetElement.ownerDocument.addEventListener("keydown", keyDownCallback); 
 	in_targetElement.ownerDocument.addEventListener("keyup", keyUpCallback); 
 
-	in_targetElement.ownerDocument.focus();
+	if ("focus" in in_targetElement.ownerDocument){
+		in_targetElement.ownerDocument.focus();
+	}
 
 	return that;
 }

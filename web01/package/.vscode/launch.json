@@ -40,6 +40,23 @@
 			},
 			"port": 5858,
 			"timeout": 100000,
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "unit test",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"unittest"
+			],
+			"port": 5858,
+			"timeout": 100000
+			//"console": "externalTerminal"
 		}
+
 	]
 }
