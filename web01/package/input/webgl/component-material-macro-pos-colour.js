@@ -18,7 +18,7 @@ uniform vec3 u_cameraAt;
 uniform vec3 u_cameraLeft;
 uniform vec3 u_cameraUp;
 uniform vec3 u_cameraPos;
-uniform vec3 u_cameraFovhFovvFar;
+uniform vec4 u_cameraFovhFovvFarClip;
 
 varying vec4 v_colour;
 varying float v_keepOrDiscard;
@@ -29,12 +29,12 @@ void main() {
 	float cameraSpaceX = -dot(cameraToAtom, u_cameraLeft);
 	float cameraSpaceY = dot(cameraToAtom, u_cameraUp);
 	float cameraSpaceZ = dot(cameraToAtom, u_cameraAt);
-	v_keepOrDiscard = cameraSpaceZ;
 	float cameraSpaceXYLengthSquared = ((cameraSpaceX * cameraSpaceX) + (cameraSpaceY* cameraSpaceY));
 	float cameraSpaceLength = sqrt(cameraSpaceXYLengthSquared + (cameraSpaceZ * cameraSpaceZ));
 	float cameraSpaceXYLength = sqrt(cameraSpaceXYLengthSquared);
 
 	float polarR = degrees(acos(clamp(cameraSpaceZ / cameraSpaceLength, -1.0, 1.0)));
+	v_keepOrDiscard = 1.0 - (polarR / u_cameraFovhFovvFarClip.w);
 
 	//replace atan with normalised vector, save (atan,sin,cos)
 	float cameraSpaceXNorm = 1.0; //Xnorm not zero for correct second of two cases, either atom directly infront (and polarR == 0) or atom directly behind camera (polarR == 180)
@@ -44,7 +44,7 @@ void main() {
 		cameraSpaceYNorm = cameraSpaceY / cameraSpaceXYLength;
 	}
 
-	float fovHHalf = u_cameraFovhFovvFar.x * 0.5;
+	float fovHHalf = u_cameraFovhFovvFarClip.x * 0.5;
 	float width = u_viewportWidthHeightWidthhalfHeighthalf.x;
 	float height = u_viewportWidthHeightWidthhalfHeighthalf.y;
 	float widthHalf = u_viewportWidthHeightWidthhalfHeighthalf.z;
@@ -55,7 +55,7 @@ void main() {
 	float apsectCorrection = (width / height);
 	float screenY = screenR * cameraSpaceYNorm * apsectCorrection;
 
-	float screenZRaw = cameraSpaceLength / u_cameraFovhFovvFar.z;
+	float screenZRaw = cameraSpaceLength / u_cameraFovhFovvFarClip.z;
 	float screenZ = (screenZRaw * 2.0) - 1.0;
 
 	gl_Position = vec4(screenX, screenY, screenZ, 1.0);
@@ -68,9 +68,11 @@ precision mediump float;
 varying vec4 v_colour;
 varying float v_keepOrDiscard;
 void main() {
-	if (v_keepOrDiscard <= 0.0){
+	if (v_keepOrDiscard <= 0.0)
 		discard;
-	}
+	vec2 diff = gl_PointCoord - vec2(.5, .5);
+	if (length(diff) > 0.5)
+		discard;
 	gl_FragColor = v_colour;
 }
 `;
@@ -82,7 +84,7 @@ const sUniformNameMap = {
 	"u_cameraUp" : ShaderUniformDataFloat3, 
 	"u_cameraLeft" : ShaderUniformDataFloat3, 
 	"u_cameraPos" : ShaderUniformDataFloat3, 
-	"u_cameraFovhFovvFar" : ShaderUniformDataFloat3
+	"u_cameraFovhFovvFarClip" : ShaderUniformDataFloat4
 };
 
 const shaderFactory = function(in_webGLState){
