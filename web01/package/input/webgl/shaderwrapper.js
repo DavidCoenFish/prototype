@@ -39,10 +39,6 @@ export default function(
 
 		m_shaderProgramObject = linkProgram(in_webGLContextWrapper, m_vertexWebGLShader, m_fragmentWebGLShader);
 
-		if (undefined === m_shaderProgramObject){
-			alert("Error creating shader Program");
-		}
-
 		return;
 	}
 
@@ -81,7 +77,6 @@ export default function(
 		var errorInfo = "";
 		// If the compilation failed, delete the shader.
 		if (!compiled){
-
 			errorInfo = in_webGLContextWrapper.callMethod("getShaderInfoLog", shaderHandle);
 			in_webGLContextWrapper.callMethod("deleteShader", shaderHandle);
 			shaderHandle = undefined;
@@ -117,7 +112,10 @@ export default function(
 		const linkStatusEnum = in_webGLContextWrapper.getEnum("LINK_STATUS");
 		const linked = in_webGLContextWrapper.callMethod("getProgramParameter", programHandle, linkStatusEnum);
 
-		if (!linked) {				
+
+		if (!linked) {			
+			var errorInfo = in_webGLContextWrapper.callMethod("getProgramInfoLog", programHandle);
+			alert("Error linking program: " + errorInfo);
 			in_webGLContextWrapper.callMethod("deleteProgram", programHandle);
 			return undefined
 		}

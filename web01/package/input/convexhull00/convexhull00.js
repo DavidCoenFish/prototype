@@ -9,8 +9,32 @@ import ShaderWrapperFactory from "./../webgl/shaderwrapper.js";
 import {sFloat3 as ShaderUniformDataFloat3, sFloat4 as ShaderUniformDataFloat4 } from "./../webgl/shaderuniformdata.js";
 import MaterialWrapperFactory from "./../webgl/materialwrapper.js";
 import WorldGridFactory from './../webgl/component-world-grid.js';
+/*
+gl_PointSize is diameter
+gl_PointCoord [0...1,0..1]
+0,0 --> +x
+|
+V
++y
+  a--\   P
+ /r    ---\
+p---------------eye
+       A
+ar is angle at the eye for the sphere at p
+A == cameraSpaceLength
 
+the sphere radius suggests a pixel radius of (ar / fovhHalf) * pixelWidth
+ar = asin (ops/hyp ) = asin(radius/cameraSpaceLength)
+   ar
+  / |
+ /  |
+.___.  _____________ar.
+
+
+*/
 const sVertexShader = `
+precision mediump float;
+
 attribute vec4 a_sphere;
 attribute vec2 a_objectID;
 attribute vec3 a_colour;
@@ -32,6 +56,19 @@ uniform vec4 u_cameraFovhFovvFarClip;
 
 varying vec4 v_colour;
 varying float v_keepOrDiscard;
+
+varying vec2 v_polarTopLeft;
+varying vec2 v_polarWidthHeight;
+
+varying vec4 v_sphere;
+varying vec4 v_plane0;
+varying vec4 v_plane1;
+varying vec4 v_plane2;
+varying vec4 v_plane3;
+varying vec4 v_plane4;
+varying vec4 v_plane5;
+varying vec4 v_plane6;
+varying vec4 v_plane7;
 
 void main() {
 	vec3 cameraToAtom = a_sphere.xyz - u_cameraPos;
@@ -68,27 +105,145 @@ void main() {
 	float screenZRaw = cameraSpaceLength / u_cameraFovhFovvFarClip.z;
 	float screenZ = (screenZRaw * 2.0) - 1.0;
 
+	float sphereRadiusAngle = degrees(asin(a_sphere.w / cameraSpaceLength));
+	float fovhSpherePixelDiameter = (sphereRadiusAngle / fovHHalf) * width;
+	//radius distored pixel diameter
+	float radialPixelSize = (screenR * width) * tan(radians(sphereRadiusAngle));
+
 	gl_Position = vec4(screenX, screenY, screenZ, 1.0);
-	gl_PointSize  = 100.0;
+	float pixelDiameter = max(fovhSpherePixelDiameter, radialPixelSize);
+	gl_PointSize = pixelDiameter;
 	v_colour = vec4(a_colour, 1.0);
+
+	float polarRRadians = radians(polarR);
+	v_polarWidthHeight = vec2(pixelDiameter / width, pixelDiameter / (width * apsectCorrection));
+	v_polarTopLeft = vec2(polarRRadians * cameraSpaceXNorm, cameraSpaceYNorm * apsectCorrection) - (v_polarWidthHeight * 0.5);
+
+	v_sphere = a_sphere;
+	v_plane0 = v_plane0;
+	v_plane1 = v_plane1;
+	v_plane2 = v_plane2;
+	v_plane3 = v_plane3;
+	v_plane4 = v_plane4;
+	v_plane5 = v_plane5;
+	v_plane6 = v_plane6;
+	v_plane7 = v_plane7;
 }
 `;
 
+
+
+
+
+
+
+
+
 const sFragmentShader = `
 precision mediump float;
+
+uniform vec3 u_cameraAt;
+uniform vec3 u_cameraLeft;
+uniform vec3 u_cameraUp;
+uniform vec3 u_cameraPos;
+uniform vec4 u_cameraFovhFovvFarClip;
+
 varying vec4 v_colour;
 varying float v_keepOrDiscard;
-void main() {
-	if (v_keepOrDiscard <= 0.0)
-		discard;
-	vec2 diff = gl_PointCoord - vec2(.5, .5);
-	if (length(diff) > 0.5)
-		discard;
 
-	gl_FragColor = v_colour;
-	gl_FragColor.x = gl_PointCoord.x;
-	gl_FragColor.y = gl_PointCoord.y;
-	gl_FragColor.z = 0.0;
+varying vec2 v_polarTopLeft;
+varying vec2 v_polarWidthHeight;
+
+varying vec4 v_sphere;
+varying vec4 v_plane0;
+varying vec4 v_plane1;
+varying vec4 v_plane2;
+varying vec4 v_plane3;
+varying vec4 v_plane4;
+varying vec4 v_plane5;
+varying vec4 v_plane6;
+varying vec4 v_plane7;
+
+vec3 makeScreenEyeRay(vec2 in_polarCoords) {
+	float polar_a_radian = atan(in_polarCoords.y, in_polarCoords.x);
+	float polar_r_radian = length(in_polarCoords);
+
+	float z = cos(polar_r_radian);
+	float temp = sqrt(1.0 - (z * z));
+	float x = temp * cos(polar_a_radian);
+	float y = temp * sin(polar_a_radian);
+	return vec3(x, y, z);
+}
+
+vec3 makeWorldRay(vec3 in_screenEyeRay){
+	return ((-(in_screenEyeRay.x) * u_cameraLeft) +
+		(in_screenEyeRay.y * u_cameraUp) +
+		(in_screenEyeRay.z * u_cameraAt));
+}
+
+//intersect world ray with plane0, check point inside all other planes
+float planeTest(float distanceFromFarClip, float farClip, vec3 eyePos, vec3 eyeRay, vec4 in_plane0, vec4 in_plane1, vec4 in_plane2, vec4 in_plane3, vec4 in_plane4, vec4 in_plane5, vec4 in_plane6, vec4 in_plane7){
+	float ln = dot(eyeRay, in_plane0.xyz);
+	if (abs(ln) < 0.0001){
+		return distanceFromFarClip;
+	}
+	float t = in_plane0.w - dot(eyePos, in_plane0.xyz);
+	if (t < 0.0){
+		return distanceFromFarClip;
+	}
+	if (farClip < t){
+		return distanceFromFarClip;
+	}
+	vec3 testPos = eyePos + (eyeRay * t);
+
+	float inside = 1.0;
+	inside *= step(in_plane1.w, dot(testPos, in_plane1.xyz));
+	inside *= step(in_plane2.w, dot(testPos, in_plane2.xyz));
+	inside *= step(in_plane3.w, dot(testPos, in_plane3.xyz));
+	inside *= step(in_plane4.w, dot(testPos, in_plane4.xyz));
+	inside *= step(in_plane5.w, dot(testPos, in_plane5.xyz));
+	inside *= step(in_plane6.w, dot(testPos, in_plane6.xyz));
+	inside *= step(in_plane7.w, dot(testPos, in_plane7.xyz));
+	float testDistanceFromFarClip = farClip - t;
+
+	return mix(distanceFromFarClip, testDistanceFromFarClip, inside);
+}
+
+void main() {
+	if (v_keepOrDiscard <= 0.0) {
+		discard;
+	}
+	vec2 diff = (gl_PointCoord - vec2(.5, .5)) * 2.0;
+	if (1.0 < dot(diff, diff)) {
+		discard;
+	}
+
+	vec2 polarCoords = v_polarTopLeft + vec2(gl_PointCoord.x * v_polarWidthHeight.x, gl_PointCoord.y * v_polarWidthHeight.y);
+	vec3 screenEyeRay = makeScreenEyeRay(polarCoords);
+	vec3 worldRay = makeWorldRay(screenEyeRay);
+
+	float farClip = u_cameraFovhFovvFarClip.z;
+	float distanceFromFarClip = 0.0;
+
+	distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane0, v_plane1, v_plane2, v_plane3, v_plane4, v_plane5, v_plane6, v_plane7);
+	distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane1, v_plane0, v_plane2, v_plane3, v_plane4, v_plane5, v_plane6, v_plane7);
+	distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane2, v_plane0, v_plane1, v_plane3, v_plane4, v_plane5, v_plane6, v_plane7);
+	distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane3, v_plane0, v_plane1, v_plane2, v_plane4, v_plane5, v_plane6, v_plane7);
+	distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane4, v_plane0, v_plane1, v_plane2, v_plane3, v_plane5, v_plane6, v_plane7);
+	distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane5, v_plane0, v_plane1, v_plane2, v_plane3, v_plane4, v_plane6, v_plane7);
+	distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane6, v_plane0, v_plane1, v_plane2, v_plane3, v_plane4, v_plane5, v_plane7);
+	distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane7, v_plane0, v_plane1, v_plane2, v_plane3, v_plane4, v_plane5, v_plane6);
+
+	if (distanceFromFarClip == 0.0){
+		discard;
+	}
+
+	float distance = farClip - distanceFromFarClip;
+	vec3 worldPos = u_cameraPos + (worldRay * distance);
+	float colourDistance = length(worldPos - v_sphere.xyz);
+
+	gl_FragColor = mix(vec4(1.0, 1.0, 1.0, 1.0), v_colour, colourDistance / v_sphere.w);
+	//gl_FragDepthEXT = distance / farClip;
 }
 `;
 
@@ -139,11 +294,11 @@ export default function () {
 		"margin" : "0",
 		"padding" : "0",
 		"display" : "block"
-		}, false, undefined, undefined, undefined, true);
+		}, false, undefined, undefined, ["EXT_frag_depth"], true);
 	const webGLState = componentScene.getWebGLState();
 	const state = {
 		"u_viewportWidthHeightWidthhalfHeighthalf" : Vector4FactoryFloat32(webGLState.getCanvasWidth(), webGLState.getCanvasHeight(), webGLState.getCanvasWidth() / 2.0, webGLState.getCanvasHeight() / 2.0).getRaw(),
-		"u_cameraFovhFovvFarClip" : Vector4FactoryFloat32(210.0, 150.0, 100.0, 128.8).getRaw(),
+		"u_cameraFovhFovvFarClip" : Vector4FactoryFloat32(210.0, 150.0, 100.0, Math.sqrt((210 * 210) + (150 * 150)) * 0.5).getRaw(),
 	};
 	const cameraComponent = ComponentCameraFactory(componentScene.getCanvasElement(), state);
 	const resourceManager = ResourceManagerFactory();
