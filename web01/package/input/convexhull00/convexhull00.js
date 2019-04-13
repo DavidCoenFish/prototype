@@ -116,28 +116,20 @@ void main() {
 	v_colour = vec4(a_colour, 1.0);
 
 	float polarRRadians = radians(polarR);
-	v_polarWidthHeight = vec2(pixelDiameter / width, pixelDiameter / (width * apsectCorrection));
-	v_polarTopLeft = vec2(polarRRadians * cameraSpaceXNorm, cameraSpaceYNorm * apsectCorrection) - (v_polarWidthHeight * 0.5);
+	v_polarWidthHeight = vec2(pixelDiameter / width, (pixelDiameter / width) * apsectCorrection);
+	v_polarTopLeft = vec2(polarRRadians * cameraSpaceXNorm, polarRRadians * cameraSpaceYNorm * apsectCorrection) - (v_polarWidthHeight * 0.5);
 
 	v_sphere = a_sphere;
-	v_plane0 = v_plane0;
-	v_plane1 = v_plane1;
-	v_plane2 = v_plane2;
-	v_plane3 = v_plane3;
-	v_plane4 = v_plane4;
-	v_plane5 = v_plane5;
-	v_plane6 = v_plane6;
-	v_plane7 = v_plane7;
+	v_plane0 = a_plane0;
+	v_plane1 = a_plane1;
+	v_plane2 = a_plane2;
+	v_plane3 = a_plane3;
+	v_plane4 = a_plane4;
+	v_plane5 = a_plane5;
+	v_plane6 = a_plane6;
+	v_plane7 = a_plane7;
 }
 `;
-
-
-
-
-
-
-
-
 
 const sFragmentShader = `
 precision mediump float;
@@ -213,12 +205,12 @@ void main() {
 	if (v_keepOrDiscard <= 0.0) {
 		discard;
 	}
-	vec2 diff = (gl_PointCoord - vec2(.5, .5)) * 2.0;
-	if (1.0 < dot(diff, diff)) {
-		discard;
-	}
+	//vec2 diff = (gl_PointCoord - vec2(.5, .5)) * 2.0;
+	//if (1.0 < dot(diff, diff)) {
+	//	discard;
+	//}
 
-	vec2 polarCoords = v_polarTopLeft + vec2(gl_PointCoord.x * v_polarWidthHeight.x, gl_PointCoord.y * v_polarWidthHeight.y);
+	vec2 polarCoords = v_polarTopLeft + vec2(gl_PointCoord.x * v_polarWidthHeight.x, (1.0 - gl_PointCoord.y) * v_polarWidthHeight.y);
 	vec3 screenEyeRay = makeScreenEyeRay(polarCoords);
 	vec3 worldRay = makeWorldRay(screenEyeRay);
 
@@ -234,9 +226,9 @@ void main() {
 	distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane6, v_plane0, v_plane1, v_plane2, v_plane3, v_plane4, v_plane5, v_plane7);
 	distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane7, v_plane0, v_plane1, v_plane2, v_plane3, v_plane4, v_plane5, v_plane6);
 
-	if (distanceFromFarClip == 0.0){
-		discard;
-	}
+	//if (distanceFromFarClip == 0.0){
+	//	discard;
+	//}
 
 	float distance = farClip - distanceFromFarClip;
 	vec3 worldPos = u_cameraPos + (worldRay * distance);
@@ -244,6 +236,8 @@ void main() {
 
 	gl_FragColor = mix(vec4(1.0, 1.0, 1.0, 1.0), v_colour, colourDistance / v_sphere.w);
 	//gl_FragDepthEXT = distance / farClip;
+
+	//gl_FragColor = vec4(v_plane0.x, v_plane0.y, v_plane0.z, 1.0);
 }
 `;
 
@@ -285,6 +279,12 @@ export default function () {
 
 	const stopCallback = function(){
 		grid.destroy();
+		var message = "";
+		message += `		"u_cameraPos" : [${state.u_cameraPos[0]}, ${state.u_cameraPos[1]}, ${state.u_cameraPos[2]}],\n`;
+		message += `		"u_cameraAt" : [${state.u_cameraAt[0]}, ${state.u_cameraAt[1]}, ${state.u_cameraAt[2]}],\n`;
+		message += `		"u_cameraLeft" : [${state.u_cameraLeft[0]}, ${state.u_cameraLeft[1]}, ${state.u_cameraLeft[2]}],\n`;
+		message += `		"u_cameraUp" : [${state.u_cameraUp[0]}, ${state.u_cameraUp[1]}, ${state.u_cameraUp[2]}],\n`;
+		console.log(message);
 	}
 
 	const componentScene = ComponentWebGLSceneFactory(document, true, sceneUpdateCallback, stopCallback, {
