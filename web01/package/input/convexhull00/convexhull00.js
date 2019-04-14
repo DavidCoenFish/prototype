@@ -107,7 +107,7 @@ void main() {
 
 	float sphereRadiusAngleRadians = asin(a_sphere.w / cameraSpaceLength);
 	float fovHHalfRadians = radians(u_cameraFovhFovvFarClip.x * 0.5);
-	float pixelDiameter = 455.0; //width * (sphereRadiusAngleRadians / fovHHalfRadians);
+	float pixelDiameter = width * (sphereRadiusAngleRadians / fovHHalfRadians);
 
 	float radianDiameter = (pixelDiameter / widthHalf) * fovHHalfRadians;
 	v_polarWidthHeight = vec2(radianDiameter, radianDiameter);
@@ -166,11 +166,7 @@ vec3 makeScreenEyeRay(vec2 in_polarCoords) {
 	float temp = sqrt(1.0 - (z * z));
 	float x = temp * cos(polar_a_radian);
 	float y = temp * sin(polar_a_radian);
-	//return vec3(x, y, z);
-	if (polar_r_radian < 0.01){
-		polar_r_radian = 1.0;
-		}
-	return vec3(polar_r_radian, polar_r_radian, polar_r_radian);
+	return vec3(x, y, z);
 }
 
 vec3 makeWorldRay(vec3 in_screenEyeRay){
@@ -182,10 +178,12 @@ vec3 makeWorldRay(vec3 in_screenEyeRay){
 //intersect world ray with plane0, check point inside all other planes
 float planeTest(float distanceFromFarClip, float farClip, vec3 eyePos, vec3 eyeRay, vec4 in_plane0, vec4 in_plane1, vec4 in_plane2, vec4 in_plane3, vec4 in_plane4, vec4 in_plane5, vec4 in_plane6, vec4 in_plane7){
 	float ln = dot(eyeRay, in_plane0.xyz);
-	if (abs(ln) < 0.0001){
+	//if (abs(ln) < 0.0001){
+	if (0.0001 < ln){
 		return distanceFromFarClip;
 	}
-	float t = in_plane0.w - dot(eyePos, in_plane0.xyz);
+	float t = (in_plane0.w - dot(eyePos, in_plane0.xyz)) / ln;
+
 	if (t < 0.0){
 		return distanceFromFarClip;
 	}
@@ -195,13 +193,13 @@ float planeTest(float distanceFromFarClip, float farClip, vec3 eyePos, vec3 eyeR
 	vec3 testPos = eyePos + (eyeRay * t);
 
 	float inside = 1.0;
-	inside *= step(in_plane1.w, dot(testPos, in_plane1.xyz));
-	inside *= step(in_plane2.w, dot(testPos, in_plane2.xyz));
-	inside *= step(in_plane3.w, dot(testPos, in_plane3.xyz));
-	inside *= step(in_plane4.w, dot(testPos, in_plane4.xyz));
-	inside *= step(in_plane5.w, dot(testPos, in_plane5.xyz));
-	inside *= step(in_plane6.w, dot(testPos, in_plane6.xyz));
-	inside *= step(in_plane7.w, dot(testPos, in_plane7.xyz));
+	inside *= step(dot(testPos, in_plane1.xyz), in_plane1.w);
+	inside *= step(dot(testPos, in_plane2.xyz), in_plane2.w);
+	inside *= step(dot(testPos, in_plane3.xyz), in_plane3.w);
+	inside *= step(dot(testPos, in_plane4.xyz), in_plane4.w);
+	inside *= step(dot(testPos, in_plane5.xyz), in_plane5.w);
+	inside *= step(dot(testPos, in_plane6.xyz), in_plane6.w);
+	inside *= step(dot(testPos, in_plane7.xyz), in_plane7.w);
 	float testDistanceFromFarClip = farClip - t;
 
 	return mix(distanceFromFarClip, testDistanceFromFarClip, inside);
@@ -210,8 +208,8 @@ float planeTest(float distanceFromFarClip, float farClip, vec3 eyePos, vec3 eyeR
 //v_plane0, worldRay, u_cameraPos, farClip
 float planeDebug(vec4 in_plane, vec3 in_eyeRay, vec3 in_eyePos, float in_farClip){
 	float ln = dot(in_eyeRay, in_plane.xyz);
-	//if (0.0001 < ln){
-	if (abs(ln) < 0.0001){
+	if (0.0001 < ln){
+	//if (abs(ln) < 0.0001){
 		return in_farClip;
 	}
 	float t = (in_plane.w - dot(in_eyePos, in_plane.xyz)) / ln;
@@ -233,39 +231,39 @@ void main() {
 	vec2 polarCoords = v_polarTopLeft + vec2(gl_PointCoord.x * v_polarWidthHeight.x, (1.0 - gl_PointCoord.y) * v_polarWidthHeight.y);
 	vec3 screenEyeRay = makeScreenEyeRay(polarCoords);
 	vec3 worldRay = makeWorldRay(screenEyeRay);
-	gl_FragColor = vec4(screenEyeRay, 1.0);
+	gl_FragColor = vec4(worldRay, 1.0);
 
 	float farClip = u_cameraFovhFovvFarClip.z;
 	gl_FragDepthEXT = 0.5;
-	//float distanceFromFarClip = 0.0;
+	float distanceFromFarClip = 0.0;
 
 	//float distanceToPlane = planeDebug(v_plane0, worldRay, u_cameraPos, farClip);
-	//float distanceToPlane = planeDebug(vec4(0,1,0,0), worldRay, u_cameraPos, farClip);
+	//float distanceToPlane = planeDebug(vec4(0,0,1,0), worldRay, u_cameraPos, farClip);
 	//if (farClip <= distanceToPlane){
 	//	discard;
 	//}
 	//float distance = 1.0 - (distanceToPlane / farClip);
 	//gl_FragColor = vec4(distance, distance, distance, 1.0);
 
-	//distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane0, v_plane1, v_plane2, v_plane3, v_plane4, v_plane5, v_plane6, v_plane7);
-	//distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane1, v_plane0, v_plane2, v_plane3, v_plane4, v_plane5, v_plane6, v_plane7);
-	//distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane2, v_plane0, v_plane1, v_plane3, v_plane4, v_plane5, v_plane6, v_plane7);
-	//distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane3, v_plane0, v_plane1, v_plane2, v_plane4, v_plane5, v_plane6, v_plane7);
-	//distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane4, v_plane0, v_plane1, v_plane2, v_plane3, v_plane5, v_plane6, v_plane7);
-	//distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane5, v_plane0, v_plane1, v_plane2, v_plane3, v_plane4, v_plane6, v_plane7);
-	//distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane6, v_plane0, v_plane1, v_plane2, v_plane3, v_plane4, v_plane5, v_plane7);
-	//distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane7, v_plane0, v_plane1, v_plane2, v_plane3, v_plane4, v_plane5, v_plane6);
+	distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane0, v_plane1, v_plane2, v_plane3, v_plane4, v_plane5, v_plane6, v_plane7);
+	distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane1, v_plane0, v_plane2, v_plane3, v_plane4, v_plane5, v_plane6, v_plane7);
+	distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane2, v_plane0, v_plane1, v_plane3, v_plane4, v_plane5, v_plane6, v_plane7);
+	distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane3, v_plane0, v_plane1, v_plane2, v_plane4, v_plane5, v_plane6, v_plane7);
+	distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane4, v_plane0, v_plane1, v_plane2, v_plane3, v_plane5, v_plane6, v_plane7);
+	distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane5, v_plane0, v_plane1, v_plane2, v_plane3, v_plane4, v_plane6, v_plane7);
+	distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane6, v_plane0, v_plane1, v_plane2, v_plane3, v_plane4, v_plane5, v_plane7);
+	distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane7, v_plane0, v_plane1, v_plane2, v_plane3, v_plane4, v_plane5, v_plane6);
 
-	//if (distanceFromFarClip == 0.0){
-	//	discard;
-	//}
+	if (distanceFromFarClip == 0.0){
+		discard;
+	}
 
-	//float distance = farClip - distanceFromFarClip;
-	//vec3 worldPos = u_cameraPos + (worldRay * distance);
-	//float colourDistance = length(worldPos - v_sphere.xyz);
+	float distance = farClip - distanceFromFarClip;
+	vec3 worldPos = u_cameraPos + (worldRay * distance);
+	float colourDistance = length(worldPos - v_sphere.xyz);
 
-	//gl_FragColor = mix(vec4(1.0, 1.0, 1.0, 1.0), v_colour, colourDistance / v_sphere.w);
-	//gl_FragDepthEXT = distance / farClip;
+	gl_FragColor = mix(vec4(1.0, 1.0, 1.0, 1.0), v_colour, colourDistance / v_sphere.w);
+	gl_FragDepthEXT = distance / farClip;
 
 	//gl_FragColor = vec4(v_plane0.x, v_plane0.y, v_plane0.z, 1.0);
 }
@@ -347,7 +345,13 @@ export default function () {
 		undefined,
 		undefined,
 		true,
-		"LESS"
+		"LESS",
+		undefined,
+		undefined,
+		undefined,
+		undefined,
+		undefined,
+		true
 	);
 	const shader = ShaderWrapperFactory(webGLState, sVertexShader, sFragmentShader, sVertexAttributeNameArray, sUniformNameMap);
 	const model = ModelFactory(webGLState);
