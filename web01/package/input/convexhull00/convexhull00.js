@@ -16,24 +16,13 @@ gl_PointCoord [0...1,0..1]
 |
 V
 +y
-  a--\   P
- /r    ---\
-p---------------eye
-       A
-ar is angle at the eye for the sphere at p
-A == cameraSpaceLength
 
-the sphere radius suggests a pixel radius of (ar / fovhHalf) * pixelWidth
-ar = asin (ops/hyp ) = asin(radius/cameraSpaceLength)
-   ar
-  / |
- /  |
-.___.  _____________ar.
-
+precision highp float;
+precision mediump float;
 
 */
 const sVertexShader = `
-precision mediump float;
+precision highp float;
 
 attribute vec4 a_sphere;
 attribute vec2 a_objectID;
@@ -107,7 +96,11 @@ void main() {
 
 	float sphereRadiusAngleRadians = asin(a_sphere.w / cameraSpaceLength);
 	float fovHHalfRadians = radians(u_cameraFovhFovvFarClip.x * 0.5);
-	float pixelDiameter = width * (sphereRadiusAngleRadians / fovHHalfRadians);
+	float pixelDiameterA = 1.25 * width * (sphereRadiusAngleRadians / fovHHalfRadians);
+
+	float pixelDiameterB = 1.25 * (screenR * width) * sin(sphereRadiusAngleRadians);
+
+	float pixelDiameter = max(pixelDiameterA, pixelDiameterB);
 
 	float radianDiameter = (pixelDiameter / widthHalf) * fovHHalfRadians;
 	v_polarWidthHeight = vec2(radianDiameter, radianDiameter);
@@ -134,7 +127,7 @@ void main() {
 
 const sFragmentShader = `
 #extension GL_EXT_frag_depth : enable
-precision mediump float;
+precision highp float;
 
 uniform vec3 u_cameraAt;
 uniform vec3 u_cameraLeft;
@@ -175,11 +168,11 @@ vec3 makeWorldRay(vec3 in_screenEyeRay){
 		(in_screenEyeRay.z * u_cameraAt));
 }
 
-//intersect world ray with plane0, check point inside all other planes
+//intersect eye ray with plane0, check point inside all other planes
 float planeTest(float distanceFromFarClip, float farClip, vec3 eyePos, vec3 eyeRay, vec4 in_plane0, vec4 in_plane1, vec4 in_plane2, vec4 in_plane3, vec4 in_plane4, vec4 in_plane5, vec4 in_plane6, vec4 in_plane7){
 	float ln = dot(eyeRay, in_plane0.xyz);
-	//if (abs(ln) < 0.0001){
-	if (0.0001 < ln){
+	//if (abs(ln) < 0.0001){ //plane not on edge to eye
+	if (0.0001 < ln){ //front face only
 		return distanceFromFarClip;
 	}
 	float t = (in_plane0.w - dot(eyePos, in_plane0.xyz)) / ln;
@@ -205,28 +198,15 @@ float planeTest(float distanceFromFarClip, float farClip, vec3 eyePos, vec3 eyeR
 	return mix(distanceFromFarClip, testDistanceFromFarClip, inside);
 }
 
-//v_plane0, worldRay, u_cameraPos, farClip
-float planeDebug(vec4 in_plane, vec3 in_eyeRay, vec3 in_eyePos, float in_farClip){
-	float ln = dot(in_eyeRay, in_plane.xyz);
-	if (0.0001 < ln){
-	//if (abs(ln) < 0.0001){
-		return in_farClip;
-	}
-	float t = (in_plane.w - dot(in_eyePos, in_plane.xyz)) / ln;
-	if (t < 0.0){
-		return in_farClip;
-	}
-	return t;
-}
-
 void main() {
 	if (v_keepOrDiscard <= 0.0) {
 		discard;
 	}
-	//vec2 diff = (gl_PointCoord - vec2(.5, .5)) * 2.0;
-	//if (1.0 < dot(diff, diff)) {
-	//	discard;
-	//}
+
+	vec2 diff = (gl_PointCoord - vec2(.5, .5)) * 2.0;
+	if (1.0 < dot(diff, diff)) {
+		discard;
+	}
 
 	vec2 polarCoords = v_polarTopLeft + vec2(gl_PointCoord.x * v_polarWidthHeight.x, (1.0 - gl_PointCoord.y) * v_polarWidthHeight.y);
 	vec3 screenEyeRay = makeScreenEyeRay(polarCoords);
@@ -236,14 +216,6 @@ void main() {
 	float farClip = u_cameraFovhFovvFarClip.z;
 	gl_FragDepthEXT = 0.5;
 	float distanceFromFarClip = 0.0;
-
-	//float distanceToPlane = planeDebug(v_plane0, worldRay, u_cameraPos, farClip);
-	//float distanceToPlane = planeDebug(vec4(0,0,1,0), worldRay, u_cameraPos, farClip);
-	//if (farClip <= distanceToPlane){
-	//	discard;
-	//}
-	//float distance = 1.0 - (distanceToPlane / farClip);
-	//gl_FragColor = vec4(distance, distance, distance, 1.0);
 
 	distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane0, v_plane1, v_plane2, v_plane3, v_plane4, v_plane5, v_plane6, v_plane7);
 	distanceFromFarClip = planeTest(distanceFromFarClip, farClip, u_cameraPos, worldRay, v_plane1, v_plane0, v_plane2, v_plane3, v_plane4, v_plane5, v_plane6, v_plane7);
@@ -270,17 +242,17 @@ void main() {
 `;
 
 const sVertexAttributeNameArray = [
-	"a_sphere",// : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("AAAAAAAAAAAAAAAAP5PNOg=="), "STATIC_DRAW", false),
-	"a_objectID",// : ModelDataStream(in_webGLState, "BYTE", 2, Base64ToUint8Array("AAE="), "STATIC_DRAW", true),
-	"a_colour",// : ModelDataStream(in_webGLState, "BYTE", 3, Base64ToUint8Array("MzOA"), "STATIC_DRAW", true),
-	"a_plane0",// : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("AAAAAAAAAAA/gAAAP4AAAA=="), "STATIC_DRAW", false),
-	"a_plane1",// : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("AAAAAAAAAAC/gAAAP4AAAA=="), "STATIC_DRAW", false),
-	"a_plane2",// : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("P4AAAAAAAAAAAAAAPwAAAA=="), "STATIC_DRAW", false),
-	"a_plane3",// : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("v4AAAAAAAAAAAAAAPwAAAA=="), "STATIC_DRAW", false),
-	"a_plane4",// : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("PwAAAD9ds9cAAAAAPwAAAA=="), "STATIC_DRAW", false),
-	"a_plane5",// : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("PwAAAL9ds9cAAAAAPwAAAA=="), "STATIC_DRAW", false),
-	"a_plane6",// : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("vwAAAD9ds9cAAAAAPwAAAA=="), "STATIC_DRAW", false),
-	"a_plane7"// : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("vwAAAL9ds9cAAAAAPwAAAA=="), "STATIC_DRAW", false)
+	"a_sphere",
+	"a_objectID",
+	"a_colour",
+	"a_plane0",
+	"a_plane1",
+	"a_plane2",
+	"a_plane3",
+	"a_plane4",
+	"a_plane5",
+	"a_plane6",
+	"a_plane7"
 ];
 const sUniformNameMap = {
 	"u_viewportWidthHeightWidthhalfHeighthalf" : ShaderUniformDataFloat4, 
@@ -322,16 +294,22 @@ export default function () {
 		"margin" : "0",
 		"padding" : "0",
 		"display" : "block"
-		}, false, true, undefined, ["EXT_frag_depth"], true);
+		}, false, true, false, ["EXT_frag_depth"], true);
 	const webGLState = componentScene.getWebGLState();
 	const state = {
 		"u_viewportWidthHeightWidthhalfHeighthalf" : Vector4FactoryFloat32(webGLState.getCanvasWidth(), webGLState.getCanvasHeight(), webGLState.getCanvasWidth() / 2.0, webGLState.getCanvasHeight() / 2.0).getRaw(),
 		"u_cameraFovhFovvFarClip" : Vector4FactoryFloat32(210.0, 150.0, 100.0, Math.sqrt((210 * 210) + (150 * 150)) * 0.5).getRaw(),
 
-		"u_cameraPos" : [-1.1833, 0, 0],
-		"u_cameraAt" : [1, 0, 0],
-		"u_cameraLeft" : [0, 1, 0],
-		"u_cameraUp" : [0, 0, 1],
+		// "u_cameraPos" : [-1.1833, 0, 0],
+		// "u_cameraAt" : [1, 0, 0],
+		// "u_cameraLeft" : [0, 1, 0],
+		// "u_cameraUp" : [0, 0, 1],
+
+		"u_cameraPos" : [5.75476598739624, 4.1965227127075195, 3.497739315032959],
+		"u_cameraAt" : [-0.9832300543785095, 0.05298185721039772, -0.17450380325317383],
+		"u_cameraLeft" : [-0.04296869412064552, -0.9972326159477234, -0.06066987290978432],
+		"u_cameraUp" : [-0.17723529040813446, -0.05215424299240112, 0.9827856421470642],
+
 	};
 	const cameraComponent = ComponentCameraFactory(componentScene.getCanvasElement(), state);
 	const resourceManager = ResourceManagerFactory();
