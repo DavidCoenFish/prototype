@@ -16,7 +16,16 @@ export default function () {
 		return;
 	};
 
-	const componentScene = ComponentWebGLSceneFactory(document, sceneUpdateCallback, undefined, false, undefined, undefined, undefined, true);
+	const componentScene = ComponentWebGLSceneFactory(document, sceneUpdateCallback, undefined, false,
+	{
+		"width" : "512px",
+		"height" : "512px",
+		"backgroundColor" : "#FFFFFF",
+		"margin" : "0",
+		"padding" : "0",
+		"display" : "block"
+	},
+	 undefined, undefined, undefined, true);
 	const webGLState = componentScene.getWebGLState();
 
 	const canvasWidth = webGLState.getCanvasWidth();

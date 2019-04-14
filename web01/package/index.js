@@ -28,15 +28,15 @@ if ("unittest" === process.argv[2]){
 	}).then(function(){
 		//return makeProject("test", "capablity");
 	}).then(function(){
-		//return makeProject("test", "triangle");
+		return makeProject("test", "triangle");
 	}).then(function(){
-		//return makeProject("test", "scene");
+		return makeProject("test", "scene");
 	}).then(function(){
-		//return makeProject("celticknot01", "celticknot01");
+		return makeProject("celticknot01", "celticknot01");
 	}).then(function(){
-		//return makeProject("celticknot02", "celticknot02");
+		return makeProject("celticknot02", "celticknot02");
 	}).then(function(){
-		return makeProject("convexhull00", "convexhull00");
+		//return makeProject("convexhull00", "convexhull00");
 	}).done(function(){
 		console.log(new Date().toLocaleTimeString());
 	});

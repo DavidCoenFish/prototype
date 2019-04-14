@@ -23,7 +23,16 @@ void main() {
 const sVertexAttributeNameArray = ["a_position"];
 
 export default function () {
-	const html5CanvasWrapper = factoryAppendBody(document, 512, 512);
+	const html5CanvasWrapper = factoryAppendBody(document, 
+	{
+		"width" : "512px",
+		"height" : "512px",
+		"backgroundColor" : "#FFFFFF",
+		"margin" : "0",
+		"padding" : "0",
+		"display" : "block"
+	}
+	);
 	const webGLState = WebGLStateFactory(html5CanvasWrapper.getElement(), false);
 	webGLState.clear(Colour4FactoryFloat32(1.0,0.0,0.0));
 
