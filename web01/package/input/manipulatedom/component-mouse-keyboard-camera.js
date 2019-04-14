@@ -101,6 +101,10 @@ export default function(in_targetElement, inout_state){
 
 				//console.log(`update:${in_yawDeltaOrUndefined} ${in_pitchDeltaOrUndefined} ${in_rollDeltaOrUndefined}`);
 				//console.log(`m_cameraAt:${m_cameraAt.getX()} ${m_cameraAt.getY()} ${m_cameraAt.getZ()}`);
+				//console.log(`dot:${m_cameraAt.dotProduct(m_cameraUp)} ${m_cameraAt.dotProduct(m_cameraLeft)}`);
+				//console.log(`dot:${m_cameraUp.dotProduct(m_cameraAt)} ${m_cameraAt.dotProduct(m_cameraLeft)}`);
+				//console.log(`dot:${m_cameraLeft.dotProduct(m_cameraAt)} ${m_cameraAt.dotProduct(m_cameraUp)}`);
+				//console.log(`length:${m_cameraAt.length()} ${m_cameraUp.length()} ${m_cameraLeft.length()}`);
 			}
 		}
 

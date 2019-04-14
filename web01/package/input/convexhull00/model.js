@@ -4,6 +4,7 @@ import ModelWrapperFactory from './../webgl/modelwrapper.js';
 import ModelDataStream from './../webgl/modeldatastream.js';
 
 export default function(in_webGLState){
+	console.log(Base64ToFloat32Array("AAAAAAAAAAA/gAAAP4AAAA=="));
 	return ModelWrapperFactory(
 		in_webGLState, "POINTS", 1, {
 			"a_sphere" : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("AAAAAAAAAAAAAAAAP5PNOg=="), "STATIC_DRAW", false),
