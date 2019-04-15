@@ -28,7 +28,7 @@ if ("unittest" === process.argv[2]){
 	}).then(function(){
 		//return makeProject("test", "capablity");
 	}).then(function(){
-		return makeProject("test", "triangle");
+		//return makeProject("test", "triangle");
 	}).then(function(){
 		return makeProject("test", "scene");
 	}).then(function(){

@@ -3,7 +3,6 @@
 
 */
 
-import { factoryFloat32 as Vector4FactoryFloat32 } from './../core/vector4.js';
 import ComponentModelScreenQuadFactory from './component-model-screen-quad.js';
 import MaterialWrapperFactory from './materialwrapper.js';
 import ShaderWrapperFactory from './shaderwrapper.js';
@@ -73,7 +72,6 @@ export default function(in_resourceManager, in_webGLState, in_colourRGBA, in_wid
 		"SRC_ALPHA", //in_sourceBlendEnumNameOrUndefined,
 		"ONE_MINUS_SRC_ALPHA" //in_destinationBlendEnumNameOrUndefined
 		);
-	//const m_widthHeightRadius1Radius2 = Vector4FactoryFloat32(in_width, in_height, in_radius1, in_radius2);
 	const m_state = {
 		"u_colour" : in_colourRGBA.getRaw(),
 		"u_widthHeightRadius1Radius2" : in_widthHeightRadius1Radius2.getRaw()

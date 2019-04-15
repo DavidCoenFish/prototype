@@ -8,7 +8,7 @@ export default function () {
 		return;
 	};
 
-	const componentScene = ComponentWebGLSceneFactory(document, sceneUpdateCallback, undefined, false, 
+	const componentScene = ComponentWebGLSceneFactory(document, true, sceneUpdateCallback, undefined, 
 	{
 		"width" : "512px",
 		"height" : "512px",
@@ -17,7 +17,7 @@ export default function () {
 		"padding" : "0",
 		"display" : "block"
 	},
-	undefined, undefined, undefined, true);
+	undefined, undefined, undefined, undefined, true);
 	const webGLState = componentScene.getWebGLState();
 
 	const canvasWidth = webGLState.getCanvasWidth();

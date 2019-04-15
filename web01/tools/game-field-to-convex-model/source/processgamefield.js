@@ -139,8 +139,6 @@ const makeSphereToFitPointColud = function(in_pointCloud){
 	const count = in_pointCloud.length;
 	var pointA = undefined;
 	var pointB = undefined;
-	var pointC = undefined;
-	var pointD = undefined;
 	var bestDistance;
 	var bestIndexA;
 	var bestIndexB;
@@ -190,6 +188,11 @@ const appendArrayColourToUint8 = function(in_dest, in_src){
 	}
 }
 
+const makePlaneRelative = function(in_offset, in_plane){
+	var d = in_plane[3] - dotProduct(in_offset, in_plane);
+	return [in_plane[0], in_plane[1], in_plane[2], d];
+}
+
 const appendNodeToModel = function(inout_model, in_node){
 	const pointCloud = convexHullToPointCloud(in_node.convexhull);
 	const sphere = makeSphereToFitPointColud(pointCloud);
@@ -197,14 +200,14 @@ const appendNodeToModel = function(inout_model, in_node){
 	appendArray(inout_model.modelSphereData, sphere);
 	appendArrayUint16ToUint8(inout_model.objectID, in_node.objectid);
 	appendArrayColourToUint8(inout_model.colour, in_node.colour);
-	appendArray(inout_model.modelPlane0, in_node.convexhull[0]);
-	appendArray(inout_model.modelPlane1, in_node.convexhull[1]);
-	appendArray(inout_model.modelPlane2, in_node.convexhull[2]);
-	appendArray(inout_model.modelPlane3, in_node.convexhull[3]);
-	appendArray(inout_model.modelPlane4, in_node.convexhull[4]);
-	appendArray(inout_model.modelPlane5, in_node.convexhull[5]);
-	appendArray(inout_model.modelPlane6, in_node.convexhull[6]);
-	appendArray(inout_model.modelPlane7, in_node.convexhull[7]);
+	appendArray(inout_model.modelPlane0, makePlaneRelative(sphere, in_node.convexhull[0]));
+	appendArray(inout_model.modelPlane1, makePlaneRelative(sphere, in_node.convexhull[1]));
+	appendArray(inout_model.modelPlane2, makePlaneRelative(sphere, in_node.convexhull[2]));
+	appendArray(inout_model.modelPlane3, makePlaneRelative(sphere, in_node.convexhull[3]));
+	appendArray(inout_model.modelPlane4, makePlaneRelative(sphere, in_node.convexhull[4]));
+	appendArray(inout_model.modelPlane5, makePlaneRelative(sphere, in_node.convexhull[5]));
+	appendArray(inout_model.modelPlane6, makePlaneRelative(sphere, in_node.convexhull[6]));
+	appendArray(inout_model.modelPlane7, makePlaneRelative(sphere, in_node.convexhull[7]));
 
 	return;
 }

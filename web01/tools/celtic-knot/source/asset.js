@@ -10,7 +10,7 @@ const TGA = require("tga");
 
 const saveTexture = function(in_outputFilePath, in_width, in_height, in_base64TextureData){
 	const content = `
-import { base64ToByteArray } from './../core/base64.js';
+import { Base64ToUint8Array } from './../core/base64.js';
 import { factoryByteRGB } from './../webgl/texturewrapper.js';
 
 export default function(in_webGLState){
@@ -18,7 +18,7 @@ export default function(in_webGLState){
 		in_webGLState, 
 		${in_width}, 
 		${in_height}, 
-		base64ToByteArray("${in_base64TextureData}")
+		Base64ToUint8Array("${in_base64TextureData}")
 	);
 }`
 	return FileSystemExtra.writeFile(in_outputFilePath, content);
