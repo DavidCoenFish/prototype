@@ -43,6 +43,8 @@ const run = function(in_type, in_outputFilePath){
 				return Basic.test();
 			} else if ("basic" === in_type){
 				return Basic.run();
+			} else if ("basic5" === in_type){
+				return Basic.run5();
 			}
 			throw new Error(`unknown type ${in_type}`);
 		}).then(function(in_input) {	

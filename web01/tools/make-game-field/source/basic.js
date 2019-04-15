@@ -88,23 +88,51 @@ const test = function(){
 	return result;
 }
 
+const addNodeConvexHull = function(trace, out_nodearray, indexX, indexY, width, height, radius){
+	var nodeOrigin = makeNodeOrigin(radius, indexX, indexY, width, height);
+	//console.log("index:" + indexX + ", " + indexY);
+	//console.log("nodeOrigin:" + nodeOrigin.x + ", " + nodeOrigin.y);
+	var height = makeNodeHeight(radius, indexX, indexY, width, height);
+	out_nodearray.push(makeNode(nodeOrigin, trace, radius, -1, height));
+	return trace + 1;
+}
+
+const run5 = function(){
+	const result = {
+		"background" : [0.5, 0.5, 0.5],
+		"nodearray" : []
+	};
+
+	const radius = 1.0;
+	const width = 16;
+	const height = 16;
+
+	var trace = 1;
+	trace = addNodeConvexHull(trace, result.nodearray, 9, 8, width, height, radius);
+	trace = addNodeConvexHull(trace, result.nodearray, 10, 8, width, height, radius);
+	trace = addNodeConvexHull(trace, result.nodearray, 8, 9, width, height, radius);
+	trace = addNodeConvexHull(trace, result.nodearray, 9, 9, width, height, radius);
+	trace = addNodeConvexHull(trace, result.nodearray, 10, 9, width, height, radius);
+	trace = addNodeConvexHull(trace, result.nodearray, 9, 10, width, height, radius);
+	trace = addNodeConvexHull(trace, result.nodearray, 10, 10, width, height, radius);
+
+	return result;
+}
+
 const run = function(){
 	const result = {
 		"background" : [0.5, 0.5, 0.5],
 		"nodearray" : []
 	};
 
-	var radius = 1.0;
-	var width = 16;
-	var height = 16;
+	const radius = 1.0;
+	const width = 16;
+	const height = 16;
 
 	var trace = 1;
 	for (var indexY = 0; indexY < 16; ++indexY){
 		for (var indexX = 0; indexX < 16; ++indexX){
-			var nodeOrigin = makeNodeOrigin(radius, indexX, indexY, width, height);
-			var height = makeNodeHeight(radius, indexX, indexY, width, height);
-			result.nodearray.push(makeNode(nodeOrigin, trace, radius, -1, height));
-			++trace;
+			trace = addNodeConvexHull(trace, result.nodearray, indexX, indexY, width, height, radius);
 		}
 	}
 
@@ -147,6 +175,7 @@ const unittest = function(){
 
 module.exports = {
 	"run" : run,
+	"run5" : run5,
 	"unittest" : unittest,
 	"test" : test
 }

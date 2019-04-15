@@ -52,5 +52,21 @@
 			"timeout": 100000
 			//"console": "externalTerminal"
 		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "basic5",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"basic5"
+			],
+			"port": 5858,
+			"timeout": 100000
+			//"console": "externalTerminal"
+		},
 	]
 }
