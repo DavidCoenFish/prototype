@@ -216,7 +216,7 @@ void main() {
 	gl_FragDepthEXT = 0.5;
 	float distanceFromFarClip = 0.0;
 
-	float eyePos = u_cameraPos - v_sphere.xyz;
+	vec3 eyePos = u_cameraPos - v_sphere.xyz;
 
 	distanceFromFarClip = planeTest(distanceFromFarClip, farClip, eyePos, worldRay, v_plane0, v_plane1, v_plane2, v_plane3, v_plane4, v_plane5, v_plane6, v_plane7);
 	distanceFromFarClip = planeTest(distanceFromFarClip, farClip, eyePos, worldRay, v_plane1, v_plane0, v_plane2, v_plane3, v_plane4, v_plane5, v_plane6, v_plane7);
