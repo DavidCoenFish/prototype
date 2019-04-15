@@ -27,40 +27,27 @@ varying vec2 v_uv;
 uniform sampler2D u_sampler;
 uniform vec4 u_viewport;
 void main() {
-	//1 4 6
-	//4 16 24
-	//6 24 36
 	vec4 colour = vec4(0.0, 0.0, 0.0, 0.0);
 	vec2 duv = vec2(1.0 / u_viewport.z, 1.0 / u_viewport.w);
-	colour += (1.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2(-2.0, -2.0) * duv));
-	colour += (4.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2(-1.0, -2.0) * duv));
-	colour += (6.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2( 0.0, -2.0) * duv));
-	colour += (4.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2( 1.0, -2.0) * duv));
-	colour += (1.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2( 2.0, -2.0) * duv));
+	colour += texture2D(u_sampler, v_uv);
 
-	colour += (4.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2(-2.0, -1.0) * duv));
-	colour += (16.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2(-1.0, -1.0) * duv));
-	colour += (24.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2( 0.0, -1.0) * duv));
-	colour += (16.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2( 1.0, -1.0) * duv));
-	colour += (4.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2( 2.0, -1.0) * duv));
+	colour += texture2D(u_sampler, v_uv + (vec2( 0.5,  1.5) * duv));
+	colour += texture2D(u_sampler, v_uv + (vec2( 0.5,  3.5) * duv));
+	colour += texture2D(u_sampler, v_uv + (vec2( 2.5,  1.5) * duv));
 
-	colour += (6.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2(-2.0,  0.0) * duv));
-	colour += (24.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2(-1.0,  0.0) * duv));
-	colour += (36.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2( 0.0,  0.0) * duv));
-	colour += (24.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2( 1.0,  0.0) * duv));
-	colour += (6.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2( 2.0,  0.0) * duv));
+	colour += texture2D(u_sampler, v_uv + (vec2(-1.5,  0.5) * duv));
+	colour += texture2D(u_sampler, v_uv + (vec2(-3.5,  0.5) * duv));
+	colour += texture2D(u_sampler, v_uv + (vec2(-1.5,  2.5) * duv));
 
-	colour += (4.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2(-2.0,  1.0) * duv));
-	colour += (16.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2(-1.0,  1.0) * duv));
-	colour += (24.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2( 0.0,  1.0) * duv));
-	colour += (16.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2( 1.0,  1.0) * duv));
-	colour += (4.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2( 2.0,  1.0) * duv));
+	colour += texture2D(u_sampler, v_uv + (vec2(-0.5, -1.5) * duv));
+	colour += texture2D(u_sampler, v_uv + (vec2(-0.5, -3.5) * duv));
+	colour += texture2D(u_sampler, v_uv + (vec2(-2.5, -1.5) * duv));
 
-	colour += (1.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2(-2.0,  2.0) * duv));
-	colour += (4.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2(-1.0,  2.0) * duv));
-	colour += (6.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2( 0.0,  2.0) * duv));
-	colour += (4.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2( 1.0,  2.0) * duv));
-	colour += (1.0 / 256.0) * texture2D(u_sampler, v_uv + (vec2( 2.0,  2.0) * duv));
+	colour += texture2D(u_sampler, v_uv + (vec2( 1.5, -0.5) * duv));
+	colour += texture2D(u_sampler, v_uv + (vec2( 3.5, -0.5) * duv));
+	colour += texture2D(u_sampler, v_uv + (vec2( 1.5, -2.5) * duv));
+
+	colour /= 13.0;
 
 	gl_FragColor = colour;
 }

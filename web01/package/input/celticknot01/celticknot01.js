@@ -17,7 +17,7 @@ export default function () {
 		"padding" : "0",
 		"display" : "block"
 	},
-	undefined, undefined, undefined, undefined, true);
+	false, undefined, undefined, undefined, true);
 	const webGLState = componentScene.getWebGLState();
 
 	const canvasWidth = webGLState.getCanvasWidth();

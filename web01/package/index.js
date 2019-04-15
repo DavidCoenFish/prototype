@@ -32,7 +32,7 @@ if ("unittest" === process.argv[2]){
 	}).then(function(){
 		return makeProject("test", "scene");
 	}).then(function(){
-		return makeProject("celticknot01", "celticknot01");
+		//return makeProject("celticknot01", "celticknot01");
 	}).then(function(){
 		return makeProject("celticknot02", "celticknot02");
 	}).then(function(){

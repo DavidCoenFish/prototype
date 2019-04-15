@@ -59,6 +59,9 @@ export default function(in_resourceManager, in_webGLState, in_vec2Low, in_vec2Hi
 		"setTexture" : function(in_texture){
 			m_textureArray[0] = in_texture;
 		},
+		"getMaterial" : function(){
+			return m_material;
+		},
 		"draw" : function(){
 			in_webGLState.applyShader(m_shader, m_state);
 			in_webGLState.applyMaterial(m_material);

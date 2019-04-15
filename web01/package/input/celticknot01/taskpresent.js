@@ -11,12 +11,12 @@ export default function (in_resourceManager, in_webGLState, in_width, in_height)
 		Vector2FactoryFloat32(-1.0, -1.0), 
 		Vector2FactoryFloat32(1.0, 1.0));
 	const m_vignette = ComponentVignetteFactory(in_resourceManager, in_webGLState, Colour4FactoryFloat32(0.0, 0.0, 0.0, 0.25), Vector4FactoryFloat32(in_width, in_height, 128, 128));
-	const m_background = Colour4FactoryFloat32(1.0, 1.0, 1.0, 1.0);
+	//const m_background = Colour4FactoryFloat32(0.0, 0.0, 0.0, 1.0); //need some way of getting alpha into 
 	const that = Object.create({
 		"run" : function(in_state){
 			
 			in_webGLState.applyRenderTarget();
-			in_webGLState.clear(m_background);
+			//in_webGLState.clear(m_background);
 			m_component.setTexture(in_state["texture"]);
 			m_component.draw();
 			m_vignette.draw();
