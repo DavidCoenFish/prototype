@@ -13,7 +13,7 @@ attribute vec2 a_uv;
 varying vec2 v_uv;
 
 void main() {
-	gl_Position = vec4(a_position, 0.0, 1.0);
+	gl_Position = vec4(a_position, 1.0, 1.0);
 	v_uv = a_uv;
 }
 `;
@@ -164,7 +164,7 @@ void main() {
 
 	gl_FragColor = vec4(0.0, 0.0, 0.0, data.x);
 #ifdef GL_EXT_frag_depth
-	gl_FragDepthEXT = 1.0 - maxDistance.y;
+	gl_FragDepthEXT = 1.0 - data.y;
 #endif
 }
 `;

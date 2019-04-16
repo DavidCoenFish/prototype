@@ -133,10 +133,10 @@ export default function(
 			setEnumEnabled(in_enabled, enableDepthTestEnum);
 		}
 
-		if (false === stateValueCmp("depthFunc", in_depthFuncEnumName)){
+		//if (false === stateValueCmp("depthFunc", in_depthFuncEnumName)){
 			const depthFuncEnum = m_webGLContextWrapper.getEnum(in_depthFuncEnumName);
 			m_webGLContextWrapper.callMethod("depthFunc", depthFuncEnum);
-		}
+		//}
 		return;
 	}
 
@@ -185,6 +185,7 @@ export default function(
 
 			if (undefined !== in_colourOrUndefined){
 				clearFlag |= m_webGLContextWrapper.getEnum("COLOR_BUFFER_BIT");
+				setColorMask(true, true, true, true);
 				if (false === stateValueCmpColour4("clearColor", in_colourOrUndefined)){
 					m_webGLContextWrapper.callMethod(
 						"clearColor", 
@@ -198,6 +199,7 @@ export default function(
 
 			if (undefined !== in_depthOrUndefined){
 				clearFlag |= m_webGLContextWrapper.getEnum("DEPTH_BUFFER_BIT");
+				setDepthMask(true);
 				if (false === stateValueCmp("clearDepth", in_depthOrUndefined)){
 					m_webGLContextWrapper.callMethod("clearDepth", in_depthOrUndefined);
 				}
@@ -205,6 +207,7 @@ export default function(
 
 			if (undefined !== in_stencilOrUndefined){
 				clearFlag |= m_webGLContextWrapper.getEnum("STENCIL_BUFFER_BIT");
+				setStencilMask(true);
 				if (false === stateValueCmp("clearStencil", in_stencilOrUndefined)){
 					m_webGLContextWrapper.callMethod("clearStencil", in_stencilOrUndefined);
 				}

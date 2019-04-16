@@ -32,13 +32,13 @@ if ("unittest" === process.argv[2]){
 	}).then(function(){
 		//return makeProject("test", "scene");
 	}).then(function(){
-		return makeProject("test", "worldgrid");
+		//return makeProject("test", "worldgrid");
 	}).then(function(){
 		//return makeProject("celticknot01", "celticknot01");
 	}).then(function(){
 		//return makeProject("celticknot02", "celticknot02");
 	}).then(function(){
-		//return makeProject("convexhull00", "convexhull00");
+		return makeProject("convexhull00", "convexhull00");
 	}).done(function(){
 		console.log(new Date().toLocaleTimeString());
 	});

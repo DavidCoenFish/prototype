@@ -7,7 +7,7 @@ import ComponentCameraFactory from './../manipulatedom/component-mouse-keyboard-
 import ShaderWrapperFactory from "./../webgl/shaderwrapper.js";
 import {sFloat3 as ShaderUniformDataFloat3, sFloat4 as ShaderUniformDataFloat4 } from "./../webgl/shaderuniformdata.js";
 import MaterialWrapperFactory from "./../webgl/materialwrapper.js";
-import WorldGridFactory from './../webgl/component-world-grid.js';
+import WorldGridFactory from './../webgl/component-world-grid2.js';
 /*
 gl_PointSize is diameter
 gl_PointCoord [0...1,0..1]
@@ -268,13 +268,17 @@ const sUniformNameMap = {
 export default function () {
 	const backgroundColour = Colour4FactoryFloat32(0.5,0.5,0.5,1.0);
 	const sceneUpdateCallback = function(in_timeDeltaActual, in_timeDeltaAjusted){
+
+
 		webGLState.clear(backgroundColour, 1.0);
 		cameraComponent.update(in_timeDeltaActual);
-		grid.draw();
 
 		webGLState.applyShader(shader, state);
 		webGLState.applyMaterial(material);
 		webGLState.drawModel(model);
+
+		grid.draw();
+
 		return;
 	};
 
@@ -314,7 +318,7 @@ export default function () {
 	};
 	const cameraComponent = ComponentCameraFactory(componentScene.getCanvasElement(), state);
 	const resourceManager = ResourceManagerFactory();
-	const grid = WorldGridFactory(resourceManager, webGLState, state, 4, 16);
+	const grid = WorldGridFactory(resourceManager, webGLState, state); //, 4, 16);
 
 	const material = MaterialWrapperFactory(
 		undefined,
