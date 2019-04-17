@@ -1,6 +1,10 @@
 todo:
 	gameplay field
-		gamefield check math (gaps)
+			render target component
+			pallet
+			screen space camera rays to texture (generate once and reuse)
+			object rollover
+			object highlight
 		selection and rollover
 		depth buffer screen space shadow
 		movement

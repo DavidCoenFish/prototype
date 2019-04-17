@@ -87,6 +87,11 @@ export default function(
 	const lostCallback = function(in_webGLContextWrapper){
 		in_webGLContextWrapper.callMethod("deleteFramebuffer", m_frameBufferObject);
 		m_frameBufferObject = undefined;
+
+		for (var index = 0; index < in_renderTargetDataArray.length; ++index) { 
+			in_renderTargetDataArray[index].destroy();
+		}
+
 		return;
 	}
 

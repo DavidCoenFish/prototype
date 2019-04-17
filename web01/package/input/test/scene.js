@@ -35,14 +35,14 @@ export default function () {
 		"padding" : "0",
 		"display" : "block"
 	},
-	 undefined, undefined, undefined, true);
+	 false, undefined, undefined, true);
 	const webGLState = componentScene.getWebGLState();
 
 	const canvasWidth = webGLState.getCanvasWidth();
 	const canvasHeight = webGLState.getCanvasHeight();
 	const state = {
 		"u_viewportWidthHeightWidthhalfHeighthalf" : Vector4FactoryFloat32(canvasWidth, canvasHeight, canvasWidth / 2.0, canvasHeight / 2.0).getRaw(),
-		"u_cameraFovhFovvFar" : Vector3FactoryFloat32(90.0, 90.0, 100.0).getRaw(),
+		"u_cameraFovhFovvFarClip" : Vector4FactoryFloat32(90.0, 90.0, 100.0, 128.0).getRaw(),
 	};
 	const cameraComponent = ComponentCameraFactory(componentScene.getCanvasElement(), state);
 	const resourceManager = ResourceManagerFactory();
