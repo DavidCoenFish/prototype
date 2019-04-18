@@ -2,15 +2,17 @@ import { factory as ButtonFactory } from './button.js';
 
 export default function(in_document, in_elementToFullScreen, in_elementToAttachButton, in_buttonStyle){
 	const button = ButtonFactory(in_document, in_elementToAttachButton, "full", function(){
-		if (null !== in_document.fullScreenElement){
+		const isFullScreen = (null !== in_document.fullscreenElement); // || (undefined !== in_document.fullScreenElement));
+		if (false === isFullScreen){
 			openFullscreen();
 		} else {
 			closeFullscreen();
 		}
 	}, in_buttonStyle);
 
-	/* View in fullscreen, document.fullScreenElement is non-null when full screen */
+	/* View in fullscreen, document.fullscreenElement is non-null when full screen */
 	function openFullscreen() {
+		//console.log("openFullscreen");
 		if (in_elementToFullScreen.requestFullscreen) {
 			in_elementToFullScreen.requestFullscreen();
 		} else if (in_elementToFullScreen.mozRequestFullScreen) { /* Firefox */
@@ -25,6 +27,7 @@ export default function(in_document, in_elementToFullScreen, in_elementToAttachB
 
 	/* Close fullscreen */
 	function closeFullscreen() {
+		//console.log("closeFullscreen");
 		if (in_document.exitFullscreen) {
 			in_document.exitFullscreen();
 		} else if (in_document.mozCancelFullScreen) { /* Firefox */
