@@ -28,9 +28,11 @@ if ("unittest" === process.argv[2]){
 	}).then(function(){
 		//return makeProject("test", "capablity");
 	}).then(function(){
-		//return makeProject("test", "triangle");
+		//return makeProject("test", "pallet");
 	}).then(function(){
-		return makeProject("test", "scene");
+		//return makeProject("test", "scene");
+	}).then(function(){
+		//return makeProject("test", "triangle");
 	}).then(function(){
 		//return makeProject("test", "worldgrid");
 	}).then(function(){
@@ -39,6 +41,8 @@ if ("unittest" === process.argv[2]){
 		//return makeProject("celticknot02", "celticknot02");
 	}).then(function(){
 		//return makeProject("convexhull00", "convexhull00");
+	}).then(function(){
+		return makeProject("convexhull01", "convexhull01");
 	}).done(function(){
 		console.log(new Date().toLocaleTimeString());
 	});

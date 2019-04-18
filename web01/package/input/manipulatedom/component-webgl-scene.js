@@ -3,7 +3,7 @@ import { factoryAppendBody as componentFpsFactory } from './component-fps.js'
 import { factoryAppendBody as brAppendBody } from './br.js'
 import { factoryAppendBody as buttonAppendBody } from './button.js'
 import { autoSnapShot } from './autodownload.js'
-import webGLStateFactory from './../webgl/webglstate.js'
+import componentWebGLSceneSimple from './component-webgl-scene-simple.js'
 
 
 export default function(
@@ -23,20 +23,23 @@ export default function(
 	in_saveEachFrameFileNameOrUndefined
 ){
 	const m_canvaseElementWrapper = componentCanvasFactory(in_document, in_canvasStyleDictionaryOrUndefined);
-	const m_webGLState = webGLStateFactory(
-		m_canvaseElementWrapper.getElement(), 
+
+	const m_componentSimple = componentWebGLSceneSimple(
+		animationFrameCallback,
 		in_alphaOrUndefined, 
 		in_depthOrUndefined, 
 		in_antialiasOrUndefined, 
 		in_extentionsOrUndefined,
 		in_preserveDrawingBufferOrUndefined
 		);
+
 	var m_stepMode = (undefined !== in_stepModeOrUndefined) ? in_stepModeOrUndefined : false;
 
 	var m_paused = (true === m_stepMode);
 	var m_prevTimeStamp = undefined;
 	var m_frameIndex = 0;
 	var m_fpsElement = undefined;
+	var m_continue = true;
 
 	const animationFrameCallback = function(in_timestamp){
 		if (undefined != m_fpsElement){
@@ -64,7 +67,7 @@ export default function(
 		}
 
 		if (undefined !== in_callbackUpdateOrUndefined){
-			in_callbackUpdateOrUndefined(timeDeltaActual, timeDeltaAjusted);
+			m_continue &= in_callbackUpdateOrUndefined(timeDeltaActual, timeDeltaAjusted);
 		}
 
 		if (undefined !== in_saveEachFrameFileNameOrUndefined){
@@ -74,26 +77,23 @@ export default function(
 		if (undefined !== in_frameCountOrUndefined){
 			m_frameIndex += 1;
 			if (in_frameCountOrUndefined <= m_frameIndex){
-				if (undefined !== in_callbackStop){
-					in_callbackStop();
+				if (undefined !== in_callbackStopOrUndefined){
+					in_callbackStopOrUndefined();
 				}
-				return;
+				return false;
 			}
 		}
 
-		m_requestId = requestAnimationFrame(animationFrameCallback);
-		return;
+		return m_continue;
 	}
 
-	var m_requestId = requestAnimationFrame(animationFrameCallback);
-
 	const stop = function(){
-		cancelAnimationFrame(m_requestId);
-		m_requestId = undefined;
 		if (undefined !== in_callbackStopOrUndefined){
 			in_callbackStopOrUndefined();
 		}
-		m_webGLState.destroy();
+		m_componentSimple.destroy();
+		m_continue = false;
+		return;
 	}
 
 	if (true == in_addButtons) {
@@ -124,7 +124,7 @@ export default function(
 			return m_canvaseElementWrapper.getElement();
 		},
 		"getWebGLState" : function(){
-			return m_webGLState;
+			return m_componentSimple.getWebGLState();
 		},
 		"stop" : function(){
 			stop();

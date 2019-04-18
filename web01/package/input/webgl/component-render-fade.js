@@ -29,7 +29,7 @@ const sUniformNameMap = {
 };
 
 const shaderFactory = function(in_webGLState){
-	return ShaderWrapper.factory(
+	return ShaderWrapperFactory(
 		in_webGLState, 
 		sVertexShader, 
 		sFragmentShader, 

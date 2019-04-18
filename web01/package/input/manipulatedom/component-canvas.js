@@ -1,18 +1,19 @@
+import { applyStyle } from './style.js';
+
 export const factory = function(in_document, in_canvasStyleDictionaryOrUndefined){
 	var m_element = in_document.createElement("CANVAS");
 
-	if (undefined !== in_canvasStyleDictionaryOrUndefined){
-		for (var key in in_canvasStyleDictionaryOrUndefined) {
-			if (in_canvasStyleDictionaryOrUndefined.hasOwnProperty(key)) {
-				m_element.style[key] = in_canvasStyleDictionaryOrUndefined[key];
-			}
-		}
-	}
+	applyStyle(m_element, in_canvasStyleDictionaryOrUndefined);
 
 	//public methods ==========================
 	const that = Object.create({
 		"getElement" : function(){
 			return m_element;
+		},
+		"onResize" : function(){
+			m_element.width = m_element.offsetWidth;
+			m_element.height = m_element.offsetHeight;
+			return;
 		}
 	});
 
@@ -23,7 +24,6 @@ export const factoryAppendBody = function(in_document, in_canvasStyleDictionaryO
 	var result = factory(in_document, in_canvasStyleDictionaryOrUndefined);
 	var element = result.getElement();
 	in_document.body.appendChild(element);
-	element.width = element.offsetWidth;
-	element.height = element.offsetHeight;
+	result.onResize();
 	return result;
 }
