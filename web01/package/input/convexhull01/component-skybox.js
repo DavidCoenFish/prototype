@@ -63,12 +63,9 @@ void main() {
 
 	float angleSunViewDegrees = degrees(acos(dot(viewNorm, sunNorm)));
 
-	float angleViewZenithDegrees = degrees(acos(viewNorm.z));
-	float angleSunZenithDegrees = 90.0 - u_sunAzimuthAltitude.y;
-
-	vec3 skyDomeColor = calcSkyDomeColor(angleSunViewDegrees);
+	vec3 skyDomeColor = calcSkyDomeColor(angleSunViewDegrees) + ((1.0 - viewNorm.z) * 0.25);
 	float fog = (1.0 - abs(viewNorm.z));
-	fog = pow(fog, u_skyTurbitity);
+	fog = max(0.0, min(1.0, pow(fog, u_skyTurbitity)));
 	vec3 rgb = mix((u_groundTint - (viewNorm.z * 0.5)), skyDomeColor, step(0.0, viewNorm.z));
 	rgb = mix(rgb, u_fogTint, fog);
 	gl_FragColor = vec4(rgb, 1.0);
@@ -124,9 +121,9 @@ export default function(in_resourceManager, in_webGLState, in_state, in_texture)
 	const m_sunAzimuthAltitude = Vector2FactoryFloat32(-90.0, 45.0);
 	const m_sunTint = Vector3FactoryFloat32(255.0/255.0, 245.0/255.0, 235.0/255.0);
 	const m_sunRange = Vector2FactoryFloat32(1.0, 5.0); 
-	const m_skyTint = Vector3FactoryFloat32(10.0/255.0, 128.0/255.0, 255.0/255.0);
+	const m_skyTint = Vector3FactoryFloat32(10.0/255.0, 10.0/255.0, 255.0/255.0);
 	const m_groundTint = Vector3FactoryFloat32(32.0/255.0, 16.0/255.0, 2.0/255.0);
-	const m_fogTint = Vector3FactoryFloat32(232.0/255.0, 232.0/255.0, 232.0/255.0);
+	const m_fogTint = Vector3FactoryFloat32(200.0/255.0, 200.0/255.0, 200.0/255.0);
 	const m_skySpread = -0.5; //-0.9;
 	const m_skyTurbitity = 10.0;
 

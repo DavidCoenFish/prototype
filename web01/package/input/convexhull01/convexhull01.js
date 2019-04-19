@@ -53,7 +53,8 @@ export default function () {
 
 	var m_scene = ComponentWebGLSceneSimpleFactory(callback, m_canvasElement, false, false, false, [
 		"OES_texture_float",
-		"EXT_frag_depth"
+		"EXT_frag_depth",
+		"WEBGL_depth_texture"
 	], true );
 	var m_webGLState = m_scene.getWebGLState();
 

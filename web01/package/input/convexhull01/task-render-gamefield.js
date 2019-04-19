@@ -1,5 +1,7 @@
 import ComponentCameraRayFactory from './component-camera-ray.js';
 import ComponentSkyBox from './component-skybox.js';
+import ComponentDeferedrenderGamefield from './component-deferedrender-gamefield.js';
+
 import ComponentScreenTextureArrayFactory from './../webgl/component-screen-texture-array.js';
 import ResourceManagerFactory from './../core/resourcemanager.js';
 import {fromDegrees} from './../core/radians.js';
@@ -16,7 +18,6 @@ export default function(in_currentTaskFunction, in_topLevelElement, in_webGLStat
 	const m_viewport = Vector2FactoryFloat32(m_canvasWidth, m_canvasHeight);
 	const m_fovhradian = fromDegrees(210.0);
 	const m_componentCameraRay = ComponentCameraRayFactory(m_resourceManager, in_webGLState, m_fovhradian, m_canvasWidth, m_canvasHeight); 
-	const m_componentScreenTextureArray = ComponentScreenTextureArrayFactory(m_resourceManager, in_webGLState, [m_componentCameraRay.getTexture()], 4);
 	const m_background = Colour4FactoryFloat32(0.5, 0.5, 0.5, 1.0);
 	const m_state = {
 		"u_sampler0" : 0,
@@ -25,8 +26,15 @@ export default function(in_currentTaskFunction, in_topLevelElement, in_webGLStat
 		"u_cameraFar" : 100.0
 	};
 	const m_componentCamera = ComponentCameraFactory( in_topLevelElement, m_state );
-	const m_componentSkyBox = ComponentSkyBox(m_resourceManager, in_webGLState, m_state, [m_componentCameraRay.getTexture()]);
-	const m_worldGrid = ComponentWorldGridFactory(m_resourceManager, in_webGLState, m_state, [m_componentCameraRay.getTexture()]);
+	const m_componentSkyBox = ComponentSkyBox(m_resourceManager, in_webGLState, m_state, m_componentCameraRay.getTexture());
+	const m_componentDeferedrenderGamefield = ComponentDeferedrenderGamefield(m_resourceManager, in_webGLState, m_canvasWidth, m_canvasHeight, m_state, m_componentCameraRay.getTexture());
+	const m_worldGrid = ComponentWorldGridFactory(m_resourceManager, in_webGLState, m_state, m_componentCameraRay.getTexture());
+
+	const m_componentScreenTextureArray = ComponentScreenTextureArrayFactory(m_resourceManager, in_webGLState, [
+		m_componentCameraRay.getTexture(),
+		m_componentDeferedrenderGamefield.getTextureAttachment0(),
+		m_componentDeferedrenderGamefield.getTextureDepth()
+		], 4);
 	var m_keepGoing = true;
 
 	return function(in_currentTaskFunction, in_topLevelElement, in_webGLState, in_timeDelta){
@@ -44,18 +52,21 @@ export default function(in_currentTaskFunction, in_topLevelElement, in_webGLStat
 		m_viewport.setY(m_canvasHeight);
 
 		m_componentCameraRay.update(m_canvasWidth, m_canvasHeight);
-
-		m_componentScreenTextureArray.setTexture(0, m_componentCameraRay.getTexture());
-		m_componentSkyBox.setTexture(m_componentCameraRay.getTexture());
-		m_worldGrid.setTexture(m_componentCameraRay.getTexture());
-
 		m_componentCamera.update(in_timeDelta);
 
-		//debug draw texture array
+		m_componentSkyBox.setTexture(m_componentCameraRay.getTexture());
+		m_worldGrid.setTexture(m_componentCameraRay.getTexture());
+		m_componentDeferedrenderGamefield.setTexture(m_componentCameraRay.getTexture());
+		m_componentDeferedrenderGamefield.update(m_canvasWidth, m_canvasHeight);
+
 		in_webGLState.applyRenderTarget();
-		//in_webGLState.clear(m_background);
 		m_componentSkyBox.draw();
 		m_worldGrid.draw();
+
+		//debug draw texture array
+		m_componentScreenTextureArray.setTexture(0, m_componentCameraRay.getTexture());
+		m_componentScreenTextureArray.setTexture(1, m_componentDeferedrenderGamefield.getTextureAttachment0());
+		m_componentScreenTextureArray.setTexture(2, m_componentDeferedrenderGamefield.getTextureDepth());
 		m_componentScreenTextureArray.draw();
 
 		return in_currentTaskFunction;
