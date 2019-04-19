@@ -42,7 +42,10 @@ export default function () {
 		return true;
 	}
 
-	var m_scene = ComponentWebGLSceneSimpleFactory(callback, m_canvasElement, false, false, false, [], true );
+	var m_scene = ComponentWebGLSceneSimpleFactory(callback, m_canvasElement, false, false, false, [
+		"OES_texture_float",
+		"EXT_frag_depth"
+	], true );
 	var m_webGLState = m_scene.getWebGLState();
 
 	window.addEventListener("resize", function() {

@@ -100,6 +100,7 @@ export default function(in_targetElement, inout_state){
 				m_cameraLeft.set(localLeft.getX(), localLeft.getY(), localLeft.getZ());
 
 				//console.log(`update:${in_yawDeltaOrUndefined} ${in_pitchDeltaOrUndefined} ${in_rollDeltaOrUndefined}`);
+				//console.log(`m_cameraPos:${m_cameraPos.getX()} ${m_cameraPos.getY()} ${m_cameraPos.getZ()}`);
 				//console.log(`m_cameraAt:${m_cameraAt.getX()} ${m_cameraAt.getY()} ${m_cameraAt.getZ()}`);
 				//console.log(`dot:${m_cameraAt.dotProduct(m_cameraUp)} ${m_cameraAt.dotProduct(m_cameraLeft)}`);
 				//console.log(`dot:${m_cameraUp.dotProduct(m_cameraAt)} ${m_cameraAt.dotProduct(m_cameraLeft)}`);

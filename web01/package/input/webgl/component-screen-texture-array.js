@@ -1,6 +1,6 @@
 // draw an array of quads on screen with textures
-const Core = require("core");
-const ComponentScreenTextureQuad = require("./component-screen-texture-quad.js");
+import ComponentScreenTextureQuadFactory from './component-screen-texture-quad.js';
+import { factoryFloat32 as Vector2Float32Factory} from './../core/vector2.js';
 
 export default function(in_resourceManager, in_webGLState, in_textureArray, in_screenDivisionCountOrUndefined){
 	const m_screenQuadArray = [];
@@ -12,9 +12,9 @@ export default function(in_resourceManager, in_webGLState, in_textureArray, in_s
 		for (var index = 0; index < in_textureArray.length; ++index){
 			var xIndex = Math.floor(index / screenDivisionCount);
 			var yIndex = index - (xIndex * screenDivisionCount);
-			var low = Core.Vector2.factoryFloat32(-1.0 + (xIndex * step), -1.0 + (yIndex * step));
-			var high = Core.Vector2.factoryFloat32(-1.0 + ((xIndex + 1) * step), -1.0 + ((yIndex + 1) * step));
-			m_screenQuadArray.push(ComponentScreenTextureQuad.factory(in_resourceManager, in_webGLState, low, high, in_textureArray[index]));
+			var low = Vector2Float32Factory(-1.0 + (xIndex * step), -1.0 + (yIndex * step));
+			var high = Vector2Float32Factory(-1.0 + ((xIndex + 1) * step), -1.0 + ((yIndex + 1) * step));
+			m_screenQuadArray.push(ComponentScreenTextureQuadFactory(in_resourceManager, in_webGLState, low, high, in_textureArray[index]));
 		}
 	}
 

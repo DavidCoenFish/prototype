@@ -1,9 +1,9 @@
 /*
-like world grid, but ray cast instead of geometry
+like world grid2, expect input texture of the screen camera normal
  */
 import modelScreenQuadFactory from "./component-model-screen-quad.js"
 import ShaderWrapperFactory from "./shaderwrapper.js";
-import {sFloat3 as ShaderUniformDataFloat3, sFloat4 as ShaderUniformDataFloat4 } from "./shaderuniformdata.js";
+import {sInt, sFloat, sFloat2, sFloat3} from "./shaderuniformdata.js";
 import MaterialWrapperFactory from "./materialwrapper.js";
 
 const sVertexShader = `
@@ -24,26 +24,16 @@ const sFragmentShader = `
 #extension GL_EXT_frag_depth : enable
 precision mediump float;
 
-uniform vec4 u_viewportWidthHeightWidthhalfHeighthalf;
+uniform sampler2D u_sampler;
+uniform vec2 u_viewportWidthHeight;
 uniform vec3 u_cameraAt;
 uniform vec3 u_cameraLeft;
 uniform vec3 u_cameraUp;
 uniform vec3 u_cameraPos;
-uniform vec4 u_cameraFovhFovvFarClip;
+uniform float u_cameraFar;
+uniform float u_fovhradian;
 
 varying vec2 v_uv;
-
-vec3 makeScreenEyeRay(vec2 in_polarCoords) {
-	float polar_a_radian = atan(in_polarCoords.y, in_polarCoords.x);
-	float polar_r_radian = length(in_polarCoords);
-
-	float z = cos(polar_r_radian);
-	float temp = sqrt(1.0 - (z * z));
-	float x = temp * cos(polar_a_radian);
-	float y = temp * sin(polar_a_radian);
-	return vec3(x, y, z);
-	//return vec3(polar_r_radian, polar_r_radian, polar_r_radian);
-}
 
 vec3 makeWorldRay(vec3 in_screenEyeRay){
 	return ((-(in_screenEyeRay.x) * u_cameraLeft) +
@@ -84,9 +74,7 @@ float planeTest(float maxDistance, vec3 rayPos, vec3 rayNormal, vec4 in_plane){
 }
 
 float getPixelSizeAtCameraDistance(float in_distance){
-	float fovHRadians = radians(u_cameraFovhFovvFarClip.x);
-	float pixelScreenWidth = u_viewportWidthHeightWidthhalfHeighthalf.x;
-	float angleRadians = fovHRadians / pixelScreenWidth;
+	float angleRadians = u_fovhradian / u_viewportWidthHeight.x;
 	//sin(a) = ops/hyp
 	float pixelSize = in_distance * sin(angleRadians);
 	return pixelSize * 0.75;
@@ -105,7 +93,7 @@ vec2 AlphaFromAxisLine(vec3 in_axisNormal, vec3 in_ray, vec3 in_pos, float in_ma
 	vec3 offset = (in_pos + (in_ray * ScTc.x)) - (in_axisNormal * ScTc.y);
 	float distanceSquared = dot(offset, offset);
 	if (distanceSquared < temp){
-		float alpha = 1.0 - (distanceSquared / temp);
+		float alpha = (1.0 - (distanceSquared / temp)) * 0.5; // (1.0 - (ScTc.x / in_maxDistance));
 		float oneMinusDistance = 1.0 - (ScTc.x / in_maxDistance);
 		return vec2(alpha, oneMinusDistance);
 	}
@@ -146,12 +134,9 @@ vec2 AlphaFromPlane(vec4 in_plane, vec3 in_crossA, vec3 in_crossB, vec3 in_ray, 
 }
 
 void main() {
-	float apsect = u_viewportWidthHeightWidthhalfHeighthalf.y / u_viewportWidthHeightWidthhalfHeighthalf.x;
-	float fovHRadians = radians(u_cameraFovhFovvFarClip.x);
-	vec2 screenRadian = vec2((v_uv.x - 0.5) * fovHRadians, (v_uv.y - 0.5) * fovHRadians * apsect);
-	vec3 screenEyeRay = makeScreenEyeRay(screenRadian);
+	vec3 screenEyeRay = texture2D(u_sampler, v_uv).xyz;
 	vec3 worldRay = makeWorldRay(screenEyeRay);
-	float maxDistance = u_cameraFovhFovvFarClip.z;
+	float maxDistance = u_cameraFar;
 
 	//kind of need alpha from grid, alpha from axis
 	vec2 data = vec2(0.0, 0.0);
@@ -173,16 +158,19 @@ void main() {
 
 const sVertexAttributeNameArray = ["a_position", "a_uv"];
 const sUniformNameMap = {
-	"u_viewportWidthHeightWidthhalfHeighthalf" : ShaderUniformDataFloat4, 
-	"u_cameraAt" : ShaderUniformDataFloat3, 
-	"u_cameraUp" : ShaderUniformDataFloat3, 
-	"u_cameraLeft" : ShaderUniformDataFloat3, 
-	"u_cameraPos" : ShaderUniformDataFloat3, 
-	"u_cameraFovhFovvFarClip" : ShaderUniformDataFloat4
+	"u_sampler" : sInt,
+	"u_viewportWidthHeight" : sFloat2,
+	"u_cameraAt" : sFloat3, 
+	"u_cameraUp" : sFloat3, 
+	"u_cameraLeft" : sFloat3, 
+	"u_cameraPos" : sFloat3,
+	"u_cameraFar" : sFloat,
+	"u_fovhradian" : sFloat
 };
 
-export default function(in_resourceManager, in_webGLState, in_state){
+export default function(in_resourceManager, in_webGLState, in_state, in_texture){
 	var m_modelComponent = modelScreenQuadFactory(in_resourceManager, in_webGLState);
+	var m_textureArray = [in_texture];
 
 	var m_shader = ShaderWrapperFactory(
 		in_webGLState, 
@@ -191,7 +179,7 @@ export default function(in_resourceManager, in_webGLState, in_state){
 		sVertexAttributeNameArray, 
 		sUniformNameMap);
 	var m_material = MaterialWrapperFactory(
-		undefined, //in_textureArrayOrUndefined,
+		m_textureArray, //in_textureArrayOrUndefined,
 		undefined, //in_triangleCullEnabledOrUndefined,
 		undefined, //in_triangleCullEnumNameOrUndefined,
 		true, //in_blendModeEnabledOrUndefined,
@@ -208,12 +196,21 @@ export default function(in_resourceManager, in_webGLState, in_state){
 		false //in_stencilMaskOrUndefined //false
 	);
 
+	const m_state = {
+		"u_sampler" : 0
+	};
+
 	//public methods ==========================
 	const that = Object.create({
 		"draw" : function(){
-			in_webGLState.applyShader(m_shader, in_state);
+			var state = Object.assign({}, m_state, in_state);
+			in_webGLState.applyShader(m_shader, state);
 			in_webGLState.applyMaterial(m_material);
 			in_webGLState.drawModel(m_modelComponent.getModel());
+			return;
+		},
+		"setTexture" : function(in_texture){
+			m_textureArray[0] = in_texture;
 			return;
 		},
 		"destroy" : function(){

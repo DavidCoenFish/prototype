@@ -19,16 +19,19 @@ export default function(in_webGLState, in_arrayDataFactory, in_width, in_height)
 		return;
 	}
 
+	makeRenderTarget();
+
 	//public methods ==========================
 	const that = Object.create({
 		"setWidthHeight" : function(in_newWidth, in_newHeight){
 			if ((in_width === in_newWidth) && (in_height === in_newHeight)){
-				return;
+				return false;
 			}
-			in_width = in_newHeight;
+			in_width = in_newWidth;
 			in_height = in_newHeight;
 			release();
 			makeRenderTarget();
+			return true;
 		},
 		"apply" : function(){
 			in_webGLState.applyRenderTarget(m_renderTarget);
