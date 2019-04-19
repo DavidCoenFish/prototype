@@ -1,10 +1,12 @@
 import ComponentWebGLSceneSimpleFactory from './../manipulatedom/component-webgl-scene-simple.js';
 import {applyStyleFullscreenDefault} from './../manipulatedom/style.js';
-import { factoryAppendBody as componentCanvasFactory } from './../manipulatedom/component-canvas.js';
+import {factory as ComponentFpsFactory} from './../manipulatedom/component-fps';
+import {factoryAppendBody as componentCanvasFactory } from './../manipulatedom/component-canvas.js';
 import taskRenderGamefield from './task-render-gamefield.js';
 import fullScreenButton from './../manipulatedom/fullscreen-button.js';
-import { factoryAppendBody as divFactory}  from './../manipulatedom/div.js';
-import { factory as buttonFactory}  from './../manipulatedom/button.js';
+import {factoryAppendBody as divFactory}  from './../manipulatedom/div.js';
+import {factory as buttonFactory}  from './../manipulatedom/button.js';
+
 export default function () {
 	applyStyleFullscreenDefault(document.documentElement);
 	applyStyleFullscreenDefault(document.body);
@@ -29,7 +31,8 @@ export default function () {
 	m_div.appendChild(m_canvasElement);
 	var m_task = taskRenderGamefield;
 
-	const callback = function(in_timeDelta){
+	var m_previousTimeStamp = undefined;
+	const callback = function(in_timestamp){
 		if (undefined === m_task){
 			if (undefined !== m_scene){
 				m_scene.destroy();
@@ -38,7 +41,13 @@ export default function () {
 			m_webGLState = undefined;
 			return false;
 		}
-		m_task = m_task(m_task, m_div, m_webGLState, in_timeDelta);
+		m_fps.update(in_timestamp);
+		var timeDelta = 0.0;
+		if (undefined !== m_previousTimeStamp){
+			timeDelta = (in_timestamp - m_previousTimeStamp) / 1000.0;
+		}
+		m_previousTimeStamp = in_timestamp;
+		m_task = m_task(m_task, m_div, m_webGLState, timeDelta);
 		return true;
 	}
 
@@ -73,6 +82,14 @@ export default function () {
 		"width": "32px", 
 		"height": "32px"
 	});
+	const m_fps = ComponentFpsFactory(document, {
+		"position": "absolute",
+		"left": "10px",
+		"top": "10px",
+		"width": "64px", 
+		"height": "16px"
+	});
+	m_div.appendChild(m_fps.getElement());
 
 	return;
 }

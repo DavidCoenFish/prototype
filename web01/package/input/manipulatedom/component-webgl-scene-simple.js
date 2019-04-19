@@ -18,17 +18,9 @@ export default function(
 		in_preserveDrawingBufferOrUndefined
 		);
 
-	var m_prevTimeStamp = undefined;
 	const animationFrameCallback = function(in_timestamp){
-		var timeDelta = 0.0;
-
-		if (undefined !== m_prevTimeStamp){
-			timeDelta = (in_timestamp - m_prevTimeStamp) / 1000.0;
-		}
-		m_prevTimeStamp = in_timestamp;
-
 		if (undefined !== in_callbackUpdateOrUndefined){
-			if (false === in_callbackUpdateOrUndefined(timeDelta)){
+			if (false === in_callbackUpdateOrUndefined(in_timestamp)){
 				return;
 			}
 		}

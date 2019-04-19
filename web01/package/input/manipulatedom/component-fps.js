@@ -1,7 +1,10 @@
-export const factory = function(in_document){
+import { applyStyle } from './style.js';
+
+export const factory = function(in_document, in_styleOrUndefined){
 	var m_timeStamp = undefined;
 	var m_textElement = in_document.createTextNode("");
 	var m_div = in_document.createElement("DIV");
+	applyStyle(m_div, in_styleOrUndefined);
 	m_div.appendChild(m_textElement);
 
 	//public methods ==========================
