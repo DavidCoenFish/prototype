@@ -1,4 +1,5 @@
 import ComponentCameraRayFactory from './component-camera-ray.js';
+import ComponentSkyBox from './component-skybox.js';
 import ComponentScreenTextureArrayFactory from './../webgl/component-screen-texture-array.js';
 import ResourceManagerFactory from './../core/resourcemanager.js';
 import {fromDegrees} from './../core/radians.js';
@@ -18,11 +19,13 @@ export default function(in_currentTaskFunction, in_topLevelElement, in_webGLStat
 	const m_componentScreenTextureArray = ComponentScreenTextureArrayFactory(m_resourceManager, in_webGLState, [m_componentCameraRay.getTexture()], 4);
 	const m_background = Colour4FactoryFloat32(0.5, 0.5, 0.5, 1.0);
 	const m_state = {
+		"u_sampler0" : 0,
 		"u_fovhradian" : m_fovhradian,
 		"u_viewportWidthHeight" : m_viewport.getRaw(),
 		"u_cameraFar" : 100.0
 	};
 	const m_componentCamera = ComponentCameraFactory( in_topLevelElement, m_state );
+	const m_componentSkyBox = ComponentSkyBox(m_resourceManager, in_webGLState, m_state, [m_componentCameraRay.getTexture()]);
 	const m_worldGrid = ComponentWorldGridFactory(m_resourceManager, in_webGLState, m_state, [m_componentCameraRay.getTexture()]);
 	var m_keepGoing = true;
 
@@ -43,13 +46,15 @@ export default function(in_currentTaskFunction, in_topLevelElement, in_webGLStat
 		m_componentCameraRay.update(m_canvasWidth, m_canvasHeight);
 
 		m_componentScreenTextureArray.setTexture(0, m_componentCameraRay.getTexture());
+		m_componentSkyBox.setTexture(m_componentCameraRay.getTexture());
 		m_worldGrid.setTexture(m_componentCameraRay.getTexture());
 
 		m_componentCamera.update(in_timeDelta);
 
 		//debug draw texture array
 		in_webGLState.applyRenderTarget();
-		in_webGLState.clear(m_background);
+		//in_webGLState.clear(m_background);
+		m_componentSkyBox.draw();
 		m_worldGrid.draw();
 		m_componentScreenTextureArray.draw();
 

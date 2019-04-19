@@ -2,7 +2,6 @@ import ComponentRenderTargetFactory from './../webgl/component-render-target.js'
 import { RenderTargetDataFactoryAttachment0FloatRGBA } from './../webgl/component-render-target-data-factory.js';
 import ComponentModelScreenQuadFactory from './../webgl/component-model-screen-quad.js';
 import {factoryFloat32 as Vector2FactoryFloat32} from './../core/vector2.js';
-import {factoryFloat32 as Vector3FactoryFloat32} from './../core/vector3.js';
 import ShaderWrapperFactory from "./../webgl/shaderwrapper.js";
 import {sFloat, sFloat2} from "./../webgl/shaderuniformdata.js";
 import MaterialWrapperFactory from "./../webgl/materialwrapper.js";

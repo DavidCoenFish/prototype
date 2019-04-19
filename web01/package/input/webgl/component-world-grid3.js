@@ -197,7 +197,7 @@ export default function(in_resourceManager, in_webGLState, in_state, in_texture)
 	);
 
 	const m_state = {
-		"u_sampler" : 0
+		"u_sampler0" : 0
 	};
 
 	//public methods ==========================
