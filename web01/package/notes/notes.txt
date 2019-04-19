@@ -1,12 +1,11 @@
 todo:
 	gameplay field
-			render target component
-			pallet
-			screen space camera rays to texture (generate once and reuse)
+			depth test
+			present
+			lighting, screen shadow
 			object rollover
 			object highlight
 		selection and rollover
-		depth buffer screen space shadow
 		movement
 		combat
 		ingame ui, text

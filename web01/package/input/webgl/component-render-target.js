@@ -33,8 +33,11 @@ export default function(in_webGLState, in_arrayDataFactory, in_width, in_height)
 			makeRenderTarget();
 			return true;
 		},
-		"apply" : function(){
-			in_webGLState.applyRenderTarget(m_renderTarget);
+		// "apply" : function(){
+		// 	in_webGLState.applyRenderTarget(m_renderTarget);
+		// },
+		"getRenderTarget" : function(){
+			return m_renderTarget;
 		},
 		"getTexture" : function(in_index){
 			return m_renderTarget.getTexture(in_index);
