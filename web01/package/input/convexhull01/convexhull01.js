@@ -6,6 +6,7 @@ import taskRenderGamefield from './task-render-gamefield.js';
 import fullScreenButton from './../manipulatedom/fullscreen-button.js';
 import {factoryAppendBody as divFactory}  from './../manipulatedom/div.js';
 import {factory as buttonFactory}  from './../manipulatedom/button.js';
+import { autoSnapShot } from './../manipulatedom/autodownload.js';
 
 export default function () {
 	applyStyleFullscreenDefault(document.documentElement);
@@ -91,6 +92,19 @@ export default function () {
 		"height": "16px"
 	});
 	m_div.appendChild(m_fps.getElement());
+
+	buttonFactory(document, m_div, "save", function(){
+		var rightNow = new Date();
+		rightNow.setMinutes(rightNow.getMinutes() - rightNow.getTimezoneOffset()); 
+		var fileName = rightNow.toISOString().slice(0,10) + "_convexhull01.png"
+		autoSnapShot(document, m_canvasElement, fileName);
+	}, {
+		"position": "absolute",
+		"right": "82px",
+		"top": "10px",
+		"width": "32px", 
+		"height": "32px"
+	});
 
 	return;
 }

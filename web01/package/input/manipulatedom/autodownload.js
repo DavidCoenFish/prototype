@@ -34,7 +34,7 @@ export const autoSnapShot = function(in_document, in_html5CanvasElement, in_file
 	var parts = data.split(";base64,");
 	var base64 = parts[1];
 	var byteArray = base64ToByteArray(base64);
-	download(byteArray, "test.png", "image/png");
+	download(byteArray, in_fileName, "image/png");
 
 	return;
 }

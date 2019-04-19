@@ -23,7 +23,8 @@ export default function () {
 		"ALIASED_POINT_SIZE_RANGE",
 		"MAX_VIEWPORT_DIMS",
 		"SHADING_LANGUAGE_VERSION",
-		//"GL_POINT_SIZE_MAX",
+		"DEPTH_BITS",
+		"STENCIL_BITS",
 		//#extension GL_EXT-draw_buffers : require
 		//"MAX_DRAW_BUFFERS_WEBGL",
 	];
