@@ -6,7 +6,7 @@ import {sInt, sFloat, sFloat2, sFloat3} from "./../webgl/shaderuniformdata.js";
 import MaterialWrapperFactory from "./../webgl/materialwrapper.js";
 
 const sVertexShader = `
-precision highp float;
+precision mediump float;
 
 attribute vec4 a_sphere;
 attribute vec4 a_colour0;
@@ -80,11 +80,9 @@ void main() {
 	float screenZ = (screenZRaw * 2.0) - 1.0;
 
 	float sphereRadiusAngleRadians = asin(a_sphere.w / cameraSpaceLength);
-	float pixelDiameterA = 1.25 * width * (sphereRadiusAngleRadians / fovHHalfRadians);
-
-	float pixelDiameterB = 1.25 * (screenR * width) * sin(sphereRadiusAngleRadians);
-
-	float pixelDiameter = max(pixelDiameterA, pixelDiameterB);
+	float pixelDiameter = width * (sphereRadiusAngleRadians / fovHHalfRadians);
+	//float pixelDiameterB = (screenR * width) * tan(sphereRadiusAngleRadians);
+	pixelDiameter += ((1.0 * screenR * width) * tan(sphereRadiusAngleRadians));
 
 	gl_Position = vec4(screenX, screenY, screenZ, 1.0);
 	gl_PointSize = pixelDiameter;
@@ -108,7 +106,7 @@ void main() {
 
 const sFragmentShader = `
 #extension GL_EXT_frag_depth : enable
-precision highp float;
+precision mediump float;
 
 uniform sampler2D u_sampler0;
 
@@ -180,6 +178,11 @@ void main() {
 	vec2 diff = (gl_PointCoord - vec2(.5, .5)) * 2.0;
 	if (1.0 < dot(diff, diff)) {
 		discard;
+// 		gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+// #ifdef GL_EXT_frag_depth
+// 		gl_FragDepthEXT = 0.0;
+// #endif
+// 		return;
 	}
 
 	vec3 screenEyeRay = texture2D(u_sampler0, v_uv + (v_uvScale * gl_PointCoord)).xyz;
@@ -200,6 +203,11 @@ void main() {
 
 	if (distanceFromFarClip == 0.0){
 		discard;
+// 		gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+// #ifdef GL_EXT_frag_depth
+// 		gl_FragDepthEXT = 0.0;
+// #endif
+// 		return;
 	}
 
 	float distance = u_cameraFar - distanceFromFarClip;

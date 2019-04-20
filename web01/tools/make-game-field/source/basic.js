@@ -57,9 +57,10 @@ const makeColourLerp = function(in_colour0, in_colour1, in_ratio){
 
 const sHalfSqrt3 = 0.86602540378443864676372317075294;
 const sQuaterSqrt3 = 0.43301270189221932338186158537647;
-const sBaseColourNode = [10.0/255.0, 12.0/255.0, 26.0/255.0, 0.5];
+const sBaseColourNode = [12.0/255.0, 12.0/255.0, 12.0/255.0, 0.5];
 const sBaseColourNodeA = [192.0/255.0, 186.0/255.0, 0.0/255.0, 0.0];
 const sBaseColourNodeB = [192.0/255.0, 17.0/255.0, 0.0/255.0, 0.25];
+const sBaseColourNodeC = [255.0/255.0, 0.0/255.0, 0.0/255.0, 0.0];
 
 const makeNode = function(in_nodeOrigin, in_objectId, in_radius, in_low, in_high, in_colour0, in_colour1){
 	const result = {
@@ -103,11 +104,7 @@ const test = function(){
 	};
 
 	var radius = 1.0;
-	const nodeOrigin = {
-		"x" : 0,
-		"y" : 0
-	};
-	result.nodearray.push(cBaseColourNode(nodeOrigin, 1, radius, -1, 1, sBaseColourNode, sBaseColourNode));
+	addNodeConvexHull(1, result.nodearray, 0, 0, 1, 1, radius);
 	return result;
 }
 
@@ -116,7 +113,8 @@ const addNodeConvexHull = function(trace, out_nodearray, indexX, indexY, width, 
 	//console.log("index:" + indexX + ", " + indexY);
 	//console.log("nodeOrigin:" + nodeOrigin.x + ", " + nodeOrigin.y);
 	var height = makeNodeHeight(radius, indexX, indexY, width, height);
-	var colour = makeNodeColour(radius, indexX, indexY, width, height);
+	//var colour = makeNodeColour(radius, indexX, indexY, width, height);
+	var colour = sBaseColourNodeC;
 	out_nodearray.push(makeNode(nodeOrigin, trace, radius, -1, height, sBaseColourNode, colour));
 	return trace + 1;
 }
