@@ -6,7 +6,8 @@ const UnitTest = require("./unittest.js");
 // 		[objectId:],
 // 		[convexHull:[[x,y,z,d],]]|,
 // 		[sphere:[x,y,z,r]]|,
-// 		colour:[r,g,b]|
+// 		colour0:[r,g,b, {0 ... 0.5 emittance, 0.5 ... 1.0 refelectivity}]|
+// 		colour1:[r,g,b, {0 ... 0.5 emittance, 0.5 ... 1.0 refelectivity}]|
 // 		gradient:|?
 // 	}]
 // }
@@ -32,19 +33,40 @@ const makeNodeHeight = function(in_radius, in_x, in_y, in_width, in_height){
 	return h;
 }
 
+const makeNodeColour = function(in_radius, in_x, in_y, in_width, in_height){
+	const origin = makeNodeOrigin(in_radius, in_x, in_y, in_width, in_height);
+	var d = makeDistance(origin.x, origin.y) / (Math.max(in_width, in_height) * 0.5 * in_radius);
+	var h = 0.5 + (Math.cos(d * Math.PI * 2.0) * 0.5);
+	var colour = makeColourLerp(sBaseColourNodeA, sBaseColourNodeB, h);
+	return colour;
+}
+
 const makePlane = function(in_nX, in_nY, in_nZ, in_pX, in_pY, in_pZ){
 	var d = (in_nX * in_pX) + (in_nY * in_pY) + (in_nZ * in_pZ);
 	return [in_nX, in_nY, in_nZ, d];
 }
 
+const makeColourLerp = function(in_colour0, in_colour1, in_ratio){
+	return [
+		in_colour0[0] + ((in_colour1[0] - in_colour0[0]) * in_ratio),
+		in_colour0[1] + ((in_colour1[1] - in_colour0[1]) * in_ratio),
+		in_colour0[2] + ((in_colour1[2] - in_colour0[2]) * in_ratio),
+		in_colour0[3] + ((in_colour1[3] - in_colour0[3]) * in_ratio)
+		];
+}
+
 const sHalfSqrt3 = 0.86602540378443864676372317075294;
 const sQuaterSqrt3 = 0.43301270189221932338186158537647;
+const sBaseColourNode = [10.0/255.0, 12.0/255.0, 26.0/255.0, 0.5];
+const sBaseColourNodeA = [192.0/255.0, 186.0/255.0, 0.0/255.0, 0.0];
+const sBaseColourNodeB = [192.0/255.0, 17.0/255.0, 0.0/255.0, 0.25];
 
-const makeNode = function(in_nodeOrigin, in_objectId, in_radius, in_low, in_high){
+const makeNode = function(in_nodeOrigin, in_objectId, in_radius, in_low, in_high, in_colour0, in_colour1){
 	const result = {
 		"objectid" : in_objectId,
 		"convexhull" : [],
-		"colour" : [0.2,0.2,0.5]
+		"colour0" : in_colour0,
+		"colour1" : in_colour1
 	};
 
 	result.convexhull.push(makePlane(0.0, 0.0, 1.0, 0, 0, in_high));
@@ -65,7 +87,8 @@ const makeNode = function(in_nodeOrigin, in_objectId, in_radius, in_low, in_high
 const makeShere = function(in_objectIDorUndefined, in_x, in_y, in_z, in_radius){
 	const result = {
 		"sphere" : [in_x, in_y, in_z, in_radius],
-		"colour" : [1,1,1]
+		"colour0" : [1,1,1, 0.5],
+		"colour1" : [1,1,1, 0.5]
 	};
 	if (undefined !== in_objectIDorUndefined){
 		result["objectid"] = in_objectIDorUndefined;
@@ -84,7 +107,7 @@ const test = function(){
 		"x" : 0,
 		"y" : 0
 	};
-	result.nodearray.push(makeNode(nodeOrigin, 1, radius, -1, 1));
+	result.nodearray.push(cBaseColourNode(nodeOrigin, 1, radius, -1, 1, sBaseColourNode, sBaseColourNode));
 	return result;
 }
 
@@ -93,7 +116,8 @@ const addNodeConvexHull = function(trace, out_nodearray, indexX, indexY, width, 
 	//console.log("index:" + indexX + ", " + indexY);
 	//console.log("nodeOrigin:" + nodeOrigin.x + ", " + nodeOrigin.y);
 	var height = makeNodeHeight(radius, indexX, indexY, width, height);
-	out_nodearray.push(makeNode(nodeOrigin, trace, radius, -1, height));
+	var colour = makeNodeColour(radius, indexX, indexY, width, height);
+	out_nodearray.push(makeNode(nodeOrigin, trace, radius, -1, height, sBaseColourNode, colour));
 	return trace + 1;
 }
 

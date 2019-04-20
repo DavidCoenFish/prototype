@@ -1,6 +1,5 @@
 todo:
 	gameplay field
-			depth test
 			present
 			lighting, screen shadow
 			object rollover

@@ -28,7 +28,7 @@ if ("unittest" === process.argv[2]){
 	}).then(function(){
 		//return makeProject("test", "capablity");
 	}).then(function(){
-		return makeProject("test", "depthtexture");
+		//return makeProject("test", "depthtexture");
 	}).then(function(){
 		//return makeProject("test", "pallet");
 	}).then(function(){
@@ -44,7 +44,7 @@ if ("unittest" === process.argv[2]){
 	}).then(function(){
 		//return makeProject("convexhull00", "convexhull00");
 	}).then(function(){
-		//return makeProject("convexhull01", "convexhull01");
+		return makeProject("convexhull01", "convexhull01");
 	}).done(function(){
 		console.log(new Date().toLocaleTimeString());
 	});

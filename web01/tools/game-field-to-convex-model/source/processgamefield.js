@@ -23,43 +23,6 @@ const vecScalarMultiply = function(in_vec, in_scalar){
 
 /*
 https://www.gamedev.net/forums/topic/90414-calculate-where-3-planes-intersect/
-	D3DXVECTOR3 Normal = (&Plane->a, &Plane->b, &Plane->c);
-	D3DXVECTOR3 Normal2 = (&Plane2->a, &Plane2->b, &Plane2->c);
-	D3DXVECTOR3 Normal3 = (&Plane3->a, &Plane3->b, &Plane3->c);
-	D3DXVECTOR3 CrossProduct;
-	D3DXVECTOR3 CrossProduct2;
-	D3DXVECTOR3 CrossProduct3;
-	D3DXVECTOR3 DotProduct;
-	float DotProduct2;
-	float DotProduct3;
-	D3DXVECTOR3 IntersectCoordinate;
-	D3DXVECTOR3 Num1, Num2, Num3;
-	D3DXVec3Cross( &CrossProduct , &Normal2 , &Normal3 );
-	D3DXVec3Cross( &CrossProduct2 , &Normal3 , &Normal );
-	D3DXVec3Cross( &CrossProduct3 , &Normal , &Normal2 );
-
-	float XPos;
-	float YPos;
-	float ZPos;
-
-	float denom = D3DXVec3Dot (&Normal, &CrossProduct);
-	if( denom == 0 ) {
-		return FALSE;
-	}
-	
-	Num1 = -(Plane->d * CrossProduct);
-	Num2 = -(Plane2->d * CrossProduct2);
-	Num3 = -(Plane3->d * CrossProduct3);
-	
-	IntersectCoordinate =  (Num1 + Num2 + Num3) / denom;
-
-	X = IntersectCoordinate.x;
-	Y = IntersectCoordinate.y;
-	Z = IntersectCoordinate.z;
-
-	return TRUE;
-
-
  */
 const intersectPlanePlanePlane = function(in_planeA, in_planeB, in_planeC){
 	const crossA = crossProduct(in_planeB, in_planeC);
@@ -199,7 +162,8 @@ const appendNodeToModel = function(inout_model, in_node){
 
 	appendArray(inout_model.modelSphereData, sphere);
 	appendArrayUint16ToUint8(inout_model.objectID, in_node.objectid);
-	appendArrayColourToUint8(inout_model.colour, in_node.colour);
+	appendArrayColourToUint8(inout_model.colour0, in_node.colour0);
+	appendArrayColourToUint8(inout_model.colour1, in_node.colour1);
 	appendArray(inout_model.modelPlane0, makePlaneRelative(sphere, in_node.convexhull[0]));
 	appendArray(inout_model.modelPlane1, makePlaneRelative(sphere, in_node.convexhull[1]));
 	appendArray(inout_model.modelPlane2, makePlaneRelative(sphere, in_node.convexhull[2]));
@@ -224,7 +188,8 @@ export default function(in_webGLState){
 		in_webGLState, "POINTS", ${elementCount}, {
 			"a_sphere" : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("${Base64.Float32ArrayToBase64(in_model.modelSphereData)}"), "STATIC_DRAW", false),
 			"a_objectID" : ModelDataStream(in_webGLState, "BYTE", 2, Base64ToUint8Array("${Base64.Uint8ArrayToBase64(in_model.objectID)}"), "STATIC_DRAW", true),
-			"a_colour" : ModelDataStream(in_webGLState, "BYTE", 3, Base64ToUint8Array("${Base64.Uint8ArrayToBase64(in_model.colour)}"), "STATIC_DRAW", true),
+			"a_colour0" : ModelDataStream(in_webGLState, "BYTE", 4, Base64ToUint8Array("${Base64.Uint8ArrayToBase64(in_model.colour0)}"), "STATIC_DRAW", true),
+			"a_colour1" : ModelDataStream(in_webGLState, "BYTE", 4, Base64ToUint8Array("${Base64.Uint8ArrayToBase64(in_model.colour1)}"), "STATIC_DRAW", true),
 			"a_plane0" : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("${Base64.Float32ArrayToBase64(in_model.modelPlane0)}"), "STATIC_DRAW", false),
 			"a_plane1" : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("${Base64.Float32ArrayToBase64(in_model.modelPlane1)}"), "STATIC_DRAW", false),
 			"a_plane2" : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("${Base64.Float32ArrayToBase64(in_model.modelPlane2)}"), "STATIC_DRAW", false),
@@ -244,7 +209,8 @@ const runObjectIDModel = function(in_gameField){
 	var tempModel = {
 		"modelSphereData" : [],
 		"objectID" : [],
-		"colour" : [],
+		"colour0" : [],
+		"colour1" : [],
 		"modelPlane0" : [],
 		"modelPlane1" : [],
 		"modelPlane2" : [],

@@ -26,7 +26,7 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 				in_height = in_newHeight;
 			}
 
-			m_componentRenderTarget.apply();
+			in_webGLState.applyRenderTarget(m_componentRenderTarget.getRenderTarget());
 			in_webGLState.clear(m_background, 1.0);
 			m_componentConvexHullRgba.draw();
 

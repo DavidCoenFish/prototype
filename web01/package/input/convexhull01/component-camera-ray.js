@@ -75,11 +75,10 @@ export default function(in_resourceManager, in_webGLState, in_fovHRadian, in_wid
 	};
 
 	const render = function(){
-		m_componentRenderTarget.apply();
-
 		m_viewportWidthHeight.setX(in_width);
 		m_viewportWidthHeight.setY(in_height);
 
+		in_webGLState.applyRenderTarget(m_componentRenderTarget.getRenderTarget());
 		in_webGLState.applyShader(m_shader, m_shaderState);
 		in_webGLState.applyMaterial(m_material);
 		in_webGLState.drawModel(m_componentModel.getModel());

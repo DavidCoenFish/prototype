@@ -152,6 +152,9 @@ export default function(in_resourceManager, in_webGLState, in_state, in_texture)
 			m_textureArray[0] = in_texture;
 			return;
 		},
+		"getFogTint" : function(){
+			return m_fogTint;
+		},
 		"destroy" : function(){
 			m_modelComponent.destroy();
 			m_modelComponent = undefined;

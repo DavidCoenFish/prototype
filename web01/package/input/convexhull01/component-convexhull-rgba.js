@@ -9,7 +9,8 @@ const sVertexShader = `
 precision highp float;
 
 attribute vec4 a_sphere;
-attribute vec3 a_colour;
+attribute vec4 a_colour0;
+attribute vec4 a_colour1;
 attribute vec4 a_plane0;
 attribute vec4 a_plane1;
 attribute vec4 a_plane2;
@@ -27,7 +28,8 @@ uniform vec3 u_cameraUp;
 uniform vec3 u_cameraPos;
 uniform float u_cameraFar;
 
-varying vec4 v_colour;
+varying vec4 v_colour0;
+varying vec4 v_colour1;
 varying float v_keepOrDiscard;
 
 varying vec2 v_uv;
@@ -91,7 +93,8 @@ void main() {
 	v_uv = vec2((screenX / 2.0) + 0.5, (screenY / 2.0) + 0.5) - (v_uvScale * 0.5);
 
 	v_sphere = a_sphere;
-	v_colour = vec4(a_colour, 1.0);
+	v_colour0 = a_colour0;
+	v_colour1 = a_colour1;
 	v_plane0 = a_plane0;
 	v_plane1 = a_plane1;
 	v_plane2 = a_plane2;
@@ -116,7 +119,8 @@ uniform vec3 u_cameraPos;
 uniform vec4 u_cameraFovhFovvFarClip;
 uniform float u_cameraFar;
 
-varying vec4 v_colour;
+varying vec4 v_colour0;
+varying vec4 v_colour1;
 varying float v_keepOrDiscard;
 
 varying vec2 v_uv;
@@ -202,7 +206,7 @@ void main() {
 	vec3 worldPos = u_cameraPos + (worldRay * distance);
 	float colourDistance = length(worldPos - v_sphere.xyz);
 
-	gl_FragColor = mix(vec4(1.0, 1.0, 1.0, 1.0), v_colour, colourDistance / v_sphere.w);
+	gl_FragColor = mix(v_colour1, v_colour0, colourDistance / v_sphere.w);
 #ifdef GL_EXT_frag_depth
 	gl_FragDepthEXT = distance / u_cameraFar;
 #endif
@@ -211,7 +215,8 @@ void main() {
 
 const sVertexAttributeNameArray = [
 	"a_sphere",
-	"a_colour",
+	"a_colour0",
+	"a_colour1",
 	"a_plane0",
 	"a_plane1",
 	"a_plane2",
