@@ -17,6 +17,8 @@ attribute vec4 a_plane4;
 attribute vec4 a_plane5;
 attribute vec4 a_plane6;
 attribute vec4 a_plane7;
+attribute vec4 a_colour0;
+attribute vec4 a_colour1;
 
 uniform float u_fovhradian;
 uniform vec2 u_viewportWidthHeight;
@@ -40,6 +42,8 @@ varying vec4 v_plane4;
 varying vec4 v_plane5;
 varying vec4 v_plane6;
 varying vec4 v_plane7;
+varying vec4 v_colour0;
+varying vec4 v_colour1;
 
 void main() {
 	vec3 cameraToAtom = a_sphere.xyz - u_cameraPos;
@@ -78,7 +82,7 @@ void main() {
 	float sphereRadiusAngleRadians = asin(a_sphere.w / cameraSpaceLength);
 	float pixelDiameter = width * (sphereRadiusAngleRadians / fovHHalfRadians);
 	//float pixelDiameterB = (screenR * width) * tan(sphereRadiusAngleRadians);
-	pixelDiameter += ((1.0 * screenR * width) * tan(sphereRadiusAngleRadians));
+	pixelDiameter += max(0.0, ((1.0 * screenR * width) * tan(sphereRadiusAngleRadians)));
 
 	gl_Position = vec4(screenX, screenY, screenZ, 1.0);
 	gl_PointSize = pixelDiameter;
@@ -95,6 +99,9 @@ void main() {
 	v_plane5 = a_plane5;
 	v_plane6 = a_plane6;
 	v_plane7 = a_plane7;
+
+	v_colour0 = a_colour0;
+	v_colour1 = a_colour1;
 }
 `;
 
@@ -125,6 +132,8 @@ varying vec4 v_plane4;
 varying vec4 v_plane5;
 varying vec4 v_plane6;
 varying vec4 v_plane7;
+varying vec4 v_colour0;
+varying vec4 v_colour1;
 
 vec3 makeWorldRay(vec3 in_screenEyeRay){
 	return ((-(in_screenEyeRay.x) * u_cameraLeft) +
@@ -196,7 +205,8 @@ void main() {
 	vec3 worldPos = u_cameraPos + (worldRay * distance);
 	float colourDistance = length(worldPos - v_sphere.xyz);
 
-	gl_FragColor = vec4(0.75,0.75,0.75,0.5); // v_colour0; //mix(v_colour1, v_colour0, colourDistance / v_sphere.w);
+	//gl_FragColor = vec4(0.75,0.75,0.75,0.5); // v_colour0; //mix(v_colour1, v_colour0, colourDistance / v_sphere.w);
+	gl_FragColor = mix(v_colour1, v_colour0, colourDistance / v_sphere.w);
 #ifdef GL_EXT_frag_depth
 	gl_FragDepthEXT = distance / u_cameraFar;
 #endif
@@ -212,7 +222,9 @@ const sVertexAttributeNameArray = [
 	"a_plane4",
 	"a_plane5",
 	"a_plane6",
-	"a_plane7"
+	"a_plane7",
+	"a_colour0",
+	"a_colour1",
 ];
 const sUniformNameMap = {
 	"u_sampler0" : sInt,
