@@ -31,28 +31,43 @@ uniform vec2 u_dxDy;
 
 varying vec2 v_uv;
 
+float makeAlpha(float in_depth, float in_threashold){
+	//if (in_depth < in_threashold){
+		float temp0 = abs(1.0 - (in_depth / in_threashold));
+		return 1.0 - temp0;
+		//return max(-0.5, 1.0 - temp0);
+	//}
+	//float temp = abs(1.0 - (in_depth / in_threashold));
+	//temp *= temp;
+	//return max(-0.25, 1.0 - temp);
+}
+
+float shade(float in_referenceDepth, vec2 in_offsetA, vec2 in_offsetB, vec2 in_offsetC){
+	float depthA = max(0.0, in_referenceDepth - texture2D(u_samplerDepth, v_uv + (in_offsetA * u_dxDy)).x);
+	float depthB = max(0.0, in_referenceDepth - texture2D(u_samplerDepth, v_uv + (in_offsetB * u_dxDy)).x);
+	float depthC = max(0.0, in_referenceDepth - texture2D(u_samplerDepth, v_uv + (in_offsetC * u_dxDy)).x);
+
+	float threashold = 0.005;
+
+	float alphaA = makeAlpha(depthA, threashold) * 0.25;
+	float alphaB = makeAlpha((depthB + depthC) * 0.5, threashold) * 0.075;
+	float alpha = max(alphaA, alphaB);
+
+	//float alpha = makeAlpha((depthA + depthB + depthC) * 0.333, threashold) * 0.25;
+
+	return alpha;
+}
+
 void main() {
 	float referenceDepth = texture2D(u_samplerDepth, v_uv).x;
 
-	float averageDepth = 0.0;
-	averageDepth += texture2D(u_samplerDepth, v_uv + (vec2( 0.5,  1.5) * u_dxDy)).x;
-	averageDepth += texture2D(u_samplerDepth, v_uv + (vec2( 0.5,  3.5) * u_dxDy)).x;
-	averageDepth += texture2D(u_samplerDepth, v_uv + (vec2( 2.5,  1.5) * u_dxDy)).x;
+	float alpha = 0.0;
+	alpha += shade(referenceDepth, vec2( 0.5,  1.5), vec2( 0.5,  3.5), vec2( 2.5,  1.5));
+	alpha += shade(referenceDepth, vec2(-1.5,  0.5), vec2(-3.5,  0.5), vec2(-1.5,  2.5));
+	alpha += shade(referenceDepth, vec2(-0.5, -1.5), vec2(-0.5, -3.5), vec2(-2.5, -1.5));
+	alpha += shade(referenceDepth, vec2( 1.5, -0.5), vec2( 3.5, -0.5), vec2( 1.5, -2.5));
 
-	averageDepth += texture2D(u_samplerDepth, v_uv + (vec2(-1.5,  0.5) * u_dxDy)).x;
-	averageDepth += texture2D(u_samplerDepth, v_uv + (vec2(-3.5,  0.5) * u_dxDy)).x;
-	averageDepth += texture2D(u_samplerDepth, v_uv + (vec2(-1.5,  2.5) * u_dxDy)).x;
-
-	averageDepth += texture2D(u_samplerDepth, v_uv + (vec2(-0.5, -1.5) * u_dxDy)).x;
-	averageDepth += texture2D(u_samplerDepth, v_uv + (vec2(-0.5, -3.5) * u_dxDy)).x;
-	averageDepth += texture2D(u_samplerDepth, v_uv + (vec2(-2.5, -1.5) * u_dxDy)).x;
-
-	averageDepth += texture2D(u_samplerDepth, v_uv + (vec2( 1.5, -0.5) * u_dxDy)).x;
-	averageDepth += texture2D(u_samplerDepth, v_uv + (vec2( 3.5, -0.5) * u_dxDy)).x;
-	averageDepth += texture2D(u_samplerDepth, v_uv + (vec2( 1.5, -2.5) * u_dxDy)).x;
-	averageDepth /= 12.0;
-
-	float alpha = max(0.0, referenceDepth - averageDepth) * 100.0;
+	alpha = max(0.0, alpha);
 
 	gl_FragColor = vec4(0.0, 0.0, 0.0, alpha);
 }
