@@ -1,11 +1,11 @@
 import ComponentCameraRayFactory from './component-camera-ray.js';
 import ComponentDeferedrenderGamefield from './component-deferedrender-gamefield.js';
+import ComponentDeferedrenderLight from './component-deferedrender-light.js';
 import ComponentPresentFactory from './component-present.js';
 
 import ComponentScreenTextureArrayFactory from './../webgl/component-screen-texture-array.js';
 import ResourceManagerFactory from './../core/resourcemanager.js';
 import {fromDegrees} from './../core/radians.js';
-//import {factoryFloat32 as Colour4FactoryFloat32} from './../core/colour4.js';
 import {factoryFloat32 as Vector2FactoryFloat32} from './../core/vector2.js';
 import ComponentCameraFactory from './../manipulatedom/component-mouse-keyboard-camera.js';
 //import ComponentWorldGridFactory from './../webgl/component-world-grid3.js';
@@ -26,7 +26,8 @@ export default function(in_currentTaskFunction, in_topLevelElement, in_webGLStat
 	};
 	const m_componentCamera = ComponentCameraFactory( in_topLevelElement, m_state );
 	const m_componentDeferedrenderGamefield = ComponentDeferedrenderGamefield(m_resourceManager, in_webGLState, m_canvasWidth, m_canvasHeight, m_state, m_componentCameraRay.getTexture());
-	const m_componentPresent = ComponentPresentFactory(m_resourceManager, in_webGLState, m_state, m_componentCameraRay.getTexture(), m_componentDeferedrenderGamefield.getTextureAttachment0(), m_componentDeferedrenderGamefield.getTextureDepth());
+	const m_componentDefferedLight = ComponentDeferedrenderLight(m_resourceManager, in_webGLState, m_canvasWidth, m_canvasHeight, m_componentCameraRay.getTexture(), m_componentDeferedrenderGamefield.getTextureAttachment0(), m_componentDeferedrenderGamefield.getTextureDepth());
+	const m_componentPresent = ComponentPresentFactory(m_resourceManager, in_webGLState, m_state, m_componentCameraRay.getTexture(), m_componentDefferedLight.getTexture(), m_componentDeferedrenderGamefield.getTextureDepth());
 
 	const m_componentScreenTextureArray = ComponentScreenTextureArrayFactory(m_resourceManager, in_webGLState, [
 		m_componentDeferedrenderGamefield.getTextureDepth()
@@ -55,14 +56,14 @@ export default function(in_currentTaskFunction, in_topLevelElement, in_webGLStat
 
 		m_componentDeferedrenderGamefield.setTexture(m_componentCameraRay.getTexture());
 		m_componentDeferedrenderGamefield.update(m_canvasWidth, m_canvasHeight);
+		m_componentDefferedLight.setTexture(m_componentCameraRay.getTexture(), m_componentDeferedrenderGamefield.getTextureAttachment0(), m_componentDeferedrenderGamefield.getTextureDepth());
+		m_componentDefferedLight.update(m_canvasWidth, m_canvasHeight);
 
 		m_componentPresent.setTextureCameraRay(m_componentCameraRay.getTexture());
-		m_componentPresent.setTextureDeferedrender(m_componentDeferedrenderGamefield.getTextureAttachment0(), m_componentDeferedrenderGamefield.getTextureDepth());
+		m_componentPresent.setTextureDeferedrender(m_componentDefferedLight.getTexture(), m_componentDeferedrenderGamefield.getTextureDepth());
 
 		in_webGLState.applyRenderTarget();
 		m_componentPresent.draw();
-		//m_componentSkyBox.draw();
-		//m_worldGrid.draw();
 
 		//debug draw texture array
 		m_componentScreenTextureArray.setTexture(0, m_componentDeferedrenderGamefield.getTextureDepth());

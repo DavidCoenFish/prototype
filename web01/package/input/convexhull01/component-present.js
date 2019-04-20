@@ -5,7 +5,7 @@ import {sInt, sFloat3} from "./../webgl/shaderuniformdata.js";
 import MaterialWrapperFactory from "./../webgl/materialwrapper.js";
 
 const sVertexShader = `
-precision highp float;
+precision mediump float;
 
 attribute vec2 a_position;
 attribute vec2 a_uv;
@@ -19,7 +19,7 @@ void main() {
 `;
 
 const sFragmentShader = `
-precision highp float;
+precision mediump float;
 
 uniform sampler2D u_samplerAttachment0;
 uniform sampler2D u_samplerDepth;
@@ -29,7 +29,7 @@ varying vec2 v_uv;
 
 void main() {
 	vec3 attachment0 = texture2D(u_samplerAttachment0, v_uv).xyz;
-	float depth = texture2D(u_samplerDepth, v_uv).x;
+	highp float depth = texture2D(u_samplerDepth, v_uv).x;
 	if (1.0 <= depth){
 		discard;
 	}
