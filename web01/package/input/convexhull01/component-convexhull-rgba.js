@@ -9,8 +9,6 @@ const sVertexShader = `
 precision mediump float;
 
 attribute vec4 a_sphere;
-attribute vec4 a_colour0;
-attribute vec4 a_colour1;
 attribute vec4 a_plane0;
 attribute vec4 a_plane1;
 attribute vec4 a_plane2;
@@ -28,8 +26,6 @@ uniform vec3 u_cameraUp;
 uniform vec3 u_cameraPos;
 uniform float u_cameraFar;
 
-varying vec4 v_colour0;
-varying vec4 v_colour1;
 varying float v_keepOrDiscard;
 
 varying vec2 v_uv;
@@ -91,8 +87,6 @@ void main() {
 	v_uv = vec2((screenX / 2.0) + 0.5, (screenY / 2.0) + 0.5) - (v_uvScale * 0.5);
 
 	v_sphere = a_sphere;
-	v_colour0 = a_colour0;
-	v_colour1 = a_colour1;
 	v_plane0 = a_plane0;
 	v_plane1 = a_plane1;
 	v_plane2 = a_plane2;
@@ -117,8 +111,6 @@ uniform vec3 u_cameraPos;
 uniform vec4 u_cameraFovhFovvFarClip;
 uniform float u_cameraFar;
 
-varying vec4 v_colour0;
-varying vec4 v_colour1;
 varying float v_keepOrDiscard;
 
 varying vec2 v_uv;
@@ -178,11 +170,6 @@ void main() {
 	vec2 diff = (gl_PointCoord - vec2(.5, .5)) * 2.0;
 	if (1.0 < dot(diff, diff)) {
 		discard;
-// 		gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-// #ifdef GL_EXT_frag_depth
-// 		gl_FragDepthEXT = 0.0;
-// #endif
-// 		return;
 	}
 
 	vec3 screenEyeRay = texture2D(u_sampler0, v_uv + (v_uvScale * gl_PointCoord)).xyz;
@@ -203,18 +190,13 @@ void main() {
 
 	if (distanceFromFarClip == 0.0){
 		discard;
-// 		gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
-// #ifdef GL_EXT_frag_depth
-// 		gl_FragDepthEXT = 0.0;
-// #endif
-// 		return;
 	}
 
 	float distance = u_cameraFar - distanceFromFarClip;
 	vec3 worldPos = u_cameraPos + (worldRay * distance);
 	float colourDistance = length(worldPos - v_sphere.xyz);
 
-	gl_FragColor = mix(v_colour1, v_colour0, colourDistance / v_sphere.w);
+	gl_FragColor = vec4(0.75,0.75,0.75,0.5); // v_colour0; //mix(v_colour1, v_colour0, colourDistance / v_sphere.w);
 #ifdef GL_EXT_frag_depth
 	gl_FragDepthEXT = distance / u_cameraFar;
 #endif
@@ -223,8 +205,6 @@ void main() {
 
 const sVertexAttributeNameArray = [
 	"a_sphere",
-	"a_colour0",
-	"a_colour1",
 	"a_plane0",
 	"a_plane1",
 	"a_plane2",

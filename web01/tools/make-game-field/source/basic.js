@@ -57,10 +57,10 @@ const makeColourLerp = function(in_colour0, in_colour1, in_ratio){
 
 const sHalfSqrt3 = 0.86602540378443864676372317075294;
 const sQuaterSqrt3 = 0.43301270189221932338186158537647;
-const sBaseColourNode = [12.0/255.0, 12.0/255.0, 12.0/255.0, 0.5];
+const sBaseColourNode = [200.0/255.0, 200.0/255.0, 200.0/255.0, 0.5];
 const sBaseColourNodeA = [192.0/255.0, 186.0/255.0, 0.0/255.0, 0.0];
 const sBaseColourNodeB = [192.0/255.0, 17.0/255.0, 0.0/255.0, 0.25];
-const sBaseColourNodeC = [255.0/255.0, 0.0/255.0, 0.0/255.0, 0.0];
+const sBaseColourNodeC = [255.0/255.0, 255.0/255.0, 200.0/255.0, 0.0];
 
 const makeNode = function(in_nodeOrigin, in_objectId, in_radius, in_low, in_high, in_colour0, in_colour1){
 	const result = {

@@ -43,8 +43,9 @@ void main() {
 	float ambient = 255.0/255.0;
 	vec3 colour = deferedRGBA.xyz * (ambient + getEmittance(deferedRGBA.w));
 
-	gl_FragColor = vec4(colour, 1.0);
-	//gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+	//gl_FragColor = vec4(colour, 1.0);
+	//gl_FragColor = vec4(0.5, 0.5, 0.5, 1.0);
+	gl_FragColor = deferedRGBA;
 }
 `;
 
@@ -53,15 +54,15 @@ const sVertexAttributeNameArray = [
 	"a_uv",
 ];
 const sUniformNameMap = {
-	"u_samplerCameraRay" : sInt,
+	//"u_samplerCameraRay" : sInt,
 	"u_samplerDeferedRGBA" : sInt,
-	"u_samplerDepth" : sInt
+	//"u_samplerDepth" : sInt
 };
 
 
 export default function(in_resourceManager, in_webGLState, in_textureCameraRay, in_textureDeferedRGBA, in_textureDepth){
 	var m_componentModel = ComponentModelScreenQuadFactory(in_resourceManager, in_webGLState);
-	var m_textureArray = [in_textureCameraRay, in_textureDeferedRGBA, in_textureDepth];
+	var m_textureArray = [in_textureDeferedRGBA, in_textureCameraRay, in_textureDepth];
 	const m_material = MaterialWrapperFactory(
 		m_textureArray,
 		undefined,
@@ -80,8 +81,8 @@ export default function(in_resourceManager, in_webGLState, in_textureCameraRay, 
 	const m_shader = ShaderWrapperFactory(in_webGLState, sVertexShader, sFragmentShader, sVertexAttributeNameArray, sUniformNameMap);
 
 	var m_state = {
-		"u_samplerCameraRay" : 0,
-		"u_samplerDeferedRGBA" : 1,
+		"u_samplerDeferedRGBA" : 0,
+		"u_samplerCameraRay" : 1,
 		"u_samplerDepth" : 2,
 	};
 
@@ -94,8 +95,8 @@ export default function(in_resourceManager, in_webGLState, in_textureCameraRay, 
 			return;
 		},
 		"setTexture" : function(in_textureCameraRay, in_textureDeferedRGBA, in_textureDepth){
-			m_textureArray[0] = in_textureCameraRay;
-			m_textureArray[1] = in_textureDeferedRGBA;
+			m_textureArray[0] = in_textureDeferedRGBA;
+			m_textureArray[1] = in_textureCameraRay;
 			m_textureArray[2] = in_textureDepth;
 			return;
 		},

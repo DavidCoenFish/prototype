@@ -15,7 +15,7 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 		RenderTargetDataFactoryAttachment0ByteRGBA,
 		RenderTargetDataFactoryDepthInt
 	], in_width, in_height);
-	const m_background = Colour4FactoryFloat32(0.0, 0.0, 0.0, 0.0);
+	const m_background = Colour4FactoryFloat32(0.0, 0.0, 0.0, 1.0);
 	var m_componentConvexHullRgba = ComponentConvexHullRgbaFactory(in_resourceManager, in_webGLState, in_state, in_texture);
 
 	//public methods ==========================
