@@ -330,11 +330,13 @@ export default function(
 			return;
 		},
 
+
+		// reads from current frame object
 		//in_formatEnumName
 		//ALPHA, RGB, RGBA
 		"readTexturePixel" : function(in_textureWrapper, in_formatEnumName, in_x, in_y, in_width, in_height){
 			//in_textureWrapper.apply(m_webGLContextWrapper, 0);
-			setTexture(0, in_textureWrapper);
+			//setTexture(0, in_textureWrapper);
 
 			var elementsPerPixel = 0;
 			if (in_formatEnumName === "ALPHA") {
