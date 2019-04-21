@@ -16,7 +16,7 @@ export default function(in_currentTaskFunction, in_topLevelElement, in_webGLStat
 	var m_canvasWidth = in_webGLState.getCanvasWidth();
 	var m_canvasHeight = in_webGLState.getCanvasHeight();
 	const m_viewport = Vector2FactoryFloat32(m_canvasWidth, m_canvasHeight);
-	const m_fovhradian = fromDegrees(210.0);
+	const m_fovhradian = fromDegrees(120.0);
 	const m_componentCameraRay = ComponentCameraRayFactory(m_resourceManager, in_webGLState, m_fovhradian, m_canvasWidth, m_canvasHeight); 
 	const m_state = {
 		"u_sampler0" : 0,

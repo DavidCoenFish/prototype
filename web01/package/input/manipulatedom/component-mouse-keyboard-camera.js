@@ -7,9 +7,10 @@ import {
 	multiplication as QuaternionMultiplication
 	} from './../core/quaternion.js'
 
-const getInside = function(in_radius, in_x0, in_y0, in_x1, in_y1){
-	const offsetX = in_x0 - in_x1;
-	const offsetY = in_y0 - in_y1;
+const getInside = function(in_radius, in_width, in_height, in_x1, in_y1){
+	const offsetX = (in_width * 0.5) - in_x1;
+	const aspect = in_width / in_height;
+	const offsetY = (in_width * 0.5) - (in_y1 * aspect);
 	const dot = (offsetX * offsetX) + (offsetY * offsetY);
 	const inside = dot < (in_radius * in_radius);
 	return inside;
@@ -143,9 +144,8 @@ export default function(in_targetElement, inout_state){
 		const lmb = (0 !== (in_event.buttons & 1));
 
 		if (true === lmb){ //if in circle, do yaw and pitch, else roll
-			const innerRadius = Math.min(rect.width, rect.height) * 0.45;
-
-			const inside = getInside(innerRadius, rect.width * 0.5, rect.height * 0.5, x, y);
+			const innerRadius = rect.width * 0.45;
+			const inside = getInside(innerRadius, rect.width, rect.height, x, y);
 			if (inside){
 				var yaw = calculateYawPitch(deltaX / innerRadius);
 				var pitch = calculateYawPitch(deltaY / innerRadius);
