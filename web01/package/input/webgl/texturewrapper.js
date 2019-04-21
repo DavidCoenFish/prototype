@@ -53,6 +53,9 @@ export const factory = function(
 		"getHeight" : function(){
 			return in_height;
 		},
+		"getTypeEnumName" : function(){
+			return in_typeEnumName;
+		},
 		"destroy" : function(){
 			in_webGLState.removeResourceContextCallbacks(restoredCallback, lostCallback);
 		},

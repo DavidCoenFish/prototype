@@ -330,6 +330,46 @@ export default function(
 			return;
 		},
 
+		//in_formatEnumName
+		//ALPHA, RGB, RGBA
+		"readTexturePixel" : function(in_textureWrapper, in_formatEnumName, in_x, in_y, in_width, in_height){
+			//in_textureWrapper.apply(m_webGLContextWrapper, 0);
+			setTexture(0, in_textureWrapper);
+
+			var elementsPerPixel = 0;
+			if (in_formatEnumName === "ALPHA") {
+				elementsPerPixel = 1;
+			} else if (in_formatEnumName === "RGB") {
+				elementsPerPixel = 3;
+			} else if (in_formatEnumName === "RGBA") {
+				elementsPerPixel = 4;
+			} else {
+				throw new error("readTexturePixel unknown format:" + in_formatEnumName);
+			}
+
+			var pixels = undefined;
+			const typeEnumName = in_textureWrapper.getTypeEnumName();
+			if (typeEnumName === "UNSIGNED_BYTE") {
+				pixels = new Uint8Array(in_width * in_height * elementsPerPixel);
+			} else if ((typeEnumName === "UNSIGNED_SHORT_5_6_5") ||
+				(typeEnumName === "UNSIGNED_SHORT_5_6_5") ||
+				(typeEnumName === "UNSIGNED_SHORT_5_6_5")) {
+				pixels = new Uint16Array(in_width * in_height * elementsPerPixel);
+			} else if (typeEnumName === "FLOAT"){
+				pixels = new Float32Array(in_width * in_height * elementsPerPixel);
+			} else {
+				throw new error("readTexturePixel unknown type:" + typeEnumName);
+			}
+
+			//void gl.readPixels(x, y, width, height, format, type, pixels); 
+			const formatEnum = m_webGLContextWrapper.getEnum(in_formatEnumName);
+			const typeEnum = m_webGLContextWrapper.getEnum(typeEnumName);
+			m_webGLContextWrapper.callMethod("readPixels", in_x, in_y, in_width, in_height, formatEnum, typeEnum, pixels);
+
+			return pixels;
+		},
+
+
 		"getExtention" : function(in_extentionName){
 			const result = m_webGLContextWrapper.callMethod("getExtension", in_extentionName);
 			return result;

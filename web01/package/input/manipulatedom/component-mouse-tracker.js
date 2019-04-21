@@ -10,9 +10,13 @@ export default function(in_targetElement, in_callbackArray){
 	const setNew = function(in_x, in_y){
 		if (undefined !== m_x){
 			m_deltaX = in_x - m_x;
+		} else {
+			m_deltaX = 0.0;
 		}
 		if (undefined !== m_y){
 			m_deltaY = in_y - m_y;
+		} else {
+			m_deltaY = 0.0;
 		}
 		m_x = in_x;
 		m_y = in_y;
@@ -24,9 +28,10 @@ export default function(in_targetElement, in_callbackArray){
 		return;
 	}
 
-
 	//https://stackoverflow.com/questions/7790725/javascript-track-mouse-position
 	const mouseMoveCallback = function(in_event){
+		//console.log("mousemove");
+
 		//m_lmb = (0 !== (in_event.buttons & 1));
 
 		in_event = in_event || window.event; // IE-ism
@@ -53,6 +58,11 @@ export default function(in_targetElement, in_callbackArray){
 		return;
 	}
 
+	const mouseLeaveCallback = function(in_event){
+		//console.log("mouseleave");
+		m_x = undefined;
+		m_y = undefined;
+	}
 
 	const mouseDownCallback = function(in_event){
 		//console.log("mouseDownCallback:" + in_event.buttons);
@@ -72,6 +82,7 @@ export default function(in_targetElement, in_callbackArray){
 	const that = Object.create({
 		"destroy" : function(){
 			in_targetElement.removeEventListener("mousemove", mouseMoveCallback);
+			in_targetElement.removeEventListener("mouseleave", mouseLeaveCallback);
 			in_targetElement.removeEventListener("mousedown", mouseDownCallback);
 			in_targetElement.removeEventListener("mouseup", mouseUpCallback);
 			return;
@@ -88,6 +99,7 @@ export default function(in_targetElement, in_callbackArray){
 	});
 
 	in_targetElement.addEventListener("mousemove", mouseMoveCallback);
+	in_targetElement.addEventListener("mouseleave", mouseLeaveCallback);
 	in_targetElement.addEventListener("mousedown", mouseDownCallback);
 	in_targetElement.addEventListener("mouseup", mouseUpCallback);
 

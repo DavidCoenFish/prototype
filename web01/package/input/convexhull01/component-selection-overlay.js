@@ -134,6 +134,7 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 	var m_viewportWidthHeight = Vector2FactoryFloat32(in_width, in_height);
 	var m_mouseXY = Vector2FactoryFloat32(-1000.0, -1000.0);
 	var m_radiusInnerOuter = Vector2FactoryFloat32(0.05, 0.2);
+	var m_selectionObjectID_00 = Vector2FactoryFloat32(0.0, 1.0/256.0);
 	var m_state = {
 		"u_samplerSelection" : 0,
 		"u_samplerGrow" : 1,
@@ -141,13 +142,13 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 		"u_mouseXY" : m_mouseXY.getRaw(),
 		"u_radiusInnerOuter" : m_radiusInnerOuter.getRaw(),
 
-		"u_selectionObjectID_00" : Vector2FactoryFloat32(1.0/255.0, 0.0).getRaw(),
-		"u_selectionColour_00" : Vector4FactoryFloat32(1.0, 0.0, 1.0, 0.5).getRaw(),
-		"u_selectionObjectID_01" : Vector2FactoryFloat32(2.0/255.0, 0.0).getRaw(),
+		"u_selectionObjectID_00" : m_selectionObjectID_00.getRaw(),
+		"u_selectionColour_00" : Vector4FactoryFloat32(1.0, 0.0, 0.0, 0.5).getRaw(),
+		"u_selectionObjectID_01" : Vector2FactoryFloat32(0.0, 2.0/255.0).getRaw(),
 		"u_selectionColour_01" : Vector4FactoryFloat32(1.0, 1.0, 0.0, 0.5).getRaw(),
-		"u_selectionObjectID_02" : Vector2FactoryFloat32(3.0/255.0, 0.0).getRaw(),
+		"u_selectionObjectID_02" : Vector2FactoryFloat32(0.0, 3.0/255.0).getRaw(),
 		"u_selectionColour_02" : Vector4FactoryFloat32(1.0, 0.0, 1.0, 0.5).getRaw(),
-		"u_selectionObjectID_03" : Vector2FactoryFloat32(4.0/255.0, 0.0).getRaw(),
+		"u_selectionObjectID_03" : Vector2FactoryFloat32(0.0, 4.0/255.0).getRaw(),
 		"u_selectionColour_03" : Vector4FactoryFloat32(0.0, 1.0, 1.0, 0.5).getRaw()
 	};
 
@@ -160,8 +161,29 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 				m_viewportWidthHeight.setX(in_width);
 				m_viewportWidthHeight.setY(in_height);
 			}
-			m_mouseXY.setX(in_mouseTracker.getX()),
-			m_mouseXY.setY(in_mouseTracker.getY())
+			var mouseX = in_mouseTracker.getX();
+			var mouseY = in_mouseTracker.getY();
+			if ((undefined === mouseX) || (undefined === mouseY)){
+				m_mouseXY.setX(-9000.0);
+				m_mouseXY.setY(-9000.0);
+				m_selectionObjectID_00.setX(1.0);
+				m_selectionObjectID_00.setY(1.0);
+			} else {
+				m_mouseXY.setX(mouseX);
+				m_mouseXY.setY(mouseY);
+				var pixels = in_webGLState.readTexturePixel(in_textureGrow, "RGBA", mouseX, in_height - mouseY - 1, 1, 1);
+				//console.log(pixels);
+				var a = pixels[0];
+				var b = pixels[1];
+				if ((a === 0) && (b === 0)){
+					m_selectionObjectID_00.setX(1.0);
+					m_selectionObjectID_00.setY(1.0);
+				} else {
+					m_selectionObjectID_00.setX(a / 255.0);
+					m_selectionObjectID_00.setY(b / 255.0);
+				}
+			}
+
 			//console.log("x:" + m_mouseXY.getX());
 			//console.log("y:" + m_mouseXY.getY());
 
@@ -174,7 +196,9 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 
 			return;
 		},
-		"setTexture" : function(in_textureSelection, in_textureGrow){
+		"setTexture" : function(in_newTextureSelection, in_newTextureGrow){
+			in_textureSelection = in_newTextureSelection;
+			in_textureGrow = in_newTextureGrow;
 			m_textureArray[0] = in_textureSelection;
 			m_textureArray[1] = in_textureGrow;
 			return;
