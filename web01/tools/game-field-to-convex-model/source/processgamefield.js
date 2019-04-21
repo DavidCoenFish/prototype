@@ -163,8 +163,10 @@ const appendNodeToModel = function(inout_model, in_node){
 	appendArray(inout_model.modelSphereData, sphere);
 	appendArrayUint16ToUint8(inout_model.objectID, in_node.objectid);
 	//downstream, colour is all balck, issue with mediump norm? try float and different order
-	//appendArrayColourToUint8(inout_model.colour0, in_node.colour0);
-	//appendArrayColourToUint8(inout_model.colour1, in_node.colour1);
+	appendArrayColourToUint8(inout_model.colour0, in_node.colour0);
+	appendArrayColourToUint8(inout_model.colour1, in_node.colour1);
+	//appendArray(inout_model.colour0, in_node.colour0);
+	//appendArray(inout_model.colour1, in_node.colour1);
 	appendArray(inout_model.modelPlane0, makePlaneRelative(sphere, in_node.convexhull[0]));
 	appendArray(inout_model.modelPlane1, makePlaneRelative(sphere, in_node.convexhull[1]));
 	appendArray(inout_model.modelPlane2, makePlaneRelative(sphere, in_node.convexhull[2]));
@@ -173,9 +175,6 @@ const appendNodeToModel = function(inout_model, in_node){
 	appendArray(inout_model.modelPlane5, makePlaneRelative(sphere, in_node.convexhull[5]));
 	appendArray(inout_model.modelPlane6, makePlaneRelative(sphere, in_node.convexhull[6]));
 	appendArray(inout_model.modelPlane7, makePlaneRelative(sphere, in_node.convexhull[7]));
-
-	appendArray(inout_model.colour0, in_node.colour0);
-	appendArray(inout_model.colour1, in_node.colour1);
 
 	return;
 }
@@ -199,9 +198,9 @@ export default function(in_webGLState){
 			"a_plane5" : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("${Base64.Float32ArrayToBase64(in_model.modelPlane5)}"), "STATIC_DRAW", false),
 			"a_plane6" : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("${Base64.Float32ArrayToBase64(in_model.modelPlane6)}"), "STATIC_DRAW", false),
 			"a_plane7" : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("${Base64.Float32ArrayToBase64(in_model.modelPlane7)}"), "STATIC_DRAW", false),
-			"a_colour0" : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("${Base64.Float32ArrayToBase64(in_model.colour0)}"), "STATIC_DRAW", false),
-			"a_colour1" : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("${Base64.Float32ArrayToBase64(in_model.colour1)}"), "STATIC_DRAW", false),
-			"a_objectID" : ModelDataStream(in_webGLState, "BYTE", 2, Base64ToUint8Array("${Base64.Uint8ArrayToBase64(in_model.objectID)}"), "STATIC_DRAW", true)
+			"a_colour0" : ModelDataStream(in_webGLState, "UNSIGNED_BYTE", 4, Base64ToUint8Array("${Base64.Uint8ArrayToBase64(in_model.colour0)}"), "STATIC_DRAW", true),
+			"a_colour1" : ModelDataStream(in_webGLState, "UNSIGNED_BYTE", 4, Base64ToUint8Array("${Base64.Uint8ArrayToBase64(in_model.colour1)}"), "STATIC_DRAW", true),
+			"a_objectID" : ModelDataStream(in_webGLState, "UNSIGNED_BYTE", 2, Base64ToUint8Array("${Base64.Uint8ArrayToBase64(in_model.objectID)}"), "STATIC_DRAW", true)
 		}
 	);
 }
