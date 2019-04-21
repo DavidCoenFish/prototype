@@ -127,7 +127,7 @@ export default function(in_resourceManager, in_webGLState, in_state, in_texture)
 	const m_skySpread = -0.5; //-0.9;
 	const m_skyTurbitity = 10.0;
 
-	const m_state = {
+	const m_state = Object.assign({
 		"u_sampler0" : 0,
 		"u_sunAzimuthAltitude" : m_sunAzimuthAltitude.getRaw(),
 		"u_sunTint" : m_sunTint.getRaw(),
@@ -137,13 +137,12 @@ export default function(in_resourceManager, in_webGLState, in_state, in_texture)
 		"u_fogTint" : m_fogTint.getRaw(),
 		"u_skySpread" : m_skySpread,
 		"u_skyTurbitity" : m_skyTurbitity
-	};
+	}, in_state);
 
 	//public methods ==========================
 	const that = Object.create({
 		"draw" : function(){
-			var state = Object.assign({}, m_state, in_state);
-			in_webGLState.applyShader(m_shader, state);
+			in_webGLState.applyShader(m_shader, m_state);
 			in_webGLState.applyMaterial(m_material);
 			in_webGLState.drawModel(m_modelComponent.getModel());
 			return;

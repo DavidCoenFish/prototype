@@ -116,7 +116,6 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 
 			in_webGLState.applyRenderTarget(m_componentRenderTarget.getRenderTarget());
 
-			//var state = Object.assign({}, m_state, in_state);
 			in_webGLState.applyShader(m_shader, m_state);
 			in_webGLState.applyMaterial(m_material);
 			in_webGLState.drawModel(m_modelComponent.getModel());

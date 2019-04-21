@@ -259,9 +259,9 @@ export default function(in_resourceManager, in_webGLState, in_state, in_texture)
 	const m_shader = ShaderWrapperFactory(in_webGLState, sVertexShader, sFragmentShader, sVertexAttributeNameArray, sUniformNameMap);
 	const m_model = ModelFactory(in_webGLState);
 
-	const m_state = {
+	const m_state = Object.assign({
 		"u_sampler0" : 0
-	};
+	}, in_state);
 
 	//public methods ==========================
 	const result = Object.create({
@@ -270,8 +270,7 @@ export default function(in_resourceManager, in_webGLState, in_state, in_texture)
 			return;
 		},
 		"draw" : function(){
-			var state = Object.assign({}, m_state, in_state);
-			in_webGLState.applyShader(m_shader, state);
+			in_webGLState.applyShader(m_shader, m_state);
 			in_webGLState.applyMaterial(m_material);
 			in_webGLState.drawModel(m_model);
 
