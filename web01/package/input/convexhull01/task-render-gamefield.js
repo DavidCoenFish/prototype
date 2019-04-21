@@ -9,10 +9,11 @@ import ResourceManagerFactory from './../core/resourcemanager.js';
 import {fromDegrees} from './../core/radians.js';
 import {factoryFloat32 as Vector2FactoryFloat32} from './../core/vector2.js';
 import ComponentCameraFactory from './../manipulatedom/component-mouse-keyboard-camera.js';
+import ComponentMouseTrackerFactory from './../manipulatedom/component-mouse-tracker.js';
 //import ComponentWorldGridFactory from './../webgl/component-world-grid3.js';
 
 export default function(in_currentTaskFunction, in_topLevelElement, in_webGLState, in_timeDelta){
-
+	var m_mouseTracker = ComponentMouseTrackerFactory(in_topLevelElement, []);
 	const m_resourceManager = ResourceManagerFactory();
 	var m_canvasWidth = in_webGLState.getCanvasWidth();
 	var m_canvasHeight = in_webGLState.getCanvasHeight();
@@ -27,13 +28,13 @@ export default function(in_currentTaskFunction, in_topLevelElement, in_webGLStat
 	const m_componentCamera = ComponentCameraFactory( in_topLevelElement, m_state );
 	const m_componentDeferedrenderGamefield = ComponentDeferedrenderGamefield(m_resourceManager, in_webGLState, m_canvasWidth, m_canvasHeight, m_state, m_componentCameraRay.getTexture());
 	const m_componentDefferedLight = ComponentDeferedrenderLight(m_resourceManager, in_webGLState, m_canvasWidth, m_canvasHeight, m_componentCameraRay.getTexture(), m_componentDeferedrenderGamefield.getTextureAttachment0(), m_componentDeferedrenderGamefield.getTextureDepth());
-	const m_componentPresent = ComponentPresentFactory(m_resourceManager, in_webGLState, m_state, m_componentCameraRay.getTexture(), m_componentDefferedLight.getTexture(), m_componentDeferedrenderGamefield.getTextureDepth());
-	const m_componentSelectionrenderGamefield = ComponentSelectionrenderGamefield(m_resourceManager, in_webGLState, m_canvasWidth, m_canvasHeight, m_state, m_componentCameraRay.getTexture());
+	const m_componentSelectionrenderGamefield = ComponentSelectionrenderGamefield(m_resourceManager, in_webGLState, m_canvasWidth, m_canvasHeight, m_state, m_componentCameraRay.getTexture(), m_mouseTracker);
+	const m_componentPresent = ComponentPresentFactory(m_resourceManager, in_webGLState, m_state, m_componentCameraRay.getTexture(), m_componentDefferedLight.getTexture(), m_componentDeferedrenderGamefield.getTextureDepth(), m_componentSelectionrenderGamefield.getTextureSelectionOverlay());
 
 	const m_componentScreenTextureArray = ComponentScreenTextureArrayFactory(m_resourceManager, in_webGLState, [
 		m_componentDeferedrenderGamefield.getTextureDepth(),
 		m_componentDeferedrenderGamefield.getTextureAttachment0(),
-		m_componentSelectionrenderGamefield.getTextureAttachment0()
+		m_componentSelectionrenderGamefield.getTextureSelectionOverlay()
 		], 4);
 	var m_keepGoing = true;
 
@@ -43,6 +44,7 @@ export default function(in_currentTaskFunction, in_topLevelElement, in_webGLStat
 			m_componentScreenTextureArray.destroy();
 			m_componentCamera.destroy();
 			m_worldGrid.destroy();
+			m_mouseTracker.destroy();
 			return undefined;
 		}
 
@@ -64,6 +66,7 @@ export default function(in_currentTaskFunction, in_topLevelElement, in_webGLStat
 
 		m_componentPresent.setTextureCameraRay(m_componentCameraRay.getTexture());
 		m_componentPresent.setTextureDeferedrender(m_componentDefferedLight.getTexture(), m_componentDeferedrenderGamefield.getTextureDepth());
+		m_componentPresent.setTextureOverlay(m_componentSelectionrenderGamefield.getTextureSelectionOverlay());
 
 		in_webGLState.applyRenderTarget();
 		m_componentPresent.draw();
@@ -71,7 +74,7 @@ export default function(in_currentTaskFunction, in_topLevelElement, in_webGLStat
 		//debug draw texture array
 		m_componentScreenTextureArray.setTexture(0, m_componentDeferedrenderGamefield.getTextureDepth());
 		m_componentScreenTextureArray.setTexture(1, m_componentDeferedrenderGamefield.getTextureAttachment0());
-		m_componentScreenTextureArray.setTexture(2, m_componentSelectionrenderGamefield.getTextureAttachment0());
+		m_componentScreenTextureArray.setTexture(2, m_componentSelectionrenderGamefield.getTextureSelectionOverlay());
 		m_componentScreenTextureArray.draw();
 
 		return in_currentTaskFunction;

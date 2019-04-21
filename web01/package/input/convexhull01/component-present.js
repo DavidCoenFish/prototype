@@ -48,7 +48,23 @@ const sUniformNameMap = {
 	"u_fogTint" : sFloat3
 };
 
-export default function(in_resourceManager, in_webGLState, in_state, in_cameraRay, in_attachment0, in_depth){
+const sOverlayFragmentShader = `
+precision mediump float;
+
+uniform sampler2D u_samplerOverlay;
+varying vec2 v_uv;
+
+void main() {
+	gl_FragColor = texture2D(u_samplerOverlay, v_uv);
+}
+`;
+
+const sOverlayUniformNameMap = {
+	"u_samplerOverlay" : sInt
+};
+
+
+export default function(in_resourceManager, in_webGLState, in_state, in_cameraRay, in_attachment0, in_depth, in_overlay){
 	const m_componentSkyBox = ComponentSkyBox(in_resourceManager, in_webGLState, in_state, in_cameraRay);
 	var m_componentModel = ComponentModelScreenQuadFactory(in_resourceManager, in_webGLState);
 	const m_textureArray = [in_attachment0, in_depth];
@@ -59,6 +75,16 @@ export default function(in_resourceManager, in_webGLState, in_state, in_cameraRa
 		"u_samplerDepth" : 1,
 		"u_fogTint" : m_componentSkyBox.getFogTint().getRaw()
 	};
+
+	const m_overlayTextureArray = [in_overlay];
+	const m_overlayMaterial = MaterialWrapperFactory(m_overlayTextureArray
+		, undefined, undefined, true, "SRC_ALPHA", "ONE_MINUS_SRC_ALPHA"
+	);
+	const m_overlayShader = ShaderWrapperFactory(in_webGLState, sVertexShader, sOverlayFragmentShader, sVertexAttributeNameArray, sOverlayUniformNameMap);
+	const m_overlayState = {
+		"u_samplerOverlay" : 0
+	};
+
 
 	//public methods ==========================
 	const result = Object.create({
@@ -72,12 +98,19 @@ export default function(in_resourceManager, in_webGLState, in_state, in_cameraRa
 			m_textureArray[1] = in_depth;
 			return;
 		},
+		"setTextureOverlay" : function(in_overlay){
+			m_overlayTextureArray[0] = in_overlay;
+		},
 		"draw" : function(){
 			m_componentSkyBox.draw();
 			//m_worldGrid.draw();
 
 			in_webGLState.applyShader(m_shader, m_state);
 			in_webGLState.applyMaterial(m_material);
+			in_webGLState.drawModel(m_componentModel.getModel());
+
+			in_webGLState.applyShader(m_overlayShader, m_overlayState);
+			in_webGLState.applyMaterial(m_overlayMaterial);
 			in_webGLState.drawModel(m_componentModel.getModel());
 
 			return;
