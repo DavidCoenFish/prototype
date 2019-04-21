@@ -1,5 +1,7 @@
 import { factoryByteRGB, factoryByteRGBA, factoryDepthInt, factoryFloatRGBA, factoryFloatRGB } from './texturewrapper.js';
 import RenderTargetDataFactory from "./rendertargetdata.js";
+import RenderTargetRenderBufferFactory from "./rendertargetrenderbuffer.js";
+import RenderBufferWrapperFactory from "./renderbufferwrapper.js";
 
 export const RenderTargetDataFactoryAttachment0ByteRGB = function(in_webGLState, in_width, in_height){
 	return RenderTargetDataFactory(
@@ -15,6 +17,20 @@ export const RenderTargetDataFactoryAttachment0ByteRGBA = function(in_webGLState
 		"FRAMEBUFFER", 
 		"COLOR_ATTACHMENT0", 
 		"TEXTURE_2D"
+	);
+}
+
+export const RenderTargetRenderBufferFactoryDepthStencil = function(in_webGLState, in_width, in_height){
+	return RenderTargetRenderBufferFactory(
+		"FRAMEBUFFER",
+		"DEPTH_STENCIL_ATTACHMENT",
+		"RENDERBUFFER",
+		RenderBufferWrapperFactory(
+			in_webGLState,
+			"RENDERBUFFER",
+			"DEPTH_STENCIL",
+			in_width, in_height
+		)
 	);
 }
 
