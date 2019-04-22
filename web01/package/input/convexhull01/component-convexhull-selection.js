@@ -1,4 +1,4 @@
-import ModelFactory from "./model.js";
+import ModelObjectIDFactory from "./modelhullobjectid.js";
 import ShaderWrapperFactory from "./../webgl/shaderwrapper.js";
 import {sInt, sFloat, sFloat2, sFloat3} from "./../webgl/shaderuniformdata.js";
 import MaterialWrapperFactory from "./../webgl/materialwrapper.js";
@@ -247,7 +247,7 @@ export default function(in_resourceManager, in_webGLState, in_state, in_texture)
 		true
 	);
 	const m_shader = ShaderWrapperFactory(in_webGLState, sVertexShader, sFragmentShader, sVertexAttributeNameArray, sUniformNameMap);
-	const m_model = ModelFactory(in_webGLState);
+	const m_model = ModelObjectIDFactory(in_webGLState);
 
 	const m_state = Object.assign({
 		"u_sampler0" : 0

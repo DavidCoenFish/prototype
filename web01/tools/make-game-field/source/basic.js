@@ -1,5 +1,12 @@
 const UnitTest = require("./unittest.js");
 
+const sHalfSqrt3 = 0.86602540378443864676372317075294;
+const sQuaterSqrt3 = 0.43301270189221932338186158537647;
+const sBaseColourNode = [77.0/255.0, 57.0/255.0, 34.0/255.0, 0.5];
+const sBaseColourNodeA = [255.0/255.0, 0.0/255.0, 0.0/255.0, 0.5];
+const sBaseColourNodeB = [24.0/255.0, 24.0/255.0, 32.0/255.0, 0.0];
+
+
 // output = {
 // 	background : { colour:|,gradient:|,envSphere:|,},
 // 	nodeArray : [{
@@ -55,13 +62,6 @@ const makeColourLerp = function(in_colour0, in_colour1, in_ratio){
 		];
 }
 
-const sHalfSqrt3 = 0.86602540378443864676372317075294;
-const sQuaterSqrt3 = 0.43301270189221932338186158537647;
-const sBaseColourNode = [200.0/255.0, 200.0/255.0, 200.0/255.0, 0.5];
-const sBaseColourNodeA = [192.0/255.0, 186.0/255.0, 0.0/255.0, 0.0];
-const sBaseColourNodeB = [192.0/255.0, 17.0/255.0, 0.0/255.0, 0.25];
-const sBaseColourNodeC = [255.0/255.0, 255.0/255.0, 200.0/255.0, 0.0];
-
 const makeNode = function(in_nodeOrigin, in_objectId, in_radius, in_low, in_high, in_colour0, in_colour1){
 	const result = {
 		"objectid" : in_objectId,
@@ -85,11 +85,10 @@ const makeNode = function(in_nodeOrigin, in_objectId, in_radius, in_low, in_high
 	return result;
 }
 
-const makeShere = function(in_objectIDorUndefined, in_x, in_y, in_z, in_radius){
+const makeShere = function(in_objectIDorUndefined, in_x, in_y, in_z, in_radius, in_rgba){
 	const result = {
 		"sphere" : [in_x, in_y, in_z, in_radius],
-		"colour0" : [1,1,1, 0.5],
-		"colour1" : [1,1,1, 0.5]
+		"colour" : in_rgba
 	};
 	if (undefined !== in_objectIDorUndefined){
 		result["objectid"] = in_objectIDorUndefined;
@@ -112,11 +111,18 @@ const addNodeConvexHull = function(trace, out_nodearray, indexX, indexY, width, 
 	var nodeOrigin = makeNodeOrigin(radius, indexX, indexY, width, height);
 	//console.log("index:" + indexX + ", " + indexY);
 	//console.log("nodeOrigin:" + nodeOrigin.x + ", " + nodeOrigin.y);
-	var height = makeNodeHeight(radius, indexX, indexY, width, height);
-	//var colour = makeNodeColour(radius, indexX, indexY, width, height);
-	var colour = sBaseColourNodeC;
-	out_nodearray.push(makeNode(nodeOrigin, trace, radius, -1, height, sBaseColourNode, colour));
-	return trace + 1;
+	var high = makeNodeHeight(radius, indexX, indexY, width, height);
+	var colour = makeNodeColour(radius, indexX, indexY, width, height);
+	out_nodearray.push(makeNode(nodeOrigin, trace, radius, -1, high, sBaseColourNode, colour));
+	trace++;
+
+	if (((indexX === 0) || (indexX === (width - 1))) &&
+		((indexY === 0) || (indexY === (height - 1)))){
+		out_nodearray.push(makeShere(trace, nodeOrigin.x, nodeOrigin.y, high + 1.0, 1.0, colour));
+		trace++;
+	}
+
+	return trace;
 }
 
 const run5 = function(){
@@ -158,7 +164,7 @@ const run = function(){
 		}
 	}
 
-	result.nodearray.push(makeShere(undefined, 0, 0, 3, 1));
+	result.nodearray.push(makeShere(undefined, 0, 0, 5, 2.0, [1.0, 1.0, 1.0, 0.0]));
 
 	return result;
 }

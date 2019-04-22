@@ -139,6 +139,9 @@ const appendArray = function(in_dest, in_src){
 }
 
 const appendArrayUint16ToUint8 = function(in_dest, in_src){
+	if ((undefined === in_dest) || (undefined === in_src)){
+		return;
+	}
 	in_dest.push(in_src >> 8);
 	in_dest.push(in_src & 255);
 }
@@ -181,6 +184,12 @@ const appendNodeToModel = function(inout_model, in_node){
 
 const printModel = function(in_model){
 	const elementCount = Math.round(in_model.modelSphereData.length / 4);
+	var objectIDText = "";
+	if (undefined !== in_model.objectID){
+		objectIDText = `,
+			"a_objectID" : ModelDataStream(in_webGLState, "UNSIGNED_BYTE", 2, Base64ToUint8Array("${Base64.Uint8ArrayToBase64(in_model.objectID)}"), "STATIC_DRAW", true)
+`;
+	}
 	const result = `
 import { Base64ToUint8Array, Base64ToFloat32Array } from './../core/base64.js';
 import ModelWrapperFactory from './../webgl/modelwrapper.js';
@@ -199,8 +208,7 @@ export default function(in_webGLState){
 			"a_plane6" : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("${Base64.Float32ArrayToBase64(in_model.modelPlane6)}"), "STATIC_DRAW", false),
 			"a_plane7" : ModelDataStream(in_webGLState, "FLOAT", 4, Base64ToFloat32Array("${Base64.Float32ArrayToBase64(in_model.modelPlane7)}"), "STATIC_DRAW", false),
 			"a_colour0" : ModelDataStream(in_webGLState, "UNSIGNED_BYTE", 4, Base64ToUint8Array("${Base64.Uint8ArrayToBase64(in_model.colour0)}"), "STATIC_DRAW", true),
-			"a_colour1" : ModelDataStream(in_webGLState, "UNSIGNED_BYTE", 4, Base64ToUint8Array("${Base64.Uint8ArrayToBase64(in_model.colour1)}"), "STATIC_DRAW", true),
-			"a_objectID" : ModelDataStream(in_webGLState, "UNSIGNED_BYTE", 2, Base64ToUint8Array("${Base64.Uint8ArrayToBase64(in_model.objectID)}"), "STATIC_DRAW", true)
+			"a_colour1" : ModelDataStream(in_webGLState, "UNSIGNED_BYTE", 4, Base64ToUint8Array("${Base64.Uint8ArrayToBase64(in_model.colour1)}"), "STATIC_DRAW", true)${objectIDText}
 		}
 	);
 }
@@ -243,6 +251,37 @@ const runObjectIDModel = function(in_gameField){
 	return result;
 }
 
+const runVisualModel = function(in_gameField){
+	var tempModel = {
+		"modelSphereData" : [],
+		"colour0" : [],
+		"colour1" : [],
+		"modelPlane0" : [],
+		"modelPlane1" : [],
+		"modelPlane2" : [],
+		"modelPlane3" : [],
+		"modelPlane4" : [],
+		"modelPlane5" : [],
+		"modelPlane6" : [],
+		"modelPlane7" : []
+	};
+
+	// nodearray
+	for (var index = 0; index < in_gameField.nodearray.length; ++index){
+		//{"objectid":1,"convexhull":[[0,0,1,0.9122472186352573],[0,0,-1,1],[1,0,0,-7.25],[-1,0,0,8.25],[0.5,0.28867513459481287,0,-5.583333333333333],[0.5,-0.28867513459481287,0,-1.8333333333333337],[-0.5,0.28867513459481287,0,2.166666666666667],[-0.5,-0.28867513459481287,0,5.916666666666666]],"colour":[0.2,0.2,0.5]}
+		var node = in_gameField.nodearray[index];
+		if (!("convexhull" in node) || ("objectid" in node)){
+			continue;
+		}
+		appendNodeToModel(tempModel, node);
+	}
+
+	var result = printModel(tempModel);
+
+	return result;
+}
+
 module.exports = {
-	"runObjectIDModel" : runObjectIDModel
+	"runObjectIDModel" : runObjectIDModel,
+	"runVisualModel" : runVisualModel
 }

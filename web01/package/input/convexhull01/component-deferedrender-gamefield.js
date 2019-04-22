@@ -7,6 +7,7 @@ output [rgba buffer, depth buffer]
 
 import ComponentRenderTargetFactory from './../webgl/component-render-target.js';
 import ComponentConvexHullRgbaFactory from './component-convexhull-rgba.js';
+import ComponentSphereRgbaFactory from './component-sphere-rgba.js';
 import { RenderTargetDataFactoryAttachment0ByteRGBA, RenderTargetDataFactoryDepthInt } from './../webgl/component-render-target-data-factory.js';
 import {factoryFloat32 as Colour4FactoryFloat32} from './../core/colour4.js';
 
@@ -17,6 +18,7 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 	], in_width, in_height);
 	const m_background = Colour4FactoryFloat32(0.0, 0.0, 0.0, 1.0);
 	var m_componentConvexHullRgba = ComponentConvexHullRgbaFactory(in_resourceManager, in_webGLState, in_state, in_texture);
+	var m_componentSphereRgba = ComponentSphereRgbaFactory(in_resourceManager, in_webGLState, in_state, in_texture);
 
 	//public methods ==========================
 	const result = Object.create({
@@ -29,11 +31,13 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 			in_webGLState.applyRenderTarget(m_componentRenderTarget.getRenderTarget());
 			in_webGLState.clear(m_background, 1.0);
 			m_componentConvexHullRgba.draw();
+			m_componentSphereRgba.draw();
 
 			return;
 		},
 		"setTexture" : function(in_texture){
 			m_componentConvexHullRgba.setTexture(in_texture);
+			m_componentSphereRgba.setTexture(in_texture);
 			return;
 		},
 		"getTextureAttachment0" : function(){
@@ -50,6 +54,10 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 			if (undefined !== m_componentConvexHullRgba){
 				m_componentConvexHullRgba.destroy();
 				m_componentConvexHullRgba = undefined;
+			}
+			if (undefined !== m_componentSphereRgba){
+				m_componentSphereRgba.destroy();
+				m_componentSphereRgba = undefined;
 			}
 			return;
 		}

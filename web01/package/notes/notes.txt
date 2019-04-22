@@ -1,11 +1,10 @@
 todo:
 	gameplay field
-			present
-			lighting, screen shadow
-			object rollover
-			object highlight
-		selection and rollover
+		draw sphere
+		camera
+		convex hull editor
 		movement
 		combat
+		draw cylinder
 		ingame ui, text
 	cloth01

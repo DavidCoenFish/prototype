@@ -2,14 +2,14 @@ const Q = require("q");
 const Path = require("path");
 const FileSystem = require("fs");
 const FsExtra = require("fs-extra");
-const AdjustHeight = require("./source/adjust_height.js");
+const ProcessGameField = require("./source/processgamefield.js");
 
 const makeDirectory = function(in_filePath){
 	var deferred = Q.defer();
-	//console.log("makeDirectory:" + in_filePath + " dirname:" + Path.dirname(in_filePath));
+	console.log("makeDirectory:" + in_filePath + " dirname:" + Path.dirname(in_filePath));
 	FileSystem.mkdir(Path.dirname(in_filePath), { recursive: true }, function(error){
 		if (error && (error.code !== 'EEXIST')){
-			//console.log("error:" + error);
+			console.log("error:" + error);
 			throw error;
 		}
 		deferred.resolve(true);
@@ -17,25 +17,22 @@ const makeDirectory = function(in_filePath){
 	return deferred.promise;
 }
 
-const loadGltr = function(in_outputFilePath, in_inputFilePath, in_param){
+const run = function(in_cmd, in_inputFilePath, in_outputFilePath){
 	console.log(new Date().toLocaleTimeString());
 
 	return Q(true).then(function(){
 			return makeDirectory(in_outputFilePath);
-		}).then(function() {	
+		}).then(function() {
 			return FsExtra.readJson(in_inputFilePath);
-		}).then(function(in_rawTriangleArray) {	
-			var result = in_rawTriangleArray;
-			for (var index = 0; index < in_param.length; ++index){
-				if (in_param[index] === "-adjust_height"){
-					++index;
-					height = parseFloat(in_param[index]);
-					result = AdjustHeight.run(result, height);
-				}
+		}).then(function(in_gameField) {
+			if (in_cmd == "objectidmodel"){
+				return ProcessGameField.runObjectIDModel(in_gameField);
+			} else if (in_cmd == "visualmodel"){
+				return ProcessGameField.runVisualModel(in_gameField);
 			}
-			return result;
-		}).then(function(in_rawTriangleArray) {	
-			return FsExtra.writeJSON(in_outputFilePath, in_rawTriangleArray);
+			throw new Error("unknown cmd:" + in_cmd);
+		}).then(function(in_saveData) {	
+			return FsExtra.writeFile(in_outputFilePath, in_saveData);
 		}).then(function() {
 			console.log(new Date().toLocaleTimeString());
 			console.log("done");
@@ -44,4 +41,9 @@ const loadGltr = function(in_outputFilePath, in_inputFilePath, in_param){
 		});
 }
 
-loadGltr(process.argv[2], process.argv[3], process.argv.slice(4));
+console.log(new Date().toLocaleTimeString());
+console.log(process.argv[2]);
+if ("unittest" === process.argv[2]){
+} else {
+	run(process.argv[2], process.argv[3], process.argv[4]);
+}
