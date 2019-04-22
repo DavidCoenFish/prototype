@@ -6,6 +6,7 @@ import {factoryFloat32 as Vector4FactoryFloat32} from './../core/vector4.js';
 import ShaderWrapperFactory from "./../webgl/shaderwrapper.js";
 import {sInt, sFloat2, sFloat4} from "./../webgl/shaderuniformdata.js";
 import MaterialWrapperFactory from "./../webgl/materialwrapper.js";
+import ComponentReadPixelFactory from "./component-readpixel.js";
 
 const sVertexShader = `
 precision mediump float;
@@ -108,6 +109,7 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 	var m_componentRenderTarget = ComponentRenderTargetFactory(in_webGLState, [
 		RenderTargetDataFactoryAttachment0ByteRGBA
 	], in_width, in_height);
+	var m_componentReadPixel = ComponentReadPixelFactory(in_resourceManager, in_webGLState, in_textureGrow);
 
 	var m_modelComponent = modelScreenQuadFactory(in_resourceManager, in_webGLState);
 	var m_textureArray = [in_textureSelection, in_textureGrow];
@@ -163,25 +165,18 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 			}
 			var mouseX = in_mouseTracker.getX();
 			var mouseY = in_mouseTracker.getY();
-			if ((undefined === mouseX) || (undefined === mouseY)){
-				m_mouseXY.setX(-9000.0);
-				m_mouseXY.setY(-9000.0);
+
+			m_componentReadPixel.run(in_textureGrow, mouseX / in_width, 1.0 - (mouseY / in_height));
+			var pixels = m_componentReadPixel.getPixels();
+
+			var a = pixels[0];
+			var b = pixels[1];
+			if ((a === 0) && (b === 0)){
 				m_selectionObjectID_00.setX(1.0);
 				m_selectionObjectID_00.setY(1.0);
 			} else {
-				m_mouseXY.setX(mouseX);
-				m_mouseXY.setY(mouseY);
-				var pixels = in_webGLState.readTexturePixel(in_textureGrow, "RGBA", mouseX, in_height - mouseY - 1, 1, 1);
-				//console.log(pixels);
-				var a = pixels[0];
-				var b = pixels[1];
-				if ((a === 0) && (b === 0)){
-					m_selectionObjectID_00.setX(1.0);
-					m_selectionObjectID_00.setY(1.0);
-				} else {
-					m_selectionObjectID_00.setX(a / 255.0);
-					m_selectionObjectID_00.setY(b / 255.0);
-				}
+				m_selectionObjectID_00.setX(a / 255.0);
+				m_selectionObjectID_00.setY(b / 255.0);
 			}
 
 			//console.log("x:" + m_mouseXY.getX());

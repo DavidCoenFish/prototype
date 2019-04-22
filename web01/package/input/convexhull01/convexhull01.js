@@ -33,6 +33,7 @@ export default function () {
 	var m_task = taskRenderGamefield;
 
 	var m_previousTimeStamp = undefined;
+	var m_keepGoing = true;
 	const callback = function(in_timestamp){
 		if (undefined === m_task){
 			if (undefined !== m_scene){
@@ -48,7 +49,7 @@ export default function () {
 			timeDelta = (in_timestamp - m_previousTimeStamp) / 1000.0;
 		}
 		m_previousTimeStamp = in_timestamp;
-		m_task = m_task(m_task, m_div, m_webGLState, timeDelta);
+		m_task = m_task(m_task, m_div, m_webGLState, timeDelta, m_keepGoing);
 		return true;
 	}
 
@@ -66,10 +67,11 @@ export default function () {
 
 	buttonFactory(document, m_div, "stop", function(){
 		console.log("stop");
-		if (undefined !== m_scene){
-			m_scene.destroy();
-			m_scene = undefined;
-		}
+		m_keepGoing = false;
+		// if (undefined !== m_scene){
+		// 	m_scene.destroy();
+		// 	m_scene = undefined;
+		// }
 	}, {
 		"position": "absolute",
 		"right": "10px",

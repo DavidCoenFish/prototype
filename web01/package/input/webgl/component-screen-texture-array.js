@@ -32,7 +32,7 @@ export default function(in_resourceManager, in_webGLState, in_textureArray, in_s
 		},
 		"destroy" : function(){
 			for (var index = 0; index < m_screenQuadArray.length; ++index){
-				m_screenQuadArray[index].release();
+				m_screenQuadArray[index].destroy();
 			}
 			m_screenQuadArray.length = 0;
 		}
