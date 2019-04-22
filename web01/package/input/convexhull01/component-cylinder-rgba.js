@@ -1,4 +1,4 @@
-import ModelObjectIDFactory from "./modelsphereobjectid.js";
+import ModelObjectIDFactory from "./modelcylinderobjectid.js";
 import ShaderWrapperFactory from "./../webgl/shaderwrapper.js";
 import {sInt, sFloat, sFloat2, sFloat3} from "./../webgl/shaderuniformdata.js";
 import MaterialWrapperFactory from "./../webgl/materialwrapper.js";
@@ -7,6 +7,7 @@ const sVertexShader = `
 precision mediump float;
 
 attribute vec4 a_sphere;
+attribute vec4 a_cylinder;
 attribute vec4 a_colour;
 
 uniform float u_fovhradian;
@@ -23,6 +24,8 @@ varying vec2 v_uv;
 varying vec2 v_uvScale;
 
 varying vec4 v_sphere;
+varying vec4 v_cylinder;
+varying float v_radius2;
 varying vec4 v_colour;
 
 void main() {
@@ -70,6 +73,8 @@ void main() {
 	v_uv = vec2((screenX / 2.0) + 0.5, (screenY / 2.0) + 0.5) - (v_uvScale * 0.5);
 
 	v_sphere = a_sphere;
+	v_cylinder = a_cylinder;
+	v_radius2 = sqrt((a_sphere.w * a_sphere.w) - (a_cylinder.w * a_cylinder.w));
 	v_colour = a_colour;
 }
 `;
@@ -93,6 +98,8 @@ varying vec2 v_uv;
 varying vec2 v_uvScale;
 
 varying vec4 v_sphere;
+varying vec4 v_cylinder;
+varying float v_radius2;
 varying vec4 v_colour;
 
 vec3 makeWorldRay(vec3 in_screenEyeRay){
@@ -101,18 +108,35 @@ vec3 makeWorldRay(vec3 in_screenEyeRay){
 		(in_screenEyeRay.z * u_cameraAt));
 }
 
-//http://viclw17.github.io/2018/07/16/raytracing-ray-sphere-intersection/
-float raySphere(vec4 sphere, vec3 rayNormal, vec3 rayPos, float maxZ){
-	vec3 oc = rayPos - sphere.xyz;
-	float a = dot(rayNormal, rayNormal);
-	float b = 2.0 * dot(oc, rayNormal);
-	float c = dot(oc,oc) - sphere.w*sphere.w;
-	float discriminant = b*b - 4.0*a*c;
-	if(discriminant < 0.0){
-		return maxZ;
-	} else{
-		return min(maxZ, (-b - sqrt(discriminant)) / (2.0*a));
+//https://www.gamedev.net/forums/topic/467789-raycylinder-intersection/
+float rayCylinder(vec3 pos, vec3 normal, float r1, float r2, vec3 eyeRay, vec3 eyePos, float maxDistance){
+	vec3 A = pos - (normal * r1);
+	vec3 B = pos + (normal * r1);
+	vec3 AB = (B - A);
+	vec3 AO = (eyePos - A);
+	vec3 AOxAB = cross(AO, AB);
+	vec3 VxAB = cross(eyeRay, AB);
+	float ab2 = dot(AB, AB);
+	float a = dot(VxAB, VxAB);
+	float b = 2.0 * dot(VxAB, AOxAB); // dot product
+	float c = dot(AOxAB, AOxAB) - (r2 * r2 * ab2);
+
+	float discr = b*b - 4.0*a*c;
+	if (discr < 0.0)
+	{
+		return maxDistance;
 	}
+
+	float temp = sqrt(discr);
+	float x1 = (-b + temp)/(2.0*a);
+	float x2 = (-b - temp)/(2.0*a);
+	float distance = min(x1, x2);
+	if (distance < 0.0)
+	{
+		return maxDistance;
+	}
+
+	return distance;
 }
 
 void main() {
@@ -132,7 +156,7 @@ void main() {
 
 	vec3 screenEyeRay = texture2D(u_samplerCameraRay, v_uv + (v_uvScale * gl_PointCoord)).xyz;
 	vec3 worldRay = makeWorldRay(screenEyeRay);
-	float distance = raySphere(v_sphere, worldRay, u_cameraPos, u_cameraFar);
+	float distance = rayCylinder(v_sphere.xyz, v_cylinder.xyz, v_cylinder.w, v_radius2, worldRay, u_cameraPos, u_cameraFar);
 
 	if (u_cameraFar <= distance) {
 		discard;
@@ -147,6 +171,7 @@ void main() {
 
 const sVertexAttributeNameArray = [
 	"a_sphere",
+	"a_cylinder",
 	"a_colour"
 ];
 const sUniformNameMap = {

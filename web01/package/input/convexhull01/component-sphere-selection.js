@@ -7,7 +7,7 @@ const sVertexShader = `
 precision mediump float;
 
 attribute vec4 a_sphere;
-attribute vec4 a_colour;
+attribute vec2 a_objectID;
 
 uniform float u_fovhradian;
 uniform vec2 u_viewportWidthHeight;
@@ -23,7 +23,7 @@ varying vec2 v_uv;
 varying vec2 v_uvScale;
 
 varying vec4 v_sphere;
-varying vec4 v_colour;
+varying vec2 v_objectID;
 
 void main() {
 	vec3 cameraToAtom = a_sphere.xyz - u_cameraPos;
@@ -70,7 +70,7 @@ void main() {
 	v_uv = vec2((screenX / 2.0) + 0.5, (screenY / 2.0) + 0.5) - (v_uvScale * 0.5);
 
 	v_sphere = a_sphere;
-	v_colour = a_colour;
+	v_objectID = a_objectID;
 }
 `;
 
@@ -93,7 +93,7 @@ varying vec2 v_uv;
 varying vec2 v_uvScale;
 
 varying vec4 v_sphere;
-varying vec4 v_colour;
+varying vec2 v_objectID;
 
 vec3 makeWorldRay(vec3 in_screenEyeRay){
 	return ((-(in_screenEyeRay.x) * u_cameraLeft) +
@@ -138,7 +138,7 @@ void main() {
 		discard;
 	}
 
-	gl_FragColor = v_colour;
+	gl_FragColor = vec4(v_objectID, 0.0, 1.0);
 #ifdef GL_EXT_frag_depth
 	gl_FragDepthEXT = distance / u_cameraFar;
 #endif
@@ -147,7 +147,7 @@ void main() {
 
 const sVertexAttributeNameArray = [
 	"a_sphere",
-	"a_colour"
+	"a_objectID"
 ];
 const sUniformNameMap = {
 	"u_samplerCameraRay" : sInt,

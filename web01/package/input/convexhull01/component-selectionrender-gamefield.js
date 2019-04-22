@@ -7,6 +7,7 @@ output [selection rbga]
 
 import ComponentRenderTargetFactory from './../webgl/component-render-target.js';
 import ComponentConvexHullSelectionFactory from './component-convexhull-selection.js';
+import ComponentSphereSelectionFactory from './component-sphere-selection.js';
 import ComponentSelectionGrowFactory from './component-selection-grow.js';
 import ComponentSelectionOverlayFactory from './component-selection-overlay.js';
 import { RenderTargetDataFactoryAttachment0ByteRGBANearest, RenderTargetDataFactoryDepthInt } from './../webgl/component-render-target-data-factory.js';
@@ -20,6 +21,7 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 	], in_width, in_height);
 	const m_background = Colour4FactoryFloat32(0.0, 0.0, 0.0, 1.0);
 	var m_componentConvexHullSelection = ComponentConvexHullSelectionFactory(in_resourceManager, in_webGLState, in_state, in_texture);
+	var m_componentSphereSelection = ComponentSphereSelectionFactory(in_resourceManager, in_webGLState, in_state, in_texture);
 	var m_componentSelectionGrow = ComponentSelectionGrowFactory(in_resourceManager, in_webGLState, in_width, in_height,
 		m_componentRenderTarget.getTexture(0),
 		m_componentRenderTarget.getTexture(1)
@@ -37,6 +39,7 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 			in_webGLState.applyRenderTarget(m_componentRenderTarget.getRenderTarget());
 			in_webGLState.clear(m_background, 1.0);
 			m_componentConvexHullSelection.draw();
+			m_componentSphereSelection.draw();
 
 			m_componentSelectionGrow.setTexture(
 				m_componentRenderTarget.getTexture(0),
@@ -54,6 +57,7 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 		},
 		"setTexture" : function(in_texture){
 			m_componentConvexHullSelection.setTexture(in_texture);
+			m_componentSphereSelection.setTexture(in_texture);
 			return;
 		},
 		"getTextureAttachment0" : function(){
@@ -71,10 +75,15 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 				m_componentConvexHullSelection.destroy();
 				m_componentConvexHullSelection = undefined;
 			}
+			if (undefined !== m_componentSphereSelection){
+				m_componentSphereSelection.destroy();
+				m_componentSphereSelection = undefined;
+			}
 			if (undefined !== m_componentSelectionGrow){
 				m_componentSelectionGrow.destroy();
 				m_componentSelectionGrow = undefined;
 			}
+
 			return;
 		}
 	});

@@ -12,6 +12,7 @@ output = {
 		[objectid:],
 		[convexhull:[[x,y,z,d],]]|,
 		[sphere:[x,y,z,r]]|,
+		[cylinder:[x,y,z,nx,ny,nz,l]],
 		colour:[r,g,b]|
 		gradient:|?
 	}]

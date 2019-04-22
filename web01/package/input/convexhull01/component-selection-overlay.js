@@ -174,6 +174,7 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 				m_mouseXY.setY(mouseY);
 			}
 
+/*
 			m_componentReadPixel.run(in_textureGrow, mouseX / in_width, 1.0 - (mouseY / in_height));
 			var pixels = m_componentReadPixel.getPixels();
 
@@ -186,6 +187,7 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 				m_selectionObjectID_00.setX(a / 255.0);
 				m_selectionObjectID_00.setY(b / 255.0);
 			}
+*/
 
 			//console.log("x:" + m_mouseXY.getX());
 			//console.log("y:" + m_mouseXY.getY());

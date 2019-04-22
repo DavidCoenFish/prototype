@@ -85,9 +85,21 @@ const makeNode = function(in_nodeOrigin, in_objectId, in_radius, in_low, in_high
 	return result;
 }
 
-const makeShere = function(in_objectIDorUndefined, in_x, in_y, in_z, in_radius, in_rgba){
+const makeSphere = function(in_objectIDorUndefined, in_x, in_y, in_z, in_radius, in_rgba){
 	const result = {
 		"sphere" : [in_x, in_y, in_z, in_radius],
+		"colour" : in_rgba
+	};
+	if (undefined !== in_objectIDorUndefined){
+		result["objectid"] = in_objectIDorUndefined;
+	}
+	return result;
+}
+
+//radius1 is the center of cylinder to flat cap (ie, half length), r2 is the pipe radius
+const makeCylinder = function(in_objectIDorUndefined, in_x, in_y, in_z, in_nx, in_ny, in_nz, in_radius1, in_radius2, in_rgba){
+	const result = {
+		"cylinder" : [in_x, in_y, in_z, in_nx, in_ny, in_nz, in_radius1, in_radius2],
 		"colour" : in_rgba
 	};
 	if (undefined !== in_objectIDorUndefined){
@@ -118,7 +130,13 @@ const addNodeConvexHull = function(trace, out_nodearray, indexX, indexY, width, 
 
 	if (((indexX === 0) || (indexX === (width - 1))) &&
 		((indexY === 0) || (indexY === (height - 1)))){
-		out_nodearray.push(makeShere(trace, nodeOrigin.x, nodeOrigin.y, high + 1.0, 1.0, colour));
+		out_nodearray.push(makeSphere(trace, nodeOrigin.x, nodeOrigin.y, high + 1.0, 0.5, colour));
+		trace++;
+	}
+
+	if (((indexX === 2) || (indexX === (width - 3))) &&
+		((indexY === 2) || (indexY === (height - 3)))){
+		out_nodearray.push(makeCylinder(trace, nodeOrigin.x, nodeOrigin.y, high + 1.0, 0.0, 0.0, 1.0, 1.0, 0.25, sBaseColourNode));
 		trace++;
 	}
 
@@ -164,7 +182,7 @@ const run = function(){
 		}
 	}
 
-	result.nodearray.push(makeShere(undefined, 0, 0, 5, 2.0, [1.0, 1.0, 1.0, 0.0]));
+	result.nodearray.push(makeSphere(undefined, 0, 0, 5, 2.0, [1.0, 1.0, 1.0, 0.0]));
 
 	return result;
 }
