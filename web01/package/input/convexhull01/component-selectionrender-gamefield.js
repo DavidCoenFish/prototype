@@ -38,20 +38,20 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 
 			in_webGLState.applyRenderTarget(m_componentRenderTarget.getRenderTarget());
 			in_webGLState.clear(m_background, 1.0);
-			m_componentConvexHullSelection.draw();
-			m_componentSphereSelection.draw();
+//			m_componentConvexHullSelection.draw();
+//			m_componentSphereSelection.draw();
 
-			m_componentSelectionGrow.setTexture(
-				m_componentRenderTarget.getTexture(0),
-				m_componentRenderTarget.getTexture(1)
-				);
-			m_componentSelectionGrow.update(in_newWidth, in_newHeight);
+//			m_componentSelectionGrow.setTexture(
+//				m_componentRenderTarget.getTexture(0),
+//				m_componentRenderTarget.getTexture(1)
+//				);
+//			m_componentSelectionGrow.update(in_newWidth, in_newHeight);
 
-			m_componentSelectionOverlay.setTexture(
-				m_componentRenderTarget.getTexture(0),
-				m_componentSelectionGrow.getTexture()
-				);
-			m_componentSelectionOverlay.update(in_newWidth, in_newHeight);
+//			m_componentSelectionOverlay.setTexture(
+//				m_componentRenderTarget.getTexture(0),
+//				m_componentSelectionGrow.getTexture()
+//				);
+//			m_componentSelectionOverlay.update(in_newWidth, in_newHeight);
 
 			return;
 		},

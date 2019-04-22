@@ -90,7 +90,6 @@ export default function(in_resourceManager, in_webGLState, in_state, in_cameraRa
 	const result = Object.create({
 		"setTextureCameraRay" : function(in_cameraRay){
 			m_componentSkyBox.setTexture(in_cameraRay);
-			//m_worldGrid.setTexture(in_cameraRay);
 			return;
 		},
 		"setTextureDeferedrender" : function(in_attachment0, in_depth){
@@ -103,15 +102,14 @@ export default function(in_resourceManager, in_webGLState, in_state, in_cameraRa
 		},
 		"draw" : function(){
 			m_componentSkyBox.draw();
-			//m_worldGrid.draw();
 
 			in_webGLState.applyShader(m_shader, m_state);
 			in_webGLState.applyMaterial(m_material);
 			in_webGLState.drawModel(m_componentModel.getModel());
 
-			in_webGLState.applyShader(m_overlayShader, m_overlayState);
-			in_webGLState.applyMaterial(m_overlayMaterial);
-			in_webGLState.drawModel(m_componentModel.getModel());
+//			in_webGLState.applyShader(m_overlayShader, m_overlayState);
+//			in_webGLState.applyMaterial(m_overlayMaterial);
+//			in_webGLState.drawModel(m_componentModel.getModel());
 
 			return;
 		},

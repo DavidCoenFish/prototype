@@ -108,35 +108,54 @@ vec3 makeWorldRay(vec3 in_screenEyeRay){
 		(in_screenEyeRay.z * u_cameraAt));
 }
 
+//http://geomalgorithms.com/a07-_distance.html
+vec2 findRayRayClosest(vec3 in_rayA, vec3 in_posA, vec3 in_rayB, vec3 in_posB, float maxDistance){
+	vec3 u = in_rayA;
+	vec3 v = in_rayB;
+	vec3 w = in_posA - in_posB;
+	float a = dot(u, u);
+	float b = dot(u, v);
+	float c = dot(v, v);
+	float ACminBB = (a * c) - (b * b);
+
+	if (abs(ACminBB) < 0.0001){
+		//float Td = dot((in_posA + in_rayA) - in_posB, in_rayB);
+		//return vec2(1.0, Td);
+		return vec2(maxDistance, maxDistance);
+	}
+
+	float d = dot(u, w);
+	float e = dot(v, w);
+	float Sc = ((b*e)-(c*d)) / ACminBB;
+	float Tc = ((a*e)-(b*d)) / ACminBB;
+	return vec2(Sc, Tc);
+}
+
+
 //https://www.gamedev.net/forums/topic/467789-raycylinder-intersection/
-float rayCylinder(vec3 pos, vec3 normal, float r1, float r2, vec3 eyeRay, vec3 eyePos, float maxDistance){
-	vec3 A = pos - (normal * r1);
-	vec3 B = pos + (normal * r1);
-	vec3 AB = (B - A);
-	vec3 AO = (eyePos - A);
-	vec3 AOxAB = cross(AO, AB);
-	vec3 VxAB = cross(eyeRay, AB);
-	float ab2 = dot(AB, AB);
-	float a = dot(VxAB, VxAB);
-	float b = 2.0 * dot(VxAB, AOxAB); // dot product
-	float c = dot(AOxAB, AOxAB) - (r2 * r2 * ab2);
+//r1 = half length of cylinder
+//r2 = pipe radius
+float rayCylinder(vec3 cylinderNormal, vec3 cylinderPos, float r1, float r2, vec3 eyeRay, vec3 eyePos, float maxDistance){
+	//vec2 findRayRayClosest(vec3 in_rayA, vec3 in_posA, vec3 in_rayB, vec3 in_posB, float maxDistance){
 
-	float discr = b*b - 4.0*a*c;
-	if (discr < 0.0)
-	{
-		return maxDistance;
+	vec2 rayRayResult = findRayRayClosest(eyeRay, eyePos, cylinderNormal, cylinderPos, maxDistance);
+	if ((0.0 < rayRayResult.x) && (rayRayResult.x < maxDistance) && (abs(rayRayResult.y) < r1)){
+		vec3 pointOnCylinderNormal = cylinderPos + (rayRayResult.y * cylinderNormal);
+		vec3 pointOnEyeRay = eyePos + (rayRayResult.x * eyeRay);
+		vec3 offset = pointOnCylinderNormal - pointOnEyeRay;
+		float offsetLengthSquared = dot(offset, offset);
+		float r2Squared = r2 * r2;
+		if (offsetLengthSquared == r2Squared){
+			return rayRayResult.x;
+		}
+		if (offsetLengthSquared < r2Squared){
+			float nudge = sqrt(r2Squared - offsetLengthSquared);
+			float distance = rayRayResult.x - nudge;
+			return distance;
+		}
 	}
 
-	float temp = sqrt(discr);
-	float x1 = (-b + temp)/(2.0*a);
-	float x2 = (-b - temp)/(2.0*a);
-	float distance = min(x1, x2);
-	if (distance < 0.0)
-	{
-		return maxDistance;
-	}
-
-	return distance;
+	return maxDistance;
 }
 
 void main() {
@@ -156,7 +175,9 @@ void main() {
 
 	vec3 screenEyeRay = texture2D(u_samplerCameraRay, v_uv + (v_uvScale * gl_PointCoord)).xyz;
 	vec3 worldRay = makeWorldRay(screenEyeRay);
-	float distance = rayCylinder(v_sphere.xyz, v_cylinder.xyz, v_cylinder.w, v_radius2, worldRay, u_cameraPos, u_cameraFar);
+
+	//float rayCylinder(vec3 cylinderNormal, vec3 cylinderPos, float r1, float r2, vec3 eyeRay, vec3 eyePos, float maxDistance){
+	float distance = rayCylinder(v_cylinder.xyz, v_sphere.xyz, v_cylinder.w, v_radius2, worldRay, u_cameraPos, u_cameraFar);
 
 	if (u_cameraFar <= distance) {
 		discard;
