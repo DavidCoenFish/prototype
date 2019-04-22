@@ -31,6 +31,18 @@ const sUniformNameMap = {
 	"u_uv" : sFloat2
 };
 
+//async 
+function asyncCall(in_webGLState, in_componentRenderTarget, in_pixels, in_uv) {
+	if ((undefined === in_uv.getX()) || (undefined === in_uv.getY())){
+		// uv is not longer valid, abort
+		return;
+	}
+
+	in_webGLState.applyRenderTarget(in_componentRenderTarget.getRenderTarget());
+	in_webGLState.readTexturePixel(in_pixels, "RGBA", "UNSIGNED_BYTE", 0, 0, 1, 1);
+	return;
+}
+
 export default function(in_resourceManager, in_webGLState, in_texture){
 	var m_componentRenderTarget = ComponentRenderTargetFactory(in_webGLState, [
 		RenderTargetDataFactoryAttachment0ByteRGBA
@@ -69,9 +81,13 @@ export default function(in_resourceManager, in_webGLState, in_texture){
 		"u_uv" : m_uv.getRaw()
 	};
 
+	var m_timeoutID = undefined;
+
 	//public methods ==========================
 	const that = Object.create({
 		"run" : function(in_texture, in_x, in_y){
+			m_uv.setX(in_x);
+			m_uv.setY(in_y);
 			if ((undefined === in_x) || (undefined === in_y)){
 				m_pixels[0] = 0;
 				m_pixels[1] = 0;
@@ -79,14 +95,18 @@ export default function(in_resourceManager, in_webGLState, in_texture){
 				m_pixels[3] = 0;
 			} else {
 				m_textureArray[0] = in_texture;
-				m_uv.setX(in_x);
-				m_uv.setY(in_y);
-
 				in_webGLState.applyRenderTarget(m_componentRenderTarget.getRenderTarget());
 				in_webGLState.applyShader(m_shader, m_state);
 				in_webGLState.applyMaterial(m_material);
 				in_webGLState.drawModel(m_modelComponent.getModel());
-				in_webGLState.readTexturePixel(m_pixels, "RGBA", "UNSIGNED_BYTE", 0, 0, 1, 1);
+
+				//in_webGLState.readTexturePixel(m_pixels, "RGBA", "UNSIGNED_BYTE", 0, 0, 1, 1);
+
+				//asyncCall(in_webGLState, m_componentRenderTarget, m_pixels, m_uv);
+				//requestAnimationFrame(function(){asyncCall(in_webGLState, m_componentRenderTarget, m_pixels, m_uv);})
+				//setTimeout(function(){asyncCall(in_webGLState, m_componentRenderTarget, m_pixels, m_uv);}, 0);
+				clearTimeout(m_timeoutID);
+				m_timeoutID = setTimeout(asyncCall, 0, in_webGLState, m_componentRenderTarget, m_pixels, m_uv);
 			}
 
 			return;
