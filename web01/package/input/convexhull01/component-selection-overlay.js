@@ -166,6 +166,14 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 			var mouseX = in_mouseTracker.getX();
 			var mouseY = in_mouseTracker.getY();
 
+			if ((undefined === mouseX) || (undefined === mouseY)){
+				m_mouseXY.setX(-9000.0);
+				m_mouseXY.setY(-9000.0);
+			} else {
+				m_mouseXY.setX(mouseX);
+				m_mouseXY.setY(mouseY);
+			}
+
 			m_componentReadPixel.run(in_textureGrow, mouseX / in_width, 1.0 - (mouseY / in_height));
 			var pixels = m_componentReadPixel.getPixels();
 

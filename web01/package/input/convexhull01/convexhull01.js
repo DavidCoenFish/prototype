@@ -43,7 +43,7 @@ export default function () {
 			m_webGLState = undefined;
 			return false;
 		}
-		m_fps.update(in_timestamp);
+		//m_fps.update(in_timestamp);
 		var timeDelta = 0.0;
 		if (undefined !== m_previousTimeStamp){
 			timeDelta = (in_timestamp - m_previousTimeStamp) / 1000.0;
@@ -86,20 +86,23 @@ export default function () {
 		"width": "32px", 
 		"height": "32px"
 	});
-	const m_fps = ComponentFpsFactory(document, {
-		"position": "absolute",
-		"left": "10px",
-		"top": "10px",
-		"width": "64px", 
-		"height": "16px"
-	});
-	m_div.appendChild(m_fps.getElement());
+	// const m_fps = ComponentFpsFactory(document, {
+	// 	"position": "absolute",
+	// 	"left": "10px",
+	// 	"top": "10px",
+	// 	"width": "64px", 
+	// 	"height": "16px"
+	// });
+	// m_div.appendChild(m_fps.getElement());
 
-	buttonFactory(document, m_div, "save", function(){
+	const snapshotCallback = function(){
 		var rightNow = new Date();
 		rightNow.setMinutes(rightNow.getMinutes() - rightNow.getTimezoneOffset()); 
 		var fileName = rightNow.toISOString().slice(0,10) + "_convexhull01.png"
 		autoSnapShot(document, m_canvasElement, fileName);
+	}
+	buttonFactory(document, m_div, "save", function(){
+		setTimeout(snapshotCallback, 3000);
 	}, {
 		"position": "absolute",
 		"right": "82px",
