@@ -128,6 +128,29 @@ export const factoryDepthInt = function(
 	);
 	//gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT, 512, 512, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_SHORT, null);
 }
+
+export const factoryByteRGBANearest = function(
+	in_webGLState,
+	in_width, 
+	in_height,
+	in_dataOrUndefined
+	){
+	return factory(
+		in_webGLState,
+		in_width, 
+		in_height,
+		in_dataOrUndefined,
+		false,
+		"RGBA",
+		"RGBA",
+		"UNSIGNED_BYTE",
+		"NEAREST",
+		"NEAREST",
+		"CLAMP_TO_EDGE",
+		"CLAMP_TO_EDGE"
+	);
+}
+
 export const factoryByteRGBA = function(
 	in_webGLState,
 	in_width, 

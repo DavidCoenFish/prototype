@@ -1,4 +1,4 @@
-import { factoryByteRGB, factoryByteRGBA, factoryDepthInt, factoryFloatRGBA, factoryFloatRGB } from './texturewrapper.js';
+import { factoryByteRGB, factoryByteRGBA, factoryDepthInt, factoryFloatRGBA, factoryFloatRGB, factoryByteRGBANearest } from './texturewrapper.js';
 import RenderTargetDataFactory from "./rendertargetdata.js";
 import RenderTargetRenderBufferFactory from "./rendertargetrenderbuffer.js";
 import RenderBufferWrapperFactory from "./renderbufferwrapper.js";
@@ -14,6 +14,15 @@ export const RenderTargetDataFactoryAttachment0ByteRGB = function(in_webGLState,
 export const RenderTargetDataFactoryAttachment0ByteRGBA = function(in_webGLState, in_width, in_height){
 	return RenderTargetDataFactory(
 		factoryByteRGBA(in_webGLState, in_width, in_height),
+		"FRAMEBUFFER", 
+		"COLOR_ATTACHMENT0", 
+		"TEXTURE_2D"
+	);
+}
+
+export const RenderTargetDataFactoryAttachment0ByteRGBANearest = function(in_webGLState, in_width, in_height){
+	return RenderTargetDataFactory(
+		factoryByteRGBANearest(in_webGLState, in_width, in_height),
 		"FRAMEBUFFER", 
 		"COLOR_ATTACHMENT0", 
 		"TEXTURE_2D"

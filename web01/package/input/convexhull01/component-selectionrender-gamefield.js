@@ -9,12 +9,12 @@ import ComponentRenderTargetFactory from './../webgl/component-render-target.js'
 import ComponentConvexHullSelectionFactory from './component-convexhull-selection.js';
 import ComponentSelectionGrowFactory from './component-selection-grow.js';
 import ComponentSelectionOverlayFactory from './component-selection-overlay.js';
-import { RenderTargetDataFactoryAttachment0ByteRGBA, RenderTargetDataFactoryDepthInt } from './../webgl/component-render-target-data-factory.js';
+import { RenderTargetDataFactoryAttachment0ByteRGBANearest, RenderTargetDataFactoryDepthInt } from './../webgl/component-render-target-data-factory.js';
 import {factoryFloat32 as Colour4FactoryFloat32} from './../core/colour4.js';
 
 export default function(in_resourceManager, in_webGLState, in_width, in_height, in_state, in_texture, in_mouseTracker){
 	var m_componentRenderTarget = ComponentRenderTargetFactory(in_webGLState, [
-		RenderTargetDataFactoryAttachment0ByteRGBA,
+		RenderTargetDataFactoryAttachment0ByteRGBANearest,
 		RenderTargetDataFactoryDepthInt
 		//RenderTargetRenderBufferFactoryDepthStencil
 	], in_width, in_height);

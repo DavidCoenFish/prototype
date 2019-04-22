@@ -103,10 +103,13 @@ export default function(in_resourceManager, in_webGLState, in_texture){
 				//in_webGLState.readTexturePixel(m_pixels, "RGBA", "UNSIGNED_BYTE", 0, 0, 1, 1);
 
 				//asyncCall(in_webGLState, m_componentRenderTarget, m_pixels, m_uv);
-				//requestAnimationFrame(function(){asyncCall(in_webGLState, m_componentRenderTarget, m_pixels, m_uv);})
+
+				requestAnimationFrame(function(){asyncCall(in_webGLState, m_componentRenderTarget, m_pixels, m_uv);})
+
 				//setTimeout(function(){asyncCall(in_webGLState, m_componentRenderTarget, m_pixels, m_uv);}, 0);
-				clearTimeout(m_timeoutID);
-				m_timeoutID = setTimeout(asyncCall, 0, in_webGLState, m_componentRenderTarget, m_pixels, m_uv);
+
+				//clearTimeout(m_timeoutID);
+				//m_timeoutID = setTimeout(asyncCall, 0, in_webGLState, m_componentRenderTarget, m_pixels, m_uv);
 			}
 
 			return;

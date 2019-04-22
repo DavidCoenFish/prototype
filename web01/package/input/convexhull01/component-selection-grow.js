@@ -1,6 +1,6 @@
 import modelScreenQuadFactory from "./../webgl/component-model-screen-quad.js"
 import ComponentRenderTargetFactory from './../webgl/component-render-target.js';
-import { RenderTargetDataFactoryAttachment0ByteRGBA } from './../webgl/component-render-target-data-factory.js';
+import { RenderTargetDataFactoryAttachment0ByteRGBANearest } from './../webgl/component-render-target-data-factory.js';
 import {factoryFloat32 as Vector2FactoryFloat32} from './../core/vector2.js';
 import ShaderWrapperFactory from "./../webgl/shaderwrapper.js";
 import {sInt, sFloat, sFloat2, sFloat3} from "./../webgl/shaderuniformdata.js";
@@ -84,7 +84,7 @@ const sUniformNameMap = {
 
 export default function(in_resourceManager, in_webGLState, in_width, in_height, in_textureRgba, in_textureDepth){
 	var m_componentRenderTarget = ComponentRenderTargetFactory(in_webGLState, [
-		RenderTargetDataFactoryAttachment0ByteRGBA
+		RenderTargetDataFactoryAttachment0ByteRGBANearest
 	], in_width, in_height);
 
 	var m_modelComponent = modelScreenQuadFactory(in_resourceManager, in_webGLState);
