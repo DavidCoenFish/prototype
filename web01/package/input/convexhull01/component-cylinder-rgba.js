@@ -135,24 +135,49 @@ vec2 findRayRayClosest(vec3 in_rayA, vec3 in_posA, vec3 in_rayB, vec3 in_posB, f
 //https://www.gamedev.net/forums/topic/467789-raycylinder-intersection/
 //r1 = half length of cylinder
 //r2 = pipe radius
+//cylinderNormal blue
 float rayCylinder(vec3 cylinderNormal, vec3 cylinderPos, float r1, float r2, vec3 eyeRay, vec3 eyePos, float maxDistance){
-	//vec2 findRayRayClosest(vec3 in_rayA, vec3 in_posA, vec3 in_rayB, vec3 in_posB, float maxDistance){
+	vec3 rightNormal = normalize(cross(eyeRay, cylinderNormal));
+	vec3 atNormal = cross(cylinderNormal, rightNormal);
+	vec3 posRelativeToCylinder = eyePos - cylinderPos;
+	vec2 rayStart = vec2(dot(rightNormal, posRelativeToCylinder), dot(atNormal, posRelativeToCylinder));
+	vec2 rayNormal = vec2(dot(rightNormal, eyeRay), dot(atNormal, eyeRay));
 
-	vec2 rayRayResult = findRayRayClosest(eyeRay, eyePos, cylinderNormal, cylinderPos, maxDistance);
-	if ((0.0 < rayRayResult.x) && (rayRayResult.x < maxDistance) && (abs(rayRayResult.y) < r1)){
-		vec3 pointOnCylinderNormal = cylinderPos + (rayRayResult.y * cylinderNormal);
-		vec3 pointOnEyeRay = eyePos + (rayRayResult.x * eyeRay);
-		vec3 offset = pointOnCylinderNormal - pointOnEyeRay;
-		float offsetLengthSquared = dot(offset, offset);
-		float r2Squared = r2 * r2;
-		if (offsetLengthSquared == r2Squared){
-			return rayRayResult.x;
-		}
-		if (offsetLengthSquared < r2Squared){
-			float nudge = sqrt(r2Squared - offsetLengthSquared);
-			float distance = rayRayResult.x - nudge;
-			return distance;
-		}
+	float a = dot(rayNormal, rayNormal);
+	float b = 2.0 * dot(rayNormal, rayStart);
+	float c = dot(rayStart, rayStart) - (r2 * r2);
+
+	float temp = (b * b) - (4.0 * a * c);
+	if (temp < 0.0){
+		return maxDistance;
+	}
+
+	//at^2 + bt + c = 0
+	//d = sqrt(b^2 - 4ac)
+	//t+-= (-b+-d)/2a
+	float tempSqrt = sqrt(temp);
+	float t1 = (-b + tempSqrt) / (2.0 * a);
+	float t2 = (-b - tempSqrt) / (2.0 * a);
+
+	//return min(t1, t2);
+	//return vec4(t1, t2, 0.0, 1.0);
+
+	float rateZChange = dot(cylinderNormal, eyeRay);
+	float rateZStart = dot(cylinderNormal, eyePos - cylinderPos);
+	float h1 = rateZStart + (rateZChange * t1);
+	float h2 = rateZStart + (rateZChange * t2);
+	if ((abs(h1) <= r1) && (abs(h2) <= r1)){
+		return min(t1, t2);
+	}
+
+	if ((abs(h1) <= r1) && (r1 <= abs(h2))){
+		float ratio = (r1 - abs(h1)) / (abs(h2) - abs(h1));
+		return min(t1, mix(t1, t2, ratio));
+	}
+
+	if ((abs(h2) <= r1) && (r1 <= abs(h1))){
+		float ratio = (r1 - abs(h2)) / (abs(h1) - abs(h2));
+		return min(t2, mix(t2, t1, ratio));
 	}
 
 	return maxDistance;
@@ -166,21 +191,25 @@ void main() {
 	vec2 diff = (gl_PointCoord - vec2(.5, .5)) * 2.0;
 	if (1.0 < dot(diff, diff)) {
 		discard;
-// 	gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-// #ifdef GL_EXT_frag_depth
-// 	gl_FragDepthEXT = 0.0;
-// #endif
-// return;
+//  	gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+//  #ifdef GL_EXT_frag_depth
+//  	gl_FragDepthEXT = 0.0;
+//  #endif
+//  return;
 	}
 
 	vec3 screenEyeRay = texture2D(u_samplerCameraRay, v_uv + (v_uvScale * gl_PointCoord)).xyz;
 	vec3 worldRay = makeWorldRay(screenEyeRay);
 
-	//float rayCylinder(vec3 cylinderNormal, vec3 cylinderPos, float r1, float r2, vec3 eyeRay, vec3 eyePos, float maxDistance){
 	float distance = rayCylinder(v_cylinder.xyz, v_sphere.xyz, v_cylinder.w, v_radius2, worldRay, u_cameraPos, u_cameraFar);
 
 	if (u_cameraFar <= distance) {
 		discard;
+//  	gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+//  #ifdef GL_EXT_frag_depth
+//  	gl_FragDepthEXT = 0.0;
+//  #endif
+//  return;
 	}
 
 	gl_FragColor = v_colour;
