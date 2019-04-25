@@ -9,6 +9,7 @@ import ComponentRenderTargetFactory from './../webgl/component-render-target.js'
 import ComponentConvexHullRgbaFactory from './component-convexhull-rgba.js';
 import ComponentSphereRgbaFactory from './component-sphere-rgba.js';
 import ComponentCylinderRgbaFactory from './component-cylinder-rgba.js';
+import ComponentCylinderRgbaDynamicFactory from './component-cylinder-rgba-dynamic.js';
 import { RenderTargetDataFactoryAttachment0ByteRGBA, RenderTargetDataFactoryDepthInt } from './../webgl/component-render-target-data-factory.js';
 import {factoryFloat32 as Colour4FactoryFloat32} from './../core/colour4.js';
 
@@ -21,6 +22,7 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 	var m_componentConvexHullRgba = ComponentConvexHullRgbaFactory(in_resourceManager, in_webGLState, in_state, in_texture);
 	var m_componentSphereRgba = ComponentSphereRgbaFactory(in_resourceManager, in_webGLState, in_state, in_texture);
 	var m_componentCylinderRgba = ComponentCylinderRgbaFactory(in_resourceManager, in_webGLState, in_state, in_texture);
+	var m_componentCylinderRgbaDynamic = ComponentCylinderRgbaDynamicFactory(in_resourceManager, in_webGLState, in_state, in_texture);
 
 	//public methods ==========================
 	const result = Object.create({
@@ -35,6 +37,7 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 			m_componentConvexHullRgba.draw();
 			m_componentSphereRgba.draw();
 			m_componentCylinderRgba.draw();
+			m_componentCylinderRgbaDynamic.draw();
 
 			return;
 		},
@@ -42,6 +45,7 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 			m_componentConvexHullRgba.setTexture(in_texture);
 			m_componentSphereRgba.setTexture(in_texture);
 			m_componentCylinderRgba.setTexture(in_texture);
+			m_componentCylinderRgbaDynamic.setTexture(in_texture);
 			return;
 		},
 		"getTextureAttachment0" : function(){
@@ -66,6 +70,10 @@ export default function(in_resourceManager, in_webGLState, in_width, in_height, 
 			if (undefined !== m_componentSphereRgba){
 				m_componentSphereRgba.destroy();
 				m_componentSphereRgba = undefined;
+			}
+			if (undefined !== m_componentCylinderRgbaDynamic){
+				m_componentCylinderRgbaDynamic.destroy();
+				m_componentCylinderRgbaDynamic = undefined;
 			}
 			return;
 		}
