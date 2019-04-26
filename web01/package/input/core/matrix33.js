@@ -1,7 +1,6 @@
 /*
 Float32Array
  */
-import VectorPrototype from "./vectorprototype.js";
 import { factory as Vector3Factory } from "./vector3.js";
 
 export const factory = function(
@@ -58,8 +57,6 @@ export const factory = function(
 			return in_baseArrayClass;
 		}
 	});
-
-	Object.assign(result, VectorPrototype);
 	
 	return result;
 }

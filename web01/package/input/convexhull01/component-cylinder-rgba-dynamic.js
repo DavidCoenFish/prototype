@@ -1,10 +1,10 @@
 import ShaderWrapperFactory from "./../webgl/shaderwrapper.js";
-import {sInt, sFloat4} from "./../webgl/shaderuniformdata.js";
+import {sInt, sFloat4, sMat4} from "./../webgl/shaderuniformdata.js";
 import MaterialWrapperFactory from "./../webgl/materialwrapper.js";
 import ModelWrapperFactory from './../webgl/modelwrapper.js';
 import ModelDataStream from './../webgl/modeldatastream.js';
 import {factoryFloat32 as Vector4FactoryFloat32} from './../core/vector4.js';
-
+import {factoryFloat32 as Matrix44FactoryFloat32} from './../core/matrix44.js';
 
 
 const sVertexShader = `
@@ -12,22 +12,21 @@ precision mediump float;
 
 attribute float a_index;
 
-uniform vec4 u_cameraAtFovhradian;
-uniform vec4 u_cameraLeftViewportWidth;
-uniform vec4 u_cameraUpViewportHeight;
-uniform vec4 u_cameraPosCameraFar;
+uniform mat4 u_camera;
 
-uniform vec4 u_sphere00;
-uniform vec4 u_cylinder00;
-uniform vec4 u_colour00;
-
-uniform vec4 u_sphere01;
-uniform vec4 u_cylinder01;
-uniform vec4 u_colour01;
-
-uniform vec4 u_sphere02;
-uniform vec4 u_cylinder02;
-uniform vec4 u_colour02;
+uniform mat4 u_data00;
+uniform mat4 u_data01;
+uniform mat4 u_data02;
+uniform mat4 u_data03;
+uniform mat4 u_data04;
+uniform mat4 u_data05;
+uniform mat4 u_data06;
+uniform mat4 u_data07;
+uniform mat4 u_data08;
+uniform mat4 u_data09;
+uniform mat4 u_data10;
+uniform mat4 u_data11;
+uniform mat4 u_data12;
 
 varying float v_keepOrDiscard;
 
@@ -40,26 +39,101 @@ varying float v_radius2;
 varying vec4 v_colour;
 
 void main() {
+	vec4 u_cameraAtFovhradian = u_camera[0];
+	vec4 u_cameraLeftViewportWidth = u_camera[1];
+	vec4 u_cameraUpViewportHeight = u_camera[2];
+	vec4 u_cameraPosCameraFar = u_camera[3];
+
 	//step return 0 if x < edge, 1 if edge <= x
 	float ratio00 = step(-0.5, a_index) * step(a_index, 0.5);
 	float ratio01 = step(0.5, a_index) * step(a_index, 1.5);
 	float ratio02 = step(1.5, a_index) * step(a_index, 2.5);
+	float ratio03 = step(2.5, a_index) * step(a_index, 3.5);
+	float ratio04 = step(3.5, a_index) * step(a_index, 4.5);
+	float ratio05 = step(4.5, a_index) * step(a_index, 5.5);
+	float ratio06 = step(5.5, a_index) * step(a_index, 6.5);
+	float ratio07 = step(6.5, a_index) * step(a_index, 7.5);
+	float ratio08 = step(7.5, a_index) * step(a_index, 8.5);
+	float ratio09 = step(8.5, a_index) * step(a_index, 9.5);
+	float ratio10 = step(9.5, a_index) * step(a_index, 10.5);
+	float ratio11 = step(10.5, a_index) * step(a_index, 11.5);
+	float ratio12 = step(11.5, a_index) * step(a_index, 12.5);
+	float ratio13 = step(12.5, a_index) * step(a_index, 13.5);
+	float ratio14 = step(13.5, a_index) * step(a_index, 14.5);
+	float ratio15 = step(14.5, a_index) * step(a_index, 15.5);
+	float ratio16 = step(15.5, a_index) * step(a_index, 16.5);
 
 	vec4 sphere = vec4(0.0, 0.0, 0.0, 0.0);
 	vec4 cylinder = vec4(0.0, 0.0, 0.0, 0.0);
 	vec4 colour = vec4(0.0, 0.0, 0.0, 0.0);
 
-	sphere += (ratio00 * u_sphere00);
-	cylinder += (ratio00 * u_cylinder00);
-	colour += (ratio00 * u_colour00);
+	sphere += (ratio00 * u_data00[0]);
+	cylinder += (ratio00 * u_data00[1]);
+	colour += (ratio00 * u_data00[2]);
 
-	sphere += (ratio01 * u_sphere01);
-	cylinder += (ratio01 * u_cylinder01);
-	colour += (ratio01 * u_colour01);
+	sphere += (ratio01 * u_data00[3]);
+	cylinder += (ratio01 * u_data01[0]);
+	colour += (ratio01 * u_data01[1]);
 
-	sphere += (ratio02 * u_sphere02);
-	cylinder += (ratio02 * u_cylinder02);
-	colour += (ratio02 * u_colour02);
+	sphere += (ratio02 * u_data01[2]);
+	cylinder += (ratio02 * u_data01[3]);
+	colour += (ratio02 * u_data02[0]);
+
+	sphere += (ratio03 * u_data02[1]);
+	cylinder += (ratio03 * u_data02[2]);
+	colour += (ratio03 * u_data02[3]);
+
+	sphere += (ratio04 * u_data03[0]);
+	cylinder += (ratio04 * u_data03[1]);
+	colour += (ratio04 * u_data03[2]);
+
+	sphere += (ratio05 * u_data03[3]);
+	cylinder += (ratio05 * u_data04[0]);
+	colour += (ratio05 * u_data04[1]);
+
+	sphere += (ratio06 * u_data04[2]);
+	cylinder += (ratio06 * u_data04[3]);
+	colour += (ratio06 * u_data05[0]);
+
+	sphere += (ratio07 * u_data05[1]);
+	cylinder += (ratio07 * u_data05[2]);
+	colour += (ratio07 * u_data05[3]);
+
+	sphere += (ratio08 * u_data06[0]);
+	cylinder += (ratio08 * u_data06[1]);
+	colour += (ratio08 * u_data06[2]);
+
+	sphere += (ratio09 * u_data06[3]);
+	cylinder += (ratio09 * u_data07[0]);
+	colour += (ratio09 * u_data07[1]);
+
+	sphere += (ratio10 * u_data07[2]);
+	cylinder += (ratio10 * u_data07[3]);
+	colour += (ratio10 * u_data08[0]);
+
+	sphere += (ratio11 * u_data08[1]);
+	cylinder += (ratio11 * u_data08[2]);
+	colour += (ratio11 * u_data08[3]);
+
+	sphere += (ratio12 * u_data09[0]);
+	cylinder += (ratio12 * u_data09[1]);
+	colour += (ratio12 * u_data09[2]);
+
+	sphere += (ratio13 * u_data09[3]);
+	cylinder += (ratio13 * u_data10[0]);
+	colour += (ratio13 * u_data10[1]);
+
+	sphere += (ratio14 * u_data10[2]);
+	cylinder += (ratio14 * u_data10[3]);
+	colour += (ratio14 * u_data11[0]);
+
+	sphere += (ratio15 * u_data11[1]);
+	cylinder += (ratio15 * u_data11[2]);
+	colour += (ratio15 * u_data11[3]);
+
+	sphere += (ratio16 * u_data12[0]);
+	cylinder += (ratio16 * u_data12[1]);
+	colour += (ratio16 * u_data12[2]);
 
 	vec3 cameraToAtom = sphere.xyz - u_cameraPosCameraFar.xyz;
 
@@ -117,10 +191,7 @@ precision mediump float;
 
 uniform sampler2D u_samplerCameraRay;
 
-uniform vec4 u_cameraAtFovhradian;
-uniform vec4 u_cameraLeftViewportWidth;
-uniform vec4 u_cameraUpViewportHeight;
-uniform vec4 u_cameraPosCameraFar;
+uniform mat4 u_camera;
 
 varying float v_keepOrDiscard;
 
@@ -132,7 +203,7 @@ varying vec4 v_cylinder;
 varying float v_radius2;
 varying vec4 v_colour;
 
-vec3 makeWorldRay(vec3 in_screenEyeRay){
+vec3 makeWorldRay(vec3 in_screenEyeRay, vec4 u_cameraLeftViewportWidth, vec4 u_cameraUpViewportHeight, vec4 u_cameraAtFovhradian){
 	return ((-(in_screenEyeRay.x) * u_cameraLeftViewportWidth.xyz) +
 		(in_screenEyeRay.y * u_cameraUpViewportHeight.xyz) +
 		(in_screenEyeRay.z * u_cameraAtFovhradian.xyz));
@@ -192,6 +263,11 @@ float rayCylinder(vec3 cylinderNormal, vec3 cylinderPos, float r1, float r2, vec
 }
 
 void main() {
+	vec4 u_cameraAtFovhradian = u_camera[0];
+	vec4 u_cameraLeftViewportWidth = u_camera[1];
+	vec4 u_cameraUpViewportHeight = u_camera[2];
+	vec4 u_cameraPosCameraFar = u_camera[3];
+
 	if (v_keepOrDiscard <= 0.0) {
 		discard;
 	}
@@ -202,7 +278,7 @@ void main() {
 	}
 
 	vec3 screenEyeRay = texture2D(u_samplerCameraRay, v_uv + (v_uvScale * gl_PointCoord)).xyz;
-	vec3 worldRay = makeWorldRay(screenEyeRay);
+	vec3 worldRay = makeWorldRay(screenEyeRay, u_cameraLeftViewportWidth, u_cameraUpViewportHeight, u_cameraAtFovhradian);
 
 	float distance = rayCylinder(v_cylinder.xyz, v_sphere.xyz, v_cylinder.w, v_radius2, worldRay, u_cameraPosCameraFar.xyz, u_cameraPosCameraFar.w);
 
@@ -223,22 +299,21 @@ const sVertexAttributeNameArray = [
 const sUniformNameMap = {
 	"u_samplerCameraRay" : sInt,
 
-	"u_cameraAtFovhradian" : sFloat4,
-	"u_cameraLeftViewportWidth" : sFloat4,
-	"u_cameraUpViewportHeight" : sFloat4,
-	"u_cameraPosCameraFar" : sFloat4,
+	"u_camera" : sMat4,
 
-	"u_sphere00" : sFloat4,
-	"u_cylinder00" : sFloat4,
-	"u_colour00" : sFloat4,
-
-	"u_sphere01" : sFloat4,
-	"u_cylinder01" : sFloat4,
-	"u_colour01" : sFloat4,
-
-	"u_sphere02" : sFloat4,
-	"u_cylinder02" : sFloat4,
-	"u_colour02" : sFloat4
+	"u_data00" : sMat4,
+	"u_data01" : sMat4,
+	"u_data02" : sMat4,
+	"u_data03" : sMat4,
+	"u_data04" : sMat4,
+	"u_data05" : sMat4,
+	"u_data06" : sMat4,
+	"u_data07" : sMat4,
+	"u_data08" : sMat4,
+	"u_data09" : sMat4,
+	"u_data10" : sMat4,
+	"u_data11" : sMat4,
+	"u_data12" : sMat4
 };
 
 
@@ -262,44 +337,36 @@ export default function(in_resourceManager, in_webGLState, in_state, in_texture)
 	);
 	const m_shader = ShaderWrapperFactory(in_webGLState, sVertexShader, sFragmentShader, sVertexAttributeNameArray, sUniformNameMap);
 	const m_model = ModelWrapperFactory(
-		in_webGLState, "POINTS", 3, {
-			"a_index" : ModelDataStream(in_webGLState, "FLOAT", 1, new Float32Array([0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]), "STATIC_DRAW", true)
+		in_webGLState, "POINTS", 17, {
+			"a_index" : ModelDataStream(in_webGLState, "FLOAT", 1, new Float32Array([0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0]), "STATIC_DRAW", true)
 		}, undefined);
 
-	var m_arraySphere = [];
-	var m_arrayCylinder = [];
-	var m_arrayColour = [];
+	var m_data = [];
 
-	for (var index = 0; index < 3; ++index){
-		m_arraySphere.push(Vector4FactoryFloat32());
-		m_arrayCylinder.push(Vector4FactoryFloat32());
-		m_arrayColour.push(Vector4FactoryFloat32());
+	for (var index = 0; index < 13; ++index){
+		m_data.push(Matrix44FactoryFloat32());
 	}
 
-	var m_cameraAtFovhradian = Vector4FactoryFloat32();
-	var m_cameraLeftViewportWidth = Vector4FactoryFloat32();
-	var m_cameraUpViewportHeight = Vector4FactoryFloat32();
-	var m_cameraPosCameraFar = Vector4FactoryFloat32();
+	var m_camera = Matrix44FactoryFloat32();
 
 	const m_state = {
 		"u_samplerCameraRay" : 0,
 
-		"u_cameraAtFovhradian" : m_cameraAtFovhradian.getRaw(),
-		"u_cameraLeftViewportWidth" : m_cameraLeftViewportWidth.getRaw(),
-		"u_cameraUpViewportHeight" : m_cameraUpViewportHeight.getRaw(),
-		"u_cameraPosCameraFar" : m_cameraPosCameraFar.getRaw(),
+		"u_camera" : m_camera.getRaw(),
 
-		"u_sphere00" : m_arraySphere[0].getRaw(),
-		"u_cylinder00" : m_arrayCylinder[0].getRaw(),
-		"u_colour00" : m_arrayColour[0].getRaw(),
-
-		"u_sphere01" : m_arraySphere[1].getRaw(),
-		"u_cylinder01" : m_arrayCylinder[1].getRaw(),
-		"u_colour01" : m_arrayColour[1].getRaw(),
-
-		"u_sphere02" : m_arraySphere[2].getRaw(),
-		"u_cylinder02" : m_arrayCylinder[2].getRaw(),
-		"u_colour02" : m_arrayColour[2].getRaw()
+		"u_data00" : m_data[0].getRaw(),
+		"u_data01" : m_data[1].getRaw(),
+		"u_data02" : m_data[2].getRaw(),
+		"u_data03" : m_data[3].getRaw(),
+		"u_data04" : m_data[4].getRaw(),
+		"u_data05" : m_data[5].getRaw(),
+		"u_data06" : m_data[6].getRaw(),
+		"u_data07" : m_data[7].getRaw(),
+		"u_data08" : m_data[8].getRaw(),
+		"u_data09" : m_data[9].getRaw(),
+		"u_data10" : m_data[10].getRaw(),
+		"u_data11" : m_data[11].getRaw(),
+		"u_data12" : m_data[12].getRaw()
 	};
 
 	//public methods ==========================
@@ -316,33 +383,65 @@ export default function(in_resourceManager, in_webGLState, in_state, in_texture)
 
 			in_webGLState.applyMaterial(m_material);
 
-			m_cameraAtFovhradian.setX(in_state.u_cameraAt[0]);
-			m_cameraAtFovhradian.setY(in_state.u_cameraAt[1]);
-			m_cameraAtFovhradian.setZ(in_state.u_cameraAt[2]);
-			m_cameraAtFovhradian.setW(in_state.u_fovhradian);
-			m_cameraLeftViewportWidth.setX(in_state.u_cameraLeft[0]);
-			m_cameraLeftViewportWidth.setY(in_state.u_cameraLeft[1]);
-			m_cameraLeftViewportWidth.setZ(in_state.u_cameraLeft[2]);
-			m_cameraLeftViewportWidth.setW(in_state.u_viewportWidthHeight[0]);
-			m_cameraUpViewportHeight.setX(in_state.u_cameraUp[0]);
-			m_cameraUpViewportHeight.setY(in_state.u_cameraUp[1]);
-			m_cameraUpViewportHeight.setZ(in_state.u_cameraUp[2]);
-			m_cameraUpViewportHeight.setW(in_state.u_viewportWidthHeight[1]);
-			m_cameraPosCameraFar.setX(in_state.u_cameraPos[0]);
-			m_cameraPosCameraFar.setY(in_state.u_cameraPos[1]);
-			m_cameraPosCameraFar.setZ(in_state.u_cameraPos[2]);
-			m_cameraPosCameraFar.setW(in_state.u_cameraFar);
+			m_camera.set00(in_state.u_cameraAt[0]);
+			m_camera.set10(in_state.u_cameraAt[1]);
+			m_camera.set20(in_state.u_cameraAt[2]);
+			m_camera.set30(in_state.u_fovhradian);
+			m_camera.set01(in_state.u_cameraLeft[0]);
+			m_camera.set11(in_state.u_cameraLeft[1]);
+			m_camera.set21(in_state.u_cameraLeft[2]);
+			m_camera.set31(in_state.u_viewportWidthHeight[0]);
+			m_camera.set02(in_state.u_cameraUp[0]);
+			m_camera.set12(in_state.u_cameraUp[1]);
+			m_camera.set22(in_state.u_cameraUp[2]);
+			m_camera.set32(in_state.u_viewportWidthHeight[1]);
+			m_camera.set03(in_state.u_cameraPos[0]);
+			m_camera.set13(in_state.u_cameraPos[1]);
+			m_camera.set23(in_state.u_cameraPos[2]);
+			m_camera.set33(in_state.u_cameraFar);
 
 			var dynamicCylinderArray = in_state.m_dynamicCylinderArray;
 			var trace = 0;
-			var innerTrace = 0;
 			var drawCount = 0;
 			while (trace < arrayCount){
-				innerTrace = 0;
-				while ((innerTrace < 3) && (trace < arrayCount)){
-					m_arraySphere[innerTrace].set(dynamicCylinderArray[trace].m_sphere);
-					m_arrayCylinder[innerTrace].set(dynamicCylinderArray[trace].m_cylinder);
-					m_arrayColour[innerTrace].set(dynamicCylinderArray[trace].m_colour);
+				var innerTrace = 0;
+				var dataIndex = 0;
+				var dataSubIndex = 0;
+
+				while ((innerTrace < 17) && (trace < arrayCount)){
+					var dataRaw = m_data[dataIndex].getRaw();
+					dataRaw[dataSubIndex + 0] = dynamicCylinderArray[trace].m_sphere.getX();
+					dataRaw[dataSubIndex + 1] = dynamicCylinderArray[trace].m_sphere.getY();
+					dataRaw[dataSubIndex + 2] = dynamicCylinderArray[trace].m_sphere.getZ();
+					dataRaw[dataSubIndex + 3] = dynamicCylinderArray[trace].m_sphere.getW();
+					dataSubIndex += 4;
+					if (16 <= dataSubIndex){
+						dataSubIndex = 0;
+						dataIndex += 1;
+					}
+
+					var dataRaw = m_data[dataIndex].getRaw();
+					dataRaw[dataSubIndex + 0] = dynamicCylinderArray[trace].m_cylinder.getX();
+					dataRaw[dataSubIndex + 1] = dynamicCylinderArray[trace].m_cylinder.getY();
+					dataRaw[dataSubIndex + 2] = dynamicCylinderArray[trace].m_cylinder.getZ();
+					dataRaw[dataSubIndex + 3] = dynamicCylinderArray[trace].m_cylinder.getW();
+					dataSubIndex += 4;
+					if (16 <= dataSubIndex){
+						dataSubIndex = 0;
+						dataIndex += 1;
+					}
+
+					var dataRaw = m_data[dataIndex].getRaw();
+					dataRaw[dataSubIndex + 0] = dynamicCylinderArray[trace].m_colour.getX();
+					dataRaw[dataSubIndex + 1] = dynamicCylinderArray[trace].m_colour.getY();
+					dataRaw[dataSubIndex + 2] = dynamicCylinderArray[trace].m_colour.getZ();
+					dataRaw[dataSubIndex + 3] = dynamicCylinderArray[trace].m_colour.getW();
+					dataSubIndex += 4;
+					if (16 <= dataSubIndex){
+						dataSubIndex = 0;
+						dataIndex += 1;
+					}
+					
 					trace++;
 					innerTrace++;
 					drawCount = innerTrace;
