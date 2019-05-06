@@ -6,26 +6,32 @@ import LinearInterpolatorFactory from "./../core/linearinterpolator.js";
 import ComponentModelScreenQuadFactory from "./component-model-screen-quad.js";
 import MaterialWrapperFactory from "./materialwrapper.js";
 import ShaderWrapperFactory from "./shaderwrapper.js";
-import {sFloat4} from "./shaderuniformdata.js";
+import {sInt, sFloat} from "./shaderuniformdata.js";
 
 const sVertexShader = `
 attribute vec2 a_position;
+varying vec2 v_uv;
 void main() {
+	v_uv = (a_position.xy * 0.5) + vec2(0.5, 0.5);
 	gl_Position = vec4(a_position.x, a_position.y, 0.0, 1.0);
 }
 `;
 
 const sFragmentShader = `
 precision mediump float;
-uniform vec4 u_colour;
+uniform float u_alpha;
+uniform sampler2D u_sampler;
+varying vec2 v_uv;
 void main() {
-	gl_FragColor = u_colour;
+	vec4 texel = texture2D(u_sampler, v_uv);
+	gl_FragColor = vec4(texel.xyz, u_alpha);
 }
 `;
 
 const sVertexAttributeNameArray = ["a_position"];
 const sUniformNameMap = {
-	"u_colour" : sFloat4
+	"u_alpha" : sFloat,
+	"u_sampler" : sInt,
 };
 
 const shaderFactory = function(in_webGLState){
@@ -36,25 +42,33 @@ const shaderFactory = function(in_webGLState){
 		sVertexAttributeNameArray, 
 		sUniformNameMap);
 }
-const sShaderName = "componentRenderFadeShader";
+const sShaderName = "componentRenderFadeTextureShader";
 
 
-export default function(in_resourceManager, in_webGLState, in_colourRGBA){
-	const m_valueInterpolator = LinearInterpolatorFactory(in_colourRGBA.getAlpha());
+export default function(in_resourceManager, in_webGLState, in_textureRGB){
+	const m_valueInterpolator = LinearInterpolatorFactory(0.0);
 
 	const m_modelComponent = ComponentModelScreenQuadFactory(in_resourceManager, in_webGLState);
 	const m_model = m_modelComponent.getModel();
+	const m_textureArray = [in_textureRGB];
 	const m_material = MaterialWrapperFactory(
-		undefined, //in_textureArrayOrUndefined,
+		m_textureArray, //in_textureArrayOrUndefined,
 		undefined, //in_triangleCullEnabledOrUndefined,
 		undefined, //in_triangleCullEnumNameOrUndefined, //"FRONT", "BACK", "FRONT_AND_BACK"
 		true, //in_blendModeEnabledOrUndefined,
 		"SRC_ALPHA", //in_sourceBlendEnumNameOrUndefined,
 		"ONE_MINUS_SRC_ALPHA", //in_destinationBlendEnumNameOrUndefined,
+		undefined,
+		undefined, 
+		undefined,
+		true,
+		true,
+		true,
+		true
 		);
-	const m_colour = Core.Colour4.factoryFloat32(in_colourRGBA.getRed(), in_colourRGBA.getGreen(), in_colourRGBA.getBlue(), in_colourRGBA.getAlpha());
 	const m_state = {
-		"u_colour" : m_colour.getRaw()
+		"u_alpha" : m_valueInterpolator.getValue(),
+		"u_sampler" : 0
 	};
 
 	if (false === in_resourceManager.hasFactory(sShaderName)){
@@ -72,8 +86,13 @@ export default function(in_resourceManager, in_webGLState, in_colourRGBA){
 			m_valueInterpolator.setValue(in_alpha, in_time);
 			return;
 		},
+		"setTexture" : function(in_texture){
+			m_textureArray[0] = in_texture;
+			return;
+		},
 		"draw" : function(){
-			m_state.u_colour[3] = m_valueInterpolator.getValue();
+			m_state.u_alpha = m_valueInterpolator.getValue();
+
 			in_webGLState.applyShader(m_shader, m_state);
 			in_webGLState.applyMaterial(m_material);
 			in_webGLState.drawModel(m_model);

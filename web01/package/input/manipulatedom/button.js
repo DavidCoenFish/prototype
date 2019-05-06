@@ -1,6 +1,6 @@
 import { applyStyle } from './style.js';
 
-export const factory = function(in_document, in_elementToAppend, in_text, in_callback, in_styleOrUndefined){
+export const factory = function(in_document, in_text, in_callback, in_styleOrUndefined){
 	const button = in_document.createElement("BUTTON");
 	applyStyle(button, in_styleOrUndefined);
 	if (undefined !== in_callback){
@@ -10,13 +10,12 @@ export const factory = function(in_document, in_elementToAppend, in_text, in_cal
 	const textNode = in_document.createTextNode(in_text);
 	button.appendChild(textNode);
 
-	in_elementToAppend.appendChild(button);
-
-	return;
+	return button;
 }
 
-export const factoryAppendBody = function(in_document, in_text, in_callback, in_styleOrUndefined){
-	factory(in_document, in_document.body, in_text, in_callback, in_styleOrUndefined);
+export const factoryAppend = function(in_document, in_elementToAttach, in_text, in_callback, in_styleOrUndefined){
+	var button = factory(in_document, in_text, in_callback, in_styleOrUndefined);
+	in_elementToAttach.appendChild(button);
 
 	return;
 }

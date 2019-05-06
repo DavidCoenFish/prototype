@@ -11,6 +11,7 @@ export default function(in_webGLState, in_arrayDataFactory, in_width, in_height)
 	}
 
 	const makeRenderTarget = function(){
+		release();
 		const renderTargetDataArray = [];
 		for (var index = 0; index < in_arrayDataFactory.length; ++index){
 			renderTargetDataArray.push(in_arrayDataFactory[index](in_webGLState, in_width, in_height));
@@ -29,7 +30,6 @@ export default function(in_webGLState, in_arrayDataFactory, in_width, in_height)
 			}
 			in_width = in_newWidth;
 			in_height = in_newHeight;
-			release();
 			makeRenderTarget();
 			return true;
 		},

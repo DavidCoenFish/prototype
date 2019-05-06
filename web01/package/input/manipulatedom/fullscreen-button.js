@@ -1,7 +1,7 @@
-import { factory as ButtonFactory } from './button.js';
+import { factoryAppend as ButtonFactory } from './button.js';
 
 export default function(in_document, in_elementToFullScreen, in_elementToAttachButton, in_buttonStyle){
-	const button = ButtonFactory(in_document, in_elementToAttachButton, "full", function(){
+	ButtonFactory(in_document, in_elementToAttachButton, "full", function(){
 		const isFullScreen = (null !== in_document.fullscreenElement); // || (undefined !== in_document.fullScreenElement));
 		if (false === isFullScreen){
 			openFullscreen();

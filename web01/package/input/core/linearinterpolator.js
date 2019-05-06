@@ -2,7 +2,7 @@
 linear interpolate to a value over time
 jump to value if time is zero, needs to be ticked
  */
-export const factory = function(in_value){
+export default function(in_value){
 	var m_value = in_value;
 	var m_step = undefined;
 	var m_target = undefined;
@@ -22,7 +22,7 @@ export const factory = function(in_value){
 		"setValue" : function(in_value, in_time){
 			if (0.0 === in_time){
 				m_step = undefined;
-				m_value = in_time;
+				m_value = in_value;
 			} else {
 				m_target = in_value;
 				m_step = (m_target - m_value) / in_time;
