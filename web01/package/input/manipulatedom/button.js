@@ -17,6 +17,6 @@ export const factoryAppend = function(in_document, in_elementToAttach, in_text, 
 	var button = factory(in_document, in_text, in_callback, in_styleOrUndefined);
 	in_elementToAttach.appendChild(button);
 
-	return;
+	return button;
 }
 
