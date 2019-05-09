@@ -1,4 +1,6 @@
-/* */
+/**
+ 
+ *//* */
 import modelScreenQuadFactory from "./../../webgl/component-model-screen-quad.js"
 import ShaderWrapperFactory from "./../../webgl/shaderwrapper.js";
 import {sInt, sFloat, sFloat2, sFloat3, sMat4} from "./../../webgl/shaderuniformdata.js";

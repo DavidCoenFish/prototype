@@ -1,6 +1,5 @@
 import ComponentCameraRayFactory from "./../rendercommon/component-camera-ray.js";
-import ComponentDefferedRenderFactory from "./component-deffered-render.js";
-import ComponentPresentFactory from "./component-present";
+import ComponentSkyboxFactory from "./component-skybox.js";
 import {factoryFloat32 as Vector3FactoryFloat32} from "./../../core/vector3.js";
 import {factoryFloat32 as Matrix44FactoryFloat32} from "./../../core/matrix44.js";
 
@@ -41,14 +40,12 @@ export default function(in_webGLState, in_gameResourceManager, in_gameState, in_
 		in_webGLState.getCanvasWidth(),
 		in_webGLState.getCanvasHeight()
 		);
-	var m_componentDefferedRender = ComponentDefferedRenderFactory(in_gameResourceManager.getResourceManager(), in_webGLState, m_state, m_componentCameraRay.getTexture());
-	var m_componentPresent = ComponentPresentFactory(in_gameResourceManager.getResourceManager(), in_webGLState, m_state, m_componentCameraRay.getTexture());
+	var m_componentSkybox = ComponentSkyboxFactory(in_gameResourceManager.getResourceManager(), in_webGLState, m_state, m_componentCameraRay.getTexture());
 
 	const that = Object.create({
 		"destroy" : function(){
 			m_componentCameraRay.destroy();
-			m_componentDefferedRender.destroy();
-			m_componentPresent.destroy();
+			m_componentSkybox.destroy();
 		},
 		"update" : function(in_timeDelta){
 			m_componentCameraRay.update(
@@ -56,14 +53,8 @@ export default function(in_webGLState, in_gameResourceManager, in_gameState, in_
 				in_webGLState.getCanvasHeight()
 			);
 
-			m_componentDefferedRender.update(m_componentCameraRay.getTexture());
-
-			m_componentPresent.update(
-				m_componentCameraRay.getTexture(),
-				m_componentDefferedRender.getTexture(),
-				m_componentDefferedRender.getDepth()
-				);
-
+			in_webGLState.applyRenderTarget();
+			m_componentSkybox.update(m_componentCameraRay.getTexture());
 		},
 	});
 

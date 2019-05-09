@@ -2,6 +2,7 @@ import {factory as factoryText} from "./../manipulatedom/text.js";
 import {factoryAppend as factoryDiv} from "./../manipulatedom/div.js";
 import {factoryAppend as buttonFactory}  from './../manipulatedom/button.js';
 import {factoryFloat32 as Colour4FactoryFloat32} from "./../core/colour4.js";
+import RenderFactory from "./taskselectcharacter/render.js";
 
 /*
 
@@ -31,12 +32,14 @@ export default function(in_webGLState, in_div, in_gameResourceManager, in_gameSt
 	}
 	);
 
+	var m_render = RenderFactory(in_webGLState, in_gameResourceManager, in_gameState, in_callbackSetActiveGameTask, in_callbackRequestLoading);
 	var m_countdown = 3.0;
 
 
 	const that = Object.create({
 		"destroy" : function(){
 			in_div.removeChild(m_button);
+			m_render.destroy();
 		},
 		"update" : function(in_timeDelta){
 			if (undefined !== m_countdown){
@@ -48,7 +51,8 @@ export default function(in_webGLState, in_div, in_gameResourceManager, in_gameSt
 				}
 			}
 
-			in_webGLState.clear(Colour4FactoryFloat32(1.0,0.0,0.0,1.0));
+			//in_webGLState.clear(Colour4FactoryFloat32(1.0,0.0,0.0,1.0));
+			m_render.update(in_timeDelta);
 		},
 	});
 
