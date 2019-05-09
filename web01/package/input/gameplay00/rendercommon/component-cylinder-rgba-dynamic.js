@@ -1,9 +1,9 @@
-import ShaderWrapperFactory from "./../webgl/shaderwrapper.js";
-import {sInt, sMat4} from "./../webgl/shaderuniformdata.js";
-import MaterialWrapperFactory from "./../webgl/materialwrapper.js";
-import ModelWrapperFactory from './../webgl/modelwrapper.js';
-import ModelDataStream from './../webgl/modeldatastream.js';
-import {factoryFloat32 as Matrix44FactoryFloat32} from './../core/matrix44.js';
+import ShaderWrapperFactory from "./../../webgl/shaderwrapper.js";
+import {sInt, sMat4} from "./../../webgl/shaderuniformdata.js";
+import MaterialWrapperFactory from "./../../webgl/materialwrapper.js";
+import ModelWrapperFactory from './../../webgl/modelwrapper.js';
+import ModelDataStream from './../../webgl/modeldatastream.js';
+import {factoryFloat32 as Matrix44FactoryFloat32} from './../../core/matrix44.js';
 
 
 const sVertexShader = `
@@ -367,11 +367,8 @@ export default function(in_resourceManager, in_webGLState, in_state, in_texture)
 
 	//public methods ==========================
 	const result = Object.create({
-		"setTexture" : function(in_texture){
+		"update" : function(in_texture){
 			m_textureArray[0] = in_texture;
-			return;
-		},
-		"draw" : function(){
 			var arrayCount = in_state.m_dynamicCylinderArray.length;
 			if (0 === arrayCount){
 				return 0.0;

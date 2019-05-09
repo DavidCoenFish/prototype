@@ -35,14 +35,29 @@ export default function(in_webGLState, in_gameResourceManager, in_gameState, in_
 	m_camera.set33(m_far);
 
 	var m_state = {
-		"u_camera" : m_camera.getRaw()
+		"u_camera" : m_camera.getRaw(),
+		"m_dynamicCylinderArray" : []
 	};
 	var m_componentCameraRay = ComponentCameraRayFactory(in_gameResourceManager.getResourceManager(), in_webGLState, m_fovHRadian, 
 		in_webGLState.getCanvasWidth(),
 		in_webGLState.getCanvasHeight()
 		);
-	var m_componentDefferedRender = ComponentDefferedRenderFactory(in_gameResourceManager.getResourceManager(), in_webGLState, m_state, m_componentCameraRay.getTexture());
-	var m_componentPresent = ComponentPresentFactory(in_gameResourceManager.getResourceManager(), in_webGLState, m_state, m_componentCameraRay.getTexture());
+	var m_componentDefferedRender = ComponentDefferedRenderFactory(
+		in_gameResourceManager.getResourceManager(), 
+		in_webGLState, 
+		in_webGLState.getCanvasWidth(),
+		in_webGLState.getCanvasHeight(),
+		m_state, 
+		m_componentCameraRay.getTexture()
+		);
+	var m_componentPresent = ComponentPresentFactory(
+		in_gameResourceManager.getResourceManager(), 
+		in_webGLState, 
+		m_state, 
+		m_componentCameraRay.getTexture(),
+		m_componentDefferedRender.getTextureAttachment0(),
+		m_componentDefferedRender.getTextureDepth()
+		);
 
 	const that = Object.create({
 		"destroy" : function(){
@@ -56,12 +71,16 @@ export default function(in_webGLState, in_gameResourceManager, in_gameState, in_
 				in_webGLState.getCanvasHeight()
 			);
 
-			m_componentDefferedRender.update(m_componentCameraRay.getTexture());
+			//in_newWidth, in_newHeight, in_cameraRayTexture
+			m_componentDefferedRender.update(
+				in_webGLState.getCanvasWidth(),
+				in_webGLState.getCanvasHeight(),
+				m_componentCameraRay.getTexture());
 
 			m_componentPresent.update(
 				m_componentCameraRay.getTexture(),
-				m_componentDefferedRender.getTexture(),
-				m_componentDefferedRender.getDepth()
+				m_componentDefferedRender.getTextureAttachment0(),
+				m_componentDefferedRender.getTextureDepth()
 				);
 
 		},

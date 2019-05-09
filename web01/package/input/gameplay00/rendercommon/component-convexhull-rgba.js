@@ -1,9 +1,6 @@
-import ModelObjectIDFactory from "./modelhullobjectid.js";
-import {factoryFloat32 as Colour4FactoryFloat32} from './../core/colour4.js';
-import {factoryFloat32 as Vector4FactoryFloat32} from './../core/vector4.js';
-import ShaderWrapperFactory from "./../webgl/shaderwrapper.js";
-import {sInt, sFloat, sFloat2, sFloat3} from "./../webgl/shaderuniformdata.js";
-import MaterialWrapperFactory from "./../webgl/materialwrapper.js";
+import ShaderWrapperFactory from "./../../webgl/shaderwrapper.js";
+import {sInt, sMat4} from "./../../webgl/shaderuniformdata.js";
+import MaterialWrapperFactory from "./../../webgl/materialwrapper.js";
 
 const sVertexShader = `
 precision mediump float;
@@ -40,6 +37,18 @@ varying vec4 v_colour0;
 varying vec4 v_colour1;
 
 void main() {
+	vec4 u_cameraAtFovhradian = u_camera[0];
+	vec3 u_cameraAt = u_cameraAtFovhradian.xyz;
+	float u_fovhradian = u_cameraAtFovhradian.w;
+	vec4 u_cameraLeftViewportWidth = u_camera[1];
+	vec3 u_cameraLeft = u_cameraLeftViewportWidth.xyz;
+	vec4 u_cameraUpViewportHeight = u_camera[2];
+	vec3 u_cameraUp = u_cameraUpViewportHeight.xyz;
+	vec2 u_viewportWidthHeight = vec2(u_cameraLeftViewportWidth.w, u_cameraUpViewportHeight.w);
+	vec4 u_cameraPosCameraFar = u_camera[3];
+	vec3 u_cameraPos = u_cameraPosCameraFar.xyz;
+	float u_cameraFar = u_cameraPosCameraFar.w;
+
 	vec3 cameraToAtom = a_sphere.xyz - u_cameraPos;
 
 	float cameraSpaceX = -dot(cameraToAtom, u_cameraLeft);
@@ -226,7 +235,7 @@ const sUniformNameMap = {
 };
 
 
-export default function(in_resourceManager, in_webGLState, in_state, in_texture){
+export default function(in_resourceManager, in_webGLState, in_state, in_texture, in_modelFactory){
 	const m_textureArray = [in_texture];
 	const m_material = MaterialWrapperFactory(
 		m_textureArray,
@@ -245,7 +254,7 @@ export default function(in_resourceManager, in_webGLState, in_state, in_texture)
 		true
 	);
 	const m_shader = ShaderWrapperFactory(in_webGLState, sVertexShader, sFragmentShader, sVertexAttributeNameArray, sUniformNameMap);
-	const m_model = ModelObjectIDFactory(in_webGLState);
+	const m_model = in_modelFactory(in_webGLState);
 
 	const m_state = Object.assign({
 		"u_samplerCameraRay" : 0
@@ -253,11 +262,8 @@ export default function(in_resourceManager, in_webGLState, in_state, in_texture)
 
 	//public methods ==========================
 	const result = Object.create({
-		"setTexture" : function(in_texture){
+		"update" : function(in_texture){
 			m_textureArray[0] = in_texture;
-			return;
-		},
-		"draw" : function(){
 			in_webGLState.applyShader(m_shader, m_state);
 			in_webGLState.applyMaterial(m_material);
 			in_webGLState.drawModel(m_model);
@@ -265,6 +271,8 @@ export default function(in_resourceManager, in_webGLState, in_state, in_texture)
 			return;
 		},
 		"destroy" : function(){
+			m_shader.destroy();
+			m_model.destroy();
 			return;
 		}
 	});

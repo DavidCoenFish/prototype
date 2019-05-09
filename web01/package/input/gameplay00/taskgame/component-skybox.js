@@ -147,7 +147,7 @@ export default function(in_resourceManager, in_webGLState, in_state, in_texture)
 			return;
 		},
 		"getFogTint" : function(){
-			return m_fogTint;
+			return m_fogTint.getRaw();
 		},
 		"destroy" : function(){
 			m_modelComponent.destroy();

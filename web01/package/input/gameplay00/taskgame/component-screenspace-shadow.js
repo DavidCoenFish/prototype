@@ -3,11 +3,11 @@ input [depth]
 output [rgb buffer]
  */
 
-import ComponentModelScreenQuadFactory from './../webgl/component-model-screen-quad.js';
-import ShaderWrapperFactory from "./../webgl/shaderwrapper.js";
-import {sInt, sFloat2} from "./../webgl/shaderuniformdata.js";
-import MaterialWrapperFactory from "./../webgl/materialwrapper.js";
-import {factoryFloat32 as Vector2Float32Factory} from "./../core/vector2.js";
+import ComponentModelScreenQuadFactory from './../../webgl/component-model-screen-quad.js';
+import ShaderWrapperFactory from "./../../webgl/shaderwrapper.js";
+import {sInt, sFloat2} from "./../../webgl/shaderuniformdata.js";
+import MaterialWrapperFactory from "./../../webgl/materialwrapper.js";
+import {factoryFloat32 as Vector2Float32Factory} from "./../../core/vector2.js";
 
 const sVertexShader = `
 precision mediump float;

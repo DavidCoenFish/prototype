@@ -3,12 +3,10 @@ input [depth]
 output [rgb buffer]
  */
 
-import ComponentModelScreenQuadFactory from './../webgl/component-model-screen-quad.js';
-import ShaderWrapperFactory from "./../webgl/shaderwrapper.js";
-import {sInt, sMat4} from "./../webgl/shaderuniformdata.js";
-import MaterialWrapperFactory from "./../webgl/materialwrapper.js";
-import {factoryFloat32 as Vector2Float32Factory} from "./../core/vector2.js";
-import { sMat4 } from '../../webgl/shaderuniformdata.js';
+import ComponentModelScreenQuadFactory from './../../webgl/component-model-screen-quad.js';
+import ShaderWrapperFactory from "./../../webgl/shaderwrapper.js";
+import {sInt, sMat4, sFloat3} from "./../../webgl/shaderuniformdata.js";
+import MaterialWrapperFactory from "./../../webgl/materialwrapper.js";
 
 const sVertexShader = `
 precision mediump float;
@@ -39,9 +37,9 @@ void main() {
 	if (1.0 <= depth){
 		discard;
 	}
-	vec3 colour = texture2D(u_samplerColour, v_uv).xyz;
-
-	gl_FragColor = vec4(colour, alpha);
+	vec3 sampleColour = texture2D(u_samplerColour, v_uv).xyz;
+	vec3 colour = mix(sampleColour, u_fogTint, depth);
+	gl_FragColor = vec4(colour, 1.0);
 }
 `;
 
