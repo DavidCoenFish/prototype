@@ -4,7 +4,7 @@ import { factoryQuaternion as Matrix33FactoryQuaternion, transformVector3 as Mat
 import { 
 	factoryYawPitchRoll as QuaternionFactoryYawPitchRoll,
 	} from './../../core/quaternion.js'
-
+import {fromDegrees} from "./../../core/radians.js";
 
 export default function(
 		in_viewTarget,
@@ -15,7 +15,7 @@ export default function(
 	const m_fovHRadian = 120.0 * (Math.PI/180.0);
 	const m_far = 100.0;
 
-	var m_yaw = 0.0;
+	var m_yaw =  fromDegrees(30.0);
 	var m_pitch = Math.PI * 0.2;
 
 	var m_cameraAt = Vector3FactoryFloat32(1.0, 0.0, 0.0);
