@@ -1,7 +1,7 @@
-import {factory as factoryText} from "./../manipulatedom/text.js";
-import {factoryAppend as factoryDiv} from "./../manipulatedom/div.js";
-import {applyStyle} from "./../manipulatedom/style.js";
-import CelticKnotComponentFactory from "./taskloading/celticknotcomponent.js";
+import {factory as factoryText} from "./../../manipulatedom/text.js";
+import {factoryAppend as factoryDiv} from "./../../manipulatedom/div.js";
+import {applyStyle} from "./../../manipulatedom/style.js";
+import CelticKnotComponentFactory from "./celticknotcomponent.js";
 
 //export const appendFactory = function(in_document, in_elementToAppend, in_text, in_styleOrUndefined){
 

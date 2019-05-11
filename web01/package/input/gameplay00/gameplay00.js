@@ -64,8 +64,6 @@ export default function () {
 		m_canvaseElementWrapper.onResize();
 	});
 
-//export const factory = function(in_document, in_text, in_callback, in_styleOrUndefined){
-
 	buttonFactory(document, m_div, "stop", function(){
 		console.log("stop");
 		m_keepGoing = false;

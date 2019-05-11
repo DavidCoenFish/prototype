@@ -5,6 +5,20 @@ import ModelWrapperFactory from './../../webgl/modelwrapper.js';
 import ModelDataStream from './../../webgl/modeldatastream.js';
 import {factoryFloat32 as Matrix44FactoryFloat32} from './../../core/matrix44.js';
 
+/*
+{
+	m_sphere, //pos, sphere radius
+	m_cylinder, //normal, halfHeight cylinder
+	m_colour,
+}
+// pipe radius = sqrt(sphereRadius^2 - halfHeight^2)
+
+//r1 = half height of cylinder
+//r2 = pipe radius
+
+
+ */
+
 
 const sVertexShader = `
 precision mediump float;

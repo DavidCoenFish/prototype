@@ -1,8 +1,5 @@
-import {factory as factoryText} from "./../manipulatedom/text.js";
-import {factoryAppend as factoryDiv} from "./../manipulatedom/div.js";
-import {factoryAppend as buttonFactory}  from './../manipulatedom/button.js';
-import {factoryFloat32 as Colour4FactoryFloat32} from "./../core/colour4.js";
-import RenderFactory from "./taskselectcharacter/render.js";
+import {factoryAppend as buttonFactory}  from './../../manipulatedom/button.js';
+import RenderFactory from "./render.js";
 
 /*
 
