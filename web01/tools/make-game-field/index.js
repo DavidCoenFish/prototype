@@ -15,6 +15,20 @@ output = {
 		[cylinder:[x,y,z,nx,ny,nz,l]],
 		colour:[r,g,b]|
 		gradient:|?
+		[movedata : {
+			pos : [x,y,z],
+			[steplink : {
+				[w : nb],
+				[e : nb],
+				[a : nb],
+				[d : nb],
+				[z : nb],
+				[x : nb],
+			}], //move horizontal, adjust height, finish move horizontal
+			[linearlink : {
+			}],
+			[jumplink : []]? info about distance needed to jump
+		}]
 	}]
 }
 

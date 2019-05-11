@@ -16,7 +16,7 @@ export default function(
 	const m_far = 100.0;
 
 	var m_yaw = 0.0;
-	var m_pitch = 0.0;
+	var m_pitch = Math.PI * 0.2;
 
 	var m_cameraAt = Vector3FactoryFloat32(1.0, 0.0, 0.0);
 	var m_cameraLeft = Vector3FactoryFloat32(0.0, 1.0, 0.0);
@@ -30,7 +30,6 @@ export default function(
 			in_viewTarget.getZ() - (m_cameraAt.getZ() * m_dolly)
 		);
 	};
-	updateCameraPos();
 
 	var m_camera = Matrix44FactoryFloat32();
 
@@ -52,7 +51,6 @@ export default function(
 		m_camera.set23(m_cameraPos.getZ());
 		m_camera.set33(m_far);
 	}
-	updateCamera();
 
 	const applyChange = function(in_yawDelta, in_pitchDelta){
 		//console.log("in_yawDelta:" + in_yawDelta + " in_pitchDelta:" + in_pitchDelta);
@@ -75,6 +73,10 @@ export default function(
 
 		return;
 	}
+
+	applyChange(0.0, 0.0);
+	updateCameraPos();
+	updateCamera();
 
 	var m_oldX = undefined;
 	var m_oldY = undefined;
@@ -114,6 +116,9 @@ export default function(
 		},
 		"getCamera" : function(){
 			return m_camera;
+		},
+		"getCameraAt" : function(){
+			return m_cameraAt;
 		},
 		"getFovHRadian" : function(){
 			return m_fovHRadian;

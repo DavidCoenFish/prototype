@@ -67,7 +67,8 @@ const makeNode = function(in_nodeOrigin, in_objectId, in_radius, in_low, in_high
 		"objectid" : in_objectId,
 		"convexhull" : [],
 		"colour0" : in_colour0,
-		"colour1" : in_colour1
+		"colour1" : in_colour1,
+		"movedata" : { "pos" : [in_nodeOrigin.x, in_nodeOrigin.y, in_high], "steplink" : {} }
 	};
 
 	result.convexhull.push(makePlane(0.0, 0.0, 1.0, 0, 0, in_high));
@@ -116,6 +117,9 @@ const test = function(){
 
 	var radius = 1.0;
 	addNodeConvexHull(1, result.nodearray, 0, 0, 1, 1, radius);
+
+	populateMoveDataLinks(result.nodearray);
+
 	return result;
 }
 
@@ -143,6 +147,56 @@ const addNodeConvexHull = function(trace, out_nodearray, indexX, indexY, width, 
 	return trace;
 }
 
+//stepLink
+const sLinkKeyArray = ["d", "e", "w", "a", "z", "x"];
+const populateMoveDataLinks = function(in_nodeArray){
+	for (var index = 0; index < in_nodeArray.length; ++index){
+		var node = in_nodeArray[index];
+		if (false === ("movedata" in node)){
+			continue;
+		}
+		var data = [];
+		for (var subIndex = 0; subIndex < in_nodeArray.length; ++subIndex){
+			if (subIndex === index){
+				continue;
+			}
+			var subNode = in_nodeArray[subIndex];
+			if (false === ("movedata" in subNode)){
+				continue;
+			}
+
+			var offset = [
+				subNode.movedata.pos[0] - node.movedata.pos[0],
+				subNode.movedata.pos[1] - node.movedata.pos[1],
+				subNode.movedata.pos[2] - node.movedata.pos[2]
+			];
+			var distance = Math.sqrt((offset[0] * offset[0]) + (offset[1] * offset[1]));
+			var angle = Math.atan2(offset[1], offset[0]) * 180.0 / Math.PI;
+			data.push({
+				"index" : subIndex,
+				"distance" : distance,
+				"angle" : angle
+			});
+		}
+
+		data.sort(function(in_lhs, in_rhs){
+			return (in_lhs.distance - in_rhs.distance);
+		});
+
+		//console.log(data);
+		for (var subIndex = 0; subIndex < data.length; ++subIndex){
+			var subData = data[subIndex];
+			if (1.5 < subData.distance){
+				break;
+			}
+
+			var angleIndex = Math.round((subData.angle + 360.0) / 60.0) % 6;
+			var key = sLinkKeyArray[angleIndex];
+			node.movedata.steplink[key] = subData.index;
+		}
+	}
+}
+
 const run5 = function(){
 	const result = {
 		"background" : [0.5, 0.5, 0.5],
@@ -161,6 +215,8 @@ const run5 = function(){
 	trace = addNodeConvexHull(trace, result.nodearray, 10, 9, width, height, radius);
 	trace = addNodeConvexHull(trace, result.nodearray, 9, 10, width, height, radius);
 	trace = addNodeConvexHull(trace, result.nodearray, 10, 10, width, height, radius);
+
+	populateMoveDataLinks(result.nodearray);
 
 	return result;
 }
@@ -183,6 +239,8 @@ const run = function(){
 	}
 
 	result.nodearray.push(makeSphere(undefined, 0, 0, 5, 2.0, [1.0, 1.0, 1.0, 0.0]));
+
+	populateMoveDataLinks(result.nodearray);
 
 	return result;
 }

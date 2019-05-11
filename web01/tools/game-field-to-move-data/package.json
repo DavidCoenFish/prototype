@@ -1,0 +1,18 @@
+{
+  "name": "game-field-to-move-data",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "unittest": "node --nolazy --inspect-brk=5858 index.js unittest",
+    "test": "node --nolazy --inspect-brk=5858 index.js objectidmodel input\\test.json output\\movedatatest.js",
+    "basic": "node --nolazy --inspect-brk=5858 index.js objectidmodel input\\basic.json output\\movedatabasic.js",
+    "basic5": "node --nolazy --inspect-brk=5858 index.js objectidmodel input\\basic5.json output\\movedatabasic5.js"
+  },
+  "dependencies": {
+    "fs-extra": "^7.0.1",
+    "q": "^1.5.1"
+  },
+  "author": "David Coen",
+  "license": "ISC"
+}
