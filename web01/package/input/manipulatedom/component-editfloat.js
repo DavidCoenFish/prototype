@@ -6,8 +6,7 @@ const onRangeChange = function(r,f) {
 	return;
 }
 
-
-const createInput = function(in_document, in_callbackGet, in_callbackSet, in_minOrUndefined, in_maxOrUndefined, in_stepOrUndefined){
+export const createInput = function(in_document, in_callbackGet, in_callbackSet, in_minOrUndefined, in_maxOrUndefined, in_stepOrUndefined){
 	var input = in_document.createElement("INPUT");
 
 	input.setAttribute("type", "number");
@@ -34,7 +33,7 @@ const createInput = function(in_document, in_callbackGet, in_callbackSet, in_min
 	return input;
 }
 
-const createRange = function(in_document, in_callbackGet, in_callbackSet, in_minOrUndefined, in_maxOrUndefined, in_stepOrUndefined){
+export const createRange = function(in_document, in_callbackGet, in_callbackSet, in_minOrUndefined, in_maxOrUndefined, in_stepOrUndefined){
 	var input = in_document.createElement("INPUT");
 
 	input.setAttribute("type", "range");
@@ -61,8 +60,7 @@ const createRange = function(in_document, in_callbackGet, in_callbackSet, in_min
 	return input;
 }
 
-
-const factory = function(in_document, in_text, in_callbackGet, in_callbackSet, in_minOrUndefined, in_maxOrUndefined, in_stepOrUndefined){
+export const factory = function(in_document, in_text, in_callbackGet, in_callbackSet, in_minOrUndefined, in_maxOrUndefined, in_stepOrUndefined){
 	var m_div = in_document.createElement("DIV");
 	var m_textElement = in_document.createTextNode(in_text);
 	m_div.appendChild(m_textElement);
@@ -103,9 +101,3 @@ const factory = function(in_document, in_text, in_callbackGet, in_callbackSet, i
 
 	return result;
 }
-
-
-module.exports = {
-	"createInput" : createInput,
-	"factory" : factory
-};

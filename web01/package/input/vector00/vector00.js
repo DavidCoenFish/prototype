@@ -2,6 +2,7 @@ import ComponentWebGLSceneSimpleFactory from './../manipulatedom/component-webgl
 import {factoryAppendBody as componentCanvasFactory } from './../manipulatedom/component-canvas.js';
 import {factoryAppend as buttonFactory}  from './../manipulatedom/button.js';
 import {factoryFloat32 as Vector2factoryFloat32} from "./../core/vector2.js";
+import ComponentEditVector2Factory from "./../manipulatedom/component-editvec2.js";
 import Task from './task.js';
 
 export default function () {
@@ -18,16 +19,22 @@ export default function () {
 	document.body.appendChild(m_canvasElement);
 	var m_task = Task;
 
+	/*
+	p0 0.36 0.5
+	p1 1.62 0.95
+	p2 -0.04 0.49
+	d 0.05
+	*/
 	var m_previousTimeStamp = undefined;
 	var m_keepGoing = true;
-	var m_p0 = Vector2factoryFloat32(0.25, 0.25);
-	var m_p1 = Vector2factoryFloat32(0.25, 0.75);
-	var m_p2 = Vector2factoryFloat32(0.75, 0.75);
+	var m_p0 = Vector2factoryFloat32(0.0, 0.5);
+	var m_p1 = Vector2factoryFloat32(1.86, 0.5);
+	var m_p2 = Vector2factoryFloat32(0.0, 0.5);
 	var m_dataState = {
 		"u_p0" : m_p0.getRaw(),
 		"u_p1" : m_p1.getRaw(),
 		"u_p2" : m_p2.getRaw(),
-		"u_d" : 0.01
+		"u_d" : 0.05
 	};
 	const callback = function(in_timestamp){
 		if (undefined === m_task){
@@ -68,6 +75,15 @@ export default function () {
 		"width": "32px", 
 		"height": "32px"
 	});
+
+	var m_componentEditP0 = ComponentEditVector2Factory(document, "p0", m_p0, -1.0, 2.0, 0.01);
+	document.body.appendChild(m_componentEditP0.getElement());
+
+	var m_componentEditP1 = ComponentEditVector2Factory(document, "p1", m_p1, -1.0, 2.0, 0.01);
+	document.body.appendChild(m_componentEditP1.getElement());
+
+	var m_componentEditP2 = ComponentEditVector2Factory(document, "p2", m_p2, -1.0, 2.0, 0.01);
+	document.body.appendChild(m_componentEditP2.getElement());
 
 	return;
 }

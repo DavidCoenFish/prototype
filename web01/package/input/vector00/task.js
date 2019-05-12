@@ -158,10 +158,27 @@ float calculateMinDistanceQuadraticBezierCurve(vec2 p0, vec2 p1, vec2 p2, vec2 s
 	return sqrt(distanceSquared);
 }
 
+vec4 debugControlPoints(vec4 inputColour, vec2 p0, vec2 p1, vec2 p2, vec2 samplePoint){
+	vec2 offset0 = p0 - samplePoint;
+	vec2 offset1 = p1 - samplePoint;
+	vec2 offset2 = p2 - samplePoint;
+	float distanceSquared = dot(offset0, offset0);
+	distanceSquared = min(distanceSquared, dot(offset1, offset1));
+	distanceSquared = min(distanceSquared, dot(offset2, offset2));
+	float ratio = step(distanceSquared, 0.000015);
+	vec4 colour = mix(inputColour, vec4(1.0, 0.0, 0.0, 1.0), ratio);
+	return colour;
+}
+
 void main() {
 	float distance = calculateMinDistanceQuadraticBezierCurve(u_p0, u_p1, u_p2, v_uv);
+	float distance2 = 1.0 - distance;
+	distance2 *= distance2;
 	float ratio = step(distance, u_d);
-	gl_FragColor = mix(vec4(0.5, 0.5, 0.5, 1.0), vec4(0.0, 0.0, 0.0, 1.0), ratio);
+	vec4 colour2 = mix(vec4(0.5, 0.5, 0.5, 1.0), vec4(0.0, 0.0, 0.0, 1.0), ratio);
+	vec4 colour = vec4(distance2, distance2, colour2.z, 1.0);
+	colour = debugControlPoints(colour, u_p0, u_p1, u_p2, v_uv);
+	gl_FragColor = colour;
 }
 `;
 

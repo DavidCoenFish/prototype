@@ -1,13 +1,13 @@
-const ComponentEditFloat = require("./component-editfloat.js");
+import {createInput} from "./component-editfloat.js";
 
 const factory = function(in_document, in_text, in_callbackGetX, in_callbackSetX, in_callbackGetY, in_callbackSetY, in_minOrUndefined, in_maxOrUndefined, in_stepOrUndefined){
 	var m_div = in_document.createElement("DIV");
 	var m_textElement = in_document.createTextNode(in_text);
 	m_div.appendChild(m_textElement);
 
-	var m_inputX = ComponentEditFloat.createInput(in_document, in_callbackGetX, in_callbackSetX, in_minOrUndefined, in_maxOrUndefined, in_stepOrUndefined);
+	var m_inputX = createInput(in_document, in_callbackGetX, in_callbackSetX, in_minOrUndefined, in_maxOrUndefined, in_stepOrUndefined);
 	m_div.appendChild(m_inputX);
-	var m_inputY = ComponentEditFloat.createInput(in_document, in_callbackGetY, in_callbackSetY, in_minOrUndefined, in_maxOrUndefined, in_stepOrUndefined);
+	var m_inputY = createInput(in_document, in_callbackGetY, in_callbackSetY, in_minOrUndefined, in_maxOrUndefined, in_stepOrUndefined);
 	m_div.appendChild(m_inputY);
 		
 	//public methods ==========================
@@ -20,7 +20,7 @@ const factory = function(in_document, in_text, in_callbackGetX, in_callbackSetX,
 	return result;
 }
 
-const factoryVec2 = function(in_document, in_text, in_vec2, in_minOrUndefined, in_maxOrUndefined, in_stepOrUndefined){
+export default function(in_document, in_text, in_vec2, in_minOrUndefined, in_maxOrUndefined, in_stepOrUndefined){
 	return factory(
 		in_document, 
 		in_text, 
@@ -33,8 +33,3 @@ const factoryVec2 = function(in_document, in_text, in_vec2, in_minOrUndefined, i
 		in_stepOrUndefined
 	);
 }
-
-module.exports = {
-	"factory" : factory,
-	"factoryVec2" : factoryVec2
-};
