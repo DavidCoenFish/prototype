@@ -46,7 +46,9 @@ if ("unittest" === process.argv[2]){
 	}).then(function(){
 		//return makeProject("convexhull01", "convexhull01");
 	}).then(function(){
-		return makeProject("gameplay00", "gameplay00");
+		//return makeProject("gameplay00", "gameplay00");
+	}).then(function(){
+		return makeProject("vector00", "vector00");
 	}).done(function(){
 		console.log(new Date().toLocaleTimeString());
 	});
