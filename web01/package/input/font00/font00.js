@@ -3,7 +3,6 @@ import {factoryAppendBody as componentCanvasFactory } from './../manipulatedom/c
 import {factoryAppend as buttonFactory}  from './../manipulatedom/button.js';
 import {factoryFloat32 as Vector2factoryFloat32} from "./../core/vector2.js";
 import ComponentEditVector2Factory from "./../manipulatedom/component-editvec2.js";
-import {factory as ComponentEditFloatFactory} from "./../manipulatedom/component-editfloat.js";
 import Task from './task.js';
 
 export default function () {
@@ -28,9 +27,8 @@ export default function () {
 	*/
 	var m_previousTimeStamp = undefined;
 	var m_keepGoing = true;
-	var m_p0 = Vector2factoryFloat32(0.0, 0.5);
-	var m_p1 = Vector2factoryFloat32(1.86, 0.5);
-	var m_p2 = Vector2factoryFloat32(0.0, 0.5);
+	var m_mat0 = Matrix4factoryFloat32();
+	var m_mat1 = Matrix4factoryFloat32();
 	var m_dataState = {
 		"u_p0" : m_p0.getRaw(),
 		"u_p1" : m_p1.getRaw(),
@@ -85,16 +83,6 @@ export default function () {
 
 	var m_componentEditP2 = ComponentEditVector2Factory(document, "p2", m_p2, -1.0, 2.0, 0.01);
 	document.body.appendChild(m_componentEditP2.getElement());
-
-	var m_componentEditD = ComponentEditFloatFactory(
-		document,
-		"d", 
-		function(){return m_dataState.u_d;}, 
-		function(in_d){m_dataState.u_d = in_d; return;}, 
-		0.0,
-		1.0,
-		0.01);
-	document.body.appendChild(m_componentEditD.getElement());
 
 	return;
 }

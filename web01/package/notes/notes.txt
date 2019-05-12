@@ -1,5 +1,7 @@
 todo:
 	vector font nb
+	game nb particle shader 
+		(each particle index, uniform [pos scale, colour] into 13mat4, so 26nb at a time....
 	ui
 	combat
 	dialog
