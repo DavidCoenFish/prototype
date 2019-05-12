@@ -41,7 +41,7 @@ float distanceFunction(float t, float nullDistance){
 
 //24
 // based on Olivier Besson (http://www.gludion.com)
-float zeroMax = 0.0000001;
+float zeroMax = 0.0; //0.0000001;
 float thirdDegreeEquationMin(float a, float b, float c, float d, float nullDistance){
 	if (zeroMax < abs(a))
 	{
@@ -153,8 +153,14 @@ float calculateMinDistanceQuadraticBezierCurve(vec2 p0, vec2 p1, vec2 p2, vec2 s
 	float b = 3.0 * ((A.x * B.x) + (A.y * B.y));
 	float c = 2.0 * ((A.x * A.x) + (A.y * A.y)) + (sampleRelative.x * B.x) + (sampleRelative.y * B.y);
 	float d = (sampleRelative.x * A.x) + (sampleRelative.y * A.y);
-
 	float distanceSquared = thirdDegreeEquationMin(a, b, c, d, 1000.0);
+
+	//endpoints
+	vec2 offset0 = p0 - samplePoint;
+	vec2 offset1 = p2 - samplePoint;
+	distanceSquared = min(distanceSquared, dot(offset0, offset0));
+	distanceSquared = min(distanceSquared, dot(offset1, offset1));
+
 	return sqrt(distanceSquared);
 }
 
@@ -172,12 +178,14 @@ vec4 debugControlPoints(vec4 inputColour, vec2 p0, vec2 p1, vec2 p2, vec2 sample
 
 void main() {
 	float distance = calculateMinDistanceQuadraticBezierCurve(u_p0, u_p1, u_p2, v_uv);
-	float distance2 = 1.0 - distance;
-	distance2 *= distance2;
 	float ratio = step(distance, u_d);
-	vec4 colour2 = mix(vec4(0.5, 0.5, 0.5, 1.0), vec4(0.0, 0.0, 0.0, 1.0), ratio);
-	vec4 colour = vec4(distance2, distance2, colour2.z, 1.0);
-	colour = debugControlPoints(colour, u_p0, u_p1, u_p2, v_uv);
+	vec4 colour = mix(vec4(0.5, 0.5, 0.5, 1.0), vec4(0.0, 0.0, 0.0, 1.0), ratio);
+
+	//float distance2 = 1.0 - distance;
+	//distance2 *= distance2;
+	//vec4 colour = vec4(distance2, distance2, colour2.z, 1.0);
+	//colour = debugControlPoints(colour, u_p0, u_p1, u_p2, v_uv);
+	
 	gl_FragColor = colour;
 }
 `;

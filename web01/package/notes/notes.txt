@@ -1,10 +1,9 @@
 todo:
-	gameplay field
-		draw sphere
-		camera
-		convex hull editor
-		movement
-		combat
-		draw cylinder
-		ingame ui, text
-	cloth01
+	vector font nb
+	ui
+	combat
+	dialog
+	blood/ magic
+	bloom
+	depth field
+
