@@ -3,7 +3,8 @@ import MaterialWrapperFactory from './../webgl/materialwrapper.js';
 import ShaderWrapper from './../webgl/shaderwrapper.js';
 import ComponentModelScreenQuadFactory from "./../webgl/component-model-screen-quad.js"
 import ResourceManagerFactory from "./../core/resourcemanager.js";
-import { sFloat, sFloat2 } from "./../webgl/shaderuniformdata.js";
+import { sFloat, sFloat2, sMat4 } from "./../webgl/shaderuniformdata.js";
+import {factoryFloat32 as Mat4FactoryFloat} from "./../core/matrix44.js";
 
 const sVertexShader = `
 attribute vec2 a_position;
@@ -18,23 +19,24 @@ void main() {
 const sFragmentShader = `
 precision mediump float;
 varying vec2 v_uv;
-uniform vec2 u_p0;
-uniform vec2 u_p1;
-uniform vec2 u_p2;
+uniform mat4 u_data0;
+uniform vec2 u_data1;
+uniform mat4 u_data2;
+uniform vec2 u_data3;
 uniform float u_d;
 
 #define PI 3.1415926538
 
 //return the squared distance from QuadraticBezierCurve to our sample point v_uv
-float distanceFunction(float t, float nullDistance){
+float distanceFunction(float t, float nullDistance, vec2 p0, vec2 p1, vec2 p2, vec2 samplePoint){
 	if ((t < 0.0) || (1.0 < t)){
 		return nullDistance;
 	}
 	float a = (1.0 - t) * (1.0 - t);
 	float b = 2.0 * t * (1.0 - t);
 	float c = t * t;
-	vec2 p = (a * u_p0) + (b * u_p1) + (c * u_p2);
-	vec2 offset = p - v_uv;
+	vec2 p = (a * p0) + (b * p1) + (c * p2);
+	vec2 offset = p - samplePoint;
 	float distanceSquared = dot(offset, offset);
 	return distanceSquared;
 }
@@ -42,7 +44,7 @@ float distanceFunction(float t, float nullDistance){
 //24
 // based on Olivier Besson (http://www.gludion.com)
 float zeroMax = 0.0; //0.0000001;
-float thirdDegreeEquationMin(float a, float b, float c, float d, float nullDistance){
+float thirdDegreeEquationMin(float a, float b, float c, float d, float nullDistance, vec2 p0, vec2 p1, vec2 p2, vec2 samplePoint){
 	if (zeroMax < abs(a))
 	{
 		//30: let's adopt form: x3 + ax2 + bx + d = 0
@@ -72,7 +74,7 @@ float thirdDegreeEquationMin(float a, float b, float c, float d, float nullDista
 			} else {
 				v = -pow( -v, 1.0 / 3.0);
 			}
-			float result = distanceFunction(u + v + offset, nullDistance);
+			float result = distanceFunction(u + v + offset, nullDistance, p0, p1, p2, samplePoint);
 			return result;
 		}
 		else if (D < -zeroMax)
@@ -80,9 +82,9 @@ float thirdDegreeEquationMin(float a, float b, float c, float d, float nullDista
 			// D negative
 			float u = 2.0 * sqrt(-p / 3.0);
 			float v = acos(-sqrt(-27.0 / p3) * q / 2.0) / 3.0;
-			float result1 = distanceFunction(u * cos(v) + offset, nullDistance);
-			float result2 = distanceFunction(u * cos(v + 2.0 * PI / 3.0) + offset, nullDistance);
-			float result3 = distanceFunction(u * cos(v + 4.0 * PI / 3.0) + offset, nullDistance);
+			float result1 = distanceFunction(u * cos(v) + offset, nullDistance, p0, p1, p2, samplePoint);
+			float result2 = distanceFunction(u * cos(v + 2.0 * PI / 3.0) + offset, nullDistance, p0, p1, p2, samplePoint);
+			float result3 = distanceFunction(u * cos(v + 4.0 * PI / 3.0) + offset, nullDistance, p0, p1, p2, samplePoint);
 			float result = min(result1, min(result2, result3));
 			return result;
 		}
@@ -95,8 +97,8 @@ float thirdDegreeEquationMin(float a, float b, float c, float d, float nullDista
 			} else {
 				u = -pow( q / 2.0, 1.0 / 3.0);
 			}
-			float result1 = distanceFunction((2.0 * u) + offset, nullDistance);
-			float result2 = distanceFunction(-u + offset, nullDistance);
+			float result1 = distanceFunction((2.0 * u) + offset, nullDistance, p0, p1, p2, samplePoint);
+			float result2 = distanceFunction(-u + offset, nullDistance, p0, p1, p2, samplePoint);
 			float result = min(result1, result2);
 			return result;
 		}
@@ -115,7 +117,7 @@ float thirdDegreeEquationMin(float a, float b, float c, float d, float nullDista
 			}
 			else 
 			{
-				float result = distanceFunction(-c / b, nullDistance);
+				float result = distanceFunction(-c / b, nullDistance, p0, p1, p2, samplePoint);
 				return result;
 			}
 		}
@@ -126,8 +128,8 @@ float thirdDegreeEquationMin(float a, float b, float c, float d, float nullDista
 		if (zeroMax < D) {
 			// D positive
 			D = sqrt(D);
-			float result1 = distanceFunction(( -b - D) / (2.0 * a), nullDistance);
-			float result2 = distanceFunction(( -b + D) / (2.0 * a), nullDistance);
+			float result1 = distanceFunction(( -b - D) / (2.0 * a), nullDistance, p0, p1, p2, samplePoint);
+			float result2 = distanceFunction(( -b + D) / (2.0 * a), nullDistance, p0, p1, p2, samplePoint);
 			float result = min(result1, result2);
 			return result;
 		} else if (D < -zeroMax) {
@@ -135,7 +137,7 @@ float thirdDegreeEquationMin(float a, float b, float c, float d, float nullDista
 			return nullDistance;
 		} else {
 			// D zero
-			float result = distanceFunction(-b / (2.0 * a), nullDistance);
+			float result = distanceFunction(-b / (2.0 * a), nullDistance, p0, p1, p2, samplePoint);
 			return result;
 		}
 	}
@@ -153,7 +155,7 @@ float calculateMinDistanceQuadraticBezierCurve(vec2 p0, vec2 p1, vec2 p2, vec2 s
 	float b = 3.0 * ((A.x * B.x) + (A.y * B.y));
 	float c = 2.0 * ((A.x * A.x) + (A.y * A.y)) + (sampleRelative.x * B.x) + (sampleRelative.y * B.y);
 	float d = (sampleRelative.x * A.x) + (sampleRelative.y * A.y);
-	float distanceSquared = thirdDegreeEquationMin(a, b, c, d, 1000.0);
+	float distanceSquared = thirdDegreeEquationMin(a, b, c, d, 1000.0, p0, p1, p2, samplePoint);
 
 	//endpoints
 	vec2 offset0 = p0 - samplePoint;
@@ -161,10 +163,25 @@ float calculateMinDistanceQuadraticBezierCurve(vec2 p0, vec2 p1, vec2 p2, vec2 s
 	distanceSquared = min(distanceSquared, dot(offset0, offset0));
 	distanceSquared = min(distanceSquared, dot(offset1, offset1));
 
-	return sqrt(distanceSquared);
+	return distanceSquared;
 }
 
-vec4 debugControlPoints(vec4 inputColour, vec2 p0, vec2 p1, vec2 p2, vec2 samplePoint){
+float calculateSmallerDistanceQuadraticBezierCurve(float distance, vec2 p0, vec2 p1, vec2 p2, vec2 samplePoint){
+	//do a bounding box check? if closer than u_d to bounding box, need to check 
+	vec2 low = min(p0, min(p1, p2)) - vec2(u_d, u_d);
+	vec2 high = max(p0, max(p1, p2)) + vec2(u_d, u_d);
+	if ((samplePoint.x < low.x) || 
+		(samplePoint.y < low.y) ||
+		(high.x < samplePoint.x) ||
+		(high.y < samplePoint.y)){
+		return distance;
+	}
+
+	float result = min(distance, calculateMinDistanceQuadraticBezierCurve(p0, p1, p2, samplePoint));
+	return result;
+}
+
+float debugControlPoints(float distance, vec2 p0, vec2 p1, vec2 p2, vec2 samplePoint){
 	vec2 offset0 = p0 - samplePoint;
 	vec2 offset1 = p1 - samplePoint;
 	vec2 offset2 = p2 - samplePoint;
@@ -172,19 +189,47 @@ vec4 debugControlPoints(vec4 inputColour, vec2 p0, vec2 p1, vec2 p2, vec2 sample
 	distanceSquared = min(distanceSquared, dot(offset1, offset1));
 	distanceSquared = min(distanceSquared, dot(offset2, offset2));
 	float ratio = step(distanceSquared, 0.000015);
-	vec4 colour = mix(inputColour, vec4(1.0, 0.0, 0.0, 1.0), ratio);
-	return colour;
+	float result = mix(0.0, distance, ratio);
+	return result;
+}
+
+float GetFactor(float threashold, mat4 data0, vec2 data1, float dark, vec2 samplePoint){
+	float distance = 1000.0;
+	
+	vec2 p0 = data0[0].xy;
+	vec2 p1 = data0[0].zw;
+	vec2 p2 = data0[1].xy;
+	distance = calculateSmallerDistanceQuadraticBezierCurve(distance, p0, p1, p2, samplePoint);
+	distance = debugControlPoints(distance, p0, p1, p2, samplePoint);
+
+	p0 = p2;
+	p1 = data0[1].zw;
+	p2 = data0[2].xy;
+	distance = calculateSmallerDistanceQuadraticBezierCurve(distance, p0, p1, p2, samplePoint);
+	distance = debugControlPoints(distance, p0, p1, p2, samplePoint);
+
+	p0 = p2;
+	p1 = data0[2].zw;
+	p2 = data0[3].xy;
+	distance = calculateSmallerDistanceQuadraticBezierCurve(distance, p0, p1, p2, samplePoint);
+	distance = debugControlPoints(distance, p0, p1, p2, samplePoint);
+
+	p0 = p2;
+	p1 = data0[3].zw;
+	p2 = data1;
+	distance = calculateSmallerDistanceQuadraticBezierCurve(distance, p0, p1, p2, samplePoint);
+	distance = debugControlPoints(distance, p0, p1, p2, samplePoint);
+
+	float ratio = step(distance, threashold);
+	float result = mix(dark, 1.0, ratio);
+	return result;
 }
 
 void main() {
-	float distance = calculateMinDistanceQuadraticBezierCurve(u_p0, u_p1, u_p2, v_uv);
-	float ratio = step(distance, u_d);
-	vec4 colour = mix(vec4(0.5, 0.5, 0.5, 1.0), vec4(0.0, 0.0, 0.0, 1.0), ratio);
-
-	//float distance2 = 1.0 - distance;
-	//distance2 *= distance2;
-	//vec4 colour = vec4(distance2, distance2, colour2.z, 1.0);
-	//colour = debugControlPoints(colour, u_p0, u_p1, u_p2, v_uv);
+	vec4 colour = vec4(1.0, 1.0, 1.0, 1.0);
+	float threashHold = u_d * u_d;
+	colour.rgb *= GetFactor(threashHold, u_data0, u_data1, 0.0, v_uv);
+	colour.rgb *= GetFactor(threashHold, u_data2, u_data3, 0.5, v_uv);
 	
 	gl_FragColor = colour;
 }
@@ -196,10 +241,11 @@ const sVertexAttributeNameArray = [
 ];
 
 const sUniformNameMap = {
-	"u_p0" : sFloat2,
-	"u_p1" : sFloat2,
-	"u_p2" : sFloat2,
-	"u_d" : sFloat
+	"u_d" : sFloat,
+	"u_data0" : sMat4,
+	"u_data1" : sFloat2,
+	"u_data2" : sMat4,
+	"u_data3" : sFloat2
 };
 
 export default function(in_callback, in_webGLState, in_dataState, in_timeDelta, in_keepGoing){
@@ -209,6 +255,16 @@ export default function(in_callback, in_webGLState, in_dataState, in_timeDelta, 
 	var m_material = MaterialWrapperFactory();
 	var m_shader = ShaderWrapper(in_webGLState, sVertexShader, sFragmentShader, sVertexAttributeNameArray, sUniformNameMap);
 
+	var m_data0 = Mat4FactoryFloat();
+	var m_data2 = Mat4FactoryFloat();
+	var m_state = {
+		"u_d" : in_dataState.u_d,
+		"u_data0" : m_data0.getRaw(), //16
+		"u_data1" : in_dataState.u_p8,
+		"u_data2" : m_data2.getRaw(), //16
+		"u_data3" : in_dataState.u_r8
+	};
+
 	return function(in_callback, in_webGLState, in_dataState, in_timeDelta, in_keepGoing){
 		if (false === in_keepGoing){
 			m_componentModelScreenQuad.destroy();
@@ -217,9 +273,42 @@ export default function(in_callback, in_webGLState, in_dataState, in_timeDelta, 
 			return undefined;
 		}
 
-		in_webGLState.clear(Colour4FactoryFloat32(1.0,0.0,0.0,1.0));
+		m_state["u_d"] = in_dataState.u_d;
+		m_data0.set00(in_dataState.u_p0[0]);
+		m_data0.set10(in_dataState.u_p0[1]);
+		m_data0.set20(in_dataState.u_p1[0]);
+		m_data0.set30(in_dataState.u_p1[1]);
+		m_data0.set01(in_dataState.u_p2[0]);
+		m_data0.set11(in_dataState.u_p2[1]);
+		m_data0.set21(in_dataState.u_p3[0]);
+		m_data0.set31(in_dataState.u_p3[1]);
+		m_data0.set02(in_dataState.u_p4[0]);
+		m_data0.set12(in_dataState.u_p4[1]);
+		m_data0.set22(in_dataState.u_p5[0]);
+		m_data0.set32(in_dataState.u_p5[1]);
+		m_data0.set03(in_dataState.u_p6[0]);
+		m_data0.set13(in_dataState.u_p6[1]);
+		m_data0.set23(in_dataState.u_p7[0]);
+		m_data0.set33(in_dataState.u_p7[1]);
 
-		in_webGLState.applyShader(m_shader, in_dataState);
+		m_data2.set00(in_dataState.u_r0[0]);
+		m_data2.set10(in_dataState.u_r0[1]);
+		m_data2.set20(in_dataState.u_r1[0]);
+		m_data2.set30(in_dataState.u_r1[1]);
+		m_data2.set01(in_dataState.u_r2[0]);
+		m_data2.set11(in_dataState.u_r2[1]);
+		m_data2.set21(in_dataState.u_r3[0]);
+		m_data2.set31(in_dataState.u_r3[1]);
+		m_data2.set02(in_dataState.u_r4[0]);
+		m_data2.set12(in_dataState.u_r4[1]);
+		m_data2.set22(in_dataState.u_r5[0]);
+		m_data2.set32(in_dataState.u_r5[1]);
+		m_data2.set03(in_dataState.u_r6[0]);
+		m_data2.set13(in_dataState.u_r6[1]);
+		m_data2.set23(in_dataState.u_r7[0]);
+		m_data2.set33(in_dataState.u_r7[1]);
+
+		in_webGLState.applyShader(m_shader, m_state);
 		in_webGLState.applyMaterial(m_material);
 		in_webGLState.drawModel(m_componentModelScreenQuad.getModel());
 

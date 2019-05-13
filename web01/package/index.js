@@ -48,9 +48,9 @@ if ("unittest" === process.argv[2]){
 	}).then(function(){
 		//return makeProject("gameplay00", "gameplay00");
 	}).then(function(){
-		return makeProject("vector00", "vector00");
+		//return makeProject("vector00", "vector00");
 	}).then(function(){
-		//return makeProject("font00", "font00");
+		return makeProject("font00", "font00");
 	}).done(function(){
 		console.log(new Date().toLocaleTimeString());
 	});
