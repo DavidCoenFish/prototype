@@ -168,14 +168,14 @@ float calculateMinDistanceQuadraticBezierCurve(vec2 p0, vec2 p1, vec2 p2, vec2 s
 
 float calculateSmallerDistanceQuadraticBezierCurve(float distance, vec2 p0, vec2 p1, vec2 p2, vec2 samplePoint){
 	//do a bounding box check? if closer than u_d to bounding box, need to check 
-	vec2 low = min(p0, min(p1, p2)) - vec2(u_d, u_d);
-	vec2 high = max(p0, max(p1, p2)) + vec2(u_d, u_d);
-	if ((samplePoint.x < low.x) || 
-		(samplePoint.y < low.y) ||
-		(high.x < samplePoint.x) ||
-		(high.y < samplePoint.y)){
-		return distance;
-	}
+	// vec2 low = min(p0, min(p1, p2)) - vec2(u_d, u_d);
+	// vec2 high = max(p0, max(p1, p2)) + vec2(u_d, u_d);
+	// if ((samplePoint.x < low.x) || 
+	// 	(samplePoint.y < low.y) ||
+	// 	(high.x < samplePoint.x) ||
+	// 	(high.y < samplePoint.y)){
+	// 	return distance;
+	// }
 
 	float result = min(distance, calculateMinDistanceQuadraticBezierCurve(p0, p1, p2, samplePoint));
 	return result;
@@ -189,10 +189,11 @@ float debugControlPoints(float distance, vec2 p0, vec2 p1, vec2 p2, vec2 sampleP
 	distanceSquared = min(distanceSquared, dot(offset1, offset1));
 	distanceSquared = min(distanceSquared, dot(offset2, offset2));
 	float ratio = step(distanceSquared, 0.000015);
-	float result = mix(0.0, distance, ratio);
+	float result = mix(distance, 0.0, ratio);
 	return result;
 }
 
+//threashHold, u_data2, u_data3, 0.5, v_uv
 float GetFactor(float threashold, mat4 data0, vec2 data1, float dark, vec2 samplePoint){
 	float distance = 1000.0;
 	
@@ -221,7 +222,7 @@ float GetFactor(float threashold, mat4 data0, vec2 data1, float dark, vec2 sampl
 	distance = debugControlPoints(distance, p0, p1, p2, samplePoint);
 
 	float ratio = step(distance, threashold);
-	float result = mix(dark, 1.0, ratio);
+	float result = mix(1.0, dark, ratio);
 	return result;
 }
 
@@ -229,7 +230,7 @@ void main() {
 	vec4 colour = vec4(1.0, 1.0, 1.0, 1.0);
 	float threashHold = u_d * u_d;
 	colour.rgb *= GetFactor(threashHold, u_data0, u_data1, 0.0, v_uv);
-	colour.rgb *= GetFactor(threashHold, u_data2, u_data3, 0.5, v_uv);
+	//colour.rgb *= GetFactor(threashHold, u_data2, u_data3, 0.5, v_uv);
 	
 	gl_FragColor = colour;
 }

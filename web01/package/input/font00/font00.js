@@ -50,7 +50,7 @@ export default function () {
 	var m_r7 = Vector2factoryFloat32();
 	var m_r8 = Vector2factoryFloat32();
 	var m_dataState = {
-		"u_d" : 0.05,
+		"u_d" : 0.01,
 		"u_p0" : m_p0.getRaw(),
 		"u_p1" : m_p1.getRaw(),
 		"u_p2" : m_p2.getRaw(),
@@ -125,7 +125,7 @@ export default function () {
 		function(in_d){m_dataState.u_d = in_d; return;}, 
 		0.0,
 		1.0,
-		0.01);
+		0.001);
 	document.body.appendChild(m_componentEditD.getElement());
 
 	for (var index = 0; index < 9; ++index){
