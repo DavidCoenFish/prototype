@@ -230,7 +230,7 @@ void main() {
 	vec4 colour = vec4(1.0, 1.0, 1.0, 1.0);
 	float threashHold = u_d * u_d;
 	colour.rgb *= GetFactor(threashHold, u_data0, u_data1, 0.0, v_uv);
-	//colour.rgb *= GetFactor(threashHold, u_data2, u_data3, 0.5, v_uv);
+	colour.rgb *= GetFactor(threashHold, u_data2, u_data3, 0.5, v_uv);
 	
 	gl_FragColor = colour;
 }
