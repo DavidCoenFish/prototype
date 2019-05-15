@@ -14,6 +14,10 @@ const factory = function(in_document, in_text, in_callbackGetX, in_callbackSetX,
 	const result = Object.create({
 		"getElement" : function(){
 			return m_div;
+		},
+		"refresh" : function(){
+			m_inputX.value = in_callbackGetX();
+			m_inputY.value = in_callbackGetY();
 		}
 	});
 
