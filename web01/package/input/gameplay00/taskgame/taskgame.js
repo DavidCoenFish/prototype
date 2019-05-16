@@ -41,13 +41,22 @@ export default function(in_webGLState, in_div, in_gameResourceManager, in_gameSt
 
 	var m_dynamicCylinderArray = [];
 	m_dynamicCylinderArray.push({
-			"m_sphere" : m_playerPos,
-			"m_cylinder" : Vector4FactoryFloat32(0.0, 0.0, 1.0, 0.6),
-			"m_colour" : Vector4FactoryFloat32(0.25, 0.25, 0.25, 0.5)
-	});
+		"m_sphere" : m_playerPos,
+		"m_cylinder" : Vector4FactoryFloat32(0.0, 0.0, 1.0, 0.6),
+		"m_colour" : Vector4FactoryFloat32(0.25, 0.25, 0.25, 0.5)
+		});
+	var m_dynamicNumberArray = [];
+	for (var index = 0; index < 24; ++index){
+		var temp = index / 24.0;
+		m_dynamicNumberArray.push({
+			"m_sphere" : Vector4FactoryFloat32(Math.cos(temp * Math.PI * 2.0), Math.sin(temp * Math.PI * 2.0), 2.0, 0.5),
+			"m_data" : Vector4FactoryFloat32(index % 5.0, 0.0, 0.5, index % 10.0)
+			});
+	}
 	var m_state = {
-		"u_camera" : m_componentCamera.getCamera().getRaw(), //m_camera.getRaw(),
-		"m_dynamicCylinderArray" : m_dynamicCylinderArray
+		"u_camera" : m_componentCamera.getCamera().getRaw(),
+		"m_dynamicCylinderArray" : m_dynamicCylinderArray,
+		"m_dynamicNumberArray" : m_dynamicNumberArray
 	}
 
 	var m_render = RenderFactory(in_webGLState, in_gameResourceManager, m_state, in_callbackRequestLoading, m_componentCamera.getFovHRadian());

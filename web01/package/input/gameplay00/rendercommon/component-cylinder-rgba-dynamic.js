@@ -355,7 +355,6 @@ export default function(in_resourceManager, in_webGLState, in_state, in_texture)
 		}, undefined);
 
 	var m_data = [];
-
 	for (var index = 0; index < 13; ++index){
 		m_data.push(Matrix44FactoryFloat32());
 	}
@@ -385,7 +384,7 @@ export default function(in_resourceManager, in_webGLState, in_state, in_texture)
 			m_textureArray[0] = in_texture;
 			var arrayCount = in_state.m_dynamicCylinderArray.length;
 			if (0 === arrayCount){
-				return 0.0;
+				return;
 			}
 
 			in_webGLState.applyMaterial(m_material);
