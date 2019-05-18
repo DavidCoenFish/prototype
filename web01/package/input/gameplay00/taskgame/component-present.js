@@ -5,6 +5,7 @@
 import ComponentSkyboxFactory from "./component-skybox.js";
 import ComponentScreenspaceShadowFactory from "./component-screenspace-shadow.js";
 import ComponentPresentColourTextureFactory from "./component-present-colour-texture.js";
+import ComponentNumberDynamicFactory from "./../rendercommon/component-number-dynamic.js";
 
 export default function(
 	in_resourceManager, 
@@ -30,6 +31,7 @@ export default function(
 			in_webGLState.getCanvasHeight(),
 			in_depthTexture
 		);
+	const m_componentNumberDynamic = ComponentNumberDynamicFactory(in_resourceManager, in_webGLState, in_state, in_depthTexture);
 
 
 	//public methods ==========================
@@ -44,6 +46,7 @@ export default function(
 				in_webGLState.getCanvasWidth(),
 				in_webGLState.getCanvasHeight(),
 				in_depthTexture);
+			m_componentNumberDynamic.update(in_depthTexture);
 
 			return;
 		},
@@ -51,6 +54,7 @@ export default function(
 			m_componentSkybox.destroy();
 			m_componentPresentColourTexture.destroy();
 			m_componentScreenSpaceShadow.destroy();
+			m_componentNumberDynamic.destroy();
 			return;
 		}
 	})

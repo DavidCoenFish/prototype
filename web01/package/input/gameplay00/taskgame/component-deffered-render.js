@@ -8,7 +8,7 @@ output [rgba buffer, depth buffer]
 import ComponentRenderTargetFactory from "./../../webgl/component-render-target.js";
 import { RenderTargetDataFactoryAttachment0ByteRGBA, RenderTargetDataFactoryDepthInt } from "./../../webgl/component-render-target-data-factory.js";
 import ComponentConvexHullRgbaFactory from './../rendercommon/component-convexhull-rgba.js';
-import ComponentNumberDynamicFactory from "./../rendercommon/component-number-dynamic.js";
+//import ComponentNumberDynamicFactory from "./../rendercommon/component-number-dynamic.js";
 //import ComponentSphereRgbaFactory from './component-sphere-rgba.js';
 //import ComponentCylinderRgbaFactory from './component-cylinder-rgba.js';
 import ComponentCylinderRgbaDynamicFactory from './../rendercommon/component-cylinder-rgba-dynamic.js';
@@ -29,7 +29,7 @@ export default function(
 	], in_width, in_height);
 	const m_background = Colour4FactoryFloat32(0.0, 0.0, 0.0, 1.0);
 	var m_componentConvexHullRgba = ComponentConvexHullRgbaFactory(in_resourceManager, in_webGLState, in_state, in_cameraRayTexture, ModelFactory);
-	var m_componentNumberDynamic = ComponentNumberDynamicFactory(in_resourceManager, in_webGLState, in_state);
+	//var m_componentNumberDynamic = ComponentNumberDynamicFactory(in_resourceManager, in_webGLState, in_state);
 	//var m_componentSphereRgba = ComponentSphereRgbaFactory(in_resourceManager, in_webGLState, in_state, in_cameraRayTexture);
 	//var m_componentCylinderRgba = ComponentCylinderRgbaFactory(in_resourceManager, in_webGLState, in_state, in_cameraRayTexture);
 	var m_componentCylinderRgbaDynamic = ComponentCylinderRgbaDynamicFactory(in_resourceManager, in_webGLState, in_state, in_cameraRayTexture);
@@ -46,7 +46,7 @@ export default function(
 			in_webGLState.clear(m_background, 1.0);
 
 			m_componentConvexHullRgba.update(in_cameraRayTexture);
-			m_componentNumberDynamic.update();
+			//m_componentNumberDynamic.update();
 			//m_componentSphereRgba.update(in_cameraRayTexture);
 			//m_componentCylinderRgba.update(in_cameraRayTexture);
 			m_componentCylinderRgbaDynamic.update(in_cameraRayTexture);
@@ -62,7 +62,7 @@ export default function(
 		"destroy" : function(){
 			m_componentRenderTarget.destroy();
 			m_componentConvexHullRgba.destroy();
-			m_componentNumberDynamic.destroy();
+			//m_componentNumberDynamic.destroy();
 			//m_componentCylinderRgba.destroy();
 			//m_componentSphereRgba.destroy();
 			m_componentCylinderRgbaDynamic.destroy();

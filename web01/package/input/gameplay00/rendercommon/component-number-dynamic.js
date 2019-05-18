@@ -1,6 +1,9 @@
 import ShaderWrapperFactory from "./../../webgl/shaderwrapper.js";
-import {sFloat, sMat4} from "./../../webgl/shaderuniformdata.js";
+import {sInt, sFloat, sMat4} from "./../../webgl/shaderuniformdata.js";
 import MaterialWrapperFactory from "./../../webgl/materialwrapper.js";
+import ModelWrapperFactory from './../../webgl/modelwrapper.js';
+import ModelDataStream from './../../webgl/modeldatastream.js';
+import {factoryFloat32 as Matrix44FactoryFloat32} from './../../core/matrix44.js';
 
 /*
 var dynamicNumberArray = in_state.m_dynamicNumberArray;
@@ -27,28 +30,33 @@ uniform mat4 u_data08;
 uniform mat4 u_data09;
 uniform mat4 u_data10;
 uniform mat4 u_data11;
-uniform mat4 u_data12;
+//uniform mat4 u_data12;
 
 varying float v_keepOrDiscard;
+
+varying float v_depth;
+varying vec2 v_uv;
+varying vec2 v_uvScale;
+
 varying mat4 v_data0;
 varying vec2 v_data1;
 varying vec4 v_colour;
 
 void main() {
-	vec4 u_cameraPos = vec4(0.0,0.0,0.0,0.0);
+	vec4 a_sphere = vec4(0.0,0.0,0.0,0.0);
 	vec4 u_packedData = vec4(0.0,0.0,0.0,0.0);
 
 	//step return 0 if x < edge, 1 if edge <= x
-	float ratio00 = step(-0.5, a_index) * step(a_index, 0.5);
-	float ratio01 = step(0.5, a_index) * step(a_index, 1.5);
-	float ratio02 = step(1.5, a_index) * step(a_index, 2.5);
-	float ratio03 = step(2.5, a_index) * step(a_index, 3.5);
-	float ratio04 = step(3.5, a_index) * step(a_index, 4.5);
-	float ratio05 = step(4.5, a_index) * step(a_index, 5.5);
-	float ratio06 = step(5.5, a_index) * step(a_index, 6.5);
-	float ratio07 = step(6.5, a_index) * step(a_index, 7.5);
-	float ratio08 = step(7.5, a_index) * step(a_index, 8.5);
-	float ratio09 = step(8.5, a_index) * step(a_index, 9.5);
+	float ratio0 = step(-0.5, a_index) * step(a_index, 0.5);
+	float ratio1 = step(0.5, a_index) * step(a_index, 1.5);
+	float ratio2 = step(1.5, a_index) * step(a_index, 2.5);
+	float ratio3 = step(2.5, a_index) * step(a_index, 3.5);
+	float ratio4 = step(3.5, a_index) * step(a_index, 4.5);
+	float ratio5 = step(4.5, a_index) * step(a_index, 5.5);
+	float ratio6 = step(5.5, a_index) * step(a_index, 6.5);
+	float ratio7 = step(6.5, a_index) * step(a_index, 7.5);
+	float ratio8 = step(7.5, a_index) * step(a_index, 8.5);
+	float ratio9 = step(8.5, a_index) * step(a_index, 9.5);
 	float ratio10 = step(9.5, a_index) * step(a_index, 10.5);
 	float ratio11 = step(10.5, a_index) * step(a_index, 11.5);
 	float ratio12 = step(11.5, a_index) * step(a_index, 12.5);
@@ -63,86 +71,88 @@ void main() {
 	float ratio21 = step(20.5, a_index) * step(a_index, 21.5);
 	float ratio22 = step(21.5, a_index) * step(a_index, 22.5);
 	float ratio23 = step(22.5, a_index) * step(a_index, 23.5);
-	float ratio24 = step(23.5, a_index) * step(a_index, 24.5);
-	float ratio25 = step(24.5, a_index) * step(a_index, 25.5);
+	//float ratio24 = step(23.5, a_index) * step(a_index, 24.5);
+	//float ratio25 = step(24.5, a_index) * step(a_index, 25.5);
 
-	u_cameraPos = (ratio0 * u_data00[0]);
-	u_packedData = (ratio0 * u_data00[1]);
+	a_sphere += (ratio0 * u_data00[0]);
+	u_packedData += (ratio0 * u_data00[1]);
 
-	u_cameraPos = (ratio1 * u_data00[2]);
-	u_packedData = (ratio1 * u_data00[3]);
+	a_sphere += (ratio1 * u_data00[2]);
+	u_packedData += (ratio1 * u_data00[3]);
 
-	u_cameraPos = (ratio2 * u_data01[0]);
-	u_packedData = (ratio2 * u_data01[1]);
+	a_sphere += (ratio2 * u_data01[0]);
+	u_packedData += (ratio2 * u_data01[1]);
 
-	u_cameraPos = (ratio3 * u_data01[2]);
-	u_packedData = (ratio3 * u_data01[3]);
+	a_sphere += (ratio3 * u_data01[2]);
+	u_packedData += (ratio3 * u_data01[3]);
 
-	u_cameraPos = (ratio4 * u_data02[0]);
-	u_packedData = (ratio4 * u_data02[1]);
+	a_sphere += (ratio4 * u_data02[0]);
+	u_packedData += (ratio4 * u_data02[1]);
 
-	u_cameraPos = (ratio5 * u_data02[2]);
-	u_packedData = (ratio5 * u_data02[3]);
+	a_sphere += (ratio5 * u_data02[2]);
+	u_packedData += (ratio5 * u_data02[3]);
 
-	u_cameraPos = (ratio6 * u_data03[0]);
-	u_packedData = (ratio6 * u_data03[1]);
+	a_sphere += (ratio6 * u_data03[0]);
+	u_packedData += (ratio6 * u_data03[1]);
 
-	u_cameraPos = (ratio7 * u_data03[2]);
-	u_packedData = (ratio7 * u_data03[3]);
+	a_sphere += (ratio7 * u_data03[2]);
+	u_packedData += (ratio7 * u_data03[3]);
 
-	u_cameraPos = (ratio8 * u_data04[0]);
-	u_packedData = (ratio8 * u_data04[1]);
+	a_sphere += (ratio8 * u_data04[0]);
+	u_packedData += (ratio8 * u_data04[1]);
 
-	u_cameraPos = (ratio9 * u_data04[2]);
-	u_packedData = (ratio9 * u_data04[3]);
+	a_sphere += (ratio9 * u_data04[2]);
+	u_packedData += (ratio9 * u_data04[3]);
 
-	u_cameraPos = (ratio10 * u_data05[0]);
-	u_packedData = (ratio10 * u_data05[1]);
+	a_sphere += (ratio10 * u_data05[0]);
+	u_packedData += (ratio10 * u_data05[1]);
 
-	u_cameraPos = (ratio11 * u_data05[2]);
-	u_packedData = (ratio11 * u_data05[3]);
+	a_sphere += (ratio11 * u_data05[2]);
+	u_packedData += (ratio11 * u_data05[3]);
 
-	u_cameraPos = (ratio12 * u_data06[0]);
-	u_packedData = (ratio12 * u_data06[1]);
+	a_sphere += (ratio12 * u_data06[0]);
+	u_packedData += (ratio12 * u_data06[1]);
 
-	u_cameraPos = (ratio13 * u_data06[2]);
-	u_packedData = (ratio13 * u_data06[3]);
+	a_sphere += (ratio13 * u_data06[2]);
+	u_packedData += (ratio13 * u_data06[3]);
 
-	u_cameraPos = (ratio14 * u_data07[0]);
-	u_packedData = (ratio14 * u_data07[1]);
+	a_sphere += (ratio14 * u_data07[0]);
+	u_packedData += (ratio14 * u_data07[1]);
 
-	u_cameraPos = (ratio15 * u_data07[2]);
-	u_packedData = (ratio15 * u_data07[3]);
+	a_sphere += (ratio15 * u_data07[2]);
+	u_packedData += (ratio15 * u_data07[3]);
 
-	u_cameraPos = (ratio16 * u_data08[0]);
-	u_packedData = (ratio16 * u_data08[1]);
+	a_sphere += (ratio16 * u_data08[0]);
+	u_packedData += (ratio16 * u_data08[1]);
 
-	u_cameraPos = (ratio17 * u_data08[2]);
-	u_packedData = (ratio17 * u_data08[3]);
+	a_sphere += (ratio17 * u_data08[2]);
+	u_packedData += (ratio17 * u_data08[3]);
 
-	u_cameraPos = (ratio18 * u_data09[0]);
-	u_packedData = (ratio18 * u_data09[1]);
+	a_sphere += (ratio18 * u_data09[0]);
+	u_packedData += (ratio18 * u_data09[1]);
 
-	u_cameraPos = (ratio19 * u_data09[2]);
-	u_packedData = (ratio19 * u_data09[3]);
+	a_sphere += (ratio19 * u_data09[2]);
+	u_packedData += (ratio19 * u_data09[3]);
 
-	u_cameraPos = (ratio20 * u_data10[0]);
-	u_packedData = (ratio20 * u_data10[1]);
+	a_sphere += (ratio20 * u_data10[0]);
+	u_packedData += (ratio20 * u_data10[1]);
 
-	u_cameraPos = (ratio21 * u_data10[2]);
-	u_packedData = (ratio21 * u_data10[3]);
+	a_sphere += (ratio21 * u_data10[2]);
+	u_packedData += (ratio21 * u_data10[3]);
 
-	u_cameraPos = (ratio22 * u_data11[0]);
-	u_packedData = (ratio22 * u_data11[1]);
+	a_sphere += (ratio22 * u_data11[0]);
+	u_packedData += (ratio22 * u_data11[1]);
 
-	u_cameraPos = (ratio23 * u_data11[2]);
-	u_packedData = (ratio23 * u_data11[3]);
+	a_sphere += (ratio23 * u_data11[2]);
+	u_packedData += (ratio23 * u_data11[3]);
 
-	u_cameraPos = (ratio24 * u_data12[0]);
-	u_packedData = (ratio24 * u_data12[1]);
+	//a_sphere = (ratio24 * u_data12[0]);
+	//u_packedData = (ratio24 * u_data12[1]);
 
-	u_cameraPos = (ratio25 * u_data12[2]);
-	u_packedData = (ratio25 * u_data12[3]);
+	//a_sphere = (ratio25 * u_data12[2]);
+	//u_packedData = (ratio25 * u_data12[3]);
+
+	//a_sphere = vec4(a_index, 0.0, 3.0, 1.0);
 
 	vec4 u_cameraAtFovhradian = u_camera[0];
 	vec3 u_cameraAt = u_cameraAtFovhradian.xyz;
@@ -196,6 +206,10 @@ void main() {
 
 	gl_Position = vec4(screenX, screenY, screenZ, 1.0);
 	gl_PointSize = pixelDiameter;
+
+	v_uvScale = vec2(pixelDiameter / width, -pixelDiameter / width * apsectCorrection);
+	v_uv = vec2((screenX / 2.0) + 0.5, (screenY / 2.0) + 0.5) - (v_uvScale * 0.5);
+	v_depth = screenZRaw;
 
 	//vec4(c1,c2?,alpha, nb)
 	float nb = u_packedData.w;
@@ -262,12 +276,16 @@ void main() {
 	float c04 = step(3.5, c1) * step(c1, 4.5);
 
 	v_colour = vec4(0.0, 0.0, 0.0, 0.0);
-	v_colour.xyz += c00 * vec4(1.0, 1.0, 1.0);
-	v_colour.xyz += c01 * vec4(0.0, 0.0, 0.0);
-	v_colour.xyz += c02 * vec4(1.0, 0.0, 0.0);
-	v_colour.xyz += c03 * vec4(0.0, 1.0, 0.0);
-	v_colour.xyz += c04 * vec4(0.0, 0.0, 1.0);
+	v_colour.xyz += c00 * vec3(1.0, 1.0, 1.0);
+	v_colour.xyz += c01 * vec3(0.0, 0.0, 0.0);
+	v_colour.xyz += c02 * vec3(1.0, 0.0, 0.0);
+	v_colour.xyz += c03 * vec3(0.0, 1.0, 0.0);
+	v_colour.xyz += c04 * vec3(0.0, 0.0, 1.0);
 	v_colour.w = u_packedData.z;
+
+	//v_colour = u_data00[0];
+	//v_colour = vec4(0.0, 1.0, 0.0, 1.0);
+	//v_colour = vec4(ratio2, ratio1, ratio0, 1.0);
 }
 `;
 
@@ -275,8 +293,13 @@ const sFragmentShader = `
 precision mediump float;
 
 uniform float u_lineThickness;
+uniform sampler2D u_samplerDepth;
 
 varying float v_keepOrDiscard;
+varying float v_depth;
+varying vec2 v_uv;
+varying vec2 v_uvScale;
+
 varying mat4 v_data0;
 varying vec2 v_data1;
 varying vec4 v_colour;
@@ -437,20 +460,8 @@ float calculateSmallerDistanceQuadraticBezierCurve(float distance, vec2 p0, vec2
 	return result;
 }
 
-float debugControlPoints(float distance, vec2 p0, vec2 p1, vec2 p2, vec2 samplePoint){
-	vec2 offset0 = p0 - samplePoint;
-	vec2 offset1 = p1 - samplePoint;
-	vec2 offset2 = p2 - samplePoint;
-	float distanceSquared = dot(offset0, offset0);
-	distanceSquared = min(distanceSquared, dot(offset1, offset1));
-	distanceSquared = min(distanceSquared, dot(offset2, offset2));
-	float ratio = step(distanceSquared, 0.000015);
-	float result = mix(distance, 0.0, ratio);
-	return result;
-}
-
 //threashHold, u_data2, u_data3, 0.5, v_uv
-float GetFactor(float threashold, mat4 data0, vec2 data1, vec2 samplePoint, float in_maxDistance){
+float GetFactor(mat4 data0, vec2 data1, vec2 samplePoint, float in_maxDistance){
 	float distance = in_maxDistance;
 	
 	vec2 p0 = data0[0].xy;
@@ -480,8 +491,13 @@ void main() {
 	if (v_keepOrDiscard <= 0.0) {
 		discard;
 	}
+	float depth = texture2D(u_samplerDepth, v_uv + (v_uvScale * gl_PointCoord)).x;
+	if (depth < v_depth) {
+		discard;
+	}
 
-	float distance = GetFactor(v_data0, v_data1, v_uv, 1000.0);
+	float distance = GetFactor(v_data0, v_data1, vec2(gl_PointCoord.x, 1.0 - gl_PointCoord.y), 1000.0);
+	distance = sqrt(distance);
 	if (u_lineThickness < distance){
 		discard;
 	}
@@ -494,32 +510,41 @@ const sVertexAttributeNameArray = [
 	"a_index",
 ];
 const sUniformNameMap = {
+	"u_samplerDepth" : sInt,
 	"u_lineThickness" : sFloat, 
 	"u_camera" : sMat4,
+	"u_data00" : sMat4,
+	"u_data01" : sMat4,
+	"u_data02" : sMat4,
+	"u_data03" : sMat4,
+	"u_data04" : sMat4,
+	"u_data05" : sMat4,
+	"u_data06" : sMat4,
+	"u_data07" : sMat4,
+	"u_data08" : sMat4,
+	"u_data09" : sMat4,
+	"u_data10" : sMat4,
+	"u_data11" : sMat4,
+	//"u_data12" : sMat4,
 };
 
 
-export default function(in_resourceManager, in_webGLState, in_state){
+export default function(in_resourceManager, in_webGLState, in_state, in_depthTexture){
+	var m_matrialTextureArray = [in_depthTexture];
 	const m_material = MaterialWrapperFactory(
-		m_textureArray,
+		m_matrialTextureArray,
 		undefined,
 		undefined,
-		undefined,
-		undefined,
-		undefined,
+		true, //in_blendModeEnabledOrUndefined,
+		"SRC_ALPHA", //in_sourceBlendEnumNameOrUndefined,
+		"ONE_MINUS_SRC_ALPHA", //"ONE",  //in_destinationBlendEnumNameOrUndefined,
 		true,
-		"LESS",
-		undefined,
-		undefined,
-		undefined,
-		undefined,
-		undefined,
-		true
+		"LESS"
 	);
 	const m_shader = ShaderWrapperFactory(in_webGLState, sVertexShader, sFragmentShader, sVertexAttributeNameArray, sUniformNameMap);
 	const m_model = ModelWrapperFactory(
-		in_webGLState, "POINTS", 26, {
-			"a_index" : ModelDataStream(in_webGLState, "FLOAT", 1, new Float32Array([0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0]), "STATIC_DRAW", true)
+		in_webGLState, "POINTS", 24, {
+			"a_index" : ModelDataStream(in_webGLState, "FLOAT", 1, new Float32Array([0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0]), "STATIC_DRAW", false)
 		}, undefined);
 
 	var m_data = [];
@@ -527,9 +552,10 @@ export default function(in_resourceManager, in_webGLState, in_state){
 		m_data.push(Matrix44FactoryFloat32());
 	}
 
-	const m_state = Object.assign({
-		"u_lineThickness" : 0.01,
-
+	const m_state = {
+		"u_samplerDepth" : 0,
+		"u_lineThickness" : 0.025,
+		"u_camera" : in_state.u_camera,
 		"u_data00" : m_data[0].getRaw(),
 		"u_data01" : m_data[1].getRaw(),
 		"u_data02" : m_data[2].getRaw(),
@@ -543,12 +569,11 @@ export default function(in_resourceManager, in_webGLState, in_state){
 		"u_data10" : m_data[10].getRaw(),
 		"u_data11" : m_data[11].getRaw(),
 		"u_data12" : m_data[12].getRaw()
-
-	}, in_state);
+	};
 
 	//public methods ==========================
 	const result = Object.create({
-		"update" : function(){
+		"update" : function(in_depthTexture){
 			var dynamicNumberArray = in_state.m_dynamicNumberArray;
 			var arrayCount = dynamicNumberArray.length;
 			if (0 === arrayCount){
@@ -564,7 +589,7 @@ export default function(in_resourceManager, in_webGLState, in_state){
 				var dataIndex = 0;
 				var dataSubIndex = 0;
 
-				while ((innerTrace < 26) && (trace < arrayCount)){
+				while ((innerTrace < 24) && (trace < arrayCount)){
 					var dataRaw = m_data[dataIndex].getRaw();
 					dataRaw[dataSubIndex + 0] = dynamicNumberArray[trace].m_sphere.getX();
 					dataRaw[dataSubIndex + 1] = dynamicNumberArray[trace].m_sphere.getY();
