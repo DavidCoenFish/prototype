@@ -7,9 +7,9 @@ const Base64 = require(".//Base64.js");
 
 console.log(new Date().toLocaleTimeString());
 
-if (5 != process.argv.length){
+if (6 != process.argv.length){
 	console.log("usage");
-	console.log("texture-to-factory <inputFilePath> <outputFilePath> <dataName>");
+	console.log("texture-to-factory <inputFilePath> <outputFilePath> <dataName> <RBG|RGBA>");
 	process.exit(0);
 }
 
@@ -57,12 +57,15 @@ export default function(in_webGLState){
 }
 `;
 }
-const printTga = function(in_tga, in_name){
+const printTga = function(in_tga, in_name, in_type){
 	var pixelData = [];
 	for (var i = 0; i < in_tga.pixels.length; i += 4) {
 		pixelData.push(in_tga.pixels[i + 0]);
 		pixelData.push(in_tga.pixels[i + 1]);
 		pixelData.push(in_tga.pixels[i + 2]);
+		if ("RGBA" === in_type){
+			pixelData.push(in_tga.pixels[i + 3]);
+		}
 	}
 	var data = new Uint8Array(pixelData);
 	var dataString = Base64.Uint8ArrayToBase64(data);
@@ -72,14 +75,14 @@ const ${in_name} = "${dataString}";
 }
 
 
-const run = function(in_inputFilePath, in_outputFilePath, in_name){
+const run = function(in_inputFilePath, in_outputFilePath, in_name, in_type){
 	return Q(true).then(function(){
 			return makeDirectory(in_outputFilePath);
 		}).then(function() {
 			return new TGA(FileSystem.readFileSync(in_inputFilePath));
 		}).then(function(in_tga) {
 			console.log(in_tga.width, in_tga.height);
-			return printTga(in_tga, in_name);
+			return printTga(in_tga, in_name, in_type);
 		}).then(function(in_tgaFactory) {
 			FileSystem.writeFileSync(in_outputFilePath, in_tgaFactory);
 			return;
@@ -90,4 +93,4 @@ const run = function(in_inputFilePath, in_outputFilePath, in_name){
 		});
 }
 
-run(process.argv[2], process.argv[3], process.argv[4]);
+run(process.argv[2], process.argv[3], process.argv[4], process.argv[5]);

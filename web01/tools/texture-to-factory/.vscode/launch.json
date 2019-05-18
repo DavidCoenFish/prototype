@@ -18,6 +18,66 @@
 			],
 			"port": 5858,
 			"timeout": 100000,
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "detail_grass",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"detail_grass"
+			],
+			"port": 5858,
+			"timeout": 100000,
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "tree_fir",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"tree_fir"
+			],
+			"port": 5858,
+			"timeout": 100000,
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "tree_fir_data",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"tree_fir_data"
+			],
+			"port": 5858,
+			"timeout": 100000,
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "tree_ginkgo",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"tree_ginkgo"
+			],
+			"port": 5858,
+			"timeout": 100000,
 		}
 	]
 

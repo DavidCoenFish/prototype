@@ -15,7 +15,8 @@ void main() {
 	gl_Position = vec4(a_position.x, a_position.y, a_position.y, 1.0);
 	v_uv = vec2(
 		(a_position.x * 0.5) + 0.5 + u_cameraPanZoomAspect.x,
-		(a_position.y * 0.5 / u_cameraPanZoomAspect.w) + 0.5 + u_cameraPanZoomAspect.y
+		(a_position.y * 0.5) + 0.5 + u_cameraPanZoomAspect.y
+		//(a_position.y * 0.5 / u_cameraPanZoomAspect.w) + 0.5 + u_cameraPanZoomAspect.y
 		);
 }
 `;

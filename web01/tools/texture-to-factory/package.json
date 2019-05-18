@@ -5,7 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "node --nolazy --inspect-brk=5858 index.js test",
-    "grass": "node --nolazy --inspect-brk=5858 index.js input\\grass.tga output\\texture_grass.js sGrassTextureData"
+    "grass": "node --nolazy --inspect-brk=5858 index.js input\\grass.tga output\\texture_grass.js sGrassTextureData RGB",
+    "detail_grass": "node --nolazy --inspect-brk=5858 index.js input\\detail_grass.tga output\\texture_detail_grass.js sDetailGrassTextureData RGBA",
+    "tree_fir": "node --nolazy --inspect-brk=5858 index.js input\\tree_fir.tga output\\texture_tree_fir.js sTreeFirTextureData RGBA",
+    "tree_fir_data": "node --nolazy --inspect-brk=5858 index.js input\\tree_fir_data.tga output\\texture_tree_fir_data.js sTreeFirDataTextureData RGBA",
+    "tree_ginkgo": "node --nolazy --inspect-brk=5858 index.js input\\tree_ginkgo.tga output\\texture_tree_ginkgo.js sTreeGinkgoTextureData RGBA"
+	
   },
   "dependencies": {
     "fs-extra": "^7.0.1",
