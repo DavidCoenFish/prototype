@@ -1,0 +1,17 @@
+{
+  "name": "texture-to-factory",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --nolazy --inspect-brk=5858 index.js test",
+    "grass": "node --nolazy --inspect-brk=5858 index.js input\\grass.tga output\\texture_grass.js sGrassTextureData"
+  },
+  "dependencies": {
+    "fs-extra": "^7.0.1",
+    "tga": "^1.0.3",
+    "q": "^1.5.1"
+  },
+  "author": "David Coen",
+  "license": "ISC"
+}

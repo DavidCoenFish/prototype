@@ -1,7 +1,8 @@
 todo:
-	vector font nb
-	game nb particle shader 
-		(each particle index, uniform [pos scale, colour] into 13mat4, so 26nb at a time....
+	phoenix
+		2.5d geometry, trees over grass, wind/wobble 
+		2.5d texture, particle [uvs in geometry, selected by uniform time, direction]
+			2 textures, [huv alpha], [height, pallet, refect, wobble]
 	ui
 	combat
 	dialog

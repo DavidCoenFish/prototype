@@ -21,13 +21,15 @@ const dealHtmlTemplate = function(in_htmlTemplatePath, in_outputHtmlPath, in_ent
 		const title = Path.basename(in_entryPointPath, '.js') + " " + (new Date().toLocaleTimeString());
 		const htmlDir = Path.dirname(in_outputHtmlPath);
 		const bundlePath = Path.relative(htmlDir, in_outputBundelPath);
-		const scriptArray = ""
+		var scriptArray = ""
 		if (undefined !== in_arrayScriptAssetsOrUndefined){ 
-			in_arrayScriptAssetsOrUndefined.foreach(function(item){
-				const sriptOutputPath = Path.join(in_outputBundelPath, item);
+			for (var index = 0; index < in_arrayScriptAssetsOrUndefined.length; ++index){
+				const item = in_arrayScriptAssetsOrUndefined[index];
+				const assetName = Path.basename(item);
+				const sriptOutputPath = Path.join(in_outputAssetPathOrUndefined, assetName);
 				const scriptPath = Path.relative(htmlDir, sriptOutputPath);
-				scriptArray += `<script src="${scriptPath}" ></script>/n`
-			});
+				scriptArray += `		<script src="${scriptPath}" ></script>\n`
+			};
 		}
 
 		data = templateReplaceTokens(data, "title", title);
@@ -164,6 +166,26 @@ const processFile = function(in_entryPointPath, in_outputBundelPath){
 	});
 }
 
+const dealCopyFiles = function(in_arrayScriptAssetsPathOrUndefined, in_outputAssetPathOrUndefined){
+	var deferred = Q.defer();
+
+	if (undefined !== in_arrayScriptAssetsPathOrUndefined){
+		for (var index = 0; index < in_arrayScriptAssetsPathOrUndefined.length; ++index){
+			var source = in_arrayScriptAssetsPathOrUndefined[index];
+			var baseName = Path.basename(source);
+			var destination = Path.join(in_outputAssetPathOrUndefined, baseName);
+			FileSystem.copyFile(source, destination, function(in_error){
+				if (in_error){
+					 throw in_error;
+				}
+			});
+		}
+	}
+
+	deferred.resolve(true);
+	return deferred.promise;
+}
+
 const processProject = function(in_htmlTemplatePath, in_outputHtmlPath, in_entryPointPath, in_outputBundelPath, in_arrayScriptAssetsPathOrUndefined, in_outputAssetPathOrUndefined){
 	return Q().then(function(){	
 		return dealOutputFolder(in_outputAssetPathOrUndefined);
@@ -171,6 +193,8 @@ const processProject = function(in_htmlTemplatePath, in_outputHtmlPath, in_entry
 		return dealOutputPath(in_outputHtmlPath);
 	}).then(function(){
 		return dealOutputPath(in_outputBundelPath);
+	}).then(function(){
+		return dealCopyFiles(in_arrayScriptAssetsPathOrUndefined, in_outputAssetPathOrUndefined);
 	}).then(function(){
 		return dealHtmlTemplate(in_htmlTemplatePath, in_outputHtmlPath, in_entryPointPath, in_outputBundelPath, in_arrayScriptAssetsPathOrUndefined, in_outputAssetPathOrUndefined);
 	}).then(function(){

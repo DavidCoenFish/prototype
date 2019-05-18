@@ -5,8 +5,8 @@
 		<meta http-equiv="Content-Style-Type" content="text/css"/>
 	</head>
 	<body style='background-color: #FFFFFF'>
-		<script src="$(bundlePath)" ></script>
 $(scriptArray)
+		<script src="$(bundlePath)" ></script>
 		<script >window.addEventListener('load', onPageLoad, true);</script>
 	</body>
 </html>
