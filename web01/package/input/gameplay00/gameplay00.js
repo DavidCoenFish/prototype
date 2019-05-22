@@ -1,6 +1,6 @@
 import ComponentWebGLSceneSimpleFactory from './../manipulatedom/component-webgl-scene-simple.js';
 import {applyStyleFullscreenDefault} from './../manipulatedom/style.js';
-import {factoryAppendBody as componentCanvasFactory } from './../manipulatedom/component-canvas.js';
+import {factoryAppendElement as componentCanvasFactory } from './../manipulatedom/component-canvas.js';
 import fullScreenButton from './../manipulatedom/fullscreen-button.js';
 import {factoryAppend as divFactory}  from './../manipulatedom/div.js';
 import {factoryAppend as buttonFactory}  from './../manipulatedom/button.js';
@@ -19,7 +19,7 @@ export default function () {
 		"margin" : "0",
 		"padding" : "0"
 	});
-	const m_canvaseElementWrapper = componentCanvasFactory(document, {
+	const m_canvaseElementWrapper = componentCanvasFactory(document, m_div, {
 		"width" : "100vw",
 		"height" : "100vh",
 		"backgroundColor" : "#000000",

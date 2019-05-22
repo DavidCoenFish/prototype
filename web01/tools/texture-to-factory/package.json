@@ -9,7 +9,10 @@
     "detail_grass": "node --nolazy --inspect-brk=5858 index.js input\\detail_grass.tga output\\texture_detail_grass.js sDetailGrassTextureData RGBA",
     "tree_fir": "node --nolazy --inspect-brk=5858 index.js input\\tree_fir.tga output\\texture_tree_fir.js sTreeFirTextureData RGBA",
     "tree_fir_data": "node --nolazy --inspect-brk=5858 index.js input\\tree_fir_data.tga output\\texture_tree_fir_data.js sTreeFirDataTextureData RGBA",
-    "tree_ginkgo": "node --nolazy --inspect-brk=5858 index.js input\\tree_ginkgo.tga output\\texture_tree_ginkgo.js sTreeGinkgoTextureData RGBA"
+    "tree_ginkgo": "node --nolazy --inspect-brk=5858 index.js input\\tree_ginkgo.tga output\\texture_tree_ginkgo.js sTreeGinkgoTextureData RGBA",
+
+    "tree_pine": "node --nolazy --inspect-brk=5858 index.js input\\tree_pine.tga output\\texture_tree_pine.js sTreePineTextureData RGBA",
+    "tree_pine_data": "node --nolazy --inspect-brk=5858 index.js input\\tree_pine_data.tga output\\texture_tree_pine_data.js sTreePineDataTextureData RGBA"
 	
   },
   "dependencies": {

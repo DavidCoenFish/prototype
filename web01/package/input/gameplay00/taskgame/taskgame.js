@@ -4,6 +4,7 @@ import {factoryFloat32 as Vector4FactoryFloat32} from "./../../core/vector4.js";
 import RenderFactory from "./render.js";
 import ComponentCameraFactory from "./component-camera.js";
 import ComponentMoveFactory from "./component-move.js";
+import sMoveData from "./movedata.js";
 
 /*
  */
@@ -36,8 +37,10 @@ export default function(in_webGLState, in_div, in_gameResourceManager, in_gameSt
 		0.6,
 		m_componentCamera.getCameraAt(),
 		in_div,
-		141
+		141,
+		sMoveData
 	);
+	var m_componentNumberManager = ComponentNumberManagerFactory();
 
 	var m_dynamicCylinderArray = [];
 	m_dynamicCylinderArray.push({
@@ -46,13 +49,13 @@ export default function(in_webGLState, in_div, in_gameResourceManager, in_gameSt
 		"m_colour" : Vector4FactoryFloat32(0.25, 0.25, 0.25, 0.5)
 		});
 	var m_dynamicNumberArray = [];
-	for (var index = 0; index < 24; ++index){
-		var temp = index / 24.0;
-		m_dynamicNumberArray.push({
-			"m_sphere" : Vector4FactoryFloat32(Math.cos(temp * Math.PI * 2.0) * 3.0, Math.sin(temp * Math.PI * 2.0) * 3.0, 3.0, 0.5),
-			"m_data" : Vector4FactoryFloat32(index % 5.0, 0.0, 0.5, index % 10.0)
-			});
-	}
+	// for (var index = 0; index < 24; ++index){
+	// 	var temp = index / 24.0;
+	// 	m_dynamicNumberArray.push({
+	// 		"m_sphere" : Vector4FactoryFloat32(Math.cos(temp * Math.PI * 2.0) * 3.0, Math.sin(temp * Math.PI * 2.0) * 3.0, 3.0, 0.5),
+	// 		"m_data" : Vector4FactoryFloat32(index % 5.0, 0.0, 0.5, index % 10.0)
+	// 		});
+	// }
 	var m_state = {
 		"u_camera" : m_componentCamera.getCamera().getRaw(),
 		"m_dynamicCylinderArray" : m_dynamicCylinderArray,

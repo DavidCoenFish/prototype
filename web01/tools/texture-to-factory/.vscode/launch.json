@@ -78,7 +78,39 @@
 			],
 			"port": 5858,
 			"timeout": 100000,
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "tree_pine",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"tree_pine"
+			],
+			"port": 5858,
+			"timeout": 100000,
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "tree_pine_data",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"tree_pine_data"
+			],
+			"port": 5858,
+			"timeout": 100000,
 		}
+
+
 	]
 
 

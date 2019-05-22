@@ -8,9 +8,6 @@ import {factory as TextureFactory} from "./../webgl/texturewrapper.js";
 import {Base64ToUint8Array} from './../core/base64.js';
 
 /*
-var dynamicNumberArray = in_state.m_dynamicNumberArray;
-m_sphere //pos x, y, z, radius
-m_data // index[white, black, red, green, blue], padding, alpha, nb [0...9]
  */
 
 const sVertexShader = `
@@ -258,19 +255,19 @@ void main() {
 
 const sFragmentShader = `
 precision mediump float;
-uniform sampler2D u_sampler0;
-uniform sampler2D u_sampler1;
+uniform sampler2D u_samplerColour;
+uniform sampler2D u_samplerData;
 //varying vec2 v_test;
 varying vec2 v_distort; //wind ajust horizontal, object origin y
 
 vec2 testLookup(vec2 in_lookup, vec2 in_distort, vec4 in_sampleDataLeft, vec4 in_sampleDataRight, float in_deltaLeft, float in_deltaRight){
-	float leftDistort = ((in_sampleDataLeft.y * in_distort.x) * 2.5 / 100.0) + (in_sampleDataLeft.x * in_distort.y * 16.0 / 100.0) + in_deltaLeft;
-	float rightDistort = ((in_sampleDataRight.y * in_distort.x) * 2.5 / 100.0) + (in_sampleDataRight.x * in_distort.y * 16.0 / 100.0) + in_deltaRight;
+	float leftDistort = ((in_sampleDataLeft.y * in_distort.x) * 2.5 / 100.0) + (in_sampleDataLeft.x * in_distort.y * 4.0 / 50.0) + in_deltaLeft;
+	float rightDistort = ((in_sampleDataRight.y * in_distort.x) * 2.5 / 100.0) + (in_sampleDataRight.x * in_distort.y * 4.0 / 50.0) + in_deltaRight;
 
 	if ((leftDistort < 0.0) && (0.0 < rightDistort)){
 		if (0.0 < in_lookup.x){
 			float offset = rightDistort - leftDistort;
-			float ratio = (leftDistort / offset);
+			float ratio = -leftDistort / offset;
 			return vec2(0.0, in_deltaLeft + (ratio * (in_deltaRight - in_deltaLeft)));
 		}
 		return in_lookup;
@@ -279,7 +276,7 @@ vec2 testLookup(vec2 in_lookup, vec2 in_distort, vec4 in_sampleDataLeft, vec4 in
 	if ((rightDistort < 0.0) && (0.0 < leftDistort)){
 		if (0.0 < in_lookup.x){
 			float offset = leftDistort - rightDistort;
-			float ratio = (rightDistort / offset);
+			float ratio = -rightDistort / offset;
 			return vec2(0.0, in_deltaRight + (ratio * (in_deltaLeft - in_deltaRight)));
 		}
 		return in_lookup;
@@ -295,56 +292,40 @@ vec2 testLookup(vec2 in_lookup, vec2 in_distort, vec4 in_sampleDataLeft, vec4 in
 	return in_lookup;
 }
 
+float evalueDelta(vec4 sampleData, float in_delta){
+	return in_delta + ((sampleData.y * in_distort.x) * 4.0 / 100.0) + (sampleData.x * in_distort.y * 28.0 / 100.0);
+}
+
+float seekBestSamplePoint(float oldX){
+	vec4 sampleData = texture2D(u_samplerData, gl_PointCoord + vec2(oldX, 0.0));
+	float result = evalueDelta(sampleData, oldX);
+	//X(n+1) = Xn - F(Xn)/F'(Xn)
+
+	float oldXDelta = oldX + (1.0 / 256.0);
+	vec4 sampleDataDelta = texture2D(u_samplerData, gl_PointCoord + vec2(oldXDelta, 0.0));
+	float resultDelta = evalueDelta(sampleData, oldXDelta);
+	float rateOfChange = (resultDelta - result) / (oldXDelta - oldX);
+
+	float newX = srcDelta - ((result / rateOfChange) * 0.75);
+	return newX; 
+}
+
+
 
 void main() {
-	vec4 sampleDataM9 = texture2D(u_sampler1, gl_PointCoord + vec2(-18.0 / 100.0), 0.0);
-	vec4 sampleDataM8 = texture2D(u_sampler1, gl_PointCoord + vec2(-16.0 / 100.0), 0.0);
-	vec4 sampleDataM7 = texture2D(u_sampler1, gl_PointCoord + vec2(-14.0 / 100.0), 0.0);
-	vec4 sampleDataM6 = texture2D(u_sampler1, gl_PointCoord + vec2(-12.0 / 100.0), 0.0);
-	vec4 sampleDataM5 = texture2D(u_sampler1, gl_PointCoord + vec2(-10.0 / 100.0), 0.0);
-	vec4 sampleDataM4 = texture2D(u_sampler1, gl_PointCoord + vec2(-8.0 / 100.0), 0.0);
-	vec4 sampleDataM3 = texture2D(u_sampler1, gl_PointCoord + vec2(-6.0 / 100.0), 0.0);
-	vec4 sampleDataM2 = texture2D(u_sampler1, gl_PointCoord + vec2(-4.0 / 100.0), 0.0);
-	vec4 sampleDataM1 = texture2D(u_sampler1, gl_PointCoord + vec2(-2.0 / 100.0), 0.0);
-	vec4 sampleData = texture2D(u_sampler1, gl_PointCoord);
-	vec4 sampleDataP1 = texture2D(u_sampler1, gl_PointCoord + vec2(2.0 / 100.0), 0.0);
-	vec4 sampleDataP2 = texture2D(u_sampler1, gl_PointCoord + vec2(4.0 / 100.0), 0.0);
-	vec4 sampleDataP3 = texture2D(u_sampler1, gl_PointCoord + vec2(6.0 / 100.0), 0.0);
-	vec4 sampleDataP4 = texture2D(u_sampler1, gl_PointCoord + vec2(8.0 / 100.0), 0.0);
-	vec4 sampleDataP5 = texture2D(u_sampler1, gl_PointCoord + vec2(10.0 / 100.0), 0.0);
-	vec4 sampleDataP6 = texture2D(u_sampler1, gl_PointCoord + vec2(12.0 / 100.0), 0.0);
-	vec4 sampleDataP7 = texture2D(u_sampler1, gl_PointCoord + vec2(14.0 / 100.0), 0.0);
-	vec4 sampleDataP8 = texture2D(u_sampler1, gl_PointCoord + vec2(16.0 / 100.0), 0.0);
-	vec4 sampleDataP9 = texture2D(u_sampler1, gl_PointCoord + vec2(18.0 / 100.0), 0.0);
+	float lookup = 0.0;
+	lookup = seekBestSamplePoint(lookup);
+	lookup = seekBestSamplePoint(lookup);
+	lookup = seekBestSamplePoint(lookup);
+	lookup = seekBestSamplePoint(lookup);
 
-	vec2 lookup = vec2(10000.0, 0.0); //distance, uv.y adjust
-	lookup = testLookup(lookup, v_distort, sampleDataM9, sampleDataM9, -18.0 / 100.0, -8.0 / 100.0);
-	lookup = testLookup(lookup, v_distort, sampleDataM8, sampleDataM7, -16.0 / 100.0, -7.0 / 100.0);
-	lookup = testLookup(lookup, v_distort, sampleDataM7, sampleDataM6, -14.0 / 100.0, -6.0 / 100.0);
-	lookup = testLookup(lookup, v_distort, sampleDataM6, sampleDataM5, -12.0 / 100.0, -5.0 / 100.0);
-	lookup = testLookup(lookup, v_distort, sampleDataM5, sampleDataM4, -10.0 / 100.0, -4.0 / 100.0);
-	lookup = testLookup(lookup, v_distort, sampleDataM4, sampleDataM3, -8.0 / 100.0, -3.0 / 100.0);
-	lookup = testLookup(lookup, v_distort, sampleDataM3, sampleDataM2, -6.0 / 100.0, -2.0 / 100.0);
-	lookup = testLookup(lookup, v_distort, sampleDataM2, sampleDataM1, -4.0 / 100.0, -1.0 / 100.0);
-	lookup = testLookup(lookup, v_distort, sampleDataM1, sampleData, -2.0 / 100.0, 0.0);
-	lookup = testLookup(lookup, v_distort, sampleData, sampleDataP1, 0.0, 1.0 / 100.0);
-	lookup = testLookup(lookup, v_distort, sampleDataP1, sampleDataP2, 2.0 / 100.0, 2.0 / 100.0);
-	lookup = testLookup(lookup, v_distort, sampleDataP2, sampleDataP3, 4.0 / 100.0, 3.0 / 100.0);
-	lookup = testLookup(lookup, v_distort, sampleDataP3, sampleDataP4, 6.0 / 100.0, 4.0 / 100.0);
-	lookup = testLookup(lookup, v_distort, sampleDataP4, sampleDataP5, 8.0 / 100.0, 5.0 / 100.0);
-	lookup = testLookup(lookup, v_distort, sampleDataP5, sampleDataP6, 10.0 / 100.0, 6.0 / 100.0);
-	lookup = testLookup(lookup, v_distort, sampleDataP6, sampleDataP7, 12.0 / 100.0, 7.0 / 100.0);
-	lookup = testLookup(lookup, v_distort, sampleDataP7, sampleDataP8, 14.0 / 100.0, 8.0 / 100.0);
-	lookup = testLookup(lookup, v_distort, sampleDataP8, sampleDataP9, 16.0 / 100.0, 9.0 / 100.0);
-
-	vec2 samplePoint = gl_PointCoord + vec2(lookup.y, 0.0);
-	vec4 sample0 = texture2D(u_sampler0, samplePoint);
-	if (sample0.w <= 0.0){
+	vec2 samplePoint = gl_PointCoord + vec2(lookup, 0.0);
+	vec4 sampleColour = texture2D(u_samplerColour, samplePoint);
+	if (sampleColour.w <= 0.0){
 		discard;
 	}
 
-	gl_FragColor = sample0;
-	//gl_FragColor = vec4(texture2D(u_sampler0, gl_PointCoord + vec2(v_distort.y, 0.0)).xyz, 1.0);
+	gl_FragColor = sampleColour;
 }
 `;
 
@@ -354,8 +335,8 @@ const sVertexAttributeNameArray = [
 const sUniformNameMap = {
 	"u_cameraPanZoomAspect" : sFloat4,
 	"u_timeAccumulation" : sFloat,
-	"u_sampler0" : sInt,
-	"u_sampler1" : sInt,
+	"u_samplerColour" : sInt,
+	"u_samplerData" : sInt,
 	"u_data00" : sMat4,
 	"u_data01" : sMat4,
 	"u_data02" : sMat4,
@@ -429,8 +410,8 @@ export default function(in_webGLState, in_state, in_textureData, in_textureDataD
 	}
 
 	const m_state = {
-		"u_sampler0" : 0,
-		"u_sampler1" : 1,
+		"u_samplerColour" : 0,
+		"u_samplerData" : 1,
 		"u_cameraPanZoomAspect" : in_state.u_cameraPanZoomAspect,
 		"u_data00" : m_data[0].getRaw(),
 		"u_data01" : m_data[1].getRaw(),
@@ -444,7 +425,6 @@ export default function(in_webGLState, in_state, in_textureData, in_textureDataD
 		"u_data09" : m_data[9].getRaw(),
 		"u_data10" : m_data[10].getRaw(),
 		"u_data11" : m_data[11].getRaw(),
-		//"u_data12" : m_data[12].getRaw()
 	};
 
 	//public methods ==========================

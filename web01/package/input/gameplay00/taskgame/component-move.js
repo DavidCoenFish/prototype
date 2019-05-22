@@ -11,7 +11,7 @@ q, w, e, r, t,
 use w,e, a,d, z, x?
 move data has interp type ["step", "linear"
  */
-import sMoveData from "./movedata.js";
+//import sMoveData from "./movedata.js";
 
 export default function(
 		in_viewTarget,
@@ -19,7 +19,8 @@ export default function(
 		in_playerHeight,
 		in_cameraAt,
 		in_div,
-		in_startObjectID
+		in_startObjectID,
+		in_moveData
 	){
 	var m_currentObjectID = undefined;
 	const setCurrentObjectID = function(in_objectID){

@@ -13,7 +13,8 @@ export default function(in_callback, in_div, in_webGLState, in_timeDelta, in_kee
 	};
 	var m_componentTerain = ComponentTerrainFactory(in_webGLState, m_state);
 	var m_componentTree = ComponentTreeFactory(in_webGLState, m_state, sTreeFirTextureData);
-	var m_componentTreeLive = ComponentTreeLiveFactory(in_webGLState, m_state, sTreeFirTextureData, sTreeFirDataTextureData);
+	//var m_componentTreeLive = ComponentTreeLiveFactory(in_webGLState, m_state, sTreeFirTextureData, sTreeFirDataTextureData);
+	var m_componentTreeLive = ComponentTreeLiveFactory(in_webGLState, m_state, sTreePineTextureData, sTreePineDataTextureData);
 
 	var m_oldX;
 	var m_oldY;
