@@ -16,7 +16,7 @@ precision mediump float;
 attribute float a_index;
 
 uniform vec4 u_cameraPanZoomAspect;
-uniform float u_timeAccumulation;
+uniform vec4 u_twps;
 
 uniform mat4 u_data00; //vec4(pos x,y,z,r), vec4(c1,c2?,alpha, nb),...
 uniform mat4 u_data01;
@@ -249,6 +249,7 @@ void main() {
 	gl_PointSize = 256.0;
 	//v_test = vec2(a_index / 8.0, a_index);
 
+	float u_timeAccumulation = u_twps.x;
 	v_distort = vec2(origin.x, sin(u_timeAccumulation + origin.x + origin.y));
 }
 `;
@@ -257,11 +258,17 @@ const sFragmentShader = `
 precision mediump float;
 uniform sampler2D u_samplerColour;
 uniform sampler2D u_samplerData;
+uniform vec4 u_twps;
 
 varying vec2 v_distort; // object origin x, wind ajust horizontal,
 
 float evalueDelta(vec4 sampleData, float in_delta){
-	return in_delta + ((sampleData.y * v_distort.y) * 4.0 / 256.0) + (sampleData.x * v_distort.x * 44.0 / 256.0);
+	float skew = 1.0 - gl_PointCoord.y;
+	float skewXDelta = (gl_PointCoord.y - 0.5) * 0.1;
+	float perspectiveSkew = (((v_distort.x + skewXDelta) * skew) * 0.15) * u_twps.w;
+	float windAdjust = ((sampleData.y * v_distort.y) * 4.0 / 256.0) * u_twps.y;
+	float parrallax = (sampleData.x * v_distort.x * 44.0 / 256.0) * u_twps.z;
+	return in_delta + perspectiveSkew + windAdjust + parrallax;
 }
 
 //X(n+1) = Xn - F(Xn)/F'(Xn)
@@ -300,6 +307,7 @@ void main() {
 	}
 
 	gl_FragColor = sampleColour;
+	//gl_FragColor = vec4(gl_PointCoord.x, gl_PointCoord.y, 0.0, 1.0);
 }
 `;
 
@@ -308,7 +316,7 @@ const sVertexAttributeNameArray = [
 ];
 const sUniformNameMap = {
 	"u_cameraPanZoomAspect" : sFloat4,
-	"u_timeAccumulation" : sFloat,
+	"u_twps" : sFloat4,
 	"u_samplerColour" : sInt,
 	"u_samplerData" : sInt,
 	"u_data00" : sMat4,
@@ -394,6 +402,7 @@ export default function(in_webGLState, in_state, in_textureData, in_textureDataD
 		"u_samplerColour" : 0,
 		"u_samplerData" : 1,
 		"u_cameraPanZoomAspect" : in_state.u_cameraPanZoomAspect,
+		"u_twps" : in_state.u_twps,
 		"u_data00" : m_data[0].getRaw(),
 		"u_data01" : m_data[1].getRaw(),
 		"u_data02" : m_data[2].getRaw(),
@@ -414,8 +423,6 @@ export default function(in_webGLState, in_state, in_textureData, in_textureDataD
 			if (false === ("m_treeArray" in in_state)){
 				return;
 			}
-
-			m_state.u_timeAccumulation = in_state.u_timeAccumulation;
 
 			var treeArray = in_state.m_treeArray;
 			var arrayCount = treeArray.length;

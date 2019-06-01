@@ -3,13 +3,15 @@ import ComponentTerrainFactory from "./component-terrain.js";
 //import ComponentTreeFactory from "./component-tree.js";
 //import ComponentTreeLiveFactory from "./component-tree-live.js";
 import ComponentTreeLiveFactory2 from "./component-tree-live2.js";
+import {factory as EditFloatFactory} from "./../manipulatedom/component-editfloat.js";
 
 export default function(in_callback, in_div, in_webGLState, in_timeDelta, in_keepGoing){
 	var m_cameraPanZoomAspect = Vector4FactoryFloat(0.0, 0.0, 0.0);
 	var m_treeArray = [];
+	var m_timeAccumulationWindParralaxSkew = Vector4FactoryFloat(0.0, 1.0, 1.0, 1.0);
 	var m_state = {
 		"u_cameraPanZoomAspect" : m_cameraPanZoomAspect.getRaw(),
-		"u_timeAccumulation" : 0.0,
+		"u_twps" : m_timeAccumulationWindParralaxSkew.getRaw(),
 		"m_treeArray" : m_treeArray
 	};
 	var m_componentTerain = ComponentTerrainFactory(in_webGLState, m_state);
@@ -38,6 +40,19 @@ export default function(in_callback, in_div, in_webGLState, in_timeDelta, in_kee
 
 		return;
 	}
+
+	document.body.appendChild(EditFloatFactory(document, "Wind", 
+		function(){ return m_timeAccumulationWindParralaxSkew.getY() },
+		function(value){ m_timeAccumulationWindParralaxSkew.setY(value); return; },
+		-2.0, 2.0, 0.01).getElement());
+	document.body.appendChild(EditFloatFactory(document, "Parallax", 
+		function(){ return m_timeAccumulationWindParralaxSkew.getZ() },
+		function(value){ m_timeAccumulationWindParralaxSkew.setZ(value); return; },
+		-2.0, 2.0, 0.01).getElement());
+	document.body.appendChild(EditFloatFactory(document, "Skew", 
+		function(){ return m_timeAccumulationWindParralaxSkew.getW() },
+		function(value){ m_timeAccumulationWindParralaxSkew.setW(value); return; },
+		-2.0, 2.0, 0.01).getElement());
 
 	const wheelCallback = function(in_event){
 		var zoom = m_cameraPanZoomAspect.getZ() - ((in_event.wheelDelta) / 120.0);
@@ -72,7 +87,8 @@ export default function(in_callback, in_div, in_webGLState, in_timeDelta, in_kee
 			return undefined;
 		}
 		m_cameraPanZoomAspect.setW(in_webGLState.getCanvasWidth() / in_webGLState.getCanvasHeight()); 
-		m_state.u_timeAccumulation += in_timeDelta;
+		m_timeAccumulationWindParralaxSkew.setX(m_timeAccumulationWindParralaxSkew.getX() + in_timeDelta);
+		//m_state.u_timeAccumulation += in_timeDelta;
 		//m_state.u_timeAccumulation %= Math.PI;
 
 		m_componentTerain.run();

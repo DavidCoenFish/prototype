@@ -80,22 +80,22 @@ export default function () {
 		"height": "32px"
 	});
 
-	fullScreenButton(document, m_canvasElement, m_div, {
-		"position": "absolute",
-		"right": "46px",
-		"top": "10px",
-		"width": "32px", 
-		"height": "32px"
-	});
+	// fullScreenButton(document, m_canvasElement, m_div, {
+	// 	"position": "absolute",
+	// 	"right": "46px",
+	// 	"top": "10px",
+	// 	"width": "32px", 
+	// 	"height": "32px"
+	// });
 
 	buttonFactory(document, m_div, "save", function(){
 		var rightNow = new Date();
 		rightNow.setMinutes(rightNow.getMinutes() - rightNow.getTimezoneOffset()); 
-		var fileName = rightNow.toISOString().slice(0,10) + "_convexhull01.png"
+		var fileName = rightNow.toISOString().slice(0,10) + "_phoenix00.png"
 		autoSnapShot(document, m_canvasElement, fileName);
 	}, {
 		"position": "absolute",
-		"right": "82px",
+		"right": "42px",
 		"top": "10px",
 		"width": "32px", 
 		"height": "32px"
