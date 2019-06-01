@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script type="text/javascript">
+//function to redraw the svg
+function applyButton() {
+	var value = parseFloat(document.getElementById("percentage").value);
+	if ( true === isNaN(value) ) {
+		value = 0.0;
+	}
+	apply(value);
+}
+function applyInput(input){
+	var value = parseFloat(input);
+	if ( true === isNaN(value) ) {
+		value = 0.0;
+	}
+	apply(value);
+}
+
+function apply(value) {
+	var clipPath = document.getElementById("myClipData");
+	var newPoints = "";
+	if (value <= 0.0){
+		newPoints = "0,0 100,0 100,100 0,100"
+	} else if (value < 100.0){
+		var radians = (value / 100.0) * (Math.PI * 2.0);
+		var x = Math.cos(radians);
+		var y = Math.sin(radians);
+		newPoints = "50,0 50,50";
+		if (Math.abs(x) < Math.abs(y)){
+			var tempX = 50.0 + (Math.sign(y) * 50.0);
+			var tempY = 50.0 - (50.0 * (x/Math.abs(y)));
+		} else {
+			var tempX = 50.0 + (50.0 * (y/Math.abs(x)));
+			var tempY = 50.0 - (Math.sign(x) * 50.0);
+		}
+		newPoints += ` ${tempX},${tempY}`;
+		if (value < 12.5){
+			newPoints += " 100,0";
+		}
+		if (value < 37.5){
+			newPoints += " 100,100";
+		}
+		if (value < 62.5){
+			newPoints += " 0,100";
+		}
+		if (value < 87.5){
+			newPoints += " 0,0";
+		}
+	}
+
+	clipPath.setAttribute("points", newPoints);
+}
+
+		</script>
+	</head>
+	<body>
+		<!-- style="background-color:#00ff00" -->
+		<svg 
+			xmlns="http://www.w3.org/2000/svg" 
+			version="1.1" 
+			height="100">
+			<!-- <ellipse cx="200" cy="200" rx="80" ry="60" style="fill:#330000;"/> -->
+
+			<defs>
+				<radialGradient id="myGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+					<stop offset="0%" style="stop-color:#ffff33;" />
+					<stop offset="100%" style="stop-color:#330000;" />
+				</radialGradient>
+			</defs>
+
+			<clipPath id="myClip">
+				<polygon id="myClipData" points="0,0 50,0 50,50 100,0 100,100 0,100"/>
+			</clipPath>
+
+			<circle cx="50" cy="50" r="50" fill="red"/>
+			<rect x="25" y="25" width="50" height="50" fill="green"/>
+			<circle cx="50" cy="50" r="50" fill="#000000" opacity="0.75" clip-path="url(#myClip)"/>
+
+			<!-- <ellipse cx="200" cy="200" rx="80" ry="60" style="fill:url(#myGradient);"/> -->
+			<!-- <use clip-path="url(#myClip)"/> -->
+		</svg>
+		<br/>
+		percentage [0 ... 100]:<br/>
+		<input type="text" id="percentage" onChange="applyInput(this.value)"/><br/>
+		<!-- <input type="button" value="apply" onclick="applyButton()"/> -->
+		<input type="range" min="0" max="100" onInput="applyInput(this.value)">
+	</body>
+</html>

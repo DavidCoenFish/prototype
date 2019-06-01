@@ -244,12 +244,12 @@ void main() {
 	origin += (ratio94 * u_data11[3].xy);
 	origin += (ratio95 * u_data11[3].zw);
 
-	gl_Position = vec4(origin.x, origin.y + (50.0 / 512.0), origin.y, 1.0);
+	gl_Position = vec4(origin.x, origin.y, max(-1.0, origin.y - 0.4), 1.0);
 
-	gl_PointSize = 100.0;
+	gl_PointSize = 256.0;
 	//v_test = vec2(a_index / 8.0, a_index);
 
-	v_distort = vec2(sin(u_timeAccumulation + origin.x + origin.y), origin.x);
+	v_distort = vec2(origin.x, sin(u_timeAccumulation + origin.x + origin.y));
 }
 `;
 
@@ -257,71 +257,45 @@ const sFragmentShader = `
 precision mediump float;
 uniform sampler2D u_samplerColour;
 uniform sampler2D u_samplerData;
-//varying vec2 v_test;
-varying vec2 v_distort; //wind ajust horizontal, object origin y
 
-vec2 testLookup(vec2 in_lookup, vec2 in_distort, vec4 in_sampleDataLeft, vec4 in_sampleDataRight, float in_deltaLeft, float in_deltaRight){
-	float leftDistort = ((in_sampleDataLeft.y * in_distort.x) * 2.5 / 100.0) + (in_sampleDataLeft.x * in_distort.y * 4.0 / 50.0) + in_deltaLeft;
-	float rightDistort = ((in_sampleDataRight.y * in_distort.x) * 2.5 / 100.0) + (in_sampleDataRight.x * in_distort.y * 4.0 / 50.0) + in_deltaRight;
-
-	if ((leftDistort < 0.0) && (0.0 < rightDistort)){
-		if (0.0 < in_lookup.x){
-			float offset = rightDistort - leftDistort;
-			float ratio = -leftDistort / offset;
-			return vec2(0.0, in_deltaLeft + (ratio * (in_deltaRight - in_deltaLeft)));
-		}
-		return in_lookup;
-	}
-
-	if ((rightDistort < 0.0) && (0.0 < leftDistort)){
-		if (0.0 < in_lookup.x){
-			float offset = leftDistort - rightDistort;
-			float ratio = -rightDistort / offset;
-			return vec2(0.0, in_deltaRight + (ratio * (in_deltaLeft - in_deltaRight)));
-		}
-		return in_lookup;
-	}
-
-	if (leftDistort == rightDistort){
-		if (abs(leftDistort) < in_lookup.x){
-			return vec2(abs(leftDistort), (in_deltaLeft + in_deltaRight) * 0.5);
-		}
-		return in_lookup;
-	}
-
-	return in_lookup;
-}
+varying vec2 v_distort; // object origin x, wind ajust horizontal,
 
 float evalueDelta(vec4 sampleData, float in_delta){
-	return in_delta + ((sampleData.y * in_distort.x) * 4.0 / 100.0) + (sampleData.x * in_distort.y * 28.0 / 100.0);
+	return in_delta + ((sampleData.y * v_distort.y) * 4.0 / 256.0) + (sampleData.x * v_distort.x * 44.0 / 256.0);
 }
 
+//X(n+1) = Xn - F(Xn)/F'(Xn)
 float seekBestSamplePoint(float oldX){
 	vec4 sampleData = texture2D(u_samplerData, gl_PointCoord + vec2(oldX, 0.0));
-	float result = evalueDelta(sampleData, oldX);
-	//X(n+1) = Xn - F(Xn)/F'(Xn)
+	float value = evalueDelta(sampleData, oldX);
 
-	float oldXDelta = oldX + (1.0 / 256.0);
-	vec4 sampleDataDelta = texture2D(u_samplerData, gl_PointCoord + vec2(oldXDelta, 0.0));
-	float resultDelta = evalueDelta(sampleData, oldXDelta);
-	float rateOfChange = (resultDelta - result) / (oldXDelta - oldX);
+	if (abs(value) < 0.0001){
+		return oldX;
+	}
 
-	float newX = srcDelta - ((result / rateOfChange) * 0.75);
-	return newX; 
+	float leftX = oldX - (1.0 / 256.0);
+	vec4 leftSampleData = texture2D(u_samplerData, gl_PointCoord + vec2(leftX, 0.0));
+	float rightX = oldX + (1.0 / 256.0);
+	vec4 rightSampleData = texture2D(u_samplerData, gl_PointCoord + vec2(rightX, 0.0));
+
+	float leftValue = evalueDelta(leftSampleData, leftX);
+	float rightValue = evalueDelta(rightSampleData, rightX);
+
+	float rateOfChange = (rightValue - leftValue) / (rightX - leftX);
+
+	float newX = oldX - (value / rateOfChange);
+	return newX;
 }
-
-
 
 void main() {
 	float lookup = 0.0;
 	lookup = seekBestSamplePoint(lookup);
 	lookup = seekBestSamplePoint(lookup);
-	lookup = seekBestSamplePoint(lookup);
-	lookup = seekBestSamplePoint(lookup);
+	//lookup = seekBestSamplePoint(lookup);
 
 	vec2 samplePoint = gl_PointCoord + vec2(lookup, 0.0);
 	vec4 sampleColour = texture2D(u_samplerColour, samplePoint);
-	if (sampleColour.w <= 0.0){
+	if (sampleColour.w <= 0.5){
 		discard;
 	}
 
@@ -391,7 +365,14 @@ export default function(in_webGLState, in_state, in_textureData, in_textureDataD
 		"SRC_ALPHA", //in_sourceBlendEnumNameOrUndefined,
 		"ONE_MINUS_SRC_ALPHA", //"ONE",  //in_destinationBlendEnumNameOrUndefined,
 		true,
-		"ALWAYS" //
+		"LESS", //
+		undefined,
+		undefined,
+		undefined,
+		undefined,
+		undefined,
+		true,
+		undefined
 	);
 	const m_shader = ShaderWrapperFactory(in_webGLState, sVertexShader, sFragmentShader, sVertexAttributeNameArray, sUniformNameMap);
 	const m_model = ModelWrapperFactory(

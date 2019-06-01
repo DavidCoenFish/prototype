@@ -1,0 +1,59 @@
+<html>
+<head>
+</head>
+<!-- 
+	background: none;
+	border: none;
+
+	height: 6em;
+	width: 6em;
+
+ -->
+<style type="text/css">
+body,html {
+   font-size: 10px;
+   margin:0;
+}
+.menuButton {
+	cursor: pointer;
+	padding: 0;
+	background: none;
+	border: none;
+}
+
+.menuButton:focus {
+	outline: none;
+}
+.menuButton:hover{
+	transform: scale(1.1);
+}
+.menuButton:active{
+	transform: scale(0.9);
+}
+
+.screen_reader_only {
+	width:1px;
+	height:1px;
+	overflow:hidden;
+	position:absolute;
+}
+</style>
+<body>
+<p>Test Page foo</p>
+<button class="menuButton">
+	<svg width="6em" height="6em">
+		<circle cx="3em" cy="3em" r="3em" fill="yellow" />
+	</svg>
+	<span class="screen_reader_only"></span>
+</button>
+<button class="menuButton">
+	<svg width="6em" height="6em">
+		<circle cx="3em" cy="3em" r="3em" fill="yellow" />
+	</svg>
+	<span class="screen_reader_only"></span>
+</button>
+<button>
+	<span>reference</span>
+</button>
+</body>
+</html>

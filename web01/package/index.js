@@ -83,7 +83,9 @@ if ("unittest" === process.argv[2]){
 	}).then(function(){
 		//return makeProject("font00", "font00");
 	}).then(function(){
-		return makeProject("phoenix00", "phoenix00");
+		//return makeProject("phoenix00", "phoenix00");
+	}).then(function(){
+		return makeProject("menu00", "menu00");
 	}).done(function(){
 		console.log(new Date().toLocaleTimeString());
 	});
