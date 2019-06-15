@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style type="text/css" media="screen">
+			html, body { margin:0; padding:0; overflow:hidden; background: #ff0000; }
+			svg { position:fixed; top:0; left:0; height:100%; width:100%; background: #00ff00;}
+		</style>
+		<script type="text/javascript">
+function onPageLoad(){
+	console.log("onPageLoad");
+	//dealButton("buttonA");
+}
+		</script>
+	</head>
+	<body>
+		<!-- <svg xmlns="http://www.w3.org/2000/svg" viewBox="-350 -250 700 500"> -->
+		<svg xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 100% 100%"
+			>
+			<!-- preserveAspectRatio="xMidYMid meet" -->
+			<svg id="topmiddle" style="overflow: visible" x="50%" y="0%">
+				<circle r="50" cx="0" cy="50" fill="red" />
+			</svg>
+			<svg id="middleright" style="overflow: visible" x="100%" y="50%">
+				<circle r="50" cx="-50" cy="0" fill="green" />
+			</svg>
+			<svg id="bottommiddle" style="overflow: visible" x="50%" y="100%">
+				<circle r="50" cx="0" cy="-50" fill="blue" />
+			</svg>
+			<svg id="middleleft" style="overflow: visible" x="0%" y="50%">
+				<circle r="50" cx="50" cy="0" fill="yellow" />
+			</svg>
+		</svg>
+		<script >window.addEventListener('load', onPageLoad, true);</script>
+	</body>
+</html>

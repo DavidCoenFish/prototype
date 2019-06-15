@@ -2,8 +2,24 @@
 <html>
 	<head>
 		<script type="text/javascript">
+function dealButton(in_name){
+	var button = document.getElementById(in_name);
+	button.onmouseover = function(){
+		console.log("onmouseover:" + in_name);
+		//button.style.display = "none";
+
+	};
+	button.onmouseout = function(){
+		console.log("onmouseout:" + in_name);
+	};
+	//set on hover to unhide
+}
+
+
 function onPageLoad(){
 	console.log("onPageLoad");
+	dealButton("buttonA");
+	dealButton("buttonB");
 }
 		</script>
 	</head>
@@ -19,9 +35,57 @@ function onPageLoad(){
 
 			<defs>
 				<path id="arrow" d="M13 7v-6l11 11-11 11v-6h-13v-10z"/>
+				
+				<g id="uiExpaned">
+					<circle cx="0" cy="0" r="100" fill="#202020" opacity="0.75"/>
+					<circle cx="100" cy="0" r="40" fill="#0000ff"/>
+					<circle cx="70" cy="-70" r="40" fill="#0000ff"/>
+					<circle cx="0" cy="-100" r="40" fill="#0000ff"/>
+					<circle cx="-70" cy="-70" r="40" fill="#0000ff"/>
+					<circle cx="-100" cy="0" r="40" fill="#0000ff"/>
+				</g>
+
+				<g id="uiButtonCancel">
+					<circle cx="0" cy="0" r="25" fill="#ffffff" stroke="#ff0000" stroke-width="10"/>
+					<line x1="-20" y1="20" x2="20" y2="-20" stroke="#ff0000" stroke-width="10"/>
+				</g>
+
+				<g id="uiButton">
+					<circle cx="0" cy="0" r="50" fill="#00ff00"/>
+				</g>
+
+				<g id="manyExample">
+					<use xlink:href="#uiButton" x="0" y="0"/>
+					<use xlink:href="#uiButtonCancel" x="-40" y="-20"/>
+					<use xlink:href="#uiExpaned" x="0" y="0"/>
+				</g>
 			</defs>
 
-			<g style="cursor: pointer; display: inline;">
+			<g
+				style="display: none;"
+				transform="matrix(1 0 0 1 30 40)"
+				>
+				<use xlink:href="#uiButton" x="0" y="0"/>
+				<use xlink:href="#arrow" x="0" y="0"/>
+			</g>
+			
+			<g id="buttonA"
+				style="cursor: pointer; display: inline;"
+				>
+				<use xlink:href="#uiButton" x="256" y="462"/>
+			</g>
+
+
+			<!-- <use xlink:href="#uiButton" x="256" y="462"/> -->
+
+			<g id="buttonB"
+				style="cursor: pointer; display: inline;"
+				xlink:href="#uiButton" 
+				x="256" 
+				y="50"
+				/>
+
+			<!-- <g style="cursor: pointer; display: inline;">
 				<circle cx="256" cy="462" r="50" fill="#00ff00"/>
 			</g>
 
@@ -32,7 +96,7 @@ function onPageLoad(){
 			<g style="cursor: pointer; display: none;">
 				<circle cx="220" cy="442" r="25" fill="#ffffff" stroke="#ff0000" stroke-width="10"/>
 				<line x1="200" y1="462" x2="240" y2="422" stroke="#ff0000" stroke-width="10"/>
-			</g>
+			</g> -->
 
 		</svg>
 		<script >window.addEventListener('load', onPageLoad, true);</script>
