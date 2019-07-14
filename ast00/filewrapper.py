@@ -12,6 +12,9 @@ class FileWrapper:
 	def getContents(self):
 		return self.contents
 
+	def getRelativePath(self):
+		return self.relativePath
+
 	def __str__(self):
 		result = f"\n"
 		result += f"FileWrapper\n"
