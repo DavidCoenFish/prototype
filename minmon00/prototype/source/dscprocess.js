@@ -60,7 +60,8 @@ const dealBundle = function(in_entryPointPath, in_outputBundelPath){
 		"throwOnError": true,
 		"throwOnWarning": true,
 		"parserOptions": {
-			"sourceType": "module"
+			"ecmaVersion": 6,
+			"sourceType": "module",
 		},
 		"env": {
 			"browser": true,

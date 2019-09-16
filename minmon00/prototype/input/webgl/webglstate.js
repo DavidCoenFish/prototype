@@ -1,6 +1,6 @@
 /*
  */
-import WebGLContextWrapper from './webglcontextwrapper.js';
+import { factory as WebGLContextWrapper, makeParam as WebGLContextWrapperParam } from './webglcontextwrapper.js';
 import { cmpAlmost as Colour4CmpAlmost } from './../core/colour4.js';
 import { cmpAlmost as Vector2CmpAlmost } from './../core/vector2';
 import { cmpAlmost as Vector3CmpAlmost } from './../core/vector3';
@@ -21,12 +21,13 @@ export default function(
 ){
 	var m_webGLContextWrapper = WebGLContextWrapper(
 		in_html5CanvasElement, 
-		in_alphaOrUndefined, 
-		in_depthOrUndefined, 
-		in_antialiasOrUndefined, 
-		in_extentionsOrUndefined,
-		in_preserveDrawingBufferOrUndefined
-		);
+		WebGLContextWrapperParam(
+			in_alphaOrUndefined, 
+			in_depthOrUndefined, 
+			in_antialiasOrUndefined, 
+			in_extentionsOrUndefined,
+			in_preserveDrawingBufferOrUndefined
+			));
 
 	// keep a copy of what we think the webgl state is, if values don't change, we don't need to tell webgl to change
 	var m_state = {};

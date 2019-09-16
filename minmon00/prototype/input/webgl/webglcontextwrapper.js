@@ -45,7 +45,7 @@ const getWebGLContext = function(in_html5CanvasElement, in_paramObjectOrUndefine
 const sTokenWebglContextLost = "webglcontextlost";
 const sTokenWebglContextRestored = "webglcontextrestored";
 
-const makeParam = function(
+export const makeParam = function(
 	in_alphaOrUndefined, 
 	in_depthOrUndefined, 
 	in_antialiasOrUndefined, 
@@ -86,22 +86,12 @@ const makeParam = function(
 	return param;
 }
 
-export default function(
+export const factory = function(
 	in_html5CanvasElement,
-	in_alphaOrUndefined, 
-	in_depthOrUndefined, 
-	in_antialiasOrUndefined, 
-	in_extentionsOrUndefined,
-	in_preserveDrawingBufferOrUndefined
+	in_paramOrUndefined
 	){
 	//private members ==========================
-	var m_webGLContext = getWebGLContext(in_html5CanvasElement, makeParam(
-		in_alphaOrUndefined, 
-		in_depthOrUndefined, 
-		in_antialiasOrUndefined, 
-		in_extentionsOrUndefined,
-		in_preserveDrawingBufferOrUndefined
-		));
+	var m_webGLContext = getWebGLContext(in_html5CanvasElement, in_paramOrUndefined);
 
 	//private methods ==========================
 	const getError = function(){

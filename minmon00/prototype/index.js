@@ -28,9 +28,11 @@ const makeProject = function(in_sourceSubDir, in_sourceName){
 	var assetPath = Path.join(__dirname, "input", in_sourceSubDir, "assets");
 	//console.log("assetPath:" + assetPath);
 	var arrayAsset = [];
-	walkSync(assetPath, function(in_filePath, in_stat, in_name){
-		arrayAsset.push(in_filePath);
-	});
+	if ( FileSystem.existsSync( assetPath ) ){
+		walkSync(assetPath, function(in_filePath, in_stat, in_name){
+			arrayAsset.push(in_filePath);
+		});
+	}
 	if (0 === arrayAsset.length){
 		arrayAsset = undefined;
 	}
@@ -55,37 +57,11 @@ if ("unittest" === process.argv[2]){
 	Q().then(function(){
 		console.log(new Date().toLocaleTimeString() + ":" + process.env.NODE_ENV);
 	}).then(function(){
-		//return DscProcess.processFile("./input/test/test.js", outputDir + "/test/test.js");
-	}).then(function(){
-		//return makeProject("test", "capablity");
-	}).then(function(){
-		//return makeProject("test", "depthtexture");
-	}).then(function(){
-		//return makeProject("test", "pallet");
-	}).then(function(){
-		//return makeProject("test", "scene");
+		return makeProject("test", "capablity");
 	}).then(function(){
 		//return makeProject("test", "triangle");
 	}).then(function(){
-		//return makeProject("test", "worldgrid");
-	}).then(function(){
-		//return makeProject("celticknot01", "celticknot01");
-	}).then(function(){
-		//return makeProject("celticknot02", "celticknot02");
-	}).then(function(){
-		//return makeProject("convexhull00", "convexhull00");
-	}).then(function(){
-		//return makeProject("convexhull01", "convexhull01");
-	}).then(function(){
-		//return makeProject("gameplay00", "gameplay00");
-	}).then(function(){
-		//return makeProject("vector00", "vector00");
-	}).then(function(){
-		//return makeProject("font00", "font00");
-	}).then(function(){
-		return makeProject("phoenix00", "phoenix00");
-	}).then(function(){
-		//return makeProject("menu00", "menu00");
+		//return makeProject("face", "face00");
 	}).done(function(){
 		console.log(new Date().toLocaleTimeString());
 	});
