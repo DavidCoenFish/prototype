@@ -3,7 +3,7 @@ export const factory = function(in_document, in_text){
 	return textNode;
 }
 
-export const appendFactory = function(in_document, in_elementToAppend, in_text){
+export const factoryAppendElement = function(in_document, in_elementToAppend, in_text){
 	const textNode = factory(in_document, in_text);
 	in_elementToAppend.appendChild(textNode);
 

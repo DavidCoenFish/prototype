@@ -7,7 +7,7 @@ export const factory = function(in_document, in_styleOrUndefined){
 	return div;
 }
 
-export const factoryAppend = function(in_document, in_elementToAppend, in_styleOrUndefined){
+export const factoryAppendElement = function(in_document, in_elementToAppend, in_styleOrUndefined){
 	var div = factory(in_document, in_styleOrUndefined);
 	in_elementToAppend.appendChild(div);
 	return div;

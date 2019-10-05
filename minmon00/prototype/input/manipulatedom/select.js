@@ -34,7 +34,7 @@ export const factory = function(in_document, in_arrayText, in_callback, in_style
 	return select;
 }
 
-export const factoryAppend = function(in_document, in_elementToAttach, in_arrayText, in_callback, in_styleOrUndefined){
+export const factoryAppendElement = function(in_document, in_elementToAttach, in_arrayText, in_callback, in_styleOrUndefined){
 	var select = factory(in_document, in_arrayText, in_callback, in_styleOrUndefined);
 	in_elementToAttach.appendChild(select);
 
