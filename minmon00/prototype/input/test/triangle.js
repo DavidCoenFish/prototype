@@ -1,4 +1,4 @@
-import {factoryAppendBody} from './../manipulatedom/component-canvas.js'
+import {factoryAppendElement} from './../manipulatedom/component-canvas.js'
 import {factoryFloat32 as Colour4FactoryFloat32} from './../core/colour4.js';
 import WebGLStateFactory from './../webgl/webglstate.js'
 import MaterialWrapperFactory from './../webgl/materialwrapper.js';
@@ -23,7 +23,7 @@ void main() {
 const sVertexAttributeNameArray = ["a_position"];
 
 export default function () {
-	const html5CanvasWrapper = factoryAppendBody(document, 
+	const html5CanvasWrapper = factoryAppendElement(document, document.body,
 	{
 		"width" : "512px",
 		"height" : "512px",

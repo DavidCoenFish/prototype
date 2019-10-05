@@ -200,6 +200,8 @@ const processProject = function(in_htmlTemplatePath, in_outputHtmlPath, in_entry
 		return dealHtmlTemplate(in_htmlTemplatePath, in_outputHtmlPath, in_entryPointPath, in_outputBundelPath, in_arrayScriptAssetsPathOrUndefined, in_outputAssetPathOrUndefined);
 	}).then(function(){
 		return dealBundle(in_entryPointPath, in_outputBundelPath);
+	}).then(function(){
+		return in_outputHtmlPath;
 	});
 }
 

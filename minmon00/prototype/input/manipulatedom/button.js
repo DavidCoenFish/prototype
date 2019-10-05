@@ -13,7 +13,7 @@ export const factory = function(in_document, in_text, in_callback, in_styleOrUnd
 	return button;
 }
 
-export const factoryAppend = function(in_document, in_elementToAttach, in_text, in_callback, in_styleOrUndefined){
+export const factoryAppendElement = function(in_document, in_elementToAttach, in_text, in_callback, in_styleOrUndefined){
 	var button = factory(in_document, in_text, in_callback, in_styleOrUndefined);
 	in_elementToAttach.appendChild(button);
 

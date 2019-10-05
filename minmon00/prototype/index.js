@@ -55,13 +55,12 @@ if ("unittest" === process.argv[2]){
 	UnitTest.runUnitTests(unitTestPromises);
 } else {
 	Q().then(function(){
-		console.log(new Date().toLocaleTimeString() + ":" + process.env.NODE_ENV);
+		console.log(new Date().toLocaleTimeString() + ":" + process.env.NODE_ENV + ":" + process.argv[2] + ":" + process.argv[3]);
 	}).then(function(){
-		return makeProject("test", "capablity");
-	}).then(function(){
-		//return makeProject("test", "triangle");
-	}).then(function(){
-		//return makeProject("face", "face00");
+		return makeProject(process.argv[2], process.argv[3]);
+	}).then(function(in_ouptupHtmlFilePath){
+		//console.log(in_ouptupHtmlFilePath)
+		//vscode.env.openExternal(vscode.Uri.parse(in_ouptupHtmlFilePath));		
 	}).done(function(){
 		console.log(new Date().toLocaleTimeString());
 	});

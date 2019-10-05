@@ -18,6 +18,10 @@
 	"scripts": {
 		"package": "node index.js",
 		"packagevsc": "node --nolazy --inspect-brk=5858 index.js",
+		"packagevsc_test_capablity": "node --nolazy --inspect-brk=5858 index.js test capablity",
+		"packagevsc_test_triangle": "node --nolazy --inspect-brk=5858 index.js test triangle",
+		"packagevsc_prototype_eye00": "node --nolazy --inspect-brk=5858 index.js prototype eye00",
+		"packagevsc_prototype_ui00": "node --nolazy --inspect-brk=5858 index.js prototype ui00",
 		"unittest": "node --nolazy --inspect-brk=5858 index.js unittest"
 	},
 	"keywords": [],

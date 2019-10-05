@@ -27,8 +27,9 @@ export const factory = function(in_document, in_styleOrUndefined){
 	return result;
 }
 
-export const factoryAppendBody = function(in_document){
-	var result = factory(in_document);
-	in_document.body.appendChild(result.getElement());
+export const factoryAppendElement = function(in_document, in_parent, in_styleOrUndefined){
+	var result = factory(in_document, in_styleOrUndefined);
+	var element = result.getElement();
+	in_parent.appendChild(element);
 	return result;
 }
