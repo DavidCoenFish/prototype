@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>$(title)</title>
+		<meta http-equiv="Content-Style-Type" content="text/css"/>
+	</head>
+	<body style='background-color: #FFFFFF'>
+$(scriptArray)
+		<script src="$(bundlePath)" ></script>
+		<script >window.addEventListener('load', onPageLoad, true);</script>
+	</body>
+</html>

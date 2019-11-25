@@ -1,0 +1,83 @@
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=733558
+	// for the documentation about the tasks.json format
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "open_development_capablity",
+			"type": "shell",
+			"command": "${cwd}\\output\\development\\capablity\\index.html",
+			"windows": {
+				"command": "${cwd}\\output\\development\\capablity\\index.html"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "open_production_capablity",
+			"type": "shell",
+			"command": "${cwd}\\output\\production\\capablity\\index.html",
+			"windows": {
+				"command": "${cwd}\\output\\production\\capablity\\index.html"
+			},
+			"problemMatcher": []
+		},
+
+		{
+			"label": "open_development_triangle",
+			"type": "shell",
+			"command": "${cwd}\\output\\development\\triangle\\index.html",
+			"windows": {
+				"command": "${cwd}\\output\\development\\triangle\\index.html"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "open_production_triangle",
+			"type": "shell",
+			"command": "${cwd}\\output\\production\\triangle\\index.html",
+			"windows": {
+				"command": "${cwd}\\output\\production\\triangle\\index.html"
+			},
+			"problemMatcher": []
+		},
+
+		{
+			"label": "open_development_eye00",
+			"type": "shell",
+			"command": "${cwd}\\output\\development\\eye00\\index.html",
+			"windows": {
+				"command": "${cwd}\\output\\development\\eye00\\index.html"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "open_production_eye00",
+			"type": "shell",
+			"command": "${cwd}\\output\\production\\eye00\\index.html",
+			"windows": {
+				"command": "${cwd}\\output\\production\\eye00\\index.html"
+			},
+			"problemMatcher": []
+		},
+
+		{
+			"label": "open_development_ui00",
+			"type": "shell",
+			"command": "${cwd}\\output\\development\\ui00\\index.html",
+			"windows": {
+				"command": "${cwd}\\output\\development\\ui00\\index.html"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "open_production_ui00",
+			"type": "shell",
+			"command": "${cwd}\\output\\production\\ui00\\index.html",
+			"windows": {
+				"command": "${cwd}\\output\\production\\ui00\\index.html"
+			},
+			"problemMatcher": []
+		},
+
+	]
+}

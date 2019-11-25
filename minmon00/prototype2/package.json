@@ -1,0 +1,29 @@
+{
+	"name": "package",
+	"version": "0.0.0",
+	"description": "",
+	"dependencies": {},
+	"devDependencies": {
+		"@babel/core": "^7.6.0",
+		"@babel/preset-env": "^7.6.0",
+		"babel-preset-minify": "^0.5.1",
+		"q": "^1.5.1",
+		"rollup": "^1.21.4",
+		"rollup-plugin-babel": "^4.3.3",
+		"rollup-plugin-eslint": "^7.0.0",
+		"rollup-plugin-replace": "^2.2.0",
+		"rollup-plugin-uglify": "^6.0.3"
+	},
+	"main": "index.js",
+	"scripts": {
+		"package": "node index.js",
+		"packagevsc": "node --nolazy --inspect-brk=5858 index.js",
+		"packagevsc_test_capablity": "node --nolazy --inspect-brk=5858 index.js test capablity",
+		"packagevsc_test_triangle": "node --nolazy --inspect-brk=5858 index.js test triangle",
+		"unittest": "node --nolazy --inspect-brk=5858 index.js unittest"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"private": true
+}
