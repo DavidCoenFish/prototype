@@ -17,9 +17,10 @@ export default function () {
 	});
 	var m_webglState = webGLStateFactory(m_canvaseElementWrapper.getElement());
 
+	var m_task = Task;
 	buttonFactory(document, document.body, "stop", function(){
 		console.log("stop");
-		m_keepGoing = false;
+		m_task = undefined;
 	}, {
 		"position": "absolute",
 		"left": "10px",
@@ -36,22 +37,19 @@ export default function () {
 		"height": "16px"
 	});
 
-
-	var m_task = Task;
 	var m_animationFrameHelper = undefined;
-	var m_keepGoing = true;
-	var m_dataState = {};
+	var m_sharedData = { "webglState" : m_webglState };
 	const callback = function(in_timestamp, in_timeDelta){
 		if (undefined === m_task){
-			m_webglState.destroy();
-			m_webglState = undefined;
 			m_animationFrameHelper.destroy();
 			m_animationFrameHelper = undefined;
+			m_webglState.destroy();
+			m_webglState = undefined;
 			return false;
 		}
 
 		m_fps.update(in_timestamp);
-		m_task = m_task(m_task, m_webglState, m_dataState, in_timeDelta, m_keepGoing);
+		m_task = m_task(m_task, in_timeDelta, m_sharedData);
 		return true;
 	}
 

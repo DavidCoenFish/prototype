@@ -15,6 +15,11 @@
 	uiTemplateInstance( dataserver )
 		update()
 		destroy()
+
+still holding dear to the notion of heirearchical ownership and update lockstep
+should the dataserver or the uimanager own the created ui template instance
+was tempted to, but having the dataserver own the uitemplate instance gives easier point of control for tick/detroy
+
 */
 
 export const factory = function(){
