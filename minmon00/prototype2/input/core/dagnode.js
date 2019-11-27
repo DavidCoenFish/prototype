@@ -1,6 +1,48 @@
-import DagNodePrototype from './dagnodeprototype.js';
+const DagNodePrototype = function(in_result){
+	var m_arrayOutput = []; //array of dagnodecalculate
+	var publicMethods = {
+		"setDirtyOutput" : function(){
+			m_arrayOutput.forEach(item => item.setDirty());
+			return;
+		},
+		"addOutput" : function(in_outputNode){
+			m_arrayOutput.push(in_outputNode);
+			return;
+		},
+		"removeOutput" : function(in_outputNode){
+			m_arrayOutput = m_arrayOutput.filter(item => item !== in_outputNode);
+			return;
+		}
+	};
 
-export const factory = function(in_calculateCallback){
+	Object.assign(in_result, publicMethods);
+
+	return;
+}
+
+export function FactoryDagNodeValue (in_value){
+	var m_value = in_value;
+	const result = Object.create({
+		"getValue" : function(){
+			return m_value;
+		},
+		"setValue" : function(in_value){
+			if (m_value !== in_value)
+			{
+				m_value = in_value;
+				result.setDirtyOutput();
+			}
+			return;
+		}
+	})
+
+	DagNodePrototype(result);
+
+	return result;
+}
+
+
+export function FactoryDagNodeCalculate (in_calculateCallback){
 	var m_calculateCallback = in_calculateCallback; //( m_calculatedValue, inputIndexArray, inputArray )
 	var m_dirty = true;
 	var m_calculatedValue = undefined;
@@ -64,4 +106,22 @@ export const factory = function(in_calculateCallback){
 	DagNodePrototype(result);
 
 	return result;
+}
+
+export function LinkIndex (in_source, in_destination, in_index){
+	in_source.addOutput(in_destination);
+	in_destination.setInputIndex(in_source, in_index);
+	return;
+}
+
+export function Link (in_source, in_destination){
+	in_source.addOutput(in_destination);
+	in_destination.addInput(in_source);
+	return;
+}
+
+export function Unlink (in_source, in_destination){
+	in_source.removeOutput(in_destination);
+	in_destination.removeInput(in_source);
+	return;
 }

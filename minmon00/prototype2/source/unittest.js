@@ -100,12 +100,12 @@ const dealTestFail = function(testName)
 }
 
 module.exports = {
-	"gatherUnitTestPromises" : gatherUnitTestPromises,
-	"runUnitTests" : runUnitTests,
-	"dealTest" : dealTest,
-	"dealTestNot" : dealTestNot,
-	"dealTest" : dealTest,
-	"dealTestAlmost" : dealTestAlmost,
-	"dealTestRange" : dealTestRange,
-	"dealTestFail" : dealTestFail,
+	"GatherUnitTestPromises" : gatherUnitTestPromises,
+	"RunUnitTests" : runUnitTests,
+	"DealTest" : dealTest,
+	"DealTestNot" : dealTestNot,
+	"DealTest" : dealTest,
+	"DealTestAlmost" : dealTestAlmost,
+	"DealTestRange" : dealTestRange,
+	"DealTestFail" : dealTestFail,
 };

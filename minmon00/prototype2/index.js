@@ -51,8 +51,8 @@ if ("unittest" === process.argv[2]){
 	console.log(new Date().toLocaleTimeString());
 	var unitTestPromises = [];
 	const unittestPath = Path.join(__dirname, "/source/unittest");
-	UnitTest.gatherUnitTestPromises(unitTestPromises, unittestPath);
-	UnitTest.runUnitTests(unitTestPromises);
+	UnitTest.GatherUnitTestPromises(unitTestPromises, unittestPath);
+	UnitTest.RunUnitTests(unitTestPromises);
 } else {
 	Q().then(function(){
 		console.log(new Date().toLocaleTimeString() + ":" + process.env.NODE_ENV + ":" + process.argv[2] + ":" + process.argv[3]);
