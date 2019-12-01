@@ -33,9 +33,11 @@ const RunSanityTest = function(){
 	Unittest.DealTestAlmost("SanityTest1", dagCalculate0.getValue(), 6);
 
 	Unlink(dagInput0, dagCalculate0);
+	Unittest.DealTestAlmost("SanityTest2", dagCalculate0.getValue(), 5);
+	
 	Unlink(dagInput1, dagCalculate0);
 	Unlink(dagInput2, dagCalculate0);
-	Unittest.DealTestAlmost("SanityTest2", dagCalculate0.getValue(), 0);
+	Unittest.DealTestAlmost("SanityTest3", dagCalculate0.getValue(), 0);
 
 	return;
 }

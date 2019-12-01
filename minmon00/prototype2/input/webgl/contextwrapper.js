@@ -6,7 +6,7 @@ manage creation and destruction of resources (which may need context lost and re
 
 import EventDispatcherDecorate from "./../core/eventdispatcherdecorate.js"
 
-const getWebGLContext = function(in_html5CanvasElement, in_paramObjectOrUndefined){
+const getWebGLContext = function(in_html5CanvasElement, in_extentionsOrUndefined, in_paramObjectOrUndefined){
 	if (undefined === in_html5CanvasElement) {
 		throw("Canvas element not found");
 	} 
@@ -29,9 +29,9 @@ const getWebGLContext = function(in_html5CanvasElement, in_paramObjectOrUndefine
 		throw("Unable to get webgl Context");
 	}
 
-	if ((undefined !== in_paramObjectOrUndefined) && (undefined !== in_paramObjectOrUndefined.extentions)){
-		for (var index = 0; index < in_paramObjectOrUndefined.extentions.length; index++) { 
-			const extentionName = in_paramObjectOrUndefined.extentions[index];
+	if (undefined !== in_extentionsOrUndefined){
+		for (var index = 0; index < in_extentionsOrUndefined.length; index++) { 
+			const extentionName = in_extentionsOrUndefined.extentions[index];
 			var extention = webGLContext.getExtension(extentionName);
 			if (null === extention){
 				throw("failed to get extention:" + extentionName);
@@ -45,11 +45,10 @@ const getWebGLContext = function(in_html5CanvasElement, in_paramObjectOrUndefine
 const sTokenWebglContextLost = "webglcontextlost";
 const sTokenWebglContextRestored = "webglcontextrestored";
 
-export const makeParam = function(
+const makeParam = function(
 	in_alphaOrUndefined, 
 	in_depthOrUndefined, 
-	in_antialiasOrUndefined, 
-	in_extentionsOrUndefined,
+	in_antialiasOrUndefined,
 	in_preserveDrawingBufferOrUndefined
 	){
 	var param = undefined;
@@ -71,12 +70,6 @@ export const makeParam = function(
 		}
 		param["antialias"] = in_antialiasOrUndefined;
 	}
-	if (undefined !== in_extentionsOrUndefined){
-		if (undefined === param){
-			param = {};
-		}
-		param["extentions"] = in_extentionsOrUndefined;
-	}
 	if (undefined !== in_preserveDrawingBufferOrUndefined){
 		if (undefined === param){
 			param = {};
@@ -86,12 +79,22 @@ export const makeParam = function(
 	return param;
 }
 
-export const factory = function(
+export default function(
 	in_html5CanvasElement,
-	in_paramOrUndefined
+	in_extentionsOrUndefined,
+	in_alphaOrUndefined, 
+	in_depthOrUndefined, 
+	in_antialiasOrUndefined, 
+	in_preserveDrawingBufferOrUndefined
 	){
 	//private members ==========================
-	var m_webGLContext = getWebGLContext(in_html5CanvasElement, in_paramOrUndefined);
+
+	var m_webGLContext = getWebGLContext(in_html5CanvasElement, in_extentionsOrUndefined, makeParam(
+		in_alphaOrUndefined, 
+		in_depthOrUndefined, 
+		in_antialiasOrUndefined, 
+		in_preserveDrawingBufferOrUndefined
+		));
 
 	//private methods ==========================
 	const getError = function(){
