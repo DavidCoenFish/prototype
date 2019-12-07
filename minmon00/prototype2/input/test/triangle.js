@@ -13,19 +13,12 @@ export default function () {
 	}
 	);
 
-	console.log("pre appendChild");
 	document.body.appendChild(html5CanvasWrapper.getElement());
-	console.log("post appendChild");
 	html5CanvasWrapper.onResize();
 
-	console.log("WebGLAPIFactory");
 	const webGLApi = WebGLAPIFactory(html5CanvasWrapper.getElement(), undefined, false);
 
-	const data = new Float32Array([0.0, 1.0, 0.0, 0.0]);
-
-	console.log("webGLApi clear");
-	webGLApi.clear(data[0], data[1], data[2], data[3]);
-	//webGLApi.clear(0.5);
+	webGLApi.clear(1.0);
 
 	return;
 }
