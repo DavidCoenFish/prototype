@@ -36,15 +36,15 @@ export default function () {
 	const webGLState = WebGLStateFactory(html5CanvasWrapper.getElement(), false);
 	webGLState.clear(Colour4FactoryFloat32(1.0,0.0,0.0));
 
-	const model = ModelWrapperFactory(webGLState, "TRIANGLES", 3, {
-		"a_position" : ModelDataStream(webGLState, "BYTE", 2, new Int8Array([ -1, -1, -1, 1, 1, -1]), "STATIC_DRAW", false)
-	});
-	const material = MaterialWrapperFactory();
-	const shader = ShaderWrapper(webGLState, sVertexShader, sFragmentShader, sVertexAttributeNameArray);
+	// const model = ModelWrapperFactory(webGLState, "TRIANGLES", 3, {
+	// 	"a_position" : ModelDataStream(webGLState, "BYTE", 2, new Int8Array([ -1, -1, -1, 1, 1, -1]), "STATIC_DRAW", false)
+	// });
+	// const material = MaterialWrapperFactory();
+	// const shader = ShaderWrapper(webGLState, sVertexShader, sFragmentShader, sVertexAttributeNameArray);
 
-	webGLState.applyShader(shader);
-	webGLState.applyMaterial(material);
-	webGLState.drawModel(model);
+	// webGLState.applyShader(shader);
+	// webGLState.applyMaterial(material);
+	// webGLState.drawModel(model);
 
 	return;
 }

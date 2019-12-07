@@ -184,11 +184,11 @@ export default function(
 					return output;
 				}
 				const param = Array.prototype.slice.call(arguments, 1);
-				//console.log("callMethod:" + in_functionName + " param:" + param);
+				console.log("callMethod:" + in_functionName + " param:" + param);
 				output = method.apply(m_webGLContext, param);
-				//if (undefined !== output){
-				//	console.log("output:" + output);
-				//}
+				if (undefined !== output){
+					console.log("output:" + output);
+				}
 				if (DEVELOPMENT) getError();
 			}
 			return output;

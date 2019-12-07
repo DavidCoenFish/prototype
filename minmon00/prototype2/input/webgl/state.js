@@ -5,10 +5,14 @@ manage creation and destruction of resources (which may need context lost and re
  */
 
 const s_default = {
-};
+	"colorMask" : [true, true, true, true],
+	"clearColor" : [0.0, 0.0, 0.0, 0.0],
 
-const s_defaultParam4 = {
-	"colorMask" : [true, true, true, true]
+	"stencilMask" : 0b11111111111111111111111111111111,
+	"clearStencil" : 0,
+	"depthMask": true,
+	"clearDepth": 1,
+
 };
 
 export default function(
@@ -16,20 +20,7 @@ export default function(
 	){
 	//private members ==========================
 	var m_state = {};
-
-	// const setColorMask = function(in_red, in_green, in_blue, in_alpha){
-	// 	const falseColorMaskRed = stateValueCmp("colorMaskRed", in_red);
-	// 	const falseColorMaskGreen = stateValueCmp("colorMaskGreen", in_green);
-	// 	const falseColorMaskBlue = stateValueCmp("colorMaskBlue", in_blue);
-	// 	const falseColorMaskAlpha = stateValueCmp("colorMaskAlpha", in_alpha);
-
-	// 	if ((false === falseColorMaskRed) ||
-	// 		(false === falseColorMaskGreen) ||
-	// 		(false === falseColorMaskBlue) ||
-	// 		(false === falseColorMaskAlpha)){
-	// 		in_webGLContextWrapper.callMethod("colorMask", in_red, in_green, in_blue, in_alpha);
-	// 	}
-	// }
+	var m_lastShaderMapVertexAttribute = {};
 
 	//public methods ==========================
 	const that = Object.create({
@@ -49,17 +40,18 @@ export default function(
 		},
 		"setParam4" : function(in_key, in_value0, in_value1, in_value2, in_value3){
 			var value = undefined;
+			var anythingToSet = false;
 			if (in_key in m_state)
 			{
 				value = m_state[in_key];
 			}
 			else
 			{
+				anythingToSet = true;
 				var temp = s_default[in_key];
 				value = [temp[0], temp[1], temp[2], temp[3]];
 			}
 
-			var anythingToSet = false;
 			if ((undefined !== in_value0) && (in_value0 != value[0])){
 				anythingToSet = true;
 				value[0] = in_value0;
@@ -87,6 +79,9 @@ export default function(
 		// },
 		// "getDefaultParam4" : function(in_key){
 		// },
+		"destroy" : function(){
+			in_webGLContextWrapper.removeResourceContextCallbacks(aquireWebGLResources, releaseWebGLResources);
+		},
 	});
 
 
