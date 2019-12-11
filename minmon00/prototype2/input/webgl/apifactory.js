@@ -4,6 +4,9 @@ the public interface intended to wrap a webgl context associated with a dom canv
 
 import ContextWrapperFactory from "./contextwrapperfactory.js"
 import StateFactory from "./state.js"
+import ShaderFactory from "./shader.js"
+import ModelFactory from "./model.js"
+import ModelAttributeFactory from "./modelattribute.js"
 
 export default function(
 	in_html5CanvasElement,
@@ -60,6 +63,60 @@ export default function(
 
 		},
 
+		"createShader" : function(
+			in_vertexShaderSource, 
+			in_fragmentShaderSource, 
+			in_vertexAttributeNameArrayOrUndefined, 
+			in_uniformNameTypeMapOrUndefined
+		){
+			return ShaderFactory( 
+				m_webGLContextWrapper, 
+				in_vertexShaderSource, 
+				in_fragmentShaderSource, 
+				in_vertexAttributeNameArrayOrUndefined, 
+				in_uniformNameTypeMapOrUndefined
+				);
+		},
+
+		"createModel" : function(
+			in_modeName,
+			in_elementCount,
+			in_mapModelAttribute,
+			in_elementIndexOrUndefined
+		){
+			return ModelFactory(
+				m_webGLContextWrapper,
+				in_modeName,
+				in_elementCount,
+				in_mapModelAttribute,
+				in_elementIndexOrUndefined
+				);
+		},
+
+
+		"createModelAttribute" : function(
+			in_typeName, //string
+			in_elementsPerVertex, //int
+			in_arrayData,
+			in_usageName, //string //STATIC_DRAW, 
+			in_normalise //bool
+		){
+			return ModelAttributeFactory(
+				m_webGLContextWrapper,
+				in_typeName, //string
+				in_elementsPerVertex, //int
+				in_arrayData,
+				in_usageName, //string //STATIC_DRAW, 
+				in_normalise //bool
+				);
+		},
+
+		"draw" : function(in_model, in_shader, in_firstOrUndefined, in_countOrUndefined){
+			in_shader.apply();
+			in_model.draw(in_shader.getMapVertexAttribute(), in_firstOrUndefined, in_countOrUndefined);
+			return;
+		},
+		
 		"getCanvasWidth" : function(){
 			return m_webGLContextWrapper.getCanvasWidth();
 		},
