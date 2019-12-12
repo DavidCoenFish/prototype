@@ -85,85 +85,46 @@
 			"timeout": 100000
 		},
 
-		// prototype eye00
+		// test render_target
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "package development prototype eye00",
+			"name": "package development test render target",
 			"runtimeExecutable": "npm",
 			"windows": {
 				"runtimeExecutable": "npm.cmd"
 			},
 			"runtimeArgs": [
 				"run-script",
-				"packagevsc_prototype_eye00", 
+				"packagevsc_test_render_target", 
 			],
 			"env": {
 				"NODE_ENV": "development"
 			},
-			"postDebugTask": "open_development_eye00",
+			"postDebugTask": "open_development_render_target",
 			"port": 5858,
-			"timeout": 100000
+			"timeout": 100000,
 		},
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "package production prototype eye00",
+			"name": "package production test render target",
 			"runtimeExecutable": "npm",
 			"windows": {
 				"runtimeExecutable": "npm.cmd"
 			},
 			"runtimeArgs": [
 				"run-script",
-				"packagevsc_prototype_eye00"
+				"packagevsc_test_render_target"
 			],
 			"env": {
 				"NODE_ENV": "production"
 			},
-			"postDebugTask": "open_production_eye00",
+			"postDebugTask": "open_production_render_target",
 			"port": 5858,
 			"timeout": 100000
 		},
 
-		// prototype ui00
-		{
-			"type": "node",
-			"request": "launch",
-			"name": "package development prototype ui00",
-			"runtimeExecutable": "npm",
-			"windows": {
-				"runtimeExecutable": "npm.cmd"
-			},
-			"runtimeArgs": [
-				"run-script",
-				"packagevsc_prototype_ui00", 
-			],
-			"env": {
-				"NODE_ENV": "development"
-			},
-			"postDebugTask": "open_development_ui00",
-			"port": 5858,
-			"timeout": 100000
-		},
-		{
-			"type": "node",
-			"request": "launch",
-			"name": "package production prototype ui00",
-			"runtimeExecutable": "npm",
-			"windows": {
-				"runtimeExecutable": "npm.cmd"
-			},
-			"runtimeArgs": [
-				"run-script",
-				"packagevsc_prototype_ui00"
-			],
-			"env": {
-				"NODE_ENV": "production"
-			},
-			"postDebugTask": "open_production_ui00",
-			"port": 5858,
-			"timeout": 100000,
-		},
 
 
 		//unit test

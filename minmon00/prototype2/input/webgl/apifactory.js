@@ -67,14 +67,14 @@ export default function(
 			in_vertexShaderSource, 
 			in_fragmentShaderSource, 
 			in_vertexAttributeNameArrayOrUndefined, 
-			in_uniformNameTypeMapOrUndefined
+			in_nameShaderUniformDataFactoryMapOrUndefined
 		){
 			return ShaderFactory( 
 				m_webGLContextWrapper, 
 				in_vertexShaderSource, 
 				in_fragmentShaderSource, 
 				in_vertexAttributeNameArrayOrUndefined, 
-				in_uniformNameTypeMapOrUndefined
+				in_nameShaderUniformDataFactoryMapOrUndefined
 				);
 		},
 
@@ -109,6 +109,16 @@ export default function(
 				in_usageName, //string //STATIC_DRAW, 
 				in_normalise //bool
 				);
+		},
+
+		"setRenderTarget" : function(in_renderTargetOrUndefined){
+			if (undefined === in_renderTargetOrUndefined){
+				const targetEnum = m_webGLContextWrapper.getEnum("FRAMEBUFFER");
+				m_webGLContextWrapper.callMethod("bindFramebuffer", targetEnum, null);
+				m_webGLState.setParam4(viewport, 0, 0, that.getCanvasWidth(), that.getCanvasHeight());
+			} else {
+				in_renderTargetOrUndefined.apply();
+			}
 		},
 
 		"draw" : function(in_model, in_shader, in_firstOrUndefined, in_countOrUndefined){

@@ -7,12 +7,12 @@ manage creation and destruction of resources (which may need context lost and re
 const s_default = {
 	"colorMask" : [true, true, true, true],
 	"clearColor" : [0.0, 0.0, 0.0, 0.0],
+	"viewport" : [0, 0, 300, 300],
 
 	"stencilMask" : 0b11111111111111111111111111111111,
 	"clearStencil" : 0,
 	"depthMask": true,
 	"clearDepth": 1,
-
 };
 
 export default function(
@@ -20,7 +20,6 @@ export default function(
 	){
 	//private members ==========================
 	var m_state = {};
-	var m_lastShaderMapVertexAttribute = {};
 
 	//public methods ==========================
 	const that = Object.create({
@@ -88,7 +87,6 @@ export default function(
 	//private methods ==========================
 	const aquireWebGLResources = function(){
 		m_state = {};
-		m_lastShaderMapVertexAttribute = {};
 		return;
 	}
 

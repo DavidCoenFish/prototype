@@ -6,7 +6,7 @@ export default function(
 	in_vertexShaderSource, 
 	in_fragmentShaderSource, 
 	in_vertexAttributeNameArrayOrUndefined, 
-	in_uniformNameTypeMapOrUndefined
+	in_nameShaderUniformDataFactoryMapOrUndefined //{name: shaderUniformDataFactory(...),}
 	){
 	var m_shaderProgramObject = undefined;
 	var m_vertexWebGLShader = undefined;
@@ -25,7 +25,7 @@ export default function(
 			}
 
 			for (var key in m_mapUniform){
-				mapUniform[key].Apply();
+				m_mapUniform[key].apply();
 			}
 		},
 		"destroy" : function(){
@@ -66,18 +66,6 @@ export default function(
 		return;
 	}
 
-	const uniformApplyFactoryMat4 = function(in_typeName, in_uniformHandle){
-		return function(in_value){
-			in_webGLContextWrapper.callMethod(in_typeName, in_uniformHandle, false, in_value);
-		}
-	}
-
-	const uniformApplyFactory = function(in_typeName, in_uniformHandle){
-		return function(in_value){
-			in_webGLContextWrapper.callMethod(in_typeName, in_uniformHandle, in_value);
-		}
-	}
-
 	const loadShader = function(in_shaderText, in_type){
 		var shaderHandle = in_webGLContextWrapper.callMethod("createShader", in_type);
 		if (0 === shaderHandle){
@@ -114,10 +102,9 @@ export default function(
 		in_webGLContextWrapper.callMethod("attachShader", programHandle, in_vertexWebGLShader);
 		in_webGLContextWrapper.callMethod("attachShader", programHandle, in_fragmentWebGLShader);
 		
-		//for (var index = 0; index < m_vertexAttributeNameArray.length; ++index){
-		if (undefined !== in_uniformNameTypeMapOrUndefined){
+		if (undefined !== in_nameShaderUniformDataFactoryMapOrUndefined){
 			var index = 0;
-			for (var name in in_uniformNameTypeMapOrUndefined){
+			for (var name in in_nameShaderUniformDataFactoryMapOrUndefined){
 				in_webGLContextWrapper.callMethod("bindAttribLocation", programHandle, index, name);
 				index += 1;
 			}
@@ -145,18 +132,11 @@ export default function(
 		}
 
 		m_mapUniform = {};
-		if (undefined !== in_uniformNameTypeMapOrUndefined){
-			for (var name in in_uniformNameTypeMapOrUndefined){
-				var typeName = in_uniformNameTypeMapOrUndefined[name];
-				var uniformHandle = in_webGLContextWrapper.callMethod("getUniformLocation", programHandle, name);
-				if (typeName === sMat4)
-				{
-					m_mapUniform[name] = uniformApplyFactoryMat4(typeName, uniformHandle);
-				}
-				else
-				{
-					m_mapUniform[name] = uniformApplyFactory(typeName, uniformHandle);
-				}
+		if (undefined !== in_nameShaderUniformDataFactoryMapOrUndefined){
+			for (var name in in_nameShaderUniformDataFactoryMapOrUndefined){
+				var uniformLocation = in_webGLContextWrapper.callMethod("getUniformLocation", programHandle, name);
+				var shaderUniformFactory = in_nameShaderUniformDataFactoryMapOrUndefined[name];
+				m_mapUniform[name] = shaderUniformFactory(in_webGLContextWrapper, uniformLocation);
 			}
 		}
 			

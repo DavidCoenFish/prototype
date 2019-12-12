@@ -42,42 +42,22 @@
 		},
 
 		{
-			"label": "open_development_eye00",
+			"label": "open_development_render_target",
 			"type": "shell",
-			"command": "${cwd}\\output\\development\\eye00\\index.html",
+			"command": "${cwd}\\output\\development\\rendertarget\\index.html",
 			"windows": {
-				"command": "${cwd}\\output\\development\\eye00\\index.html"
+				"command": "${cwd}\\output\\development\\rendertarget\\index.html"
 			},
 			"problemMatcher": []
 		},
 		{
-			"label": "open_production_eye00",
+			"label": "open_production_render_target",
 			"type": "shell",
-			"command": "${cwd}\\output\\production\\eye00\\index.html",
+			"command": "${cwd}\\output\\production\\render_target\\index.html",
 			"windows": {
-				"command": "${cwd}\\output\\production\\eye00\\index.html"
+				"command": "${cwd}\\output\\production\\render_target\\index.html"
 			},
 			"problemMatcher": []
 		},
-
-		{
-			"label": "open_development_ui00",
-			"type": "shell",
-			"command": "${cwd}\\output\\development\\ui00\\index.html",
-			"windows": {
-				"command": "${cwd}\\output\\development\\ui00\\index.html"
-			},
-			"problemMatcher": []
-		},
-		{
-			"label": "open_production_ui00",
-			"type": "shell",
-			"command": "${cwd}\\output\\production\\ui00\\index.html",
-			"windows": {
-				"command": "${cwd}\\output\\production\\ui00\\index.html"
-			},
-			"problemMatcher": []
-		},
-
 	]
 }
