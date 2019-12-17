@@ -5,3 +5,11 @@ X	dag node collection able to draw triangle
 	water drop
 	eyeball
 	
+
+i have a design problem, the convcept with the dag was to have the inputs collected, will all the
+items calling getValue, and then passing the input values to the calculate.
+this was to have a controlled order of operations so that the input was fully calculated before doing the next calculate
+(allow render to target to finish draw before using the output texture....)
+
+as such, the shader data items need to take a value, not a dag node, and possibly be kept in a array to match the inputs of the
+dag node.

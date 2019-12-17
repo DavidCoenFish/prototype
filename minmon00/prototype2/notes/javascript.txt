@@ -1,0 +1,7 @@
+ Sequential for loop:
+var myStringArray = ["Hello","World"];
+var arrayLength = myStringArray.length;
+for (var index = 0; index < arrayLength; index++) {
+    console.log(myStringArray[i]);
+    //Do something
+}

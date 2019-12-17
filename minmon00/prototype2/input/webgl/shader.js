@@ -6,28 +6,57 @@ export default function(
 	in_vertexShaderSource, 
 	in_fragmentShaderSource, 
 	in_vertexAttributeNameArrayOrUndefined, 
-	in_nameShaderUniformDataFactoryMapOrUndefined //{name: shaderUniformDataFactory(...),}
+	//in_nameShaderUniformDataFactoryMapOrUndefined, //{name: { "apply" : function(in_uniformLocation)},...}
+	in_shaderDataArrayOrUndefined //[{"getName", "apply":function(in_uniformLocation, in_value)},...]
 	){
 	var m_shaderProgramObject = undefined;
 	var m_vertexWebGLShader = undefined;
 	var m_fragmentWebGLShader = undefined;
 	var m_mapVertexAttribute = undefined;
-	var m_mapUniform = undefined;
+	var m_uniformArray = undefined;
 
 	//public methods ==========================
 	const that = Object.create({
 		"getMapVertexAttribute" : function(){
 			return m_mapVertexAttribute;
 		},
-		"apply" : function(){
+		"apply" : function(in_uniforValueArrayOrUndefined, in_textureArrayOrUndefined){
 			if (undefined !== m_shaderProgramObject){
 				in_webGLContextWrapper.callMethod("useProgram", m_shaderProgramObject);
 			}
 
-			for (var key in m_mapUniform){
-				m_mapUniform[key].apply();
+			var arrayLength = m_uniformArray.length;
+			for (var index = 0; index < arrayLength; index++) {
+				m_uniformArray[index].apply(in_uniforValueArrayOrUndefined[index]);
+			}
+
+			if (undefined !== in_textureArrayOrUndefined)
+			{
+				var arrayLength = in_textureArrayOrUndefined.length;
+				for (var index = 0; index < arrayLength; index++) {
+					in_textureArrayOrUndefined[index].apply(index);
+				}
 			}
 		},
+		/*
+		is is the inputIndexArray
+		in_inputIndexArray[0] = array of shader data uniforms values or undefined
+		in_inputIndexArray[1] = array of shader data texture values or undefined
+		
+		or
+		in_inputIndexArray[0 ... n] = array of shader data uniforms values or undefined
+		in_inputIndexArray[n + 1 .... m] = array of shader data texture values or undefined
+
+		prefer the second as i don't want to recreate a container array each time values change,
+		but then again, we give the old result as input to the calculate, so you could hand in the old array and update values...
+
+		... we structure things for dag calculation, but we don't actually use it's methods at this level?
+		*/
+		//"calculateCallback" : function( in_calculatedValue, in_inputIndexArray, in_inputArray ){
+		//	that.apply( in_inputIndexArray[0], in_inputIndexArray[1] );
+		//	return undefined;
+		//},
+
 		"destroy" : function(){
 			in_webGLContextWrapper.removeResourceContextCallbacks(restoredCallback, lostCallback);
 		},
@@ -49,7 +78,7 @@ export default function(
 	// if we still have a webgl context, mark the resources for delete, else clear the resource references
 	const lostCallback = function(){
 		m_mapVertexAttribute = undefined;
-		m_mapUniform = undefined;
+		m_uniformArray = undefined;
 		if ( undefined !== m_vertexWebGLShader){
 			in_webGLContextWrapper.callMethod("deleteShader", m_vertexWebGLShader);
 			m_vertexWebGLShader = undefined;
@@ -93,6 +122,12 @@ export default function(
 		return shaderHandle;
 	}
 
+	const applyUniform = function(in_shaderData, in_uniformLocation){
+		return function(in_value){
+			in_shaderData.apply(in_uniformLocation, in_value);
+		};
+	}
+
 	const linkProgram = function(in_vertexWebGLShader, in_fragmentWebGLShader){
 		var programHandle = in_webGLContextWrapper.callMethod("createProgram");
 		if ((0 === programHandle) || (undefined === programHandle)){
@@ -115,8 +150,7 @@ export default function(
 		const linkStatusEnum = in_webGLContextWrapper.getEnum("LINK_STATUS");
 		const linked = in_webGLContextWrapper.callMethod("getProgramParameter", programHandle, linkStatusEnum);
 
-
-		if (!linked) {			
+		if (!linked) {
 			var errorInfo = in_webGLContextWrapper.callMethod("getProgramInfoLog", programHandle);
 			alert("Error linking program: " + errorInfo);
 			in_webGLContextWrapper.callMethod("deleteProgram", programHandle);
@@ -131,15 +165,19 @@ export default function(
 			}
 		}
 
-		m_mapUniform = {};
-		if (undefined !== in_nameShaderUniformDataFactoryMapOrUndefined){
-			for (var name in in_nameShaderUniformDataFactoryMapOrUndefined){
+		m_uniformArray = [];
+		if (undefined !== in_shaderDataArrayOrUndefined){
+			for (var index = 0; index < in_shaderDataArrayOrUndefined.length; ++index){
+				var shaderData = in_shaderDataArrayOrUndefined[index];
+				var name = shaderData.getName();
 				var uniformLocation = in_webGLContextWrapper.callMethod("getUniformLocation", programHandle, name);
-				var shaderUniformFactory = in_nameShaderUniformDataFactoryMapOrUndefined[name];
-				m_mapUniform[name] = shaderUniformFactory(in_webGLContextWrapper, uniformLocation);
+				if (DEVELOPMENT && (undefined === uniformLocation)){
+					console.log("WARNING: shader uniform not found:", name);
+				}
+				m_uniformArray.push(applyUniform(shaderData, uniformLocation));
 			}
 		}
-			
+
 		return programHandle;
 	}
 
