@@ -15,7 +15,7 @@ export default function(
 	in_webGLContextWrapper,
 	in_renderBuffer, //ref to renderBuffer, must implement method "getBuffer", "destroy"
 	in_targetEnumName,
-	in_attachmentEnumName,
+	in_attachmentEnumName
 	//in_levelOrUndefined //mipmap?
 	)
 {

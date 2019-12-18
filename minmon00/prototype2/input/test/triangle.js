@@ -54,7 +54,7 @@ const dagCallbackRenderTriangleFactory = function(in_webglApi){
 
 	const result = Object.create({
 		"draw" : function(){
-			in_webglApi.draw(m_geom, m_shader);
+			in_webglApi.draw(m_shader, undefined, undefined, m_geom);
 		}
 	})
 

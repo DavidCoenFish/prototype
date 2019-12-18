@@ -137,11 +137,11 @@ export default function(
 		in_webGLContextWrapper.callMethod("attachShader", programHandle, in_vertexWebGLShader);
 		in_webGLContextWrapper.callMethod("attachShader", programHandle, in_fragmentWebGLShader);
 		
-		if (undefined !== in_nameShaderUniformDataFactoryMapOrUndefined){
-			var index = 0;
-			for (var name in in_nameShaderUniformDataFactoryMapOrUndefined){
+		if (undefined !== in_shaderDataArrayOrUndefined){
+			for (var index = 0; index < in_shaderDataArrayOrUndefined.length; ++index){
+				var shaderData = in_shaderDataArrayOrUndefined[index];
+				var name = shaderData.getName();
 				in_webGLContextWrapper.callMethod("bindAttribLocation", programHandle, index, name);
-				index += 1;
 			}
 		}
 			

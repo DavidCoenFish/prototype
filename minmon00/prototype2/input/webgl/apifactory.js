@@ -99,13 +99,13 @@ export default function(
 		"createRenderTargetDataRenderBuffer" : function(
 			in_renderBuffer,
 			in_targetEnumName,
-			in_attachmentEnumName,
+			in_attachmentEnumName
 		){
 			return RenderTargetDataRenderBuffer(
 				m_webGLContextWrapper,
 				in_renderBuffer,
 				in_targetEnumName,
-				in_attachmentEnumName,
+				in_attachmentEnumName
 				);
 		},
 
