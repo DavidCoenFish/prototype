@@ -43,6 +43,12 @@ export default function () {
 	//webGL.getShaderPrecisionFormat(webGL.FRAGMENT_SHADER, webGL.MEDIUM_FLOAT);
 	//webGL.getShaderPrecisionFormat(webGL.FRAGMENT_SHADER, webGL.LOW_FLOAT);
 
+	logLine(divElement, "BLEND isEnabled:" + webGLContextWrapper.callMethod("isEnabled", webGLContextWrapper.getEnum("BLEND")));
+	logLine(divElement, "DITHER isEnabled:" + webGLContextWrapper.callMethod("isEnabled", webGLContextWrapper.getEnum("DITHER")));
+	logLine(divElement, "CULL_FACE isEnabled:" + webGLContextWrapper.callMethod("isEnabled", webGLContextWrapper.getEnum("CULL_FACE")));
+	logLine(divElement, "DEPTH_TEST isEnabled:" + webGLContextWrapper.callMethod("isEnabled", webGLContextWrapper.getEnum("DEPTH_TEST")));
+	logLine(divElement, "SCISSOR_TEST isEnabled:" + webGLContextWrapper.callMethod("isEnabled", webGLContextWrapper.getEnum("SCISSOR_TEST")));
+	logLine(divElement, "STENCIL_TEST isEnabled:" + webGLContextWrapper.callMethod("isEnabled", webGLContextWrapper.getEnum("STENCIL_TEST")));
 
 	return;
 }

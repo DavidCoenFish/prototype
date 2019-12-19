@@ -15,7 +15,6 @@ const arrayCmp = function(in_lhs, in_rhs){
 	}
 	return true;
 }
-
 const setParam4 = function(in_key, in_default, in_value, in_state, in_webGLContextWrapper){
 	var value = (undefined !== in_value) ? [in_value[0], in_value[1], in_value[2], in_value[3]] : undefined;
 	if (undefined === value){
@@ -154,6 +153,7 @@ const s_metadata = {
 	 //SRC_COLOR, ONE_MINUS_SRC_COLOR, DST_COLOR, ONE_MINUS_DST_COLOR, SRC_ALPHA, ONE_MINUS_SRC_ALPHA, DST_ALPHA, ONE_MINUS_DST_ALPHA, CONSTANT_COLOR, ONE_MINUS_CONSTANT_COLOR, CONSTANT_ALPHA, ONE_MINUS_CONSTANT_ALPHA, SRC_ALPHA_SATURATE
 	
 	//setEnableDisable
+	//By default, all capabilities except gl.DITHER are disabled.
 	"BLEND" : function(in_value, in_state, in_webGLContextWrapper){ setEnableDisable("BLEND", false, in_value, in_state, in_webGLContextWrapper); },
 	"CULL_FACE" : function(in_value, in_state, in_webGLContextWrapper){ setEnableDisable("CULL_FACE", false, in_value, in_state, in_webGLContextWrapper); },
 	"DEPTH_TEST" : function(in_value, in_state, in_webGLContextWrapper){ setEnableDisable("DEPTH_TEST", false, in_value, in_state, in_webGLContextWrapper); },
@@ -179,7 +179,6 @@ export default function(
 			in_webGLContextWrapper.removeResourceContextCallbacks(aquireWebGLResources, releaseWebGLResources);
 		},
 	});
-
 
 	//private methods ==========================
 	const aquireWebGLResources = function(){
