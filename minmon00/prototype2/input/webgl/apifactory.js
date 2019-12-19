@@ -33,6 +33,14 @@ export default function(
 
 	var m_webGLState = StateFactory(m_webGLContextWrapper);
 
+	var applyDrawState = function(in_drawStateOrUndefined){
+		if (undefined === in_drawStateOrUndefined){
+			return;
+		}
+
+
+	}
+
 	const that = Object.create({
 		"createRenderTarget" : function(
 			in_x,
@@ -142,13 +150,13 @@ export default function(
 				(undefined !== in_colourBlueOrUndefined) ||
 				(undefined !== in_colourAlphaOrUndefined)){
 				clearFlag |= m_webGLContextWrapper.getEnum("COLOR_BUFFER_BIT");
-				m_webGLState.setParam4("colorMask", 
-					(undefined !== in_colourRedOrUndefined),
+				m_webGLState.set("colorMask", 
+					[(undefined !== in_colourRedOrUndefined),
 					(undefined !== in_colourGreenOrUndefined),
 					(undefined !== in_colourBlueOrUndefined),
-					(undefined !== in_colourAlphaOrUndefined)
+					(undefined !== in_colourAlphaOrUndefined)]
 					);
-				m_webGLState.setParam4("clearColor", in_colourRedOrUndefined, in_colourGreenOrUndefined, in_colourBlueOrUndefined, in_colourAlphaOrUndefined);
+				m_webGLState.set("clearColor", [in_colourRedOrUndefined, in_colourGreenOrUndefined, in_colourBlueOrUndefined, in_colourAlphaOrUndefined]);
 			}
 
 			if (undefined !== in_colourStecilOrUndefined){
@@ -243,7 +251,8 @@ export default function(
 		/*
 		we don't put the shader in one dag node and the model draw in another to ensure the shader is actually applied
 		*/
-		"draw" : function(in_shader, in_uniforValueArrayOrUndefined, in_textureArrayOrUndefined, in_model, in_firstOrUndefined, in_countOrUndefined){
+		"draw" : function(in_shader, in_uniforValueArrayOrUndefined, in_textureArrayOrUndefined, in_model, in_firstOrUndefined, in_countOrUndefined, in_drawStateOrUndefined){
+			applyDrawState(in_drawStateOrUndefined);
 			in_shader.apply(in_uniforValueArrayOrUndefined, in_textureArrayOrUndefined);
 			in_model.draw(in_shader.getMapVertexAttribute(), in_firstOrUndefined, in_countOrUndefined);
 			return;
