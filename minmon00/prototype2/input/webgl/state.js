@@ -161,6 +161,22 @@ const s_metadata = {
 	"STENCIL_TEST" : function(in_value, in_state, in_webGLContextWrapper){ setEnableDisable("STENCIL_TEST", false, in_value, in_state, in_webGLContextWrapper); },
 };
 
+const s_drawStateKeys = [
+	"colorMask",
+	"stencilMask",
+	"depthMask",
+	"frontFace",
+	"cullFace",
+	"depthFunc",
+	"blendEquation",
+	"blendFunc",
+	"BLEND",
+	"CULL_FACE",
+	"DEPTH_TEST",
+	"SCISSOR_TEST",
+	"STENCIL_TEST"
+];
+
 export default function(
 	in_webGLContextWrapper
 	){
@@ -171,10 +187,20 @@ export default function(
 	const that = Object.create({
 		"set" : function(in_key, in_value){
 			if (in_key in s_metadata){
-				s_methodMap[in_key](in_value, m_state, in_webGLContextWrapper);
+				s_metadata[in_key](in_value, m_state, in_webGLContextWrapper);
 			}
 			return;
 		},
+
+		"applayDrawState" : function(in_drawStateOrUndefined){
+			var arrayLength = s_drawStateKeys.length;
+			for (var index = 0; index < arrayLength; index++) {
+				var key = s_drawStateKeys[index];
+				var value = (undefined !== in_drawStateOrUndefined) ? in_drawStateOrUndefined[key] : undefined;
+				that.set(key, value);
+			}
+		},
+
 		"destroy" : function(){
 			in_webGLContextWrapper.removeResourceContextCallbacks(aquireWebGLResources, releaseWebGLResources);
 		},

@@ -29,7 +29,10 @@ export default function(
 		"apply" : function(){
 			const targetEnum = in_webGLContextWrapper.getEnum("FRAMEBUFFER");
 			in_webGLContextWrapper.callMethod("bindFramebuffer", targetEnum, m_frameBufferObject);
-			in_webGLState.setParam4(viewport, in_x, in_y, in_width, in_height);
+			in_webGLState.set("viewport", [in_x, in_y, in_width, in_height]);
+		},
+		"getTexture" : function(in_index){
+			return in_renderTargetDataArray[in_index].getTexture();
 		},
 		"destroy" : function(){
 			in_webGLContextWrapper.removeResourceContextCallbacks(restoredCallback, lostCallback);

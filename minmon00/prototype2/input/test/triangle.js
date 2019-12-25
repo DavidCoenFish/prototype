@@ -1,6 +1,6 @@
 import canvasFactory from './../dom/canvasfactory.js'
 import webGLAPIFactory from './../webgl/apifactory.js'
-import { factoryDagNodeValue, factoryDagNodeCalculate, linkIndex, link } from './../core/dagnode.js'
+import { factoryDagNodeCalculate, linkIndex, link } from './../core/dagnode.js'
 //import {sFloat, sFloat2, sFloat3, sFloat4, sInt, sMat4} from './../webgl/shader.js'
 
 const dagCallbackCanvasRenderTargetFactory = function(in_webglApi){
@@ -85,10 +85,7 @@ export default function () {
 	//construct a dag nod system that results in a triangle being drawn
 
 	// want a dag nod, that when you call getValue on it, it renders to screen
-	// as some point, want a context reset node
-	const dagNodeContextReset = factoryDagNodeValue(0);
 	const dagNodeCanvasRenderTarget = factoryDagNodeCalculate(dagCallbackCanvasRenderTargetFactory(webGLApi));
-	linkIndex(dagNodeContextReset, dagNodeCanvasRenderTarget, 0);
 
 	const dagNodeDisplayList = factoryDagNodeCalculate(dagCallbackDisplayList);
 	linkIndex(dagNodeCanvasRenderTarget, dagNodeDisplayList, 0);
