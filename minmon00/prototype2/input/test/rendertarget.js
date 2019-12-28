@@ -3,6 +3,7 @@ import webGLAPIFactory from './../webgl/apifactory.js'
 import { factoryDagNodeCalculate, linkIndex, link } from './../core/dagnode.js'
 //import {sFloat, sFloat2, sFloat3, sFloat4, sInt, sMat4} from './../webgl/shader.js'
 import {sRGBA, sUNSIGNED_BYTE} from './../webgl/texturetype'
+import { sInt } from './../webgl/shaderuniformtype.js'
 
 const dagCallbackTextureRenderTargetFactory = function(in_webglApi){
 	var m_texture = in_webglApi.createTexture(
@@ -31,7 +32,7 @@ const dagCallbackTextureRenderTargetFactory = function(in_webglApi){
 	var result = Object.create({
 		"activate" : function(){
 			in_webglApi.setRenderTarget(m_renderTarget);
-			in_webglApi.clear(1.0, 0.0, 0.0);
+			in_webglApi.clear(1.0, 0.0, 0.0, 0.0);
 		},
 		"getTexture" : function(){
 			//return m_texture;
@@ -120,15 +121,18 @@ varying vec2 v_uv;
 uniform sampler2D u_sampler0;
 void main() {
 	vec4 texel = texture2D(u_sampler0, v_uv);
-	texel.x = 1.0;
+	texel = vec4(v_uv.x, v_uv.y, 0.0, 1.0);
 	gl_FragColor = texel;
 }
 `;
 
 	const sVertexAttributeNameArray = ["a_position", "a_uv"];
+	const sUniformArray = [
+		 in_webglApi.createShaderDataUniform("u_sampler0", sInt ),
+	];
 
 	//get ref to shader
-	const m_shader = in_webglApi.createShader( sVertexShader, sFragmentShader, sVertexAttributeNameArray );
+	const m_shader = in_webglApi.createShader( sVertexShader, sFragmentShader, sVertexAttributeNameArray, sUniformArray );
 /*
 -1, 1		 1, 1
 -1,-1		 1,-1
@@ -147,7 +151,7 @@ void main() {
 
 	var result = Object.create({
 		"draw" : function(){
-			in_webglApi.draw(m_shader, undefined, m_textureArray, m_geom);
+			in_webglApi.draw(m_shader, [0], m_textureArray, m_geom);
 		}
 	})
 
@@ -193,6 +197,7 @@ export default function () {
 	const dagNodeRenderQuad = factoryDagNodeCalculate(dagCallbackRenderQuadFactory(webGLApi));
 	linkIndex(dagNodeDisplayList, dagNodeRenderQuad, 0);
 	link(dagNodeRenderQuad, dagNodeDisplayList2);
+	//link(dagNodeRenderTriangle, dagNodeDisplayList2);
 
 	dagNodeDisplayList2.getValue();
 

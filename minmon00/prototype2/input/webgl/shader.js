@@ -17,6 +17,11 @@ export default function(
 
 	//public methods ==========================
 	const that = Object.create({
+		//start debug
+		"getProgram" : function(){ 
+			return m_shaderProgramObject; 
+		},
+		//end debug
 		"getMapVertexAttribute" : function(){
 			return m_mapVertexAttribute;
 		},
@@ -25,17 +30,17 @@ export default function(
 				in_webGLContextWrapper.callMethod("useProgram", m_shaderProgramObject);
 			}
 
-			var arrayLength = m_uniformArray.length;
-			for (var index = 0; index < arrayLength; index++) {
-				m_uniformArray[index].apply(in_uniforValueArrayOrUndefined[index]);
-			}
-
 			if (undefined !== in_textureArrayOrUndefined)
 			{
 				var arrayLength = in_textureArrayOrUndefined.length;
 				for (var index = 0; index < arrayLength; index++) {
 					in_textureArrayOrUndefined[index].apply(index);
 				}
+			}
+
+			var arrayLength = m_uniformArray.length;
+			for (var index = 0; index < arrayLength; index++) {
+				m_uniformArray[index](in_uniforValueArrayOrUndefined[index]);
 			}
 		},
 		/*

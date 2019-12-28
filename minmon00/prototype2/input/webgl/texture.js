@@ -39,6 +39,7 @@ RGBA8UI			RGBA_INTEGER	UNSIGNED_BYTE
 
 TEXTURE_MAG_FILTER	LINEAR (default value), NEAREST.
 TEXTURE_MIN_FILTER	LINEAR, NEAREST, NEAREST_MIPMAP_NEAREST, LINEAR_MIPMAP_NEAREST, NEAREST_MIPMAP_LINEAR (default value), LINEAR_MIPMAP_LINEAR.
+	since we dont use mipmap by default, make the default TEXTURE_MIN_FILTER LINEAR
 TEXTURE_WRAP_S	REPEAT (default value), CLAMP_TO_EDGE, MIRRORED_REPEAT
 TEXTURE_WRAP_T	REPEAT (default value), CLAMP_TO_EDGE, MIRRORED_REPEAT
 
@@ -64,7 +65,8 @@ export default function(
 	in_magFilterEnumNameOrUndefined,
 	in_minFilterEnumNameOrUndefined,
 	in_wrapSEnumNameOrUndefined,
-	in_wrapTEnumNameOrUndefined
+	in_wrapTEnumNameOrUndefined,
+	in_generateMipMapOrUndefined
 	){
 	var m_webglTexture = undefined;
 
@@ -118,10 +120,17 @@ export default function(
 			in_webGLContextWrapper.getEnum(in_typeEnumName),						//GLenum type, 
 			(undefined === in_dataOrUndefined) ? null : in_dataOrUndefined //ArrayBufferView? pixels
 			);
+
+		if (true === in_generateMipMapOrUndefined)
+		{
+			in_webGLContextWrapper.callMethod("generateMipmap", targetEnum);
+		}
+
 		var magFilterEnum = in_webGLContextWrapper.getEnum((undefined === in_magFilterEnumNameOrUndefined) ? "LINEAR" : in_magFilterEnumNameOrUndefined );
 		in_webGLContextWrapper.callMethod("texParameteri", targetEnum, in_webGLContextWrapper.getEnum("TEXTURE_MAG_FILTER"), magFilterEnum);
 
-		var minFilterEnum = in_webGLContextWrapper.getEnum((undefined === in_minFilterEnumNameOrUndefined) ? "NEAREST_MIPMAP_LINEAR" : in_minFilterEnumNameOrUndefined );
+		//var minFilterEnum = in_webGLContextWrapper.getEnum((undefined === in_minFilterEnumNameOrUndefined) ? "NEAREST_MIPMAP_LINEAR" : in_minFilterEnumNameOrUndefined );
+		var minFilterEnum = in_webGLContextWrapper.getEnum((undefined === in_minFilterEnumNameOrUndefined) ? "LINEAR" : in_minFilterEnumNameOrUndefined );
 		in_webGLContextWrapper.callMethod("texParameteri", targetEnum, in_webGLContextWrapper.getEnum("TEXTURE_MIN_FILTER"), minFilterEnum);
 
 		var wrapSEnum = in_webGLContextWrapper.getEnum((undefined === in_wrapSEnumNameOrUndefined) ? "REPEAT" : in_wrapSEnumNameOrUndefined );

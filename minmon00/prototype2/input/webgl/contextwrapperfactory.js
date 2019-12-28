@@ -218,6 +218,10 @@ export default function(
 			return in_html5CanvasElement.height;
 		},
 
+		"getWebGLContext" : function(){
+			return m_webGLContext;
+		},
+
 	});
 
 	EventDispatcherDecorate(that);

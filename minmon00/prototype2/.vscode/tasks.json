@@ -42,6 +42,26 @@
 		},
 
 		{
+			"label": "open_development_triangle_texture",
+			"type": "shell",
+			"command": "${cwd}\\output\\development\\triangletexture\\index.html",
+			"windows": {
+				"command": "${cwd}\\output\\development\\triangletexture\\index.html"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "open_production_triangle_texture",
+			"type": "shell",
+			"command": "${cwd}\\output\\production\\triangletexture\\index.html",
+			"windows": {
+				"command": "${cwd}\\output\\production\\triangletexture\\index.html"
+			},
+			"problemMatcher": []
+		},
+
+
+		{
 			"label": "open_development_render_target",
 			"type": "shell",
 			"command": "${cwd}\\output\\development\\rendertarget\\index.html",

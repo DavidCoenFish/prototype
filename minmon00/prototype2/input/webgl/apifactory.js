@@ -78,7 +78,8 @@ export default function(
 			in_magFilterEnumNameOrUndefined,
 			in_minFilterEnumNameOrUndefined,
 			in_wrapSEnumNameOrUndefined,
-			in_wrapTEnumNameOrUndefined
+			in_wrapTEnumNameOrUndefined,
+			in_generateMipMapOrUndefined
 		){
 			return TextureFactory(
 				m_webGLContextWrapper,
@@ -92,7 +93,8 @@ export default function(
 				in_magFilterEnumNameOrUndefined,
 				in_minFilterEnumNameOrUndefined,
 				in_wrapSEnumNameOrUndefined,
-				in_wrapTEnumNameOrUndefined
+				in_wrapTEnumNameOrUndefined,
+				in_generateMipMapOrUndefined // WARNING, the default min filter is NEAREST_MIPMAP_LINEAR which requires mipmaps...
 			);
 		},
 
@@ -265,6 +267,10 @@ export default function(
 
 		"getCanvasHeight" : function(){
 			return m_webGLContextWrapper.getCanvasHeight();
+		},
+
+		"getWebGLContext" : function(){
+			return m_webGLContextWrapper.getWebGLContext();
 		},
 
 		"destroy" : function(){

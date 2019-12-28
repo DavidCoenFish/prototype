@@ -14,10 +14,10 @@ if (true === normal){
 	//projectArray.push(require("./project/context.json"));
 	//projectArray.push(require("./project/clear.json"));
 	//projectArray.push(require("./project/triangle.json"));
-	//projectArray.push(require("./project/texture.json"));
+	projectArray.push(require("./project/texture.json"));
 	//projectArray.push(require("./project/noise.json"));
 	//projectArray.push(require("./project/rendertarget.json"));
-	projectArray.push(require("./project/cloth00.json"));
+	//projectArray.push(require("./project/cloth00.json"));
 	//projectArray.push(require("./project/celticknot.json"));
 }
 

@@ -85,6 +85,46 @@
 			"timeout": 100000
 		},
 
+		// text triangle_texture
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "package development test triangle texture",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"packagevsc_test_triangle_texture", 
+			],
+			"env": {
+				"NODE_ENV": "development"
+			},
+			"postDebugTask": "open_development_triangle_texture",
+			"port": 5858,
+			"timeout": 100000,
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "package production test triangle texture",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"packagevsc_test_triangle_texture"
+			],
+			"env": {
+				"NODE_ENV": "production"
+			},
+			"postDebugTask": "open_development_triangle_texture",
+			"port": 5858,
+			"timeout": 100000
+		},
+
 		// test render_target
 		{
 			"type": "node",

@@ -1,32 +1,6 @@
-import ComponentWebGLSceneSimpleFactory from './../manipulatedom/component-webgl-scene-simple.js';
-import {applyStyleFullscreenDefault} from './../manipulatedom/style.js';
-import {factoryAppendElement as componentCanvasFactory } from './../manipulatedom/component-canvas.js';
-import fullScreenButton from './../manipulatedom/fullscreen-button.js';
-import {factoryAppend as divFactory}  from './../manipulatedom/div.js';
-import {factoryAppend as buttonFactory}  from './../manipulatedom/button.js';
-import { autoSnapShot } from './../manipulatedom/autodownload.js';
-import Task from './task.js';
+//import Task from './task.js';
 
 export default function () {
-	applyStyleFullscreenDefault(document.documentElement);
-	applyStyleFullscreenDefault(document.body);
-
-	var m_div = divFactory(document, document.body, {
-		"position": "relative",
-		"width" : "100vw",
-		"height" : "100vh",
-		"backgroundColor" : "#000000",
-		"margin" : "0",
-		"padding" : "0"
-	});
-	const m_canvaseElementWrapper = componentCanvasFactory(document, m_div, {
-		"width" : "100vw",
-		"height" : "100vh",
-		"backgroundColor" : "#000000",
-		"margin" : "0",
-		"padding" : "0",
-		"display" : "block"
-	});
 	const m_canvasElement = m_canvaseElementWrapper.getElement();
 	m_div.appendChild(m_canvasElement);
 	var m_task = Task;
