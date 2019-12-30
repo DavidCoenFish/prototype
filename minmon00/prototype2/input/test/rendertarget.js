@@ -121,7 +121,7 @@ varying vec2 v_uv;
 uniform sampler2D u_sampler0;
 void main() {
 	vec4 texel = texture2D(u_sampler0, v_uv);
-	texel = vec4(v_uv.x, v_uv.y, 0.0, 1.0);
+	//texel = vec4(v_uv.x, v_uv.y, 0.0, 1.0);
 	gl_FragColor = texel;
 }
 `;
@@ -196,11 +196,10 @@ export default function () {
 	linkIndex(dagNodeCanvasRenderTarget, dagNodeDisplayList2, 0);
 	const dagNodeRenderQuad = factoryDagNodeCalculate(dagCallbackRenderQuadFactory(webGLApi));
 	linkIndex(dagNodeDisplayList, dagNodeRenderQuad, 0);
-	link(dagNodeRenderQuad, dagNodeDisplayList2);
-	//link(dagNodeRenderTriangle, dagNodeDisplayList2);
+	//link(dagNodeRenderQuad, dagNodeDisplayList2);
+	link(dagNodeRenderTriangle, dagNodeDisplayList2);
 
 	dagNodeDisplayList2.getValue();
-
 
 	return;
 }

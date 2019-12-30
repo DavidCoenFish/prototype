@@ -21,7 +21,7 @@ export default function(
 {
 	//public methods ==========================
 	const that = Object.create({
-		"apply" : function(){
+		"activate" : function(){
 			const targetEnum = in_webGLContextWrapper.getEnum(in_targetEnumName);
 			const attachmentEnum = in_webGLContextWrapper.getEnum(in_attachmentEnumName);
 			const texTargetEnum = in_webGLContextWrapper.getEnum("RENDERBUFFER");

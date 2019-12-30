@@ -6,8 +6,8 @@ export default function(
 	in_vertexShaderSource, 
 	in_fragmentShaderSource, 
 	in_vertexAttributeNameArrayOrUndefined, 
-	//in_nameShaderUniformDataFactoryMapOrUndefined, //{name: { "apply" : function(in_uniformLocation)},...}
-	in_shaderDataArrayOrUndefined //[{"getName", "apply":function(in_uniformLocation, in_value)},...]
+	//in_nameShaderUniformDataFactoryMapOrUndefined, //{name: { "activate" : function(in_uniformLocation)},...}
+	in_shaderDataArrayOrUndefined //[{"getName", "activate":function(in_uniformLocation, in_value)},...]
 	){
 	var m_shaderProgramObject = undefined;
 	var m_vertexWebGLShader = undefined;
@@ -25,7 +25,7 @@ export default function(
 		"getMapVertexAttribute" : function(){
 			return m_mapVertexAttribute;
 		},
-		"apply" : function(in_uniforValueArrayOrUndefined, in_textureArrayOrUndefined){
+		"activate" : function(in_uniforValueArrayOrUndefined, in_textureArrayOrUndefined){
 			if (undefined !== m_shaderProgramObject){
 				in_webGLContextWrapper.callMethod("useProgram", m_shaderProgramObject);
 			}
@@ -34,7 +34,7 @@ export default function(
 			{
 				var arrayLength = in_textureArrayOrUndefined.length;
 				for (var index = 0; index < arrayLength; index++) {
-					in_textureArrayOrUndefined[index].apply(index);
+					in_textureArrayOrUndefined[index].activate(index);
 				}
 			}
 
@@ -58,7 +58,7 @@ export default function(
 		... we structure things for dag calculation, but we don't actually use it's methods at this level?
 		*/
 		//"calculateCallback" : function( in_calculatedValue, in_inputIndexArray, in_inputArray ){
-		//	that.apply( in_inputIndexArray[0], in_inputIndexArray[1] );
+		//	that.activate( in_inputIndexArray[0], in_inputIndexArray[1] );
 		//	return undefined;
 		//},
 
@@ -129,7 +129,7 @@ export default function(
 
 	const applyUniform = function(in_shaderData, in_uniformLocation){
 		return function(in_value){
-			in_shaderData.apply(in_uniformLocation, in_value);
+			in_shaderData.activate(in_uniformLocation, in_value);
 		};
 	}
 

@@ -72,7 +72,7 @@ export default function(
 
 	//public methods ==========================
 	const result = Object.create({
-		"apply" : function(in_index){
+		"activate" : function(in_index){
 			if (undefined !== m_webglTexture){
 				const textureEnum = in_webGLContextWrapper.getEnum("TEXTURE0") + in_index;
 				in_webGLContextWrapper.callMethod("activeTexture", textureEnum);

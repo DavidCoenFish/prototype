@@ -132,7 +132,7 @@ export default function(
 				m_webGLContextWrapper.callMethod("bindFramebuffer", targetEnum, null);
 				m_webGLState.set("viewport", [0, 0, that.getCanvasWidth(), that.getCanvasHeight()]);
 			} else {
-				in_renderTargetOrUndefined.apply();
+				in_renderTargetOrUndefined.activate();
 			}
 		},
 
@@ -175,7 +175,7 @@ export default function(
 			in_vertexShaderSource, 
 			in_fragmentShaderSource, 
 			in_vertexAttributeNameArrayOrUndefined, 
-			in_shaderDataArrayOrUndefined //[{"getName", "apply":function(in_uniformLocation, in_value)},...]
+			in_shaderDataArrayOrUndefined //[{"activate":function(in_uniformLocation, in_value)},...]
 		){
 			return ShaderFactory( 
 				m_webGLContextWrapper, 
@@ -256,7 +256,7 @@ export default function(
 			){
 			//applyDrawState(in_drawStateOrUndefined);
 			m_webGLState.applayDrawState(in_drawStateOrUndefined);
-			in_shader.apply(in_uniforValueArrayOrUndefined, in_textureArrayOrUndefined);
+			in_shader.activate(in_uniforValueArrayOrUndefined, in_textureArrayOrUndefined);
 			in_model.draw(in_shader.getMapVertexAttribute(), in_firstOrUndefined, in_countOrUndefined);
 			return;
 		},

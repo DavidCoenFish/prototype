@@ -26,7 +26,7 @@ export default function(
 
 	//public methods ==========================
 	const that = Object.create({
-		"apply" : function(){
+		"activate" : function(){
 			const targetEnum = in_webGLContextWrapper.getEnum("FRAMEBUFFER");
 			in_webGLContextWrapper.callMethod("bindFramebuffer", targetEnum, m_frameBufferObject);
 			in_webGLState.set("viewport", [in_x, in_y, in_width, in_height]);
@@ -46,7 +46,7 @@ export default function(
 		in_webGLContextWrapper.callMethod("bindFramebuffer", targetEnum, m_frameBufferObject);
 
 		for (var index = 0; index < in_renderTargetDataArray.length; ++index) { 
-			in_renderTargetDataArray[index].apply();
+			in_renderTargetDataArray[index].activate();
 		}
 
 		//glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);

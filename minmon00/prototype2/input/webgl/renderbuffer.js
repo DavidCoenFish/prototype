@@ -74,7 +74,7 @@ export default function(
 
 	//public methods ==========================
 	const result = Object.create({
-		"apply" : function(){
+		"activate" : function(){
 			if (undefined !== m_webglRenderBuffer){
 				const targetEnum = in_webGLContextWrapper.getEnum(in_targetEnumName);
 				in_webGLContextWrapper.callMethod("bindRenderbuffer", targetEnum, m_webglRenderBuffer);

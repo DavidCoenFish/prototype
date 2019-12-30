@@ -12,7 +12,7 @@ export const ShaderDataUniformFactory = function(
 		"getName" : function(){
 			return in_name;
 		},
-		"apply" : function(in_uniformLocation, in_value){
+		"activate" : function(in_uniformLocation, in_value){
 			in_webGLContextWrapper.callMethod(in_typeName, in_uniformLocation, in_value);
 		}
 	});
@@ -32,7 +32,7 @@ export const ShaderDataUniformNormaliseFactory = function(
 		"getName" : function(){
 			return in_name;
 		},
-		"apply" : function(in_uniformLocation, in_value){
+		"activate" : function(in_uniformLocation, in_value){
 			in_webGLContextWrapper.callMethod(in_typeName, in_uniformLocation, in_normalise, in_value);
 		}
 	});
