@@ -23,6 +23,44 @@
 		},
 
 		{
+			"label": "open_development_render_target",
+			"type": "shell",
+			"command": "${cwd}\\output\\development\\rendertarget\\index.html",
+			"windows": {
+				"command": "${cwd}\\output\\development\\rendertarget\\index.html"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "open_production_render_target",
+			"type": "shell",
+			"command": "${cwd}\\output\\production\\rendertarget\\index.html",
+			"windows": {
+				"command": "${cwd}\\output\\production\\rendertarget\\index.html"
+			},
+			"problemMatcher": []
+		},
+
+		{
+			"label": "open_development_text",
+			"type": "shell",
+			"command": "${cwd}\\output\\development\\text\\index.html",
+			"windows": {
+				"command": "${cwd}\\output\\development\\text\\index.html"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "open_production_text",
+			"type": "shell",
+			"command": "${cwd}\\output\\production\\text\\index.html",
+			"windows": {
+				"command": "${cwd}\\output\\production\\text\\index.html"
+			},
+			"problemMatcher": []
+		},
+
+		{
 			"label": "open_development_triangle",
 			"type": "shell",
 			"command": "${cwd}\\output\\development\\triangle\\index.html",
@@ -60,24 +98,5 @@
 			"problemMatcher": []
 		},
 
-
-		{
-			"label": "open_development_render_target",
-			"type": "shell",
-			"command": "${cwd}\\output\\development\\rendertarget\\index.html",
-			"windows": {
-				"command": "${cwd}\\output\\development\\rendertarget\\index.html"
-			},
-			"problemMatcher": []
-		},
-		{
-			"label": "open_production_render_target",
-			"type": "shell",
-			"command": "${cwd}\\output\\production\\rendertarget\\index.html",
-			"windows": {
-				"command": "${cwd}\\output\\production\\rendertarget\\index.html"
-			},
-			"problemMatcher": []
-		},
 	]
 }

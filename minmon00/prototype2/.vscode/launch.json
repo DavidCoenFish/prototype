@@ -45,6 +45,88 @@
 			"timeout": 100000
 		},
 
+
+		// test render_target
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "package development test render target",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"packagevsc_test_render_target", 
+			],
+			"env": {
+				"NODE_ENV": "development"
+			},
+			"postDebugTask": "open_development_render_target",
+			"port": 5858,
+			"timeout": 100000,
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "package production test render target",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"packagevsc_test_render_target"
+			],
+			"env": {
+				"NODE_ENV": "production"
+			},
+			"postDebugTask": "open_production_render_target",
+			"port": 5858,
+			"timeout": 100000
+		},
+
+
+		// test text
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "package development test text",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"packagevsc_test_text", 
+			],
+			"env": {
+				"NODE_ENV": "development"
+			},
+			"postDebugTask": "open_development_text",
+			"port": 5858,
+			"timeout": 100000,
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "package production test text",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"packagevsc_test_text"
+			],
+			"env": {
+				"NODE_ENV": "production"
+			},
+			"postDebugTask": "open_production_text",
+			"port": 5858,
+			"timeout": 100000
+		},
+
 		// test triangle
 		{
 			"type": "node",
@@ -124,47 +206,6 @@
 			"port": 5858,
 			"timeout": 100000
 		},
-
-		// test render_target
-		{
-			"type": "node",
-			"request": "launch",
-			"name": "package development test render target",
-			"runtimeExecutable": "npm",
-			"windows": {
-				"runtimeExecutable": "npm.cmd"
-			},
-			"runtimeArgs": [
-				"run-script",
-				"packagevsc_test_render_target", 
-			],
-			"env": {
-				"NODE_ENV": "development"
-			},
-			"postDebugTask": "open_development_render_target",
-			"port": 5858,
-			"timeout": 100000,
-		},
-		{
-			"type": "node",
-			"request": "launch",
-			"name": "package production test render target",
-			"runtimeExecutable": "npm",
-			"windows": {
-				"runtimeExecutable": "npm.cmd"
-			},
-			"runtimeArgs": [
-				"run-script",
-				"packagevsc_test_render_target"
-			],
-			"env": {
-				"NODE_ENV": "production"
-			},
-			"postDebugTask": "open_production_render_target",
-			"port": 5858,
-			"timeout": 100000
-		},
-
 
 
 		//unit test

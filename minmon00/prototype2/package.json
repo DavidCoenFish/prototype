@@ -19,6 +19,7 @@
 		"package": "node index.js",
 		"packagevsc": "node --nolazy --inspect-brk=5858 index.js",
 		"packagevsc_test_capablity": "node --nolazy --inspect-brk=5858 index.js test capablity",
+		"packagevsc_test_text": "node --nolazy --inspect-brk=5858 index.js test text",
 		"packagevsc_test_triangle": "node --nolazy --inspect-brk=5858 index.js test triangle",
 		"packagevsc_test_triangle_texture": "node --nolazy --inspect-brk=5858 index.js test triangletexture",
 		"packagevsc_test_render_target": "node --nolazy --inspect-brk=5858 index.js test rendertarget",
