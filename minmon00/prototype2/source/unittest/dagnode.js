@@ -20,23 +20,23 @@ const CalculateSum = function ( m_calculatedValue, inputIndexArray, inputArray )
 }
 
 const RunSanityTest = function(){
-	var dagInput0 = FactoryDagNodeValue(1);
-	var dagInput1 = FactoryDagNodeValue(2);
-	var dagInput2 = FactoryDagNodeValue(3);
+	var dagInput0 = factoryDagNodeValue(1);
+	var dagInput1 = factoryDagNodeValue(2);
+	var dagInput2 = factoryDagNodeValue(3);
 
-	var dagCalculate0 = FactoryDagNodeCalculate(CalculateSum);
+	var dagCalculate0 = factoryDagNodeCalculate(CalculateSum);
 	Unittest.DealTestAlmost("SanityTest0", dagCalculate0.getValue(), 0);
 
-	Link(dagInput0, dagCalculate0);
-	Link(dagInput1, dagCalculate0);
-	Link(dagInput2, dagCalculate0);
+	link(dagInput0, dagCalculate0);
+	link(dagInput1, dagCalculate0);
+	link(dagInput2, dagCalculate0);
 	Unittest.DealTestAlmost("SanityTest1", dagCalculate0.getValue(), 6);
 
-	Unlink(dagInput0, dagCalculate0);
+	unlink(dagInput0, dagCalculate0);
 	Unittest.DealTestAlmost("SanityTest2", dagCalculate0.getValue(), 5);
 	
-	Unlink(dagInput1, dagCalculate0);
-	Unlink(dagInput2, dagCalculate0);
+	unlink(dagInput1, dagCalculate0);
+	unlink(dagInput2, dagCalculate0);
 	Unittest.DealTestAlmost("SanityTest3", dagCalculate0.getValue(), 0);
 
 	return;
