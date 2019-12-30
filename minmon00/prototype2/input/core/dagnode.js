@@ -1,3 +1,5 @@
+const s_logDagCalls = false;
+
 const dagNodePrototype = function(in_result){
 	var m_arrayOutput = []; //array of dagnodecalculate
 	var publicMethods = {
@@ -42,7 +44,7 @@ export function factoryDagNodeValue (in_value){
 	return result;
 }
 
-export function factoryDagNodeCalculate (in_calculateCallback){
+export function factoryDagNodeCalculate (in_calculateCallback, in_debugNameOrUndefined){
 	var m_calculateCallback = in_calculateCallback; //( m_calculatedValue, inputIndexArray, inputArray )
 	var m_dirty = true;
 	var m_calculatedValue = undefined;
@@ -51,6 +53,10 @@ export function factoryDagNodeCalculate (in_calculateCallback){
 
 	const result = Object.create({
 		"getValue" : function(){
+			if ((s_logDagCalls) && (DEVELOPMENT) && (undefined !== in_debugNameOrUndefined)){
+				console.log("DagNodeCalculate::getValue:", in_debugNameOrUndefined, m_dirty);
+			}
+
 			if ( true === m_dirty )
 			{
 				//prep index input

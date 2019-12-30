@@ -6,6 +6,8 @@ manage creation and destruction of resources (which may need context lost and re
 
 import EventDispatcherDecorate from "./../core/eventdispatcherdecorate.js"
 
+const s_logWebGLCalls = false;
+
 const getWebGLContext = function(in_html5CanvasElement, in_extentionsOrUndefined, in_paramObjectOrUndefined){
 	if (undefined === in_html5CanvasElement) {
 		throw("Canvas element not found");
@@ -184,9 +186,9 @@ export default function(
 					return output;
 				}
 				const param = Array.prototype.slice.call(arguments, 1);
-				if (DEVELOPMENT) console.log("callMethod:" + in_functionName + " param:" + param);
+				if ((s_logWebGLCalls) && (DEVELOPMENT)) console.log("callMethod:" + in_functionName + " param:" + param);
 				output = method.apply(m_webGLContext, param);
-				if ((DEVELOPMENT) && (undefined !== output)){
+				if ((s_logWebGLCalls) && (DEVELOPMENT) && (undefined !== output)){
 					console.log("output:" + output);
 				}
 				if (DEVELOPMENT) getError();

@@ -5,6 +5,8 @@ import { factoryDagNodeCalculate, linkIndex, link } from './../core/dagnode.js'
 import {sRGBA, sUNSIGNED_BYTE} from './../webgl/texturetype'
 import { sInt } from './../webgl/shaderuniformtype.js'
 
+const s_logDagCalls = true;
+
 const dagCallbackTextureRenderTargetFactory = function(in_webglApi){
 	var m_texture = in_webglApi.createTexture(
 			512, 
@@ -28,9 +30,12 @@ const dagCallbackTextureRenderTargetFactory = function(in_webglApi){
 			]
 			);
 
-
 	var result = Object.create({
 		"activate" : function(){
+			if ((s_logDagCalls) && (DEVELOPMENT)){
+				console.log("TextureRenderTarget::activate");
+			}
+
 			in_webglApi.setRenderTarget(m_renderTarget);
 			in_webglApi.clear(1.0, 0.0, 0.0, 0.0);
 		},
@@ -48,7 +53,12 @@ const dagCallbackTextureRenderTargetFactory = function(in_webglApi){
 const dagCallbackCanvasRenderTargetFactory = function(in_webglApi){
 	const result = Object.create({
 		"activate" : function(){
+			if ((s_logDagCalls) && (DEVELOPMENT)){
+				console.log("CanvasRenderTarget::activate");
+			}
+
 			in_webglApi.setRenderTarget(undefined);
+			in_webglApi.clear(0.0, 0.0, 0.0, 0.0);
 		}
 	})
 
@@ -59,6 +69,10 @@ const dagCallbackCanvasRenderTargetFactory = function(in_webglApi){
 
 //input[0] object with "activate" method
 const dagCallbackDisplayList = function(in_calculatedValue, in_inputIndexArray, in_inputArray){
+	if ((s_logDagCalls) && (DEVELOPMENT)){
+		console.log("CallbackDisplayList");
+	}
+
 	var renderTarget = in_inputIndexArray[0];
 	renderTarget.activate();
 	in_inputArray.forEach(function(item){
@@ -94,6 +108,10 @@ const dagCallbackRenderTriangleFactory = function(in_webglApi){
 
 	const result = Object.create({
 		"draw" : function(){
+			if ((s_logDagCalls) && (DEVELOPMENT)){
+				console.log("RenderTriangle::draw");
+			}
+
 			in_webglApi.draw(m_shader, undefined, undefined, m_geom);
 		}
 	})
@@ -151,6 +169,10 @@ void main() {
 
 	var result = Object.create({
 		"draw" : function(){
+			if ((s_logDagCalls) && (DEVELOPMENT)){
+				console.log("RenderQuad::draw");
+			}
+
 			in_webglApi.draw(m_shader, [0], m_textureArray, m_geom);
 		}
 	})
@@ -183,23 +205,23 @@ export default function () {
 
 	//construct a dag nod system that results in a render target being drawn on a quad
 	// render triangle to texture
-	const dagNodeTextureRenderTarget = factoryDagNodeCalculate(dagCallbackTextureRenderTargetFactory(webGLApi));
+	const dagNodeTextureRenderTarget = factoryDagNodeCalculate(dagCallbackTextureRenderTargetFactory(webGLApi), "texture render target");
 
-	const dagNodeDisplayList = factoryDagNodeCalculate(dagCallbackDisplayList);
+	const dagNodeDisplayList = factoryDagNodeCalculate(dagCallbackDisplayList, "texture display list");
 	linkIndex(dagNodeTextureRenderTarget, dagNodeDisplayList, 0);
-	const dagNodeRenderTriangle = factoryDagNodeCalculate(dagCallbackRenderTriangleFactory(webGLApi));
+	const dagNodeRenderTriangle = factoryDagNodeCalculate(dagCallbackRenderTriangleFactory(webGLApi), "draw triangle");
 	link(dagNodeRenderTriangle, dagNodeDisplayList);
 
-	const dagNodeCanvasRenderTarget = factoryDagNodeCalculate(dagCallbackCanvasRenderTargetFactory(webGLApi));
+	const dagNodeCanvasRenderTarget = factoryDagNodeCalculate(dagCallbackCanvasRenderTargetFactory(webGLApi), "canvas render target");
 
-	const dagNodeDisplayList2 = factoryDagNodeCalculate(dagCallbackDisplayList);
+	const dagNodeDisplayList2 = factoryDagNodeCalculate(dagCallbackDisplayList, "canvas display list");
 	linkIndex(dagNodeCanvasRenderTarget, dagNodeDisplayList2, 0);
-	const dagNodeRenderQuad = factoryDagNodeCalculate(dagCallbackRenderQuadFactory(webGLApi));
+	const dagNodeRenderQuad = factoryDagNodeCalculate(dagCallbackRenderQuadFactory(webGLApi), "draw quad");
 	linkIndex(dagNodeDisplayList, dagNodeRenderQuad, 0);
-	//link(dagNodeRenderQuad, dagNodeDisplayList2);
-	link(dagNodeRenderTriangle, dagNodeDisplayList2);
+	link(dagNodeRenderQuad, dagNodeDisplayList2);
+	//link(dagNodeRenderTriangle, dagNodeDisplayList2);
 
 	dagNodeDisplayList2.getValue();
 
 	return;
-}
+}	
