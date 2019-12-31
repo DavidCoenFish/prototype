@@ -2,7 +2,7 @@
 the public interface intended to wrap a webgl context associated with a dom canvas element
  */
 
-import ContextWrapperFactory from "./contextwrapperfactory.js"
+import ContextWrapperFactory from "./contextwrapper.js"
 import StateFactory from "./state.js"
 import ShaderFactory from "./shader.js"
 import {ShaderDataUniformFactory, ShaderDataUniformNormaliseFactory} from "./shaderdata.js"
