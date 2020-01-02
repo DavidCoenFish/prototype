@@ -1,6 +1,7 @@
 //reverse String.fromCodePoint(in_codePoint)
 //	example puppy icon 128054 (\uD83D\uDC36)
 
+//import { stringToArrayCodePoint } from './../core/unicode.js';
 export function stringToArrayCodePoint (in_string){
 	var codePointArray = [];
 	var length = in_string.length;

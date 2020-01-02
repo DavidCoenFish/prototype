@@ -1,5 +1,5 @@
 export default function(in_targetObject){
-	const m_referenceCount = 0;
+	var m_referenceCount = 0;
 	Object.assign(in_targetObject, {
 		"addReference" : function(){
 			m_referenceCount += 1;

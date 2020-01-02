@@ -1,20 +1,22 @@
 
 const s_stateKeysDrawRect = [
-	"fillStyle",
-	"globalAlpha",
-	"globalCompositeOperation",
+	"fillStyle"
+	,"globalAlpha"
+	,"globalCompositeOperation"
 ];
 
 //activateMeasureText
 const s_stateKeysMeasureText = [
 	"font"
+	//,"textBaseline"
 ];
 
 const s_stateKeysDrawText = [
-	"fillStyle",
-	"globalAlpha",
-	"globalCompositeOperation",
-	"font"
+	"fillStyle"
+	,"globalAlpha"
+	,"globalCompositeOperation"
+	,"font"
+	//,"textBaseline"
 ];
 
 const setContextValue = function(in_key, in_default, in_valueOrUndefined, in_state, in_context){
@@ -41,10 +43,11 @@ const setContextValue = function(in_key, in_default, in_valueOrUndefined, in_sta
 }
 
 const s_metadata = {
-	"fillStyle" : function(in_valueOrUndefined, in_state, in_context){ setContextValue("fillStyle", "#000", in_valueOrUndefined, in_state, in_context); },
-	"globalAlpha" : function(in_valueOrUndefined, in_state, in_context){ setContextValue("globalAlpha", 1.0, in_valueOrUndefined, in_state, in_context); },
-	"globalCompositeOperation" : function(in_valueOrUndefined, in_state, in_context){ setContextValue("globalCompositeOperation", "source-over", in_valueOrUndefined, in_state, in_context); },
-	"font" : function(in_valueOrUndefined, in_state, in_context){ setContextValue("font", "10px sans-serif", in_valueOrUndefined, in_state, in_context); },
+	"fillStyle" : function(in_valueOrUndefined, in_state, in_context){ setContextValue("fillStyle", "#000", in_valueOrUndefined, in_state, in_context); }
+	,"globalAlpha" : function(in_valueOrUndefined, in_state, in_context){ setContextValue("globalAlpha", 1.0, in_valueOrUndefined, in_state, in_context); }
+	,"globalCompositeOperation" : function(in_valueOrUndefined, in_state, in_context){ setContextValue("globalCompositeOperation", "source-over", in_valueOrUndefined, in_state, in_context); }
+	,"font" : function(in_valueOrUndefined, in_state, in_context){ setContextValue("font", "10px sans-serif", in_valueOrUndefined, in_state, in_context); }
+	//,"textBaseline" : function(in_valueOrUndefined, in_state, in_context){ setContextValue("textBaseline", "alphabetic", in_valueOrUndefined, in_state, in_context); }
 };
 export default function(
 	in_contextWrapper

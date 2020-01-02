@@ -6,6 +6,8 @@ import selectFactory from './../dom/selectfactory.js'
 import textAreaFactory from './../dom/textareafactory.js'
 import webGLAPIFactory from './../webgl/apifactory.js'
 import canvas2dAPIFactory from './../2d/apifactory.js'
+import textManagerFactory from './../glyph/textmanager.js'
+
 import { factoryDagNodeCalculate, linkIndex, link } from './../core/dagnode.js'
 import {sRGBA, sUNSIGNED_BYTE} from './../webgl/texturetype'
 import { sInt } from './../webgl/shaderuniformtype.js'
@@ -52,6 +54,8 @@ export default function () {
 	const webGLApi = webGLAPIFactory(html5CanvasWebGLWrapper.getElement(), undefined, false);
 	const canvas2dApi = canvas2dAPIFactory(html5CanvasTextWrapper.getElement());
 
+	const textManager = textManagerFactory(canvas2dApi);
+
 	const formWrapper = elementFactory(document, "DIV"); //FORM");
 	document.body.appendChild(formWrapper.getElement());
 
@@ -64,17 +68,26 @@ export default function () {
 
 	//	canvas2dApi.drawText("hello world", 128, 128);
 
+	var m_textDataArray = [];
 	const buttonAppend = buttonFactory(document, undefined, function(){
 		var font = m_font;
 		if ("custom" == font){
 			font = m_customFont;
 		}
-		canvas2dApi.drawText(m_text,128.5,128.5,{"font" : font});
+		//canvas2dApi.drawText(m_text,128,128,{"font" : font});
+		m_textDataArray.push(textManager.createString(m_text, font));
 	 }, "append");
 	formWrapper.getElement().appendChild(buttonAppend.getElement());
 	const buttonClear = buttonFactory(document, undefined, function(){ 
-		canvas2dApi.drawRect(0,0,256,256,{"fillStyle" : "#FFF"});
-		}, "clear");
+		//canvas2dApi.drawRect(0,0,256,256,{"fillStyle" : "#FFF"});
+
+		textManager.clear();
+		// var arrayLength = m_textDataArray.length;
+		// for (var index = 0; index < arrayLength; index++) {
+		// 	m_textDataArray[index].destroy();
+		// }
+		m_textDataArray = [];
+	}, "clear");
 	formWrapper.getElement().appendChild(buttonClear.getElement());
 	formWrapper.getElement().appendChild(elementFactory(document, "BR").getElement());	
 
@@ -92,7 +105,7 @@ export default function () {
 		return in_text;
 	}
 
-	var m_customFont = "10px sans-serif";
+	var m_customFont = "";
 	const updateCustomFont = function(){
 		m_customFont = "";
 		if ("none" != m_fontStyle){
@@ -134,11 +147,11 @@ export default function () {
 	}, [ "none", "100", "200", "300", "400", "500", "600", "700", "800", "900" ], m_fontVariant );
 	formWrapper.getElement().appendChild(fontWeight.getElement());
 
-	var m_fontSize = 10;
+	var m_fontSize = 50; //10;
 	const numberFontSize = inputFactory(document, undefined, function(in_value){ 
 		m_fontSize = in_value; 
 		updateCustomFont();
-	}, "number", 10);
+	}, "number", m_fontSize);
 	formWrapper.getElement().appendChild(numberFontSize.getElement());
 
 	var m_fontFamily = "sans-serif";
@@ -151,6 +164,8 @@ export default function () {
 
 	const m_textNode = document.createTextNode(m_customFont);
 	formWrapper.getElement().appendChild(m_textNode);
+
+	updateCustomFont();
 
 	return;
 }	
