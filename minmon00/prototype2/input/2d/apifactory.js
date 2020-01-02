@@ -9,6 +9,9 @@ export default function(
 	var m_state = StateFactory(m_contextWrapper);
 
 	const that = Object.create({
+		"getImageData" : function(){
+			return m_contextWrapper.getImageData();
+		},
 		// state has the font
 		"measureText" : function(in_text, in_stateOrUndefined){
 			m_state.activateMeasureText(in_stateOrUndefined);

@@ -4,6 +4,7 @@ X	dag node collection able to draw render target texture on quad
 	draw pbr spheres
 	water drop
 	eyeball
+	dag manager
 	
 
 i have a design problem, the concept with the dag was to have the inputs collected, will all the

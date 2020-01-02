@@ -66,7 +66,8 @@ export default function(
 	in_minFilterEnumNameOrUndefined,
 	in_wrapSEnumNameOrUndefined,
 	in_wrapTEnumNameOrUndefined,
-	in_generateMipMapOrUndefined
+	in_generateMipMapOrUndefined,
+	in_html5CanvasElementOrUndefined
 	){
 	var m_webglTexture = undefined;
 
@@ -80,6 +81,26 @@ export default function(
 				in_webGLContextWrapper.callMethod("bindTexture", targetEnum, m_webglTexture);
 			}
 			return;
+		},
+		"updateDataCanvasElement" : function(in_html5CanvasElement){
+			if (undefined !== m_webglTexture){
+				const targetEnum = in_webGLContextWrapper.getEnum("TEXTURE_2D");
+				in_webGLContextWrapper.callMethod("bindTexture", targetEnum, m_webglTexture);
+
+				//void gl.texSubImage2D(target, level, xoffset, yoffset, width, height, format, type, HTMLCanvasElement source);
+				in_webGLContextWrapper.callMethod(
+					"texSubImage2D",
+					targetEnum,
+					0,
+					0,
+					0,
+					in_width,
+					in_height,
+					in_webGLContextWrapper.getEnum(in_formatEnumName),						//GLenum format, 
+					in_webGLContextWrapper.getEnum(in_typeEnumName),						//GLenum type, 
+					in_html5CanvasElement
+					);
+			}
 		},
 		"getBuffer" : function(){
 			return m_webglTexture;
@@ -108,18 +129,30 @@ export default function(
 		const paramFlipYEnum = in_webGLContextWrapper.getEnum("UNPACK_FLIP_Y_WEBGL"); //default false
 		in_webGLContextWrapper.callMethod("pixelStorei", paramFlipYEnum, (true === in_flipOrUndefined));
 		
-		in_webGLContextWrapper.callMethod(
-			"texImage2D",
-			targetEnum,		//GLenum target, 
-			0,									//GLint level, 
-			in_webGLContextWrapper.getEnum(in_internalFormatEnumName),				//GLenum internalformat, 
-			in_width,						//GLsizei width, 
-			in_height,						//GLsizei height, 
-			0,									//GLint border, 
-			in_webGLContextWrapper.getEnum(in_formatEnumName),						//GLenum format, 
-			in_webGLContextWrapper.getEnum(in_typeEnumName),						//GLenum type, 
-			(undefined === in_dataOrUndefined) ? null : in_dataOrUndefined //ArrayBufferView? pixels
-			);
+		if (undefined === in_html5CanvasElementOrUndefined){
+			in_webGLContextWrapper.callMethod(
+				"texImage2D",
+				targetEnum,		//GLenum target, 
+				0,									//GLint level, 
+				in_webGLContextWrapper.getEnum(in_internalFormatEnumName),				//GLenum internalformat, 
+				in_width,						//GLsizei width, 
+				in_height,						//GLsizei height, 
+				0,									//GLint border, 
+				in_webGLContextWrapper.getEnum(in_formatEnumName),						//GLenum format, 
+				in_webGLContextWrapper.getEnum(in_typeEnumName),						//GLenum type, 
+				(undefined === in_dataOrUndefined) ? null : in_dataOrUndefined //ArrayBufferView? pixels
+				);
+		} else {
+			in_webGLContextWrapper.callMethod(
+				"texImage2D",
+				targetEnum,		//GLenum target, 
+				0,									//GLint level, 
+				in_webGLContextWrapper.getEnum(in_internalFormatEnumName),				//GLenum internalformat, 
+				in_webGLContextWrapper.getEnum(in_formatEnumName),						//GLenum format, 
+				in_webGLContextWrapper.getEnum(in_typeEnumName),						//GLenum type, 
+				in_html5CanvasElementOrUndefined
+				);
+		}
 
 		if (true === in_generateMipMapOrUndefined)
 		{

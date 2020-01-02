@@ -4,7 +4,8 @@ export default function(
 	in_glyphKey,
 	in_pos,
 	in_actualBoundingBoxLeft, 
-	in_actualBoundingBoxAscent
+	in_actualBoundingBoxAscent,
+	in_cursorAdvance
 	){
 
 	//public methods ==========================
@@ -19,7 +20,8 @@ export default function(
 			in_pos.destroy();
 		},
 		"actualBoundingBoxLeft" : in_actualBoundingBoxLeft,
-		"actualBoundingBoxAscent" : in_actualBoundingBoxAscent
+		"actualBoundingBoxAscent" : in_actualBoundingBoxAscent,
+		"cursorAdvance" : in_cursorAdvance
 	});
 
 	referenceCountDecorate(that);

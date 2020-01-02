@@ -15,16 +15,20 @@ export default function(
 	){
 	var m_glyphData;
 	var m_posManager;
+	var m_changeID = 0;
 
 	const clearImpl = function(){
 		m_glyphData = {};
 		in_context2dApi.drawRect(0, 0, in_context2dApi.getCanvasWidth(), in_context2dApi.getCanvasHeight());
 		m_posManager = PosManagerFactory(in_context2dApi.getCanvasWidth(), in_context2dApi.getCanvasHeight(), 3);
+		m_changeID += 1;
 	}
 
 	clearImpl();
 
 	const drawText = function(in_pos, in_measure, in_text, in_font){
+		m_changeID += 1;
+
 		var style = s_style[in_pos.index];
 		var styleMask = s_styleMask[in_pos.index];
 
@@ -51,6 +55,8 @@ export default function(
 	}
 
 	const undrawGlyph = function(in_pos){
+		//m_changeID += 1; //we don't need to treat texture as changed on undraw, as that part of the texture should no longer be used
+
 		var styleMask = s_styleMask[in_pos.index];
 		in_context2dApi.drawRect(in_pos.x, in_pos.y, in_pos.width, in_pos.height, {
 			"fillStyle" : styleMask,
@@ -86,7 +92,7 @@ export default function(
 				posData = PosDataFactory(0,0,0,0,0);
 			}
 
-			var glyphData = GlyphDataFactory(in_glyphKey, posData, measure.actualBoundingBoxLeft, measure.actualBoundingBoxAscent);
+			var glyphData = GlyphDataFactory(in_glyphKey, posData, measure.actualBoundingBoxLeft, measure.actualBoundingBoxAscent, measure.width);
 			m_glyphData[in_glyphKey] = glyphData;
 			return glyphData;
 		},
@@ -103,6 +109,9 @@ export default function(
 		},
 		"getCanvasElement" : function(){
 			return in_html5CanvasElement;
+		},
+		"getTextureChangeID" : function(){
+			return m_changeID;
 		},
 		"clear" : function(){
 			clearImpl();

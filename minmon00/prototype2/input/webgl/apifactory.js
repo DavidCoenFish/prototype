@@ -67,6 +67,33 @@ export default function(
 				in_height
 				);
 		},
+
+		"createTextureElement" : function(
+			in_htmlCanvasElement,
+			in_magFilterEnumNameOrUndefined,
+			in_minFilterEnumNameOrUndefined,
+			in_wrapSEnumNameOrUndefined,
+			in_wrapTEnumNameOrUndefined,
+			in_generateMipMapOrUndefined
+		){
+			return TextureFactory(
+				m_webGLContextWrapper,
+				in_htmlCanvasElement.width, 
+				in_htmlCanvasElement.height,
+				"RGBA",
+				"RGBA",
+				"UNSIGNED_BYTE",
+				undefined,
+				undefined,
+				in_magFilterEnumNameOrUndefined,
+				in_minFilterEnumNameOrUndefined,
+				in_wrapSEnumNameOrUndefined,
+				in_wrapTEnumNameOrUndefined,
+				in_generateMipMapOrUndefined, // WARNING, the default min filter is NEAREST_MIPMAP_LINEAR which requires mipmaps...
+				in_htmlCanvasElement
+			);
+		},
+
 		"createTexture" : function(
 			in_width, 
 			in_height,

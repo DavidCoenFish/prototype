@@ -25,6 +25,9 @@ export default function(
 		},
 		"clear" : function(){
 			m_glyphManager.clear();
+		},
+		"getTextureChangeID" : function(){
+			return m_glyphManager.getTextureChangeID();
 		}
 	});
 

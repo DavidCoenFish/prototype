@@ -25,6 +25,10 @@ export default function(
 			return m_context2d;
 		},
 
+		"getImageData" : function(){
+			return m_context2d.getImageData(0, 0, in_html5CanvasElement.width, in_html5CanvasElement.height);
+		},
+
 		//https://developer.mozilla.org/en-US/docs/Web/API/TextMetrics
 		"measureText" : function(in_text){
 			return m_context2d.measureText(in_text);
