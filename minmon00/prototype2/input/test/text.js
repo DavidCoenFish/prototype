@@ -37,8 +37,10 @@ const dagCallbackGlyphTextureFactory = function(in_webglApi){
 		);
 
 	return function(in_calculatedValue, in_inputIndexArray, in_inputArray ){
-		var imageData = gContext2dApi.getImageData();
-		m_texture.updateDataCanvasElement(imageData.data);
+		//TODO: debug start
+		//var imageData = gContext2dApi.getImageData();
+		//m_texture.updateDataCanvasElement(imageData.data);
+		//TODO: debug end
 		return m_texture;
 	}
 }
@@ -59,13 +61,6 @@ const dagCallbackCanvasRenderTargetFactory = function(in_webglApi){
 	}
 }
 
-/*
-	var cursor = {
-		traceX : 0.0,
-		traceY : 0.0,
-		geomElementCount : 0
-	};
-*/
 const sMaskData = [
 	[1, 0, 0],
 	[0, 1, 0],
@@ -143,8 +138,8 @@ const dagCallbackTextDraw = function(in_webglApi, in_textData){
 	void main() {
 		vec4 texel = texture2D(u_sampler0, v_uv);
 		float value = 1.0 - dot(texel.xyz, v_mask);
-		//gl_FragColor = vec4(v_uv.x, v_uv.y, 0.0, 1.0);
-		gl_FragColor = vec4(texel.x, texel.y, texel.z, 1.0);
+		gl_FragColor = vec4(v_uv.x, v_uv.y, (texel.x + texel.y) * 0.5, 1.0);
+		//gl_FragColor = vec4(texel.x, texel.y, texel.z, 1.0);
 	}
 	`;
 
@@ -258,14 +253,31 @@ const PrepContextWebgl = function(in_divWrapper){
 	gDagNodeDisplayList.getValue();
 }
 
-const PrepContext2d = function(in_divWrapper, in_html5CanvasTextWrapper){
-	in_divWrapper.getElement().appendChild(in_html5CanvasTextWrapper.getElement());
-	in_html5CanvasTextWrapper.onResize();
+const PrepContext2d = function(in_divWrapper){
+	const html5CanvasTextWrapper = canvasFactory(document, 
+	{
+		"width" : "256px",
+		"height" : "256px",
+		"backgroundColor" : "#FFFFFF",
+		"margin" : "10,0,0,0",
+		"padding" : "0",
+		"display" : "block"
+	}
+	);
+	gGlyphTextureElement = html5CanvasTextWrapper.getElement();
 
-	const canvas2dApi = canvas2dAPIFactory(in_html5CanvasTextWrapper.getElement());
+	in_divWrapper.getElement().appendChild(html5CanvasTextWrapper.getElement());
+	html5CanvasTextWrapper.onResize();
+
+	const canvas2dApi = canvas2dAPIFactory(html5CanvasTextWrapper.getElement());
 	gContext2dApi = canvas2dApi;
 
 	gTextManager = textManagerFactory(canvas2dApi);
+
+	if (DEVELOPMENT){
+		canvas2dApi.drawRect(0, 0, 256, 128, { "fillStyle" : "#FF0" });
+		canvas2dApi.drawRect(0, 128, 256, 128, { "fillStyle" : "#0FF" });
+	}
 
 	const formWrapper = elementFactory(document, "DIV"); //FORM");
 	document.body.appendChild(formWrapper.getElement());
@@ -404,21 +416,8 @@ export default function () {
 	});
 	document.body.appendChild(divWrapper.getElement());
 
-
-	const html5CanvasTextWrapper = canvasFactory(document, 
-	{
-		"width" : "256px",
-		"height" : "256px",
-		"backgroundColor" : "#FFFFFF",
-		"margin" : "10,0,0,0",
-		"padding" : "0",
-		"display" : "block"
-	}
-	);
-	gGlyphTextureElement = html5CanvasTextWrapper.getElement();
-
+	PrepContext2d(divWrapper);
 	PrepContextWebgl(divWrapper);
-	PrepContext2d(divWrapper, html5CanvasTextWrapper);
 
 	return;
 }	

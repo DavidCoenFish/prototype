@@ -27,6 +27,10 @@ export default function(
 	clearImpl();
 
 	const drawText = function(in_pos, in_measure, in_text, in_font){
+		//TODO: debug remove
+		return;
+		//TODO: end debug
+
 		m_changeID += 1;
 
 		var style = s_style[in_pos.index];
