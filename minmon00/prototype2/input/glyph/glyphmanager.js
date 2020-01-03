@@ -27,10 +27,6 @@ export default function(
 	clearImpl();
 
 	const drawText = function(in_pos, in_measure, in_text, in_font){
-		//TODO: debug remove
-		return;
-		//TODO: end debug
-
 		m_changeID += 1;
 
 		var style = s_style[in_pos.index];
@@ -110,6 +106,11 @@ export default function(
 				}
 				return;
 			}
+		},
+		"getLineHeight" : function(in_font){
+			var measureNewLine = in_context2dApi.measureText("|", {"font" : in_font});
+			var newLine = (measureNewLine.actualBoundingBoxAscent + measureNewLine.actualBoundingBoxDescent);
+			return Math.ceil(newLine * 1.1);
 		},
 		"getCanvasElement" : function(){
 			return in_html5CanvasElement;

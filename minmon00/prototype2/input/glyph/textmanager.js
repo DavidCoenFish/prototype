@@ -20,7 +20,8 @@ export default function(
 				var glyphKey = m_glyphManager.makeGlyphKey(codePoint, in_font);
 				glyphDataArray.push(m_glyphManager.getCreateGlyph(glyphKey, codePoint, in_font));
 			}
-			var textData = TextDataFactory(glyphDataArray, m_glyphManager);
+			var lineHeight = m_glyphManager.getLineHeight(in_font);
+			var textData = TextDataFactory(glyphDataArray, m_glyphManager, lineHeight);
 			return textData;
 		},
 		"clear" : function(){

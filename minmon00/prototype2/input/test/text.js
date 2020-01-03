@@ -12,7 +12,7 @@ import { factoryDagNodeCalculate, linkIndex, link, unlink } from './../core/dagn
 import {sRGBA, sUNSIGNED_BYTE} from './../webgl/texturetype'
 import { sInt } from './../webgl/shaderuniformtype.js'
 
-const s_logDagCalls = true;
+const s_logDagCalls = false;
 var gWebGLApi;
 var gContext2dApi;
 var gDagNodeDisplayList;
@@ -22,6 +22,7 @@ var gDagNodeGlyphTexture;
 var gGlyphTextureChangeID;
 var gTextManager;
 var gGlyphTextureElement;
+var gLineTraceY = 0;
 
 const UpdateDagGlyphTextureDirty = function(){
 	var changeID = gTextManager.getTextureChangeID();
@@ -37,10 +38,8 @@ const dagCallbackGlyphTextureFactory = function(in_webglApi){
 		);
 
 	return function(in_calculatedValue, in_inputIndexArray, in_inputArray ){
-		//TODO: debug start
-		//var imageData = gContext2dApi.getImageData();
-		//m_texture.updateDataCanvasElement(imageData.data);
-		//TODO: debug end
+		var imageData = gContext2dApi.getImageData();
+		m_texture.updateDataCanvasElement(imageData.data);
 		return m_texture;
 	}
 }
@@ -93,15 +92,17 @@ const appendTextData = function(inout_positionDataArray, inout_uvDataArray, inou
 	const textureWidth = 256;
 	const textureHeight = 256;
 
-	var posX1 = -1; //(((inout_cursor.traceX - in_textData.actualBoundingBoxLeft) / textureWidth) * 2.0) - 0.0;
-	var posX2 = 1; //(((inout_cursor.traceX - in_textData.actualBoundingBoxLeft + pos.width) / textureWidth) * 2.0) - 0.0;
-	var posY1 = -1; //-((((inout_cursor.traceY - in_textData.actualBoundingBoxAscent) / textureHeight) * 2.0) - 0.0);
-	var posY2 = 1; //-((((inout_cursor.traceY - in_textData.actualBoundingBoxAscent + pos.height) / textureHeight) * 2.0) - 0.0);
+	var posX1 = (((inout_cursor.traceX - in_textData.actualBoundingBoxLeft) / textureWidth) * 2.0) - 1.0;
+	var posX2 = (((inout_cursor.traceX - in_textData.actualBoundingBoxLeft + pos.width) / textureWidth) * 2.0) - 1.0;
+	var posY1 = -((((inout_cursor.traceY - in_textData.actualBoundingBoxAscent) / textureHeight) * 2.0) - 1.0);
+	var posY2 = -((((inout_cursor.traceY - in_textData.actualBoundingBoxAscent + pos.height) / textureHeight) * 2.0) - 1.0);
 
-	var uvX1 = 0; //(pos.x) / textureWidth;
-	var uvX2 = 1; //(pos.x + pos.width) / textureWidth;
-	var uvY1 = 0; //1.0 - ((pos.y) / textureHeight);
-	var uvY2 = 1; //1.0 - ((pos.y + pos.height) / textureHeight);
+	var uvX1 = (pos.x) / textureWidth;
+	var uvX2 = (pos.x + pos.width) / textureWidth;
+	var uvY1 = ((pos.y) / textureHeight);
+	var uvY2 = ((pos.y + pos.height) / textureHeight);
+
+	//console.log(posY1, posY2);
 
 	var maskData = sMaskData[pos.index];
 
@@ -138,8 +139,10 @@ const dagCallbackTextDraw = function(in_webglApi, in_textData){
 	void main() {
 		vec4 texel = texture2D(u_sampler0, v_uv);
 		float value = 1.0 - dot(texel.xyz, v_mask);
-		gl_FragColor = vec4(v_uv.x, v_uv.y, (texel.x + texel.y) * 0.5, 1.0);
+		gl_FragColor = vec4(value, value, value, 1.0);
+		//gl_FragColor = vec4(v_uv.x, v_uv.y, (texel.x + texel.y) * 0.5, 1.0);
 		//gl_FragColor = vec4(texel.x, texel.y, texel.z, 1.0);
+		//gl_FragColor = vec4(v_mask.x, v_mask.y, v_mask.z, 1.0);
 	}
 	`;
 
@@ -159,21 +162,24 @@ const dagCallbackTextDraw = function(in_webglApi, in_textData){
 	var uvDataArray = [];
 	var maskDataArray = [];
 
-	var arrayLength = in_textData.length;
+	var lineHeight = in_textData.getLineHeight();
+	gLineTraceY += lineHeight;
+	var glyphArray = in_textData.getGlyphDataArray();
 	var cursor = {
 		traceX : 0.0,
-		traceY : 0.0,
+		traceY : gLineTraceY,
 		geomElementCount : 0
 	};
+	var arrayLength = glyphArray.length;
 	for (var index = 0; index < arrayLength; index++) {
-		var textData = in_textData[index];
+		var textData = glyphArray[index];
 		appendTextData(positionDataArray, uvDataArray, maskDataArray, cursor, textData);
 	}
 
 	const m_geom = in_webglApi.createModel( "TRIANGLES", cursor.geomElementCount, {
 		"a_position" : in_webglApi.createModelAttribute("FLOAT", 2, new Float32Array(positionDataArray), "STATIC_DRAW", false),
 		"a_uv" : in_webglApi.createModelAttribute("FLOAT", 2, new Float32Array(uvDataArray), "STATIC_DRAW", false),
-		"a_mask" : in_webglApi.createModelAttribute("BYTE", 3, new Int8Array(maskDataArray), "STATIC_DRAW", true)
+		"a_mask" : in_webglApi.createModelAttribute("BYTE", 3, new Int8Array(maskDataArray), "STATIC_DRAW", false)
 	});
 
 	var m_textureArray = [ undefined ];
@@ -203,7 +209,7 @@ const dagCallbackDisplayList = function(in_calculatedValue, in_inputIndexArray, 
 }
 
 const MakeTextDraw = function(in_textData){
-	const dagNodeTextDraw = factoryDagNodeCalculate(dagCallbackTextDraw(gWebGLApi, in_textData.getGlyphDataArray()));
+	const dagNodeTextDraw = factoryDagNodeCalculate(dagCallbackTextDraw(gWebGLApi, in_textData));
 	link(dagNodeTextDraw, gDagNodeDisplayList);
 	gDrawArray.push(dagNodeTextDraw);
 	dagNodeTextDraw.m_text = in_textData;
@@ -222,6 +228,7 @@ const ClearTextDraw = function(){
 		unlink(dagNodeTextDraw, gDagNodeDisplayList);
 		dagNodeTextDraw.m_text.destroy();
 	}
+	gLineTraceY = 0.0;
 	gDagNodeDisplayList.getValue();
 }
 
@@ -274,10 +281,10 @@ const PrepContext2d = function(in_divWrapper){
 
 	gTextManager = textManagerFactory(canvas2dApi);
 
-	if (DEVELOPMENT){
-		canvas2dApi.drawRect(0, 0, 256, 128, { "fillStyle" : "#FF0" });
-		canvas2dApi.drawRect(0, 128, 256, 128, { "fillStyle" : "#0FF" });
-	}
+	// if (DEVELOPMENT){
+	// 	canvas2dApi.drawRect(0, 0, 256, 128, { "fillStyle" : "#FF0" });
+	// 	canvas2dApi.drawRect(0, 128, 256, 128, { "fillStyle" : "#0FF" });
+	// }
 
 	const formWrapper = elementFactory(document, "DIV"); //FORM");
 	document.body.appendChild(formWrapper.getElement());
