@@ -86,6 +86,45 @@
 			"timeout": 100000
 		},
 
+		// test pbr spheres
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "package development test pbr spheres",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"packagevsc_test_pbr_spheres", 
+			],
+			"env": {
+				"NODE_ENV": "development"
+			},
+			"postDebugTask": "open_development_pbr_spheres",
+			"port": 5858,
+			"timeout": 100000,
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "package production test pbr spheres",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"packagevsc_test_pbr_spheres"
+			],
+			"env": {
+				"NODE_ENV": "production"
+			},
+			"postDebugTask": "open_production_pbr_spheres",
+			"port": 5858,
+			"timeout": 100000
+		},
 
 		// test text
 		{

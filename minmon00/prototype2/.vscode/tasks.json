@@ -42,6 +42,25 @@
 		},
 
 		{
+			"label": "open_development_pbr_spheres",
+			"type": "shell",
+			"command": "${cwd}\\output\\development\\pbrspheres\\index.html",
+			"windows": {
+				"command": "${cwd}\\output\\development\\pbrspheres\\index.html"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "open_production_pbr_spheres",
+			"type": "shell",
+			"command": "${cwd}\\output\\production\\pbrspheres\\index.html",
+			"windows": {
+				"command": "${cwd}\\output\\production\\pbrspheres\\index.html"
+			},
+			"problemMatcher": []
+		},
+
+		{
 			"label": "open_development_text",
 			"type": "shell",
 			"command": "${cwd}\\output\\development\\text\\index.html",

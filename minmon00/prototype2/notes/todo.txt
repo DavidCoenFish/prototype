@@ -1,6 +1,6 @@
 X	dag node collection able to draw triangle
 X	dag node collection able to draw render target texture on quad
-	draw canvas text and use texture in webgl
+X	draw canvas text and use texture in webgl
 	draw pbr spheres
 	water drop
 	eyeball
