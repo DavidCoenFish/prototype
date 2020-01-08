@@ -1,0 +1,16 @@
+{
+  "name": "texture-to-factory",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --nolazy --inspect-brk=5858 index.js test",
+    "env0": "node --nolazy --inspect-brk=5858 index.js input\\syferfontein_18d_clear_1k_.dat output\\env0.js sEnv0 RGB"
+  },
+  "dependencies": {
+    "fs-extra": "^7.0.1",
+    "q": "^1.5.1"
+  },
+  "author": "David Coen",
+  "license": "ISC"
+}

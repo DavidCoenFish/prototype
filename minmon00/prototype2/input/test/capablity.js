@@ -1,4 +1,4 @@
-import factory from './../webgl/contextwrapperfactory.js';
+import factory from './../webgl/contextwrapper.js';
 
 export default function () {
 	console.info("onPageLoad");

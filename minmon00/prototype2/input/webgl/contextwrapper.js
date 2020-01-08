@@ -6,7 +6,7 @@ manage creation and destruction of resources (which may need context lost and re
 
 import EventDispatcherDecorate from "./../core/eventdispatcherdecorate.js"
 
-const s_logWebGLCalls = false;
+const s_logWebGLCalls = true;
 
 const getWebGLContext = function(in_html5CanvasElement, in_extentionsOrUndefined, in_paramObjectOrUndefined){
 	if (undefined === in_html5CanvasElement) {
@@ -33,7 +33,7 @@ const getWebGLContext = function(in_html5CanvasElement, in_extentionsOrUndefined
 
 	if (undefined !== in_extentionsOrUndefined){
 		for (var index = 0; index < in_extentionsOrUndefined.length; index++) { 
-			const extentionName = in_extentionsOrUndefined.extentions[index];
+			const extentionName = in_extentionsOrUndefined[index];
 			var extention = webGLContext.getExtension(extentionName);
 			if (null === extention){
 				throw("failed to get extention:" + extentionName);
