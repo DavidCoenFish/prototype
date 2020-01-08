@@ -1,5 +1,6 @@
 import canvasFactory from './../../dom/canvasfactory.js'
 import webGLAPIFactory from './../../webgl/apifactory.js'
+import inputFactory from './../../dom/inputfactory.js'
 
 import { factoryDagNodeValue, factoryDagNodeCalculate, linkIndex, link, unlink } from './../../core/dagnode.js'
 import { sInt, sFloat } from './../../webgl/shaderuniformtype.js'
@@ -97,15 +98,17 @@ const dagCallbackRenderTriangleFactory = function(in_webglApi){
 	});
 
 	var m_textureArray = [ undefined ];
+	var m_shaderUniformValueArray = [0, 1.0];
 
 	var result = Object.create({
 		"draw" : function(){
-			in_webglApi.draw(m_shader, [0, 1.0], m_textureArray, m_geom);
+			in_webglApi.draw(m_shader, m_shaderUniformValueArray, m_textureArray, m_geom);
 		}
 	})
 
 	return function(in_calculatedValue, in_inputIndexArray, in_inputArray){
 		m_textureArray[0] = in_inputIndexArray[0]
+		m_shaderUniformValueArray[1] = in_inputIndexArray[1];
 		return result;
 	}
 }
@@ -159,15 +162,18 @@ const dagCallbackRenderTriangleFactory2 = function(in_webglApi){
 	});
 
 	var m_textureArray = [ undefined ];
+	var m_shaderUniformValueArray = [0, 1.0, 0.0];
 
 	var result = Object.create({
 		"draw" : function(){
-			in_webglApi.draw(m_shader, [0, 1.0, 5.0], m_textureArray, m_geom);
+			in_webglApi.draw(m_shader, m_shaderUniformValueArray, m_textureArray, m_geom);
 		}
 	})
 
 	return function(in_calculatedValue, in_inputIndexArray, in_inputArray){
 		m_textureArray[0] = in_inputIndexArray[0]
+		m_shaderUniformValueArray[1] = in_inputIndexArray[1];
+		m_shaderUniformValueArray[2] = in_inputIndexArray[2];
 		return result;
 	}
 }
@@ -194,16 +200,34 @@ export default function () {
 	const dagNodeDisplayList = factoryDagNodeCalculate(dagCallbackDisplayList);
 	linkIndex(dagNodeCanvasRenderTarget, dagNodeDisplayList, 0);
 
+	var dagLight = factoryDagNodeValue(1.0);
+	var dagLod = factoryDagNodeValue(1.0);
+
 	var dagNodeTexture = dagNodeTextureFactory(webGLApi);
 	const dagNodeRenderTriangle = factoryDagNodeCalculate(dagCallbackRenderTriangleFactory(webGLApi));
 	linkIndex(dagNodeTexture, dagNodeRenderTriangle, 0);
+	linkIndex(dagLight, dagNodeRenderTriangle, 1);
 	link(dagNodeRenderTriangle, dagNodeDisplayList);
 
 	const dagNodeRenderTriangle2 = factoryDagNodeCalculate(dagCallbackRenderTriangleFactory2(webGLApi));
 	linkIndex(dagNodeTexture, dagNodeRenderTriangle2, 0);
+	linkIndex(dagLight, dagNodeRenderTriangle2, 1);
+	linkIndex(dagLod, dagNodeRenderTriangle2, 2);
 	link(dagNodeRenderTriangle2, dagNodeDisplayList);
 
 	dagNodeDisplayList.getValue();
+
+	const domLightInputWrapper = inputFactory(document, undefined, function(in_value){ 
+		dagLight.setValue(in_value); 
+		dagNodeDisplayList.getValue();
+	}, "number", 1.0);
+	document.body.appendChild(domLightInputWrapper.getElement());
+
+	const domLodInputWrapper = inputFactory(document, undefined, function(in_value){ 
+		dagLod.setValue(in_value); 
+		dagNodeDisplayList.getValue();
+	}, "number", 0.0);
+	document.body.appendChild(domLodInputWrapper.getElement());
 
 	return;
 }	
