@@ -1,3 +1,7 @@
+/*
+test float texture and mip maps
+*/
+
 import canvasFactory from './../../dom/canvasfactory.js'
 import webGLAPIFactory from './../../webgl/apifactory.js'
 import inputFactory from './../../dom/inputfactory.js'

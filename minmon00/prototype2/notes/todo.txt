@@ -2,8 +2,10 @@ X	dag node collection able to draw triangle
 X	dag node collection able to draw render target texture on quad
 X	draw canvas text and use texture in webgl
 	draw pbr spheres
-		can i make mip map of float texture
-		can i sample mip map of float texture
+	X	can i make mip map of float texture
+	X	can i sample mip map of float texture
+		make a material editor (sphere and param)
+			pbr param of gloss and ref amount.
 	water drop
 	eyeball
 	dag manager

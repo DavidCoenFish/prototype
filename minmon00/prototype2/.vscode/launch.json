@@ -126,6 +126,86 @@
 			"timeout": 100000
 		},
 
+		// test pbr spheres2
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "package development test pbr spheres1",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"packagevsc_test_pbr_spheres1", 
+			],
+			"env": {
+				"NODE_ENV": "development"
+			},
+			"postDebugTask": "open_development_pbr_spheres1",
+			"port": 5858,
+			"timeout": 100000,
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "package production test pbr spheres1",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"packagevsc_test_pbr_spheres1"
+			],
+			"env": {
+				"NODE_ENV": "production"
+			},
+			"postDebugTask": "open_production_pbr_spheres1",
+			"port": 5858,
+			"timeout": 100000
+		},
+
+		// test pbr spheres2
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "package development test pbr spheres2",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"packagevsc_test_pbr_spheres2", 
+			],
+			"env": {
+				"NODE_ENV": "development"
+			},
+			"postDebugTask": "open_development_pbr_spheres2",
+			"port": 5858,
+			"timeout": 100000,
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "package production test pbr spheres2",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"packagevsc_test_pbr_spheres2"
+			],
+			"env": {
+				"NODE_ENV": "production"
+			},
+			"postDebugTask": "open_production_pbr_spheres2",
+			"port": 5858,
+			"timeout": 100000
+		},
+
 		// test text
 		{
 			"type": "node",
