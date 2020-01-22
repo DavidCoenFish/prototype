@@ -6,14 +6,15 @@ https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input
 in_type
 	range, number, text, ...
 */
-export default function(in_document, in_styleOrUndefined, in_callback, in_type, in_value){
+export default function(in_document, in_styleOrUndefined, in_callback, in_type, in_value, in_parseFunctionOrUndefined){
+	const parseFunction = ( undefined !== in_parseFunctionOrUndefined ) ? in_parseFunctionOrUndefined : parseInt;
 	const m_element = in_document.createElement("INPUT");
 	applyStyle(m_element, in_styleOrUndefined);
 	if (undefined !== in_callback){
 		m_element.addEventListener("change", function(in_event){
 			var value = 0;
 			try{
-				value = parseInt(in_event.target.value, 10); 
+				value = parseFunction(in_event.target.value, 10); 
 			} catch(in_error) {
 				if (DEVELOPMENT) { console.log("assert input number change:", in_error); }
 				value = 0;

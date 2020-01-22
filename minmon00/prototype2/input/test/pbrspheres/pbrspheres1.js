@@ -46,7 +46,7 @@ const dagNodeTextureFactory = function(in_webglApi){
 		Base64ToFloat32Array(sEnv0),
 		true,
 		"LINEAR",
-		"NEAREST_MIPMAP_NEAREST",
+		"LINEAR_MIPMAP_NEAREST",
 		"REPEAT",
 		"REPEAT",
 		true
@@ -67,20 +67,42 @@ const dagCallbackRenderQuadFactory = function(in_webglApi){
 	`;
 
 	const sFragmentShader = `
+	#extension GL_EXT_shader_texture_lod : enable
 	precision mediump float;
 	varying vec2 v_uv;
 	uniform float u_reflect;
 	uniform float u_scatter;
 	uniform sampler2D u_sampler0;
+	vec3 GetPbrColour(vec3 normal) {
+		vec2 uv = vec2(((normal.x * 0.25) + 0.5), ((normal.y * 0.5) + 0.5));
+
+		vec3 texel0 = texture2DLodEXT(u_sampler0, uv, 0.0).xyz * 0.125;
+		vec3 texel1 = texture2DLodEXT(u_sampler0, uv, 1.0).xyz * 0.125;
+		vec3 texel2 = texture2DLodEXT(u_sampler0, uv, 2.0).xyz * 0.125;
+		vec3 texel3 = texture2DLodEXT(u_sampler0, uv, 3.0).xyz * 0.125;
+		vec3 texel4 = texture2DLodEXT(u_sampler0, uv, 4.0).xyz * 0.125;
+		vec3 texel5 = texture2DLodEXT(u_sampler0, uv, 5.0).xyz * 0.125;
+		vec3 texel6 = texture2DLodEXT(u_sampler0, uv, 6.0).xyz * 0.125;
+		vec3 texel7 = texture2DLodEXT(u_sampler0, uv, 7.0).xyz * 0.125;
+
+		vec3 result = texel0 + texel1 + texel2 + texel3 + texel4 + texel5 + texel6 + texel7;
+//vec3 result = texel5 + texel6 + texel7;
+
+		result *= u_reflect;
+
+		return result;
+	}
 	void main() {
 		vec2 pos = vec2((v_uv.x - 0.5) * 2.0, (v_uv.y - 0.5) * 2.0);
 		float radius = sqrt(dot(pos, pos));
-		if (1.0 < radius)
-		{
+		if (1.0 < radius) {
 			discard;
 		}
-		vec4 texel = texture2D(u_sampler0, v_uv);
-		gl_FragColor = texel;
+		vec3 normal = vec3(pos.x, pos.y, 1.0 - radius);
+		vec3 rgb = GetPbrColour( normal );
+
+		//vec4 texel = texture2D(u_sampler0, v_uv);
+		gl_FragColor = vec4(rgb.x, rgb.y, rgb.z, 1.0);
 	}
 	`;
 
@@ -120,7 +142,7 @@ const dagCallbackRenderQuadFactory = function(in_webglApi){
 
 	var result = Object.create({
 		"draw" : function(){
-			in_webglApi.draw(m_shader, [0], m_textureArray, m_geom);
+			in_webglApi.draw(m_shader, m_shaderUniformValueArray, m_textureArray, m_geom);
 		}
 	})
 
@@ -170,13 +192,13 @@ export default function () {
 	const domLightInputWrapper = inputFactory(document, undefined, function(in_value){ 
 		dagReflect.setValue(in_value); 
 		dagNodeDisplayList.getValue();
-	}, "number", dagReflect.getValue());
+	}, "number", dagReflect.getValue(), parseFloat);
 	document.body.appendChild(domLightInputWrapper.getElement());
 
 	const domLodInputWrapper = inputFactory(document, undefined, function(in_value){ 
 		dagScatter.setValue(in_value); 
 		dagNodeDisplayList.getValue();
-	}, "number", dagScatter.getValue());
+	}, "number", dagScatter.getValue(), parseFloat);
 	document.body.appendChild(domLodInputWrapper.getElement());
 
 
