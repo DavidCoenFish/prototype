@@ -27,8 +27,16 @@ glyph
 		given a html5 canvas to draw glyphs to, and return a reference to a html5 canvas to use as texture, and the data about each glyph
 		addGlyph(in_glyph, in_fontName, in_fontSize)
 		removeGlyphs(in_glyph, in_fontName, in_fontSize)
-		
 	GlyphData
-
-
 	render
+
+hdr background
+	can i get away with hdr env maps of blur radius
+1x1
+4x4
+16x16
+64x64
+	for about a 128x256 hdr, also need to calculate a weight table (or functions) to go from scater param to weight of each blur map
+
+
+
