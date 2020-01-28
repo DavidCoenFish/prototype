@@ -7,14 +7,29 @@
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "env0",
+			"name": "test",
 			"runtimeExecutable": "npm",
 			"windows": {
 				"runtimeExecutable": "npm.cmd"
 			},
 			"runtimeArgs": [
 				"run-script",
-				"env0"
+				"test"
+			],
+			"port": 5858,
+			"timeout": 100000,
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "env1",
+			"runtimeExecutable": "npm",
+			"windows": {
+				"runtimeExecutable": "npm.cmd"
+			},
+			"runtimeArgs": [
+				"run-script",
+				"env1"
 			],
 			"port": 5858,
 			"timeout": 100000,

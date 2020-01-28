@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node --nolazy --inspect-brk=5858 index.js test",
-    "env0": "node --nolazy --inspect-brk=5858 index.js input\\syferfontein_18d_clear_1k_.dat output\\env0.js sEnv0_"
+    "env1": "node --nolazy --inspect-brk=5858 index.js input\\syferfontein_18d_clear_1k_.dat output\\env1.js sEnv1_"
   },
   "dependencies": {
     "fs-extra": "^7.0.1",

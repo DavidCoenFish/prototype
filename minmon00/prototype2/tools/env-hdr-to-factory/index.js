@@ -2,7 +2,8 @@ const Q = require("q");
 const FileSystem = require("fs");
 const FileSystemExtra = require("fs-extra");
 const Path = require("path");
-const Base64 = require(".//Base64.js");
+const Base64 = require(".//base64.js");
+const UnitTest = require(".//unittest.js");
 
 console.log(new Date().toLocaleTimeString());
 
@@ -11,13 +12,11 @@ our aim is to take the float byte dump (from gimp python) of a hdr evn map
 we then want to make spherical space blur maps at various radius
 	make a collection of normals (points on unit sphere) with colour?
 	any normal within tollerance of query normal is our sampled pixel
-*/
 
-if (5 != process.argv.length){
-	console.log("usage");
-	console.log("texture-to-factory <inputFilePath> <outputFilePath> <name>");
-	process.exit(0);
-}
+    "test": "node --nolazy --inspect-brk=5858 index.js test",
+    "env1": "node --nolazy --inspect-brk=5858 index.js input\\syferfontein_18d_clear_1k_.dat output\\env1.js sEnv1_"
+
+*/
 
 const makeDirectory = function(in_filePath){
 	var deferred = Q.defer();
@@ -113,30 +112,41 @@ const degreesToRadians = function(degrees) {
 const radianToDegrees = function(radians) {
   return radians * 180 / Math.PI;
 };
-const latLongToNormal = function(in_lat, in_long){
-	const cosLat = Math.cos(in_lat);
-	const cosLong = Math.cos(in_long);
-	const sinLat = Math.sin(in_lat);
-	const sinLong = Math.sin(in_long);
+//https://en.wikipedia.org/wiki/Spherical_coordinate_system
+const latLongToNormal = function(in_latRadian, in_longRadian){
+	const cosLat = Math.cos(in_latRadian);
+	const cosLong = Math.cos(in_longRadian);
+	const sinLat = Math.sin(in_latRadian);
+	const sinLong = Math.sin(in_longRadian);
 	const x = cosLong * cosLat;
 	const y = sinLong * cosLat;
 	const z = sinLat;
 	return [x,y,z];
 }
+//theta inclination lat
+//gamma azimuth long
+//x = sin(lat) * cos(long)
+//y = sin(lat) * sin(long)
+//z = cos(lat)
+
 const modBase = function(in_value, in_base){
 	var temp = in_value / in_base;
 	temp %= 1.0;
 	if (temp < 0){
-		temp = 1.0 - temp;
+		temp = 1.0 + temp;
 	}
 	return temp * in_base;
 }
+
+const latLongToUV = function(in_latRadian, in_longRadian){
+	const uvX = modBase(radianToDegrees(in_longRadian), 360.0) / 360.0; //0 ... 1
+	const uvY = (radianToDegrees(in_latRadian) / 180.0) + 0.5; //0 ... 1
+	return [uvX,uvY];
+}
+
 const latLongTextureSample = function(in_lat, in_long, in_textureData){
-	const uvX = modBase(radianToDegrees(in_long), 360.0) / 360.0; //0 ... 1
-	const uvY = (radianToDegrees(in_lat) / 180.0) + 0.5; //0 ... 1
-
-	const pixel = in_textureData.sample(uvX, uvY); 
-
+	const uv = latLongToUV(in_lat, in_long);
+	const pixel = in_textureData.sample(uv[0], uv[1]); 
 	return pixel;
 }
 
@@ -245,7 +255,77 @@ const run = function(in_inputFilePath, in_outputFilePath, in_name){
 			console.log("done:" + new Date().toLocaleTimeString());
 		}).catch(function(in_reason){
 			console.log("promise.catch:" + in_reason);
+			process.exit(-1);
 		});
 }
 
-run(process.argv[2], process.argv[3], process.argv[4]);
+const test = function(){
+	promiseFactoryArray = [];
+
+	promiseFactoryArray.push(function(){
+		//sanity latLongToNormal
+		var v0 = latLongToNormal(0,0);
+		UnitTest.DealTestAlmost("latLongToNormal00", v0[0], 1.0);
+		UnitTest.DealTestAlmost("latLongToNormal01", v0[1], 0.0);
+		UnitTest.DealTestAlmost("latLongToNormal02", v0[2], 0.0);
+
+		var v1 = latLongToNormal(0,degreesToRadians(90.0));
+		UnitTest.DealTestAlmost("latLongToNormal10", v1[0], 0.0, 0.0000000001);
+		UnitTest.DealTestAlmost("latLongToNormal11", v1[1], 1.0, 0.0000000001);
+		UnitTest.DealTestAlmost("latLongToNormal12", v1[2], 0.0, 0.0000000001);
+
+		var v2 = latLongToNormal(0,degreesToRadians(-90.0));
+		UnitTest.DealTestAlmost("latLongToNormal20", v2[0], 0.0, 0.0000000001);
+		UnitTest.DealTestAlmost("latLongToNormal21", v2[1], -1.0, 0.0000000001);
+		UnitTest.DealTestAlmost("latLongToNormal22", v2[2], 0.0, 0.0000000001);
+
+		var v3 = latLongToNormal(degreesToRadians(90.0), 0.0);
+		UnitTest.DealTestAlmost("latLongToNormal30", v3[0], 0.0, 0.0000000001);
+		UnitTest.DealTestAlmost("latLongToNormal31", v3[1], 0.0, 0.0000000001);
+		UnitTest.DealTestAlmost("latLongToNormal32", v3[2], 1.0, 0.0000000001);
+	});
+
+	promiseFactoryArray.push(function(){
+		//sanity modBase(in_value, in_base)
+		UnitTest.DealTestAlmost("modBase0", modBase(128, 360), 128, 0.0000000001);
+		UnitTest.DealTestAlmost("modBase1", modBase(361, 360), 1, 0.0000000001);
+		UnitTest.DealTestAlmost("modBase2", modBase(-179, 360), 181, 0.0000000001);
+		UnitTest.DealTestAlmost("modBase3", modBase(-1, 360), 359, 0.0000000001);
+		UnitTest.DealTestAlmost("modBase4", modBase(-361, 360), 359, 0.0000000001);
+	});
+
+	promiseFactoryArray.push(function(){
+		//sanity latLongToUV(in_latRadian, in_longRadian)
+		var v0 = latLongToUV(0,0);
+		UnitTest.DealTestAlmost("latLongToUV00", v0[0], 0.0, 0.0000000001);
+		UnitTest.DealTestAlmost("latLongToUV01", v0[1], 0.5, 0.0000000001);
+
+		var v1 = latLongToUV(0,degreesToRadians(90.0));
+		UnitTest.DealTestAlmost("latLongToUV10", v1[0], 0.25, 0.0000000001);
+		UnitTest.DealTestAlmost("latLongToUV11", v1[1], 0.5, 0.0000000001);
+
+		var v2 = latLongToUV(0,degreesToRadians(-90.0));
+		UnitTest.DealTestAlmost("latLongToUV20", v2[0], 0.75, 0.0000000001);
+		UnitTest.DealTestAlmost("latLongToUV21", v2[1], 0.5, 0.0000000001);
+
+		var v3 = latLongToUV(degreesToRadians(90.0),0);
+		UnitTest.DealTestAlmost("latLongToUV30", v3[0], 0.0, 0.0000000001);
+		UnitTest.DealTestAlmost("latLongToUV31", v3[1], 1.0, 0.0000000001);
+	});
+
+
+	UnitTest.RunUnitTests(promiseFactoryArray);
+}
+
+if ((3 == process.argv.length) && ("test" === process.argv[2])){
+	test();
+}
+else if (5 == process.argv.length){
+	run(process.argv[2], process.argv[3], process.argv[4]);
+}
+else{
+	console.log("usage");
+	console.log("env-hdr-to-factory test");
+	console.log("env-hdr-to-factory <inputFilePath> <outputFilePath> <name>");
+	process.exit(0);
+}
