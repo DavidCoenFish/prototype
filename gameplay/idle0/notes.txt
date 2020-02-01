@@ -1,0 +1,18 @@
+raw materials
+5 elements x 12 zodiac
+hug
+heart
+
+merge in inventory can increase the stars of ingredients
+
+
+combined ingredents have the ablity to meditate, where they can not be merged
+and take up the border cells, productivity is the border cells empty percentage
+as stars increase, so do inventory cells taken
+
+
+todo:
+draw grid
+drag items
+merge
+summon

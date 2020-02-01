@@ -4,16 +4,17 @@ test float texture 2
 
 import canvasFactory from './../../dom/canvasfactory.js'
 import webGLAPIFactory from './../../webgl/apifactory.js'
+import inputFactory from './../../dom/inputfactory.js'
 
 import { factoryDagNodeValue, factoryDagNodeCalculate, linkIndex, link, unlink } from './../../core/dagnode.js'
-import { sInt, sFloat2 } from './../../webgl/shaderuniformtype.js'
+import { sInt, sFloat, sFloat2 } from './../../webgl/shaderuniformtype.js'
 import {Base64ToFloat32Array} from './../../core/base64.js';
 
 const s_logDagCalls = false;
 
 const dagNodeTextureFactory = function(in_webglApi, in_base64Data){
 	var texture = in_webglApi.createTexture(
-		256, 
+		256, //128, 
 		128, 
 		"RGB",
 		"RGB",
@@ -51,8 +52,9 @@ const dagNodeShaderFactory = function(in_webglApi){
 	precision mediump float;
 	varying vec2 v_uv;
 	uniform sampler2D u_sampler0;
+	uniform float u_light;
 	void main() {
-		vec4 texel = texture2D(u_sampler0, v_uv);
+		vec4 texel = texture2D(u_sampler0, v_uv) / u_light;
 		texel.w = 1.0;
 		gl_FragColor = texel;
 	}
@@ -62,7 +64,8 @@ const dagNodeShaderFactory = function(in_webglApi){
 	const sUniformArray = [
 			in_webglApi.createShaderDataUniform("u_sampler0", sInt ),
 			in_webglApi.createShaderDataUniform("u_posLow", sFloat2 ),
-			in_webglApi.createShaderDataUniform("u_posHigh", sFloat2 )
+			in_webglApi.createShaderDataUniform("u_posHigh", sFloat2 ),
+			in_webglApi.createShaderDataUniform("u_light", sFloat ),
 	];
 
 	//get ref to shader
@@ -104,7 +107,7 @@ const dagCallbackRenderTriangleFactory = function(in_webglApi, in_lowX, in_lowY,
 
 	var m_shader = undefined;
 	var m_textureArray = [ undefined ];
-	var m_shaderUniformValueArray = [0, [in_lowX, in_lowY], [in_highX, in_highY]];
+	var m_shaderUniformValueArray = [0, [in_lowX, in_lowY], [in_highX, in_highY], 1.0];
 
 	var result = Object.create({
 		"draw" : function(){
@@ -115,6 +118,7 @@ const dagCallbackRenderTriangleFactory = function(in_webglApi, in_lowX, in_lowY,
 	return function(in_calculatedValue, in_inputIndexArray, in_inputArray){
 		m_shader = in_inputIndexArray[0];
 		m_textureArray[0] = in_inputIndexArray[1];
+		m_shaderUniformValueArray[3] = in_inputIndexArray[2]
 		return result;
 	}
 }
@@ -142,31 +146,42 @@ export default function () {
 	linkIndex(dagNodeCanvasRenderTarget, dagNodeDisplayList, 0);
 
 	var dagNodeShader = dagNodeShaderFactory(webGLApi);
-	var dagNodeTexture0 = dagNodeTextureFactory(webGLApi, sEnv0_00);
-	var dagNodeTexture1 = dagNodeTextureFactory(webGLApi, sEnv0_01);
-	var dagNodeTexture2 = dagNodeTextureFactory(webGLApi, sEnv0_02);
-	var dagNodeTexture3 = dagNodeTextureFactory(webGLApi, sEnv0_03);
+	var dagNodeTexture0 = dagNodeTextureFactory(webGLApi, sEnv1_00);
+	var dagNodeTexture1 = dagNodeTextureFactory(webGLApi, sEnv1_01);
+	var dagNodeTexture2 = dagNodeTextureFactory(webGLApi, sEnv1_02);
+	var dagNodeTexture3 = dagNodeTextureFactory(webGLApi, sEnv1_03);
+
+	var dagLight = factoryDagNodeValue(1.0);
 
 	const dagNodeRenderQuad0 = factoryDagNodeCalculate(dagCallbackRenderTriangleFactory(webGLApi, -1.0,0.0,0,1.0));
 	linkIndex(dagNodeShader, dagNodeRenderQuad0, 0);
 	linkIndex(dagNodeTexture0, dagNodeRenderQuad0, 1);
+	linkIndex(dagLight, dagNodeRenderQuad0, 2);
 	link(dagNodeRenderQuad0, dagNodeDisplayList);
 
 	const dagNodeRenderQuad1 = factoryDagNodeCalculate(dagCallbackRenderTriangleFactory(webGLApi, 0.0,0.0,1.0,1.0));
 	linkIndex(dagNodeShader, dagNodeRenderQuad1, 0);
 	linkIndex(dagNodeTexture1, dagNodeRenderQuad1, 1);
+	linkIndex(dagLight, dagNodeRenderQuad1, 2);
 	link(dagNodeRenderQuad1, dagNodeDisplayList);
 
 	const dagNodeRenderQuad2 = factoryDagNodeCalculate(dagCallbackRenderTriangleFactory(webGLApi, -1.0,-1.0,0,0.0));
 	linkIndex(dagNodeShader, dagNodeRenderQuad2, 0);
 	linkIndex(dagNodeTexture2, dagNodeRenderQuad2, 1);
+	linkIndex(dagLight, dagNodeRenderQuad2, 2);
 	link(dagNodeRenderQuad2, dagNodeDisplayList);
 
 	const dagNodeRenderQuad3 = factoryDagNodeCalculate(dagCallbackRenderTriangleFactory(webGLApi, 0.0,-1.0,1.0,0.0));
 	linkIndex(dagNodeShader, dagNodeRenderQuad3, 0);
 	linkIndex(dagNodeTexture3, dagNodeRenderQuad3, 1);
+	linkIndex(dagLight, dagNodeRenderQuad3, 2);
 	link(dagNodeRenderQuad3, dagNodeDisplayList);
 
+	const domLightInputWrapper = inputFactory(document, undefined, function(in_value){ 
+		dagLight.setValue(in_value); 
+		dagNodeDisplayList.getValue();
+	}, "number", 1.0);
+	document.body.appendChild(domLightInputWrapper.getElement());
 
 	dagNodeDisplayList.getValue();
 

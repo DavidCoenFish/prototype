@@ -56,14 +56,20 @@ const floatByteFileToTextureFactory = function(in_file, in_width, in_height){
 		pixels[trace] = value;
 		trace += 1;
 	}
+
+	return pixelsToTextureFactory(pixels, in_width, in_height);
+}
+
+const pixelsToTextureFactory = function(in_pixels, in_width, in_height){
 	//{"lowIndex", "highIndex", "lowWeight", "highWeight"}
+	const m_pixels = in_pixels;
 	const MakeSampleWrap = function(in_uv, in_dim){
 		var uv = in_uv;
 		while(uv < 0.0){
 			uv += 1.0;
 		}
 		uv %= 1;
-		var temp = uv * in_dim;
+		var temp = uv * (in_dim - 1);
 		var index = Math.floor(temp);
 		var remainder = temp - index;
 		var nextIndex = index + 1;
@@ -80,15 +86,15 @@ const floatByteFileToTextureFactory = function(in_file, in_width, in_height){
 
 	const AddPixel = function(inout_pixel, in_xIndex, in_yIndex, in_weight){
 		var index = ((in_yIndex * in_width) + in_xIndex) * 3;
-		inout_pixel[0] += (pixels[index + 0] * in_weight);
-		inout_pixel[1] += (pixels[index + 1] * in_weight);
-		inout_pixel[2] += (pixels[index + 2] * in_weight);
+		inout_pixel[0] += (m_pixels[index + 0] * in_weight);
+		inout_pixel[1] += (m_pixels[index + 1] * in_weight);
+		inout_pixel[2] += (m_pixels[index + 2] * in_weight);
 	}
 
 	const that = Object.create({
 		"width" : in_width,
 		"height" : in_height,
-		"pixels" : pixels,
+		"pixels" : m_pixels,
 		"sample" : function(in_uvX, in_uvY){
 			const xSample = MakeSampleWrap(in_uvX, in_width);
 			const YSample = MakeSampleWrap(in_uvY, in_height);
@@ -112,7 +118,6 @@ const degreesToRadians = function(degrees) {
 const radianToDegrees = function(radians) {
   return radians * 180 / Math.PI;
 };
-//https://en.wikipedia.org/wiki/Spherical_coordinate_system
 const latLongToNormal = function(in_latRadian, in_longRadian){
 	const cosLat = Math.cos(in_latRadian);
 	const cosLong = Math.cos(in_longRadian);
@@ -123,11 +128,6 @@ const latLongToNormal = function(in_latRadian, in_longRadian){
 	const z = sinLat;
 	return [x,y,z];
 }
-//theta inclination lat
-//gamma azimuth long
-//x = sin(lat) * cos(long)
-//y = sin(lat) * sin(long)
-//z = cos(lat)
 
 const modBase = function(in_value, in_base){
 	var temp = in_value / in_base;
@@ -168,23 +168,70 @@ const sampleSphereObjectFactory = function(in_desiredNumberOfPoints, in_textureD
 		});
 	}
 
+	//are we suffering numeric underflow adding small and large
+
+	
+	const makeAverage = function(in_array, dotResultArray){
+		var result = 0;
+		in_array.forEach(function(in_item){
+			average += in_item;
+		});
+
+	}
+	const makeAverageB = function(in_array){
+		var average = 0.0;
+		var count = in_array.length;
+		if ( 0 === count){
+			return average;
+		}
+		var countMul = 1.0 / count;
+		in_array.forEach(function(in_item){
+			average += in_item;
+		});
+		average *= countMul;
+		var underCount = 0;
+		var underSum = 0.0;
+		var overAverage = 0.0;
+		in_array.forEach(function(in_item){
+			if (in_item < average){
+				underCount += 1;
+				underSum += in_item;
+			} else {
+				overAverage += (in_item * countMul);
+			}
+		});
+		if (0 < underCount){
+			overAverage += (underSum / underCount);
+		}
+
+		return overAverage;
+	}
+
 	const that = Object.create({
 		"sample" : function(in_normal, in_dotProductTollerance){
+			var cover = 0;
 			var count = 0;
 			var colourSum = [0.0, 0.0, 0.0];
+			var colourMax = [0.0, 0.0, 0.0];
+			var range = 1.0 - Math.max(0.0, in_dotProductTollerance);
 			m_data.forEach(function(in_item){
 				var dotResult = DotProduct(in_normal, in_item.normal);
 				if (in_dotProductTollerance <= dotResult){
-					colourSum[0] += in_item.colour[0];
-					colourSum[1] += in_item.colour[1];
-					colourSum[2] += in_item.colour[2];
+					var tempCover = (Math.max(0.0, dotResult) / range);
+					colourSum[0] += in_item.colour[0] * tempCover;
+					colourSum[1] += in_item.colour[1] * tempCover;
+					colourSum[2] += in_item.colour[2] * tempCover;
+					colourMax[0] = Math.max(colourMax[0], in_item.colour[0]);
+					colourMax[1] = Math.max(colourMax[1], in_item.colour[1]);
+					colourMax[2] = Math.max(colourMax[2], in_item.colour[2]);
+					cover += tempCover;
 					count += 1;
 				}
 			});
-			if (0 < count){
-				colourSum[0] /= count;
-				colourSum[1] /= count;
-				colourSum[2] /= count;
+			if (0.0 < cover){
+				colourSum[0] /= cover;
+				colourSum[1] /= cover;
+				colourSum[2] /= cover;
 			}
 			return colourSum;
 		}
@@ -214,10 +261,10 @@ const makeDataString = function(in_name, in_colorUnitSphere, in_width, in_height
 	var pixelTrace = 0;
 	//A · B = cos(Θ)
 	var dotProductTollerance = Math.cos(degreesToRadians((in_blurRadius / in_width) * 360.0));
-	for (var indexX = 0; indexX < in_width; ++indexX){
-		for (var indexY = 0; indexY < in_height; ++indexY){
+	for (var indexY = 0; indexY < in_height; ++indexY){
+		for (var indexX = 0; indexX < in_width; ++indexX){
 			const long = degreesToRadians((indexX + indexX + 1) / (in_width + in_width) * 360.0);
-			const lat = degreesToRadians(((indexY + indexY + 1) / (in_height + in_height) * 180.0) - 90.0);
+			const lat = -degreesToRadians(((indexY + indexY + 1) / (in_height + in_height) * 180.0) - 90.0);
 			const normal =  latLongToNormal(lat, long);
 			const colour = in_colorUnitSphere.sample(normal, dotProductTollerance);
 			pixels[pixelTrace + 0] = colour[0];
@@ -311,6 +358,31 @@ const test = function(){
 		var v3 = latLongToUV(degreesToRadians(90.0),0);
 		UnitTest.DealTestAlmost("latLongToUV30", v3[0], 0.0, 0.0000000001);
 		UnitTest.DealTestAlmost("latLongToUV31", v3[1], 1.0, 0.0000000001);
+	});
+
+
+	//	var pixels = new Float32Array(in_width * in_height * 3);
+	//	const pixelsToTextureFactory = function(in_pixels, in_width, in_height){
+	promiseFactoryArray.push(function(){
+		//sanity pixelsToTextureFactory(in_pixels, in_width, in_height)
+		var pixels = new Float32Array([0,0,0, 1.0,0,0, 0,1,0, 1,1,1]);
+		var tex0 = pixelsToTextureFactory(pixels, 2, 2);
+
+		var v0 = tex0.sample(0,0);
+		UnitTest.DealTestAlmost("pixelsToTextureFactory00", v0[0], 0.0, 0.0000000001);
+		UnitTest.DealTestAlmost("pixelsToTextureFactory01", v0[1], 0.0, 0.0000000001);
+		UnitTest.DealTestAlmost("pixelsToTextureFactory02", v0[2], 0.0, 0.0000000001);
+
+		var v1 = tex0.sample(0.5,0.5);
+		UnitTest.DealTestAlmost("pixelsToTextureFactory10", v1[0], 0.5, 0.0000000001);
+		UnitTest.DealTestAlmost("pixelsToTextureFactory11", v1[1], 0.5, 0.0000000001);
+		UnitTest.DealTestAlmost("pixelsToTextureFactory12", v1[2], 0.25, 0.0000000001);
+
+		var v2 = tex0.sample(0.1,0);
+		UnitTest.DealTestAlmost("pixelsToTextureFactory20", v2[0], 0.1, 0.0000000001);
+		UnitTest.DealTestAlmost("pixelsToTextureFactory21", v2[1], 0.0, 0.0000000001);
+		UnitTest.DealTestAlmost("pixelsToTextureFactory22", v2[2], 0.0, 0.0000000001);
+
 	});
 
 
