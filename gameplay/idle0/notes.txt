@@ -10,6 +10,7 @@ combined ingredents have the ablity to meditate, where they can not be merged
 and take up the border cells, productivity is the border cells empty percentage
 as stars increase, so do inventory cells taken
 
+summoned items don't merge
 
 todo:
 draw grid

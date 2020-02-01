@@ -24,7 +24,7 @@ language:
 	{
 		console.log(key, value);
 	}
-	for(count = 0; count < 10; count++) {
+	for(var count = 0; count < 10; count++) {
 
 
 design:

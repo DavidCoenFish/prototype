@@ -4,7 +4,7 @@
 		<title>idle0_00</title>
 		<meta http-equiv="Content-Style-Type" content="text/css"/>
 	</head>
-	<body style='background-color: #7F7F7F'>
+	<body style='background-color: #FFFFFF'>
 	<canvas id='canvasId' style = 'background-color: #0000FF; width: 480px; height: 720px;' >
 		This text is displayed if your browser does not support HTML5 Canvas.
 	</canvas>
@@ -31,7 +31,7 @@ DSC.OnPageLoad = function()
 
 	DSC.m_time = undefined;
 	DSC.m_averageFPS = undefined;
-	DSC.m_defaultDrawStyle = DSC.DrawStyle.Factory();
+	DSC.m_defaultDrawStyle = DSC.DrawStyle.Factory("rgb(128, 128, 128)");
 	DSC.m_defaultTextStyle = DSC.TextStyle.Factory();
 
 	DSC.m_textStyleButton = DSC.TextStyle.Factory("rgb(255, 255, 0)", "rgb(0, 0, 0)", 1.0, "left", "top", "16px sans-serif");
@@ -39,6 +39,7 @@ DSC.OnPageLoad = function()
 	DSC.m_drawStyleButtonOn = DSC.DrawStyle.Factory("rgb(0, 255, 255)", "rgb(255, 255, 255)");
 	DSC.m_drawStyleRollover = DSC.DrawStyle.Factory("rgb(0, 0, 255)", "rgb(255, 255, 0)");
 	DSC.m_drawStyleClick = DSC.DrawStyle.Factory("rgb(255, 0, 0)", "rgb(0, 255, 255)");
+	DSC.m_drawStyleInventory = DSC.DrawStyle.Factory("rgb(0, 0, 0)", "rgb(0, 0, 0)");
 
 	DSC.PushState(DSC.StateMain.Factory());
 
@@ -50,6 +51,32 @@ DSC.OnPageLoad = function()
 
 // do we put this last to ensure page finishes loading, but it should not matter?
 window.addEventListener('load', DSC.OnPageLoad, true);
+
+/*
+in html the dragable implements a "ondragstart"
+and drag target implements a "ondrop" and "ondragover"
+
+dragable items 
+OnDragStart -> make an object and give it to the input system
+
+parent item
+OnDrop(dragableItem, in_x, in_y)
+OnDragOver(dragableItem, in_x, in_y)
+
+
+dragObject
+	OnDragCancle()
+	OnDragOntoTrash()
+	OnDragOntoSummon()
+	OnDragOntoInventory()
+	//CallbackDrag (button functor)
+	//CallbackDrop (button functor)
+
+input manager
+	SetDragObject(in_dragObjectOrUndefined)
+	GetDragObject()
+	//and when drag is over, but no-one consumed the dragObject
+*/
 
 DSC.RequestAnimationFrameCallback = function(_timeStamp)
 {
@@ -237,6 +264,8 @@ DSC.Input = function(_canvas)
 	this.m_mouseYOld = undefined;
 	this.m_canvas = _canvas;
 	
+	this.m_dragDropObject = undefined;
+
 	this.AddEvents();
 
 	return;
@@ -284,6 +313,11 @@ DSC.Input.prototype.Run = function()
 	this.m_mouseEdge = false;
 	this.m_mouseXOld = this.m_mouseX;
 	this.m_mouseYOld = this.m_mouseY;
+
+	if (false === this.m_mouseDown){
+		//if mouse no longerdown, flush dragdrop
+		this.SetDragObject(undefined);
+	}
 }
 	
 DSC.Input.prototype.CallbackMouseDown = function()
@@ -338,6 +372,18 @@ DSC.Input.prototype.CallbackTouch = function(in_event)
 	return;
 }
 
+DSC.Input.prototype.SetDragObject = function(in_dragDropObject){
+	if (undefined !== this.m_dragDropObject){
+		this.m_dragDropObject.OnDragCancle();
+		this.m_dragDropObject = undefined;
+	}
+	this.m_dragDropObject = in_dragDropObject;
+}
+
+DSC.Input.prototype.GetDragObject = function(){
+	return this.m_dragDropObject;
+}
+
 DSC.Input.GetTrueOffsetLeft = function(in_element)
 {
 	var traceElement = in_element;
@@ -373,14 +419,15 @@ DSC.Input.Factory = function(_canvas)
 
 /*
 _functor
-	CallbackOver(relX, relY, button)
-	CallbackHeld(duration, _timeDelta, button);
-	CallbackDrag(x, y, button);
-	CallbackDown(x, y, button);
-	CallbackUp(x, y, button);
-	CallbackDraw(button); // return true/ false
-	CallbackInput(button); // return true/ false for if we should detect input
-
+	//x,y relative to button
+	CallbackOver(x, y, mouseX, mouseY, button, in_input)
+	CallbackHeld(duration, _timeDelta, button, in_input);
+	CallbackDrag(x, y, mouseX, mouseY, button, in_input);
+	CallbackDrop(x, y, mouseX, mouseY, button, in_input);
+	CallbackDown(x, y, mouseX, mouseY, button, in_input);
+	CallbackUp(x, y, mouseX, mouseY, button, in_input);
+	CallbackDraw(button, in_input); // return true/ false
+	CallbackInput(button, in_input); // return true/ false for if we should detect input
 */
 DSC.Button = function(_text, in_x, in_y, in_width, in_height, _functor)
 {
@@ -446,7 +493,7 @@ DSC.Button.prototype.Run = function(in_timeDelta, in_input)
 		if ((undefined != this.m_functor) &&
 			("CallbackOver" in this.m_functor))
 		{
-			this.m_functor.CallbackOver(x, y, this);
+			this.m_functor.CallbackOver(x, y, in_input.m_mouseX, in_input.m_mouseY, this, in_input);
 		}
 	}
 
@@ -462,7 +509,7 @@ DSC.Button.prototype.Run = function(in_timeDelta, in_input)
 				if ((undefined != this.m_functor) &&
 					("CallbackDown" in this.m_functor))
 				{
-					this.m_functor.CallbackDown(x, y, this);
+					this.m_functor.CallbackDown(x, y, in_input.m_mouseX, in_input.m_mouseY, this, in_input);
 				}
 			}
 			else
@@ -482,8 +529,15 @@ DSC.Button.prototype.Run = function(in_timeDelta, in_input)
 					(undefined != this.m_functor) &&
 					("CallbackUp" in this.m_functor))
 				{
-					this.m_functor.CallbackUp(x, y, this);
+					this.m_functor.CallbackUp(x, y, in_input.m_mouseX, in_input.m_mouseY, this, in_input);
 				}
+			}
+
+			if ((true == this.m_over) &&  
+				(undefined != this.m_functor) &&
+				("CallbackDrop" in this.m_functor))
+			{
+				this.m_functor.CallbackDrop(x, y, in_input.m_mouseX, in_input.m_mouseY, this, in_input);
 			}
 		}
 	}
@@ -499,7 +553,7 @@ DSC.Button.prototype.Run = function(in_timeDelta, in_input)
 		if ((undefined != this.m_functor) &&
 			("CallbackDrag" in this.m_functor))
 		{
-			this.m_functor.CallbackDrag(x, y, this);
+			this.m_functor.CallbackDrag(x, y, in_input.m_mouseX, in_input.m_mouseY, this);
 		}
 	}
 
@@ -571,178 +625,124 @@ DSC.Button.prototype.Draw = function(in_canvas, in_context)
 	return;
 }
 
+DSC.Button.prototype.SetPos = function(in_x, in_y){
+	this.m_x = in_x;
+	this.m_y = in_y;
+}
+DSC.Button.prototype.GetPosX = function(){
+	return this.m_x;
+}
+DSC.Button.prototype.GetPosY = function(){
+	return this.m_y;
+}
+
 DSC.Button.Factory = function(_text, in_x, in_y, in_width, in_height, _functor)
 {
 	return new DSC.Button(_text, in_x, in_y, in_width, in_height, _functor);
 }
 
+
 //==================================================================
-//=============================== toggle button
+//=============================== Trash Button
 //==================================================================
 
-/*
-_functor
-	CallbackOver(relX, relY)
-	CallbackHeld(duration, _timeDelta);
-	CallbackDrag(x, y);
-	CallbackDown(x, y);
-	CallbackUp(x, y);
-*/
-DSC.ToggleButton = function(_textOff, _textOn, _toggleState, in_x, in_y, in_width, in_height, _functor)
-{
-	if ( !(this instanceof DSC.ToggleButton) )
-		alert("DSC.ToggleButton: call constuctor with new keyword");
+DSC.TrashButton = function(in_x, in_y, in_width, in_height){
+	if ( !(this instanceof DSC.TrashButton) )
+		alert("DSC.TrashButton: call constuctor with new keyword");
+	this.m_button = DSC.Button.Factory("trash", in_x, in_y, in_width, in_height,{
+	});
+}
+DSC.TrashButton.prototype.Run = function(in_timeDelta, in_input){
+	this.m_button.Run(in_timeDelta, in_input);
+}
+DSC.TrashButton.prototype.Draw = function(in_canvas, in_context){
+	this.m_button.Draw(in_canvas, in_context);
+}
 
-	this.m_textOff = (undefined == _textOff) ? "" : _textOff;
-	this.m_textOn = (undefined == _textOn) ? "" : _textOn;
-	this.m_toggleState = (undefined == _toggleState) ? false : _toggleState;
+
+//==================================================================
+//=============================== Game item
+//==================================================================
+
+DSC.GameItem = function(in_x, in_y, in_stars, in_enum){
+	if ( !(this instanceof DSC.GameItem) )
+		alert("DSC.GameItem: call constuctor with new keyword");
+	this.m_dragX = 0;
+	this.m_dragY = 0;
+	var dim = (in_stars + 1) * 40;
+	this.m_button = DSC.Button.Factory(in_enum, in_x, in_y, dim, dim, {
+		"CallbackDown" : function(x, y, mouseX, mouseY, button){
+			this.m_dragX = x;
+			this.m_dragY = y;
+		},
+		"CallbackDrag" : function(x, y, mouseX, mouseY, button){
+			var newX = mouseX - this.m_dragX;
+			var newY = mouseY - this.m_dragY;
+			button.SetPos(newX, newY);
+		}
+	});
+}
+DSC.GameItem.prototype.Run = function(in_timeDelta, in_input){
+	this.m_button.Run(in_timeDelta, in_input);
+}
+DSC.GameItem.prototype.Draw = function(in_canvas, in_context){
+	this.m_button.Draw(in_canvas, in_context);
+}
+
+DSC.GameItem.prototype.SetPos = function(in_x, in_y){
+	this.m_button.SetPos(in_x, in_y);
+}
+DSC.GameItem.prototype.GetPosX = function(){
+	return this.m_button.GetPosX();
+}
+DSC.GameItem.prototype.GetPosY = function(){
+	return this.m_button.GetPosY();
+}
+
+DSC.GameItem.Factory = function(in_x, in_y, in_stars, in_enum){
+	return new DSC.GameItem(in_x, in_y, in_stars, in_enum);
+}
+
+//==================================================================
+//=============================== GameItemDragObject
+//==================================================================
+
+DSC.GameItemDragObject = function(in_gameItem, in_oldDragParent, in_x, in_y){
+	if ( !(this instanceof DSC.GameItemDragObject) )
+		alert("DSC.GameItemDragObject: call constuctor with new keyword");
+	this.m_gameItem = in_gameItem;
+	this.m_oldDragParent = in_oldDragParent;
+	this.m_x = in_x;
+	this.m_y = in_y;
+}
+DSC.GameItemDragObject.prototype.OnDragCancle = function(){
+	this.m_oldDragParent.OnDrop(this.m_gameItem, this.m_x, this.m_y);
+}
+
+DSC.GameItemDragObject.Factory = function(in_gameItem, in_oldDragParent, in_x, in_y){
+	return new DSC.GameItemDragObject(in_gameItem, in_oldDragParent, in_x, in_y);
+}
+
+//==================================================================
+//=============================== Inventory
+//==================================================================
+
+DSC.Inventory = function(in_x, in_y, in_width, in_height){
+	if ( !(this instanceof DSC.Inventory) )
+		alert("DSC.Inventory: call constuctor with new keyword");
 	this.m_x = in_x;
 	this.m_y = in_y;
 	this.m_width = in_width;
 	this.m_height = in_height;
-	this.m_functor = _functor;
-
-	this.m_state = DSC.Button.s_state.TDefault;
-	this.m_over = false;
-
 	return;
 }
 
-DSC.ToggleButton.s_state = 
-{
-	TDefault : 0,
-	TRollover : 1,
-	TClick : 2
+DSC.Inventory.prototype.Run = function(in_timeDelta, in_input){
 }
 
-DSC.ToggleButton.s_stateClickCooldown = 0.1;
+DSC.Inventory.prototype.Draw = function(in_canvas, in_context){
 
-DSC.ToggleButton.prototype.GetToggleState = function()
-{
-	return this.m_toggleState;
-}
-
-DSC.ToggleButton.prototype.Run = function(in_timeDelta, in_input)
-{
-	if (0.0 < this.m_clickCooldown)
-	{
-		this.m_clickCooldown -= in_timeDelta;
-	}
-
-	var x = in_input.m_mouseX - this.m_x;
-	var y = in_input.m_mouseY - this.m_y;
-
-	var over = ((0 <= x) &&
-		(x <= this.m_width) &&
-		(0 <= y) &&
-		(y <= this.m_height));
-
-	if (over != this.m_over)
-	{
-		this.m_over = over;
-		if ((undefined != this.m_functor) &&
-			("CallbackOver" in this.m_functor))
-		{
-			this.m_functor.CallbackOver(in_input.m_mouseX, in_input.m_mouseY, this);
-		}
-	}
-
-	if (true == in_input.m_mouseEdge)
-	{
-		if (true == in_input.m_mouseDown)
-		{
-			//mouse down edge
-			if (true == this.m_over)
-			{
-				this.m_clicked = true;
-				this.m_clickDuration = 0.0;
-				if ((undefined != this.m_functor) &&
-					("CallbackDown" in this.m_functor))
-				{
-					this.m_functor.CallbackDown(in_input.m_mouseX, in_input.m_mouseY, this);
-				}
-			}
-			else
-			{
-				//a new click, deactivate incase old click up got lost
-				this.m_clicked = false;
-			}
-		}
-		else
-		{
-			//mouse up edge
-			if (true == this.m_clicked)
-			{
-				this.m_clicked = false;
-				this.m_clickCooldown = DSC.Button.s_stateClickCooldown;
-				if (true == this.m_over)
-				{
-					this.m_toggleState = (true == this.m_toggleState) ? false : true;
-					if ((undefined != this.m_functor) &&
-						("CallbackUp" in this.m_functor))
-					{
-						this.m_functor.CallbackUp(in_input.m_mouseX, in_input.m_mouseY, this);
-					}
-				}
-			}
-		}
-	}
-	else if ((true == in_input.m_mouseDown) &&
-		(true == this.m_clicked))
-	{
-		this.m_clickDuration += in_timeDelta;
-		if ((undefined != this.m_functor) &&
-			("CallbackHeld" in this.m_functor))
-		{
-			this.m_functor.CallbackHeld(this.m_clickDuration, _timeDelta, this);
-		}
-		if ((undefined != this.m_functor) &&
-			("CallbackDrag" in this.m_functor))
-		{
-			this.m_functor.CallbackDrag(in_input.m_mouseX, in_input.m_mouseY, this);
-		}
-	}
-
-	if ((0.0 < this.m_clickCooldown) ||
-		(true == this.m_clicked))
-	{
-		this.m_state = DSC.ToggleButton.s_state.TClick;
-	}
-	else if (true == this.m_over)
-	{
-		this.m_state = DSC.ToggleButton.s_state.TRollover;
-	}
-	else if (DSC.ToggleButton.s_state.TDefault != this.m_state)
-	{
-		this.m_state = DSC.ToggleButton.s_state.TDefault;
-	}
-
-	return;
-}
-
-DSC.ToggleButton.prototype.Draw = function(in_canvas, in_context)
-{
-	switch (this.m_state)
-	{
-	default:
-		return;
-	case DSC.ToggleButton.s_state.TDefault:
-		if (true == this.m_toggleState)
-		{
-			DSC.m_drawStyleButtonOn.Apply(in_context);
-		}
-		else
-		{
-			DSC.m_drawStyleButton.Apply(in_context);
-		}
-		break;
-	case DSC.ToggleButton.s_state.TRollover:
-		DSC.m_drawStyleRollover.Apply(in_context);
-		break;
-	case DSC.ToggleButton.s_state.TClick:
-		DSC.m_drawStyleClick.Apply(in_context);
-		break;
-	}
+	DSC.m_drawStyleInventory.Apply(in_context);
 	in_context.beginPath();
 	in_context.rect(
 		this.m_x,
@@ -750,20 +750,24 @@ DSC.ToggleButton.prototype.Draw = function(in_canvas, in_context)
 		this.m_width,
 		this.m_height
 		);
+
+	var stepX = this.m_width / 10;
+	var stepY = this.m_height / 10;
+	for(var index = 0; index < 10; index++) {
+		//verticale
+		in_context.moveTo(this.m_x + (index * stepX), this.m_y);
+		in_context.lineTo(this.m_x + (index * stepX), this.m_y + this.m_height);
+		//horizontal
+		in_context.moveTo(this.m_x, this.m_y + (index * stepY));
+		in_context.lineTo(this.m_x + this.m_width, this.m_y + (index * stepY));
+	}
+
 	in_context.closePath();
-	in_context.fill();
 	in_context.stroke();
-
-	DSC.m_textStyleButton.Apply(in_context);
-	in_context.fillText(this.m_toggleState ? this.m_textOn : this.m_textOff, this.m_x + 8, this.m_y + 8);
-	in_context.stroke();
-
-	return;
 }
 
-DSC.ToggleButton.Factory = function(_textOff, _textOn, _toggleState, in_x, in_y, in_width, in_height, _functor)
-{
-	return new DSC.ToggleButton(_textOff, _textOn, _toggleState, in_x, in_y, in_width, in_height, _functor);
+DSC.Inventory.Factory = function(in_x, in_y, in_width, in_height){
+	return new DSC.Inventory(in_x, in_y, in_width, in_height);
 }
 
 //==================================================================
@@ -778,6 +782,10 @@ DSC.StateMain = function()
 	this.m_arrayDraw = [];
 	const that = this;
 
+	//this.gameItemManager = DSC.GameItemManager();
+
+	this.m_arrayDraw.push(DSC.Inventory.Factory(40, 40, 400, 400));
+
 	this.m_arrayDraw.push(DSC.Button.Factory(
 		"x", 
 		440, 0, 40, 40, 
@@ -788,6 +796,21 @@ DSC.StateMain = function()
 			}
 		} //_functor 
 		));
+
+	this.m_arrayDraw.push(DSC.Button.Factory(
+		"trash", 
+		440, 320, 40, 80, 
+		{
+			CallbackUp : function(x, y)
+			{
+			}
+		} //_functor 
+		));
+
+	this.m_arrayDraw.push(DSC.GameItem.Factory(
+		200,100,0,"test"
+		));
+
 	return;
 }
 
