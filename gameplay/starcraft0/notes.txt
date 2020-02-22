@@ -1,0 +1,29 @@
+what if you had 3 (4?5?) sliders, normalised which determined how much you spent on the following
+ - economy 
+ - attack (takes a few seconds to get across the board)
+ - defense (smaller latency than attack)
+ - scout (get more warning, info about other player)
+ - tech (same as investing in ecnonomy?)
+
+as time progresses (or economy grows) there is less latency on action
+from 0 scout to max scout, 1 second for the info to catch up
+
+differenciating races, defence/ attack easier, different latency times on skills
+for 'n' multiplayer, just have to select at which opponent you are directing your attack at?
+or different attack slider for each oppoenent
+
+
+
+if you had all your focus on economy, how long would it take to double? 30sec? 100sec?
+if you put all your focus on attack, how long would it take to reduce the starting economy to zero, 10seconds? 15seconds? 5 seconds to cross the map.
+the starting settings for scout, lets you see 25% of board, if it takes 5sec to traverse board, then latency on defence is 1 sec to allow time to get defences up?
+
+add a few ping buttons to ramp up scouting to 25,50,75,100% the last 25% starts giving info about the economy, not just the attacks coming down the pipe. 
+your own scout radius (if not zero) will show when the opponent scouts you?
+
+attacks against defences need to be sustained by bot sides, but do attacks against economy just keep doing damage till defended against.
+in multiplayer game, is it possible to take over another player's base? possibly not good idea
+
+
+
+

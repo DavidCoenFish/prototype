@@ -38,5 +38,14 @@ hdr background
 64x64
 	for about a 128x256 hdr, also need to calculate a weight table (or functions) to go from scater param to weight of each blur map
 
+going forward.
+	make a module to generate a float texture for the camera normals
+	make a module to generate a world space camera normal float texture
+	render grid
+	render box
+	render sphere
+	render eye geom?
+	work out how to combine render stages (have a stage for each microfaccet reflection level?)
+	
 
 

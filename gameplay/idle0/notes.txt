@@ -13,7 +13,12 @@ as stars increase, so do inventory cells taken
 summoned items don't merge
 
 todo:
-draw grid
 drag items
+	move around inventory
+		object owner
+		inventory
+		trash button
+	move onto trash
+	perform summon (transmogification)
 merge
 summon

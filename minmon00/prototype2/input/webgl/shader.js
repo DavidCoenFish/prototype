@@ -3,25 +3,21 @@ import {sFloat, sFloat2, sFloat3, sFloat4, sInt, sMat4} from "./shaderuniformtyp
 //export function ShaderFactory(
 export default function(
 	in_webGLContextWrapper,
-	in_vertexShaderSource, 
-	in_fragmentShaderSource, 
+	in_vertexShaderResource, 
+	in_fragmentShaderResource, 
 	in_vertexAttributeNameArrayOrUndefined, 
-	//in_nameShaderUniformDataFactoryMapOrUndefined, //{name: { "activate" : function(in_uniformLocation)},...}
-	in_shaderDataArrayOrUndefined //[{"getName", "activate":function(in_uniformLocation, in_value)},...]
+	in_shaderDataArrayOrUndefined, //[{"getName", "activate":function(in_uniformLocation, in_value)},...]
+	in_shaderManagerKey
 	){
 	var m_shaderProgramObject = undefined;
-	var m_vertexWebGLShader = undefined;
-	var m_fragmentWebGLShader = undefined;
 	var m_mapVertexAttribute = undefined;
 	var m_uniformArray = undefined;
 
 	//public methods ==========================
 	const that = Object.create({
-		//start debug
-		"getProgram" : function(){ 
-			return m_shaderProgramObject; 
+		"getShaderManagerKey" : function(){
+			return in_shaderManagerKey;
 		},
-		//end debug
 		"getMapVertexAttribute" : function(){
 			return m_mapVertexAttribute;
 		},
@@ -57,10 +53,6 @@ export default function(
 
 		... we structure things for dag calculation, but we don't actually use it's methods at this level?
 		*/
-		//"calculateCallback" : function( in_calculatedValue, in_inputIndexArray, in_inputArray ){
-		//	that.activate( in_inputIndexArray[0], in_inputIndexArray[1] );
-		//	return undefined;
-		//},
 
 		"destroy" : function(){
 			in_webGLContextWrapper.removeResourceContextCallbacks(restoredCallback, lostCallback);
@@ -69,13 +61,10 @@ export default function(
 
 	//private methods ==========================
 	const restoredCallback = function(){
-		const vertexShaderEnum = in_webGLContextWrapper.getEnum("VERTEX_SHADER");
-		m_vertexWebGLShader = loadShader(in_vertexShaderSource, vertexShaderEnum);
-
-		const fragmentShaderEnum = in_webGLContextWrapper.getEnum("FRAGMENT_SHADER");
-		m_fragmentWebGLShader = loadShader(in_fragmentShaderSource, fragmentShaderEnum);
-
-		m_shaderProgramObject = linkProgram(m_vertexWebGLShader, m_fragmentWebGLShader);
+		m_shaderProgramObject = linkProgram(
+			in_vertexShaderResource.getShader(),
+			in_fragmentShaderResource.getShader(),
+			);
 
 		return;
 	}
@@ -84,47 +73,12 @@ export default function(
 	const lostCallback = function(){
 		m_mapVertexAttribute = undefined;
 		m_uniformArray = undefined;
-		if ( undefined !== m_vertexWebGLShader){
-			in_webGLContextWrapper.callMethod("deleteShader", m_vertexWebGLShader);
-			m_vertexWebGLShader = undefined;
-		}
-		if ( undefined !== m_fragmentWebGLShader){
-			in_webGLContextWrapper.callMethod("deleteShader", m_fragmentWebGLShader);
-			m_fragmentWebGLShader = undefined;
-		}
 		if ( undefined !== m_shaderProgramObject){
 			in_webGLContextWrapper.callMethod("deleteProgram", m_shaderProgramObject);
 			m_shaderProgramObject = undefined;
 		}
 
 		return;
-	}
-
-	const loadShader = function(in_shaderText, in_type){
-		var shaderHandle = in_webGLContextWrapper.callMethod("createShader", in_type);
-		if (0 === shaderHandle){
-			return undefined;
-		}
-
-		in_webGLContextWrapper.callMethod("shaderSource", shaderHandle, in_shaderText);
-		in_webGLContextWrapper.callMethod("compileShader", shaderHandle);
-
-		const compileStatusEnum = in_webGLContextWrapper.getEnum("COMPILE_STATUS");
-		const compiled = in_webGLContextWrapper.callMethod("getShaderParameter", shaderHandle, compileStatusEnum);
-
-		var errorInfo = "";
-		// If the compilation failed, delete the shader.
-		if (!compiled){
-			errorInfo = in_webGLContextWrapper.callMethod("getShaderInfoLog", shaderHandle);
-			in_webGLContextWrapper.callMethod("deleteShader", shaderHandle);
-			shaderHandle = undefined;
-		}
-
-		if (undefined === shaderHandle){
-			alert("Error creating shader: " + errorInfo);
-		}
-		
-		return shaderHandle;
 	}
 
 	const applyUniform = function(in_shaderData, in_uniformLocation){
