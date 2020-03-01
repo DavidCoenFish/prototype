@@ -23,23 +23,25 @@
 		},
 
 		{
-			"label": "open_development_render_target",
+			"label": "open_development_module_grid",
 			"type": "shell",
-			"command": "${cwd}\\output\\development\\rendertarget\\index.html",
+			"command": "${cwd}\\output\\development\\grid\\index.html",
 			"windows": {
-				"command": "${cwd}\\output\\development\\rendertarget\\index.html"
+				"command": "${cwd}\\output\\development\\grid\\index.html"
 			},
 			"problemMatcher": []
 		},
 		{
-			"label": "open_production_render_target",
+			"label": "open_production_module_grid",
 			"type": "shell",
-			"command": "${cwd}\\output\\production\\rendertarget\\index.html",
+			"command": "${cwd}\\output\\production\\grid\\index.html",
 			"windows": {
-				"command": "${cwd}\\output\\production\\rendertarget\\index.html"
+				"command": "${cwd}\\output\\production\\grid\\index.html"
 			},
 			"problemMatcher": []
 		},
+
+
 
 		{
 			"label": "open_development_pbr_spheres",
@@ -94,6 +96,25 @@
 			"command": "${cwd}\\output\\production\\pbrspheres2\\index.html",
 			"windows": {
 				"command": "${cwd}\\output\\production\\pbrspheres2\\index.html"
+			},
+			"problemMatcher": []
+		},
+
+		{
+			"label": "open_development_render_target",
+			"type": "shell",
+			"command": "${cwd}\\output\\development\\rendertarget\\index.html",
+			"windows": {
+				"command": "${cwd}\\output\\development\\rendertarget\\index.html"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "open_production_render_target",
+			"type": "shell",
+			"command": "${cwd}\\output\\production\\rendertarget\\index.html",
+			"windows": {
+				"command": "${cwd}\\output\\production\\rendertarget\\index.html"
 			},
 			"problemMatcher": []
 		},

@@ -13,6 +13,8 @@ import RenderBufferFactory from "./renderbuffer.js"
 import TextureFactory from "./texture.js"
 import RenderTargetDataRenderBuffer from "./rendertargetdatarenderbuffer.js"
 import RenderTargetDataTexture from "./rendertargetdatatexture.js"
+import ShaderManagerFactory from "./shadermanager.js"
+import GeometryManagerFactory from "./geometrymanager.js"
 
 export default function(
 	in_html5CanvasElement,
@@ -32,8 +34,24 @@ export default function(
 		);
 
 	var m_webGLState = StateFactory(m_webGLContextWrapper);
+	var m_shaderManager = undefined;
+	var m_geometryManager = undefined;
 
 	const that = Object.create({
+		"getShaderManager" : function(){
+			if (undefined === m_shaderManager){
+				m_shaderManager = ShaderManagerFactory(m_webGLContextWrapper);
+			}
+			return m_shaderManager;
+		},
+
+		"getGeometryManager" : function(){
+			if (undefined === m_geometryManager){
+				m_geometryManager = GeometryManagerFactory(that);
+			}
+			return m_geometryManager;
+		},
+
 		"createRenderTarget" : function(
 			in_x,
 			in_y,
@@ -301,6 +319,10 @@ export default function(
 		},
 
 		"destroy" : function(){
+			if (undefined !== m_geometryManager){
+				m_geometryManager.destroy();
+				m_geometryManager = undefined;
+			}
 			m_webGLState.destroy();
 		},
 

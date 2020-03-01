@@ -63,9 +63,8 @@ export default function(
 	const restoredCallback = function(){
 		m_shaderProgramObject = linkProgram(
 			in_vertexShaderResource.getShader(),
-			in_fragmentShaderResource.getShader(),
+			in_fragmentShaderResource.getShader()
 			);
-
 		return;
 	}
 

@@ -33,7 +33,7 @@ export default function(
 		return;
 	}
 
-	const loadShader = function(in_shaderText){
+	const loadShader = function(in_shaderText, in_type){
 		var shaderHandle = in_webGLContextWrapper.callMethod("createShader", in_type);
 		if (0 === shaderHandle){
 			return undefined;

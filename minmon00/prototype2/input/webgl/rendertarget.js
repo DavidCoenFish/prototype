@@ -34,9 +34,15 @@ export default function(
 		"getTexture" : function(in_index){
 			return in_renderTargetDataArray[in_index].getTexture();
 		},
+		"getWidth" : function(){
+			return in_width;
+		},
+		"getHeight" : function(){
+			return in_height;
+		},
 		"destroy" : function(){
 			in_webGLContextWrapper.removeResourceContextCallbacks(restoredCallback, lostCallback);
-		},
+		}
 	});
 
 	//private methods ==========================

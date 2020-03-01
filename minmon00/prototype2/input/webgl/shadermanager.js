@@ -1,4 +1,4 @@
-import {sFloat, sFloat2, sFloat3, sFloat4, sInt, sMat4} from "./shaderuniformtype.js"
+//import {sFloat, sFloat2, sFloat3, sFloat4, sInt, sMat4} from "./shaderuniformtype.js"
 import ShaderResourceFactory from "./shaderresource.js"
 import ShaderFactory from "./shader.js"
 
@@ -53,8 +53,8 @@ export default function(
 
 			var shader = ShaderFactory(
 				in_webGLContextWrapper,
-				in_vertexShaderResource, 
-				in_fragmentShaderResource, 
+				vertexShader, 
+				fragmentShader, 
 				in_vertexAttributeNameArrayOrUndefined, 
 				in_shaderDataArrayOrUndefined, //[{"getName", "activate":function(in_uniformLocation, in_value)},...]
 				key

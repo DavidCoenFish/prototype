@@ -19,6 +19,7 @@
 		"package": "node index.js",
 		"packagevsc": "node --nolazy --inspect-brk=5858 index.js",
 		"packagevsc_test_capablity": "node --nolazy --inspect-brk=5858 index.js test capablity",
+		"packagevsc_test_module_grid": "node --nolazy --inspect-brk=5858 index.js test\\modules grid",
 		"packagevsc_test_pbr_spheres": "node --nolazy --inspect-brk=5858 index.js test\\pbrspheres pbrspheres",
 		"packagevsc_test_pbr_spheres1": "node --nolazy --inspect-brk=5858 index.js test\\pbrspheres pbrspheres1",
 		"packagevsc_test_pbr_spheres2": "node --nolazy --inspect-brk=5858 index.js test\\pbrspheres pbrspheres2",
