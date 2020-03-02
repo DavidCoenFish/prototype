@@ -45,11 +45,13 @@ const sVertexAttributeNameArray = ["a_position"];
 
 const dagCallbackRenderTriangleFactory = function(in_webglApi){
 	//get ref to shader
-	const m_shader = in_webglApi.createShader( sVertexShader, sFragmentShader, sVertexAttributeNameArray );
+	const shaderManager = in_webglApi.getShaderManager();
+	const m_shader = shaderManager.getShader( sVertexShader, sFragmentShader, sVertexAttributeNameArray );
 
 	//make geom
-	const m_geom = in_webglApi.createModel( "TRIANGLES", 3, {
-		"a_position" : in_webglApi.createModelAttribute("BYTE", 2, new Int8Array([ -1, -1, -1, 1, 1, -1]), "STATIC_DRAW", false)
+	const geometryManager = in_webglApi.getGeometryManager();
+	const m_geom = geometryManager.createModel( "TRIANGLES", 3, {
+		"a_position" : geometryManager.createModelAttribute("BYTE", 2, new Int8Array([ -1, -1, -1, 1, 1, -1]), "STATIC_DRAW", false)
 	});
 
 	const result = Object.create({

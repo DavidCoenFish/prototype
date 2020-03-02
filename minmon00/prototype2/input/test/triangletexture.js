@@ -51,9 +51,10 @@ const dagCallbackRenderTriangleFactory = function(in_webglApi){
 	}
 	`;
 
+	const shaderManager = in_webglApi.getShaderManager();
 	const sVertexAttributeNameArray = ["a_position", "a_uv"];
 	const sUniformArray = [
-			in_webglApi.createShaderDataUniform("u_sampler0", sInt ),
+			shaderManager.createShaderDataUniform("u_sampler0", sInt ),
 	];
 
 	const textureWidth = 256;
@@ -81,12 +82,13 @@ const dagCallbackRenderTriangleFactory = function(in_webglApi){
 		);
 
 	//get ref to shader
-	const m_shader = in_webglApi.createShader( sVertexShader, sFragmentShader, sVertexAttributeNameArray, sUniformArray );
+	const m_shader = shaderManager.getShader( sVertexShader, sFragmentShader, sVertexAttributeNameArray, sUniformArray );
 
 	//make geom
-	const m_geom = in_webglApi.createModel( "TRIANGLES", 3, {
-		"a_position" : in_webglApi.createModelAttribute("BYTE", 2, new Int8Array([ -1,-1, -1,1, 1,-1]), "STATIC_DRAW", false),
-		"a_uv" : in_webglApi.createModelAttribute("BYTE", 2, new Int8Array([ 0,0, 0,1, 1,0]), "STATIC_DRAW", false)
+	const geometryManager = in_webglApi.getGeometryManager();
+	const m_geom =  geometryManager.createModel( "TRIANGLES", 3, {
+		"a_position" :  geometryManager.createModelAttribute("BYTE", 2, new Int8Array([ -1,-1, -1,1, 1,-1]), "STATIC_DRAW", false),
+		"a_uv" :  geometryManager.createModelAttribute("BYTE", 2, new Int8Array([ 0,0, 0,1, 1,0]), "STATIC_DRAW", false)
 	});
 
 	var m_textureArray = [ m_texture ];
@@ -185,11 +187,13 @@ export default function () {
 				);
 		};
 
-		const m_shader = webGLApi.createShader( vsSource, fsSource, sVertexAttributeNameArray, sUniformArray );
+		const shaderManager = in_webglApi.getShaderManager();
+		const m_shader = shaderManager.getShader( vsSource, fsSource, sVertexAttributeNameArray, sUniformArray );
 
-		const m_geom = webGLApi.createModel( "TRIANGLES", 3, {
-			"a_position" : webGLApi.createModelAttribute("BYTE", 2, new Int8Array([ -1,-1, -1,1, 1,-1]), "STATIC_DRAW", false),
-			"a_uv" : webGLApi.createModelAttribute("BYTE", 2, new Int8Array([ 0,0, 0,1, 1,0]), "STATIC_DRAW", false)
+		const geometryManager = in_webglApi.getGeometryManager();
+		const m_geom = geometryManager.createModel( "TRIANGLES", 3, {
+			"a_position" : geometryManager.createModelAttribute("BYTE", 2, new Int8Array([ -1,-1, -1,1, 1,-1]), "STATIC_DRAW", false),
+			"a_uv" : geometryManager.createModelAttribute("BYTE", 2, new Int8Array([ 0,0, 0,1, 1,0]), "STATIC_DRAW", false)
 		});
 
 		webGLApi.draw(

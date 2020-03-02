@@ -1,6 +1,7 @@
 //import {sFloat, sFloat2, sFloat3, sFloat4, sInt, sMat4} from "./shaderuniformtype.js"
 import ShaderResourceFactory from "./shaderresource.js"
 import ShaderFactory from "./shader.js"
+import {ShaderDataUniformFactory, ShaderDataUniformNormaliseFactory} from "./shaderdata.js"
 
 //export function ShaderFactory(
 export default function(
@@ -62,6 +63,31 @@ export default function(
 			m_mapShader[key] = shader;
 			return shader;
 		},
+
+		"createShaderDataUniform" : function(
+			in_name,
+			in_typeName
+		){
+			return ShaderDataUniformFactory(
+				in_webGLContextWrapper,
+				in_name,
+				in_typeName
+			);
+		},
+
+		"createShaderDataUniformNormalise" : function(
+			in_name,
+			in_typeName,
+			in_normalise
+		){
+			return ShaderDataUniformNormaliseFactory(
+				in_webGLContextWrapper,
+				in_name,
+				in_typeName,
+				in_normalise
+			);
+		},
+
 		"releaseShader" : function(in_shader){
 			if (undefined === in_shader){
 				return;

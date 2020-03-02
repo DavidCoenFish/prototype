@@ -4,10 +4,6 @@ the public interface intended to wrap a webgl context associated with a dom canv
 
 import ContextWrapperFactory from "./contextwrapper.js"
 import StateFactory from "./state.js"
-import ShaderFactory from "./shader.js"
-import {ShaderDataUniformFactory, ShaderDataUniformNormaliseFactory} from "./shaderdata.js"
-import ModelFactory from "./model.js"
-import ModelAttributeFactory from "./modelattribute.js"
 import RenderTargetFactory from "./rendertarget.js"
 import RenderBufferFactory from "./renderbuffer.js"
 import TextureFactory from "./texture.js"
@@ -47,7 +43,7 @@ export default function(
 
 		"getGeometryManager" : function(){
 			if (undefined === m_geometryManager){
-				m_geometryManager = GeometryManagerFactory(that);
+				m_geometryManager = GeometryManagerFactory(m_webGLContextWrapper);
 			}
 			return m_geometryManager;
 		},
@@ -214,77 +210,6 @@ export default function(
 				m_webGLContextWrapper.callMethod("clear", clearFlag);
 			}
 
-		},
-
-		"createShader" : function(
-			in_vertexShaderSource, 
-			in_fragmentShaderSource, 
-			in_vertexAttributeNameArrayOrUndefined, 
-			in_shaderDataArrayOrUndefined //[{"activate":function(in_uniformLocation, in_value)},...]
-		){
-			return ShaderFactory( 
-				m_webGLContextWrapper, 
-				in_vertexShaderSource, 
-				in_fragmentShaderSource, 
-				in_vertexAttributeNameArrayOrUndefined, 
-				in_shaderDataArrayOrUndefined
-				);
-		},
-
-		"createShaderDataUniform" : function(
-			in_name,
-			in_typeName
-		){
-			return ShaderDataUniformFactory(
-				m_webGLContextWrapper,
-				in_name,
-				in_typeName
-			);
-		},
-
-		"createShaderDataUniformNormalise" : function(
-			in_name,
-			in_typeName,
-			in_normalise
-		){
-			return ShaderDataUniformNormaliseFactory(
-				m_webGLContextWrapper,
-				in_name,
-				in_typeName,
-				in_normalise
-			);
-		},
-
-		"createModel" : function(
-			in_modeName,
-			in_elementCount,
-			in_mapModelAttribute,
-			in_elementIndexOrUndefined
-		){
-			return ModelFactory(
-				m_webGLContextWrapper,
-				in_modeName,
-				in_elementCount,
-				in_mapModelAttribute,
-				in_elementIndexOrUndefined
-				);
-		},
-
-		"createModelAttribute" : function(
-			in_typeName, //string
-			in_elementsPerVertex, //int
-			in_arrayData,
-			in_usageName, //string //STATIC_DRAW, 
-			in_normalise //bool
-		){
-			return ModelAttributeFactory(
-				m_webGLContextWrapper,
-				in_typeName, //string
-				in_elementsPerVertex, //int
-				in_arrayData,
-				in_usageName, //string //STATIC_DRAW, 
-				in_normalise //bool
-				);
 		},
 
 		/*

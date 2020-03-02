@@ -3,6 +3,7 @@ C:\development\prototype\web01\package\input\webgl
 */
 
 import { factoryDagNodeCalculate } from './../../core/dagnode.js'
+import { sInt } from "./../../webgl/shaderuniformtype.js"
 
 const sVertexShader = `
 attribute vec2 a_position;
@@ -29,20 +30,26 @@ void main() {
 const sVertexAttributeNameArray = ["a_position"];
 
 const dagCallback =  function(in_webglApi){
+	const m_uniformArray = [
+			in_webglApi.createShaderDataUniform("u_sampler0", sInt )
+	];
+	var m_uniformArrayValue = [0];
+	var m_textureArray = [ undefined ]
+
 	const m_shader = in_webglApi.getShaderManager().getShader(
 		sVertexShader, 
 		sFragmentShader, 
-		sVertexAttributeNameArray
+		sVertexAttributeNameArray,
+		m_uniformArray
 		);
 
 	const m_geom = in_webglApi.getGeometryManager().getFullScreenQuad();
-	var m_textureArray = [ undefined ]
 
 	const result = Object.create({
 		"draw" : function(){
 			in_webglApi.draw(
 				m_shader, 
-				undefined, 
+				m_uniformArrayValue, 
 				m_textureArray, 
 				m_geom
 				);

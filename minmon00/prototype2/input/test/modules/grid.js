@@ -46,10 +46,12 @@ export default function () {
 	linkIndex(dagNodeFovhRadian, dagNodeCameraNormalTexture, 2);
 	linkIndex(dagNodeFovvRadian, dagNodeCameraNormalTexture, 3);
 
-	const displayListDrawGrid = displayListDrawGridFactory(webGLApi);
-	linkIndex(dagNodeCameraNormalTexture, displayListDrawGrid, 0);
+	dagNodeCameraNormalTexture.getValue();
 
-	link(displayListDrawGrid, dagNodeDisplayList);
+	//const displayListDrawGrid = displayListDrawGridFactory(webGLApi);
+	//linkIndex(dagNodeCameraNormalTexture, displayListDrawGrid, 0);
 
-	dagNodeDisplayList.getValue();
+	//link(displayListDrawGrid, dagNodeDisplayList);
+
+	//dagNodeDisplayList.getValue();
 }

@@ -19,7 +19,7 @@ output
 
 import { factoryDagNodeCalculate } from "./../core/dagnode.js";
 import { sFloat2 } from "./../webgl/shaderuniformtype.js"
-import { sRGB, sFLOAT, sLINEAR, sNEAREST_MIPMAP_NEAREST, sCLAMP_TO_EDGE } from "./../webgl/texturetype.js"
+import { sRGB, sRGBA, sUNSIGNED_BYTE, sFLOAT, sLINEAR, sNEAREST_MIPMAP_NEAREST, sCLAMP_TO_EDGE } from "./../webgl/texturetype.js"
 
 const sVertexShader = `
 precision highp float;
@@ -60,7 +60,7 @@ void main() {
 	vec2 polarCoords = makePolareCoords(v_uv);
 	vec3 screenEyeRay = makeScreenEyeRay(polarCoords);
 	//gl_FragColor = vec4(screenEyeRay, 1.0);
-	gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+	gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
 }
 `;
 
@@ -112,15 +112,16 @@ export default function(in_webglApi){
 			m_texture = in_webglApi.createTexture(
 				in_width, 
 				in_height,
-				sRGB,
-				sRGB,
-				sFLOAT,
-				undefined,
-				undefined,
-				sLINEAR,
-				sNEAREST_MIPMAP_NEAREST,
-				sCLAMP_TO_EDGE,
-				sCLAMP_TO_EDGE
+				sRGBA,
+				sRGBA,
+				//sFLOAT, //
+				sUNSIGNED_BYTE//, //
+				// undefined,
+				// undefined,
+				// sLINEAR,
+				// sNEAREST_MIPMAP_NEAREST,
+				// sCLAMP_TO_EDGE,
+				// sCLAMP_TO_EDGE
 				);
 			
 			var renderData = in_webglApi.createRenderTargetDataTexture(
