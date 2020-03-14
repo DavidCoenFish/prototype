@@ -2,31 +2,40 @@
 {
     public static Application Instance;
 
+    private DataStore _dataStore;
     private FadeComponent _fadeComponent;
     private UIButton _uiButton;
     //private float _debugTimeAccumulation;
     //private bool _debugState;
 
-    void Start()
+    private System.Collections.IEnumerator Start()
     {
         Log("Application.Start()");
-        //weak attempt at singelton, probabbly a better way, but addComponent is not playing nice
+        //weak attempt at singelton, probabbly a better way
         Instance = this;
 
         _fadeComponent = gameObject.AddComponent<FadeComponent>();
         _fadeComponent.SetFade(1.0f);
 
-        //todo: wait for scene to load before fade in
-        _fadeComponent.SetFadeToTransparent(3.0f);
-
         _uiButton = UIButton.FactoryButton(1);
- 
-        //test LoadScene
-        UnityEngine.SceneManagement.SceneManager.LoadScene("mainmenu", UnityEngine.SceneManagement.LoadSceneMode.Additive);
 
-        //debug
-        //_debugTimeAccumulation = 0.0f;
-        //_debugState = false;
+        _dataStore = new DataStore();
+
+        //wait for async tasks before load
+        yield return StartCoroutine (AsyncStart());
+
+        _fadeComponent.SetFadeToTransparent();
+    }
+
+    private System.Collections.IEnumerator AsyncStart()
+    {
+        yield return StartCoroutine (_dataStore.Init());
+
+        while (!_dataStore.HasFinishedLoad())
+        {
+            yield return null;
+        }
+        yield return UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("mainmenu", UnityEngine.SceneManagement.LoadSceneMode.Additive);
     }
 
     public void Log(string param)
@@ -34,8 +43,9 @@
         UnityEngine.Debug.Log("Application::Log:" + param);
     }
 
-    public void SetState(string stateFactoryName)
+    public System.Collections.IEnumerator SetState(string stateFactoryName)
     {
+        yield return null;
     }
 
     private void OnGUI()
