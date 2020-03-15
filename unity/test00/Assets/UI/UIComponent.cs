@@ -45,7 +45,7 @@
         return null;
     }
 
-    private UIContainer MakeUIContainerMainMenu()
+    private static UIContainer MakeUIContainerMainMenu()
     {
         UIContainer uiContainer = new UIContainer();
         uiContainer.AddUIElement(UILable.FactoryVersion((int)Bootstrap.UIRenderDepth.Menu));
@@ -55,8 +55,7 @@
             (int)Bootstrap.UIRenderDepth.Menu,
             () => { 
                 Bootstrap.Instance.Log("onclick");
-                //StartCoroutine(Bootstrap.Instance.SetState("tutorial00")); 
-                Bootstrap.Instance.SetStateTest("tutorial00");
+                Bootstrap.Instance.SetState("tutorial00");
             }
             ));
         return uiContainer;

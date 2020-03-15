@@ -16,6 +16,10 @@ public class UIButton : IUIElement
 
         UnityEngine.GUIStyle style = new UnityEngine.GUIStyle();
         style.normal.background = UnityEngine.Texture2D.whiteTexture;
+        UnityEngine.Texture2D texture = new UnityEngine.Texture2D(1,1);
+        texture.SetPixel(0,0, new UnityEngine.Color(0.9f, 0.9f, 0.9f, 1.0f));
+        texture.Apply();
+        style.hover.background = texture;
         DagNodeValue< UnityEngine.GUIStyle > dagStyle = new DagNodeValue< UnityEngine.GUIStyle >(style);
         DagGUIContent dagGUIContent = DagGUIContent.FactoryLocale(localeKey);
 

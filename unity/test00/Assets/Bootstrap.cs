@@ -55,7 +55,7 @@ public class Bootstrap : UnityEngine.MonoBehaviour
 
     public void SetState(string stateName)
     {
-        StartCoroutine(SetState(stateName));
+        StartCoroutine(SetStateInternal(stateName));
     }
 
     //stateName is now scene name?
