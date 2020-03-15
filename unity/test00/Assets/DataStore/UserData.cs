@@ -1,4 +1,7 @@
-﻿public class UserData
+﻿/*
+persistant data stored accross sessions (options?)
+ */
+public class UserData
 {
     public static UserData Factory()
     {
@@ -19,22 +22,24 @@
     //C:/Users/David/AppData/LocalLow/DefaultCompany/test00/userdata.json
     private string _filePath = UnityEngine.Application.persistentDataPath + "/userdata.json";
     private UserDataReflect _userDataReflect;
+	//private DagNodeValue<string> _dagLocale;
+	//public DagNodeValue<string> locale
 
-    public string locale
-    {
-        get { return _userDataReflect.locale; }
-        set { _userDataReflect.locale = value; Save(); }
-    }
+	public string locale
+	{
+		get { return _userDataReflect.locale; }
+		set { _userDataReflect.locale = value; Save(); }
+	}
 
-    UserData()
+	UserData()
     {
-        Application.Instance.Log("UserData.UserData() _filePath:" + _filePath);
+        //Bootstrap.Instance.Log("UserData.UserData() _filePath:" + _filePath);
         _userDataReflect = UserDataReflect.Factory();
         Load();
     }
     public void Load()
     {   
-        Application.Instance.Log("UserData.Load()");
+        //Bootstrap.Instance.Log("UserData.Load()");
         if (System.IO.File.Exists(_filePath))
         {
             try
@@ -44,7 +49,7 @@
             }
             catch (System.Exception e)
             {
-                Application.Instance.Log(e.ToString());
+                Bootstrap.Instance.Warn(e.ToString());
             }
         }
         else
@@ -54,7 +59,7 @@
     }
     public void Save()
     {
-        Application.Instance.Log("UserData.Save()");
+        //Bootstrap.Instance.Log("UserData.Save()");
         string contents = UnityEngine.JsonUtility.ToJson(_userDataReflect);
         System.IO.File.WriteAllText(_filePath, contents);
     }

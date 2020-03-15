@@ -1,4 +1,8 @@
-﻿public interface IDagNode
+﻿/*
+ direct acylic graph
+ attempt to organise state for mimimal duplication and reduction of stale state
+ */
+public interface IDagNode
 {
     void AddOutput(IDagNodeCalculateBase node);
     void RemoveOutput(IDagNodeCalculateBase node);
@@ -7,6 +11,10 @@
 public interface IDagNodeValue< TYPE > : IDagNode
 {
     TYPE GetValue();
+}
+
+public interface IDagNodeSetValue< TYPE > : IDagNodeValue< TYPE >
+{
     void SetValue(TYPE value);
 }
 
@@ -18,9 +26,8 @@ public interface IDagNodeCalculateBase : IDagNode
     void RemoveUnorderedInput(IDagNode node);
 }
 
-public interface IDagNodeCalculate< TYPE > : IDagNodeCalculateBase
+public interface IDagNodeCalculate< TYPE > : IDagNodeValue< TYPE >, IDagNodeCalculateBase
 {
-    TYPE GetValue();
 }
 
 public static class DagNode
@@ -73,15 +80,14 @@ public class DagNodeComponent
     }
 }
 
-public class DagNodeValue< TYPE > : IDagNodeValue< TYPE >
+public class DagNodeValue< TYPE > : IDagNodeSetValue< TYPE >
 {
-    private DagNodeComponent _dagNodeComponent;
+    private DagNodeComponent _dagNodeComponent = new DagNodeComponent();
     private TYPE _value;
 
-    DagNodeValue(TYPE value)
+    public DagNodeValue(TYPE value)
     {
         _value = value;
-        _dagNodeComponent = new DagNodeComponent();
     }
 
     public TYPE GetValue()
@@ -105,3 +111,41 @@ public class DagNodeValue< TYPE > : IDagNodeValue< TYPE >
     }
 }
 
+public class DagCalculateComponent
+{
+    private System.Collections.Generic.List< IDagNode > _inputArray = new System.Collections.Generic.List< IDagNode >();
+    private System.Collections.Generic.List< IDagNode > _unorderedInputArray = new System.Collections.Generic.List< IDagNode >();
+
+    public System.Collections.Generic.List< IDagNode > inputArray
+    {
+        get
+        {
+            return _inputArray;
+        }
+    }
+    public System.Collections.Generic.List< IDagNode > unorderedInputArray
+    {
+        get
+        {
+            return _unorderedInputArray;
+        }
+    }
+
+    public void SetInput(int index, IDagNode node)
+    {
+        //todo: what does c# do on out of bounds?
+        while(_inputArray.Count <= index)
+        {
+            _inputArray.Add(null);
+        }
+        _inputArray[index] = node;
+    }
+    public void AddUnorderedInput(IDagNode node)
+    {
+        _unorderedInputArray.Add(node);
+    }
+    public void RemoveUnorderedInput(IDagNode node)
+    {
+        _unorderedInputArray.Remove(node);
+    }
+}

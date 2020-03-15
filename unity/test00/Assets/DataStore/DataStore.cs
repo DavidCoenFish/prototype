@@ -3,7 +3,6 @@
     private StaticData _staticData;
     private UserData _userData;
     private LocaleData _localeData;
-    private bool _hasFinishedLoad = false;
 
     public DataStore()
     {
@@ -11,22 +10,39 @@
         //StartCoroutine (Init());
     }
 
-    public bool HasFinishedLoad()
-    {
-        return _hasFinishedLoad;
-    }
+	public StaticData staticData
+	{
+		get
+		{
+			return _staticData;
+		}
+	}
+	public UserData userData
+	{
+		get
+		{
+			return _userData;
+		}
+	}
+	public LocaleData localeData
+	{
+		get
+		{
+			return _localeData;
+		}
+	}
 
-    public System.Collections.IEnumerator Init()
+	//fake threading in the main thread for now
+	public System.Collections.IEnumerator Init()
     {
         _staticData = StaticData.Factory();
-        //Application.Instance.Log("GetVersion:" + _staticData.GetVersion());
-        //Application.Instance.Log("GetVersion:" + _staticData.GetString("version"));
+        //Bootstrap.Instance.Log("GetVersion:" + _staticData.GetVersion());
+        //Bootstrap.Instance.Log("GetVersion:" + _staticData.GetString("version"));
         yield return null;
         _userData = UserData.Factory();
         yield return null;
         _localeData = LocaleData.Factory(_userData.locale);
         //string test = _localeData.GetValue("hint_4");
         yield return null;
-        _hasFinishedLoad = true;
     }
 }

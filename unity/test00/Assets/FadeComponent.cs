@@ -5,11 +5,18 @@ public class FadeComponent : UnityEngine.MonoBehaviour
     private UIBox _UIBox;
     private float _alpha;
     private float _alphaDelta;
+    private int _depth;
 
     void Start()
     {
-        Application.Instance.Log("FadeComponent.Start()");
-        _UIBox = UIBox.FactoryScreenQuad(0);
+        Bootstrap.Instance.Log("FadeComponent.Start()", this);
+        _UIBox = UIBox.FactoryScreenQuad(_depth);
+    }
+
+    public void SetDepth(int depth)
+    {
+        Bootstrap.Instance.Log("FadeComponent.SetDepth()", this);
+        _depth = depth;
     }
 
     // set the value of the fade alpha, stops fade transition
@@ -19,12 +26,18 @@ public class FadeComponent : UnityEngine.MonoBehaviour
         _alphaDelta = 0.0f;
     }
 
-    //start 
-    public void SetFadeToBlack(float in_duration = 0.5f)
+    public bool IsFadeFullyObscuring()
+    {
+        return (1.0f == _alpha);
+    }
+
+    //go from not covering anything, to solid black
+    public void SetFadeToFullyObscuring(float in_duration = 0.5f)
     {
         _alphaDelta = 1.0f / in_duration;
     }
 
+    //go from solid black (or what ever the current state is), to seethrough
     public void SetFadeToTransparent(float in_duration = 0.5f)
     {
         _alphaDelta = (-1.0f) / in_duration;
@@ -32,17 +45,17 @@ public class FadeComponent : UnityEngine.MonoBehaviour
 
 	void Update()
 	{
-        //Application.Instance.Log("FadeComponent.Update()");
+        //Bootstrap.Instance.Log("FadeComponent.Update()");
 
         _alpha = UnityEngine.Mathf.Clamp(_alpha + (_alphaDelta * UnityEngine.Time.deltaTime), 0.0f, 1.0f);
         _UIBox.SetAlpha(_alpha);
-        //Application.Instance.Log(" _alpha:" + _alpha.ToString());
+        //Bootstrap.Instance.Log(" _alpha:" + _alpha.ToString());
 	}
 
     private void OnGUI()
     {
-        //Application.Instance.Log("FadeComponent.OnGUI()");
-        //Application.Instance.Log(" _alpha:" + _alpha.ToString());
+        //Bootstrap.Instance.Log("FadeComponent.OnGUI()");
+        //Bootstrap.Instance.Log(" _alpha:" + _alpha.ToString());
 
         if (0.0f < _alpha)
         {

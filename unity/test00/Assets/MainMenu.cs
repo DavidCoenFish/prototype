@@ -1,14 +1,13 @@
 ﻿public class MainMenu : UnityEngine.MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    private UIComponent _uiComponent;
 
-    // Update is called once per frame
-    void Update()
+    private System.Collections.IEnumerator Start()
     {
-        
+        Bootstrap.Instance.Log("MainMenu.Start()");
+
+        _uiComponent = gameObject.AddComponent<UIComponent>();
+        yield return _uiComponent.SetTemplate(UIComponent.UITemplate.MainMenu);
+        //yield return null;
     }
 }
