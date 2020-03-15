@@ -17,8 +17,8 @@ public class Bootstrap : UnityEngine.MonoBehaviour
 
     private DataStore _dataStore;
     private FadeComponent _fadeComponent;
-    //private string _lastStateName = null;
-    private UnityEngine.SceneManagement.Scene _scene;
+    private string _lastStateName = null;
+    //private UnityEngine.SceneManagement.Scene _scene;
 
     private System.Collections.IEnumerator Start()
     {
@@ -33,7 +33,7 @@ public class Bootstrap : UnityEngine.MonoBehaviour
         _dataStore = new DataStore();
         yield return _dataStore.Init();
 
-        yield return SetState("mainmenu");
+        yield return SetStateInternal("mainmenu");
     }
 
     public DataStore dataStore
@@ -53,12 +53,18 @@ public class Bootstrap : UnityEngine.MonoBehaviour
         UnityEngine.Debug.LogWarning("Bootstrap::Warn:" + param, context);
     }
 
+    public void SetState(string stateName)
+    {
+        StartCoroutine(SetState(stateName));
+    }
+
     //stateName is now scene name?
     //was planning on wrapping the state in a factory, and have it have a "HasFinished" method for load/ unload...
     //but does LoadSceneAsync, UnloadSceneAsync and IEnumerator Start() cover that for us?
-    public System.Collections.IEnumerator SetState(string stateName)
+    private System.Collections.IEnumerator SetStateInternal(string stateName)
     {
         Bootstrap.Instance.Log("SetState:" + stateName, this);
+        yield return null;
 
         _fadeComponent.SetFadeToFullyObscuring(); // go from whatever state currently in to black
         while(false == _fadeComponent.IsFadeFullyObscuring())
@@ -66,24 +72,16 @@ public class Bootstrap : UnityEngine.MonoBehaviour
             yield return null;
         }
 
-        //if (null != _lastStateName) //(null != _scene)
-        if (true == _scene.IsValid())
+        if (null != _lastStateName)
         {
-            Bootstrap.Instance.Log("UnloadSceneAsync:" + _scene.name, this);
-            yield return UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(_scene);
-            Bootstrap.Instance.Log("post UnloadSceneAsync", this);
+            yield return UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(_lastStateName);
+            _lastStateName = null;
         }
-        Bootstrap.Instance.Log("LoadSceneAsync:" + stateName, this);
-        yield return UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(stateName, UnityEngine.SceneManagement.LoadSceneMode.Additive);
-        Bootstrap.Instance.Log("post LoadSceneAsync:" + stateName, this);
-        _scene = UnityEngine.SceneManagement.SceneManager.GetSceneByName(stateName);
 
-        //want to wait till all object in the scene have finished start?
-        //while(false == _scene.isLoaded)
-        //{
-        //    yield return null;
-        //    Bootstrap.Instance.Log("_scene.isLoaded:" + _scene.isLoaded);
-        //}
+        yield return UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(stateName, UnityEngine.SceneManagement.LoadSceneMode.Additive);
+        _lastStateName = stateName;
+
+        //todo: is there some way to itterate over all the children of the added scene to see if their "Start" method has finished?
 
         _fadeComponent.SetFadeToTransparent();
     }

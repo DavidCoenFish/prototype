@@ -1,6 +1,7 @@
 ﻿public class UIComponent : UnityEngine.MonoBehaviour
 {
     public enum UITemplate {
+        None,
         MainMenu,
     //    Options,
     //    Language,
@@ -44,10 +45,20 @@
         return null;
     }
 
-    private static UIContainer MakeUIContainerMainMenu()
+    private UIContainer MakeUIContainerMainMenu()
     {
         UIContainer uiContainer = new UIContainer();
         uiContainer.AddUIElement(UILable.FactoryVersion((int)Bootstrap.UIRenderDepth.Menu));
+        uiContainer.AddUIElement(UIButton.FactoryButton(
+            UIButton.FactoryRect((UnityEngine.Screen.width * 0.5f) - 150.0f, (UnityEngine.Screen.height * 0.5f) - 75.0f, 300.0f, 150.0f),
+            "anykey",
+            (int)Bootstrap.UIRenderDepth.Menu,
+            () => { 
+                Bootstrap.Instance.Log("onclick");
+                //StartCoroutine(Bootstrap.Instance.SetState("tutorial00")); 
+                Bootstrap.Instance.SetStateTest("tutorial00");
+            }
+            ));
         return uiContainer;
     }
 }

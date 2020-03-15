@@ -4,38 +4,51 @@ public class UIButton : IUIElement
 {
     public delegate void ClickEventHandler();
 
-//public static bool Button(Rect position, GUIContent content, GUIStyle style);
-    public static UIButton FactoryButton(int depth)
+    public static IDagNodeValue< UnityEngine.Rect > FactoryRect(float left, float top, float width, float height)
     {
-        UnityEngine.GUIStyle style = new UnityEngine.GUIStyle();
-        style.normal.background = UnityEngine.Texture2D.whiteTexture;
-        UnityEngine.GUIContent guiContent = new UnityEngine.GUIContent();
-        guiContent.text = "this is a test";
-        UnityEngine.Rect rect = new UnityEngine.Rect((UnityEngine.Screen.width * 0.5f) - 50.0f, (UnityEngine.Screen.height * 0.5f) - 50.0f, 100.0f, 100.0f);
-        return new UIButton(rect, guiContent, style, null, depth);
+        DagNodeValue< UnityEngine.Rect > dagRect = new DagNodeValue< UnityEngine.Rect >( new UnityEngine.Rect(left, top, width, height));
+        return dagRect;
     }
 
-    private UnityEngine.Rect _rect;
-    private UnityEngine.GUIContent _content;
-    private UnityEngine.GUIStyle _style;
-    private event ClickEventHandler _onClick;
-    private int _depth;
-
-    public UIButton(UnityEngine.Rect rect, UnityEngine.GUIContent content, UnityEngine.GUIStyle style, ClickEventHandler onClick, int depth)
+    public static UIButton FactoryButton(IDagNodeValue< UnityEngine.Rect > dagRect, string localeKey, int depth, ClickEventHandler onClick)
     {
-        _rect = rect;
-        _content = content;
-        _style = style;
+        DagNodeValue< int > dagDepth = new DagNodeValue< int >(depth);
+
+        UnityEngine.GUIStyle style = new UnityEngine.GUIStyle();
+        style.normal.background = UnityEngine.Texture2D.whiteTexture;
+        DagNodeValue< UnityEngine.GUIStyle > dagStyle = new DagNodeValue< UnityEngine.GUIStyle >(style);
+        DagGUIContent dagGUIContent = DagGUIContent.FactoryLocale(localeKey);
+
+        return new UIButton(dagRect, dagGUIContent, dagStyle, dagDepth, onClick);
+    }
+
+    private IDagNodeValue< UnityEngine.Rect > _dagRect;
+    private IDagNodeValue< UnityEngine.GUIContent > _dagGUIContent;
+    private IDagNodeValue< UnityEngine.GUIStyle > _dagGUIStyle;
+    private IDagNodeValue< int > _dagDepth;
+    private event ClickEventHandler _onClick;
+
+    public UIButton(
+        IDagNodeValue< UnityEngine.Rect > dagRect,
+        IDagNodeValue< UnityEngine.GUIContent > dagGUIContent,
+        IDagNodeValue< UnityEngine.GUIStyle > dagGUIStyle,
+        IDagNodeValue< int > dagDepth,
+        ClickEventHandler onClick
+        )
+    {
+        _dagRect = dagRect;
+        _dagGUIContent = dagGUIContent;
+        _dagGUIStyle = dagGUIStyle;
+        _dagDepth = dagDepth;
         _onClick = onClick;
-        _depth = depth;
     }
 
     //void IUIElement.Draw()
     public void Draw()
     {
-        UnityEngine.GUI.depth = _depth;
+        UnityEngine.GUI.depth = _dagDepth.GetValue();
         //Application.Instance.Log("UIButton.Draw()");
-        if (UnityEngine.GUI.Button(_rect, _content, _style))
+        if (UnityEngine.GUI.Button(_dagRect.GetValue(), _dagGUIContent.GetValue(), _dagGUIStyle.GetValue()))
         {
             if (null != _onClick)
             {

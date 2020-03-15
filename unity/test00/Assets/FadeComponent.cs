@@ -15,7 +15,7 @@ public class FadeComponent : UnityEngine.MonoBehaviour
 
     public void SetDepth(int depth)
     {
-        Bootstrap.Instance.Log("FadeComponent.SetDepth()", this);
+        //Bootstrap.Instance.Log("FadeComponent.SetDepth()", this);
         _depth = depth;
     }
 

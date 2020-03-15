@@ -3,7 +3,7 @@
     public static UILable FactoryVersion(int depth)
     {
         DagNodeValue< int > dagDepth = new DagNodeValue< int >(depth);
-        DagNodeValue< UnityEngine.Rect > dagRect = new DagNodeValue< UnityEngine.Rect >( new UnityEngine.Rect(UnityEngine.Screen.width - 200.0f, UnityEngine.Screen.height - 50.0f, 200.0f, 50.0f));
+        DagNodeValue< UnityEngine.Rect > dagRect = new DagNodeValue< UnityEngine.Rect >( new UnityEngine.Rect(UnityEngine.Screen.width - 200.0f, UnityEngine.Screen.height - 25.0f, 200.0f, 25.0f));
 
         UnityEngine.GUIStyle style = new UnityEngine.GUIStyle();
         //style.normal.background = UnityEngine.Texture2D.whiteTexture;
