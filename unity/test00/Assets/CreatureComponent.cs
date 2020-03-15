@@ -59,7 +59,51 @@ public class CreatureComponent : UnityEngine.MonoBehaviour
     private System.Collections.Generic.List< UnityEngine.SphereCollider > _sphereColliderArray = new System.Collections.Generic.List< UnityEngine.SphereCollider >();
     private System.Collections.Generic.List< UnityEngine.GameObject > _childGameObjectArraySphere = new System.Collections.Generic.List< UnityEngine.GameObject >();
     private System.Collections.Generic.List< UnityEngine.GameObject > _childGameObjectArrayCube = new System.Collections.Generic.List< UnityEngine.GameObject >();
-    private float _height;
+    private float _height = 1.0f;
+    private bool _touchingGround = false;
+
+    struct TouchData
+    {
+        public bool touchActive = false;
+        public UnityEngine.Vector2 touch = new UnityEngine.Vector2(0.0f, 0.0f);
+        public bool touchActiveOld = false;
+        public UnityEngine.Vector2 touchOld = new UnityEngine.Vector2(0.0f, 0.0f);
+        public float touchTimeAccumulation = 0.0f;
+        public bool doneJumpThisTouch = false;
+    }
+    private TouchData _inputTouchData = new TouchData();
+    private TouchData _viewTouchData = new TouchData();
+
+    public bool humanInput = false;
+    public bool inputTouchActive
+    {
+        set
+        {
+            _inputTouchData.touchActive = value;
+        }
+    }
+    public UnityEngine.Vector2 inputTouch
+    {
+        set
+        {
+            _inputTouchData.touch = value;
+        }
+    }
+
+    public bool viewTouchActive
+    {
+        set
+        {
+            _viewTouchData.touchActive = value;
+        }
+    }
+    public UnityEngine.Vector2 viewTouch
+    {
+        set
+        {
+            _viewTouchData.touch = value;
+        }
+    }
 
     void Start()
     {
@@ -113,6 +157,19 @@ public class CreatureComponent : UnityEngine.MonoBehaviour
     void Update()
     {
         //Time.deltaTime
+        int layerMask = 1 << 8;
+        UnityEngine.Vector3 touchingGroundPosition = new UnityEngine.Vector3(_childGameObjectArrayCube.transform.position.x, _childGameObjectArrayCube.transform.position.y - (0.55f * _height), _childGameObjectArrayCube.transform.position.z);
+        _touchingGround = UnityEngine.Physics.CheckSphere(touchingGroundPosition, 0.1f, layerMask, QueryTriggerInteraction.Ignore);
+
+        bool doJump = UpdateTouchData(_inputTouchData, Time.deltaTime);
+
+    }
+
+    private static bool UpdateTouchData(TouchData touchData, float deltaTime)
+    {
+
+
+        touchData.touchActiveOld = touchData.touchActive;
     }
 
     void FixedUpdate()
