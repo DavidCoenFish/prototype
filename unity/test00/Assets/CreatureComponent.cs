@@ -57,7 +57,8 @@ public class CreatureComponent : UnityEngine.MonoBehaviour
 
     private UnityEngine.Rigidbody _rigidbody;
     private System.Collections.Generic.List< UnityEngine.SphereCollider > _sphereColliderArray = new System.Collections.Generic.List< UnityEngine.SphereCollider >();
-    private System.Collections.Generic.List< UnityEngine.GameObject > _childGameObjectArray = new System.Collections.Generic.List< UnityEngine.GameObject >();
+    private System.Collections.Generic.List< UnityEngine.GameObject > _childGameObjectArraySphere = new System.Collections.Generic.List< UnityEngine.GameObject >();
+    private System.Collections.Generic.List< UnityEngine.GameObject > _childGameObjectArrayCube = new System.Collections.Generic.List< UnityEngine.GameObject >();
     private float _height;
 
     void Start()
@@ -80,22 +81,33 @@ public class CreatureComponent : UnityEngine.MonoBehaviour
             _sphereColliderArray.Add(sphereCollider);
         }
 
+        //Assets/Resources/material/CreatureSkin.mat
+        UnityEngine.Material materialSkin = UnityEngine.Resources.Load<UnityEngine.Material>("material/CreatureSkin");
+        //Assets/Resources/material/CreatureDark.mat
+        UnityEngine.Material materialDark = UnityEngine.Resources.Load<UnityEngine.Material>("material/CreatureDark");
+
         foreach (SpherePosData data in _standingSphereCollider)
         {
-            //UnityEngine.GameObject childGameObject = new UnityEngine.GameObject("creaturechild");
             UnityEngine.GameObject childGameObject = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Sphere);
-            //UnityEngine.MeshFilter meshFilter = childGameObject.AddComponent<UnityEngine.MeshFilter>();
-            //meshFilter.sharedMesh = UnityEngine.PrimitiveHelper.GetPrimitiveMesh(UnityEngine.PrimitiveType.Sphere);
-            //childGameObject.AddComponent<UnityEngine.MeshRenderer>();
-
+            childGameObject.GetComponent<UnityEngine.Renderer>().sharedMaterial = materialSkin;
             childGameObject.transform.parent = gameObject.transform;
-            childGameObject.transform.position = new UnityEngine.Vector3(data.center.x * _height, data.center.y * _height, data.center.z * _height);
+            childGameObject.transform.localPosition = new UnityEngine.Vector3(data.center.x * _height, data.center.y * _height, data.center.z * _height);
             float childScale = data.radius * _height * 2.0f;
             childGameObject.transform.localScale = new UnityEngine.Vector3(childScale, childScale, childScale);
-            _childGameObjectArray.Add(childGameObject);
+            _childGameObjectArraySphere.Add(childGameObject);
         }
 
-        UnityEngine.Debug.Log("CreatureComponent.End", this);
+        foreach (ChildTransform data in _standCubeMesh)
+        {
+            UnityEngine.GameObject childGameObject = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cube);
+            childGameObject.GetComponent<UnityEngine.Renderer>().sharedMaterial = materialDark;
+            childGameObject.transform.parent = gameObject.transform;
+            childGameObject.transform.localPosition = new UnityEngine.Vector3(data.position.x * _height, data.position.y * _height, data.position.z * _height);
+            childGameObject.transform.localRotation = UnityEngine.Quaternion.Euler(data.rotation.x, data.rotation.y, data.rotation.z);
+            childGameObject.transform.localScale = new UnityEngine.Vector3(data.scale.x * _height, data.scale.y * _height, data.scale.z * _height);
+
+            _childGameObjectArrayCube.Add(childGameObject);
+        }
     }
 
     void Update()
