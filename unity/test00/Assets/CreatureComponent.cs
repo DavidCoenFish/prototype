@@ -20,7 +20,7 @@ public class CreatureComponent : UnityEngine.MonoBehaviour
     private TouchData _inputTouchData = new TouchData();
     private TouchData _viewTouchData = new TouchData();
 
-    public bool humanInput = false;
+    public bool humanHost = false;
     public bool inputTouchActive
     {
         set
@@ -85,6 +85,23 @@ public class CreatureComponent : UnityEngine.MonoBehaviour
 
         _inputs.x = UnityEngine.Input.GetAxis("Horizontal");
         _inputs.z = UnityEngine.Input.GetAxis("Vertical");
+
+        if ((true == humanHost) && (null != UnityEngine.Camera.main))
+        {
+            UnityEngine.Camera camera = null;
+            foreach (UnityEngine.Camera trace in UnityEngine.Camera.allCameras)
+            {
+                if (UnityEngine.Camera.main == trace)
+                {
+                    camera = trace;
+                }
+            }
+            if (null != camera)
+            {
+                camera.transform.position = gameObject.transform.position;
+                camera.transform.rotation = gameObject.transform.rotation;
+            }
+        }
     }
 
     private static bool UpdateTouchData(TouchData touchData, float deltaTime)

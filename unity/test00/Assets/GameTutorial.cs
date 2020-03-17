@@ -1,14 +1,9 @@
 ﻿public class GameTutorial : UnityEngine.MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    //GameObject.FindWithTag("Main Camera").camera
+    void Awake()
     {
-        
+
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

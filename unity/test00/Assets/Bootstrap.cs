@@ -18,6 +18,7 @@ public class Bootstrap : UnityEngine.MonoBehaviour
     private DataStore _dataStore;
     private FadeComponent _fadeComponent;
     private string _lastStateName = null;
+    public UnityEngine.Camera bootstrapCamera;
     //private UnityEngine.SceneManagement.Scene _scene;
 
     private System.Collections.IEnumerator Start()
@@ -58,6 +59,14 @@ public class Bootstrap : UnityEngine.MonoBehaviour
         StartCoroutine(SetStateInternal(stateName));
     }
 
+    private void DisableAllCameras()
+    {
+        foreach (UnityEngine.Camera trace in UnityEngine.Camera.allCameras)
+        {
+            trace.enabled = false;
+        }
+    }
+
     //stateName is now scene name?
     //was planning on wrapping the state in a factory, and have it have a "HasFinished" method for load/ unload...
     //but does LoadSceneAsync, UnloadSceneAsync and IEnumerator Start() cover that for us?
@@ -72,6 +81,12 @@ public class Bootstrap : UnityEngine.MonoBehaviour
             yield return null;
         }
 
+        DisableAllCameras();
+        if (null != bootstrapCamera)
+        {
+            bootstrapCamera.enabled = true;
+        }
+
         if (null != _lastStateName)
         {
             yield return UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(_lastStateName);
@@ -80,6 +95,11 @@ public class Bootstrap : UnityEngine.MonoBehaviour
 
         yield return UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(stateName, UnityEngine.SceneManagement.LoadSceneMode.Additive);
         _lastStateName = stateName;
+
+        if (null != bootstrapCamera)
+        {
+            bootstrapCamera.enabled = false;
+        }
 
         //todo: is there some way to itterate over all the children of the added scene to see if their "Start" method has finished?
 
