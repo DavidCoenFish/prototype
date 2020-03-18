@@ -49,7 +49,7 @@ public class UserData
             }
             catch (System.Exception e)
             {
-                Bootstrap.Instance.Warn(e.ToString());
+                Bootstrap.Warn(e.ToString());
             }
         }
         else

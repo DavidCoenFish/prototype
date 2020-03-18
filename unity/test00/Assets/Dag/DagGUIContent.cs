@@ -4,7 +4,7 @@
     public static DagGUIContent FactoryLocaleVersion()
     {
         DagLocale dagLocale = new DagLocale("version");
-        DagNodeValue<string> dagVersion = new DagNodeValue<string>( Bootstrap.Instance.dataStore.staticData.GetString("version"));
+        DagNodeValue<string> dagVersion = new DagNodeValue<string>( Bootstrap.GetDataStore().staticData.GetString("version"));
         DagStringConcat dagStringConcat = new DagStringConcat(" ");
         DagNode.Link(0, dagLocale, dagStringConcat);
         DagNode.Link(1, dagVersion, dagStringConcat);

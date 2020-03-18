@@ -13,19 +13,32 @@ public class Bootstrap : UnityEngine.MonoBehaviour
         HUD = 4
     }
 
-    public static Bootstrap Instance;
-
+    private static Bootstrap _instance;
     private DataStore _dataStore;
     private FadeComponent _fadeComponent;
     private string _lastStateName = null;
-    public UnityEngine.Camera bootstrapCamera;
     //private UnityEngine.SceneManagement.Scene _scene;
+
+    public UnityEngine.Camera bootstrapCamera;
+
+    void Awake()
+    {
+        Log("Bootstrap.Awake()");
+        //Singleton pattern
+        if(_instance == null)
+        {
+            DontDestroyOnLoad(gameObject);
+            _instance = this;
+        }
+        else if(_instance != this)
+        {
+            Destroy(gameObject);
+        }
+    }
 
     private System.Collections.IEnumerator Start()
     {
         Log("Bootstrap.Start()");
-        //weak attempt at singelton, probabbly a better way
-        Instance = this;
 
         _fadeComponent = gameObject.AddComponent<FadeComponent>();
         _fadeComponent.SetDepth((int)UIRenderDepth.BootstrapFade);
@@ -37,26 +50,21 @@ public class Bootstrap : UnityEngine.MonoBehaviour
         yield return SetStateInternal("mainmenu");
     }
 
-    public DataStore dataStore
-    {
-        get
-        {
-            return _dataStore;
-        }
-    }
-
-    public void Log(string param, UnityEngine.Object context = null)
+    public static void Log(string param, UnityEngine.Object context = null)
     {
         UnityEngine.Debug.Log("Bootstrap::Log:" + param, context);
     }
-    public void Warn(string param, UnityEngine.Object context = null)
+    public static void Warn(string param, UnityEngine.Object context = null)
     {
         UnityEngine.Debug.LogWarning("Bootstrap::Warn:" + param, context);
     }
 
-    public void SetState(string stateName)
+    public static void SetState(string stateName)
     {
-        StartCoroutine(SetStateInternal(stateName));
+        if (null != _instance)
+        {
+            _instance.StartCoroutine(_instance.SetStateInternal(stateName));
+        }
     }
 
     private void DisableAllCameras()
@@ -72,7 +80,7 @@ public class Bootstrap : UnityEngine.MonoBehaviour
     //but does LoadSceneAsync, UnloadSceneAsync and IEnumerator Start() cover that for us?
     private System.Collections.IEnumerator SetStateInternal(string stateName)
     {
-        Bootstrap.Instance.Log("SetState:" + stateName, this);
+        Log("SetState:" + stateName, this);
         yield return null;
 
         _fadeComponent.SetFadeToFullyObscuring(); // go from whatever state currently in to black
@@ -104,5 +112,10 @@ public class Bootstrap : UnityEngine.MonoBehaviour
         //todo: is there some way to itterate over all the children of the added scene to see if their "Start" method has finished?
 
         _fadeComponent.SetFadeToTransparent();
+    }
+
+    public static DataStore GetDataStore()
+    {
+        return _instance._dataStore;
     }
 }

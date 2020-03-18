@@ -4,7 +4,7 @@
 
     private System.Collections.IEnumerator Start()
     {
-        Bootstrap.Instance.Log("MainMenu.Start()");
+        Bootstrap.Log("MainMenu.Start()");
 
         _uiComponent = gameObject.AddComponent<UIComponent>();
         yield return _uiComponent.SetTemplate(UIComponent.UITemplate.MainMenu);

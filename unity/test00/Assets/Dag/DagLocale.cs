@@ -38,7 +38,7 @@
         {
             _dirty = false;
             //todo, move locale to a dagnode input, and hook up dirty. out of time...
-            _value = Bootstrap.Instance.dataStore.localeData.GetValue(_key);
+            _value = Bootstrap.GetDataStore().localeData.GetValue(_key);
         }
         return _value;
     }

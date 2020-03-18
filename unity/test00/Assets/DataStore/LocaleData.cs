@@ -13,7 +13,7 @@
 		}
         catch (System.Exception e)
         {
-            Bootstrap.Instance.Log(e.ToString());
+            Bootstrap.Log(e.ToString());
         }
 		return new LocaleData(jsonObject);
 	}
@@ -22,7 +22,7 @@
 
 	public LocaleData(SimpleJSON.JSONObject jsonObject)
 	{
-        //Bootstrap.Instance.Log("LocaleData.LocaleData()");
+        //Bootstrap.Log("LocaleData.LocaleData()");
 		_jsonObject = jsonObject;
 	}
 

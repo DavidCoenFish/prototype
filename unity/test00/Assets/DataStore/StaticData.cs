@@ -7,12 +7,12 @@
 		try
 		{
 			UnityEngine.TextAsset textAsset = UnityEngine.Resources.Load(filePath, typeof(UnityEngine.TextAsset)) as UnityEngine.TextAsset;
-	        //Bootstrap.Instance.Log(textAsset.text);
+	        //Bootstrap.Log(textAsset.text);
 			jsonNode = SimpleJSON.JSON.Parse(textAsset.text);
 		}
         catch (System.Exception e)
         {
-            Bootstrap.Instance.Warn(e.ToString());
+            Bootstrap.Warn(e.ToString());
         }
         return new StaticData(jsonNode);
     }
@@ -39,7 +39,7 @@
         {
             return node.Value;
         }
-        Bootstrap.Instance.Warn("LocaleData.GetString() path not found:" + path);
+        Bootstrap.Warn("LocaleData.GetString() path not found:" + path);
         return "";
     }
 
@@ -50,7 +50,7 @@
         {
             return node.AsFloat;
         }
-        Bootstrap.Instance.Warn("LocaleData.GetFloat() path not found:" + path);
+        Bootstrap.Warn("LocaleData.GetFloat() path not found:" + path);
         return 0.0f;
     }
 

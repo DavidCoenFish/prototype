@@ -54,8 +54,8 @@
             "anykey",
             (int)Bootstrap.UIRenderDepth.Menu,
             () => { 
-                Bootstrap.Instance.Log("onclick");
-                Bootstrap.Instance.SetState("tutorial00");
+                Bootstrap.Log("onclick");
+                Bootstrap.SetState("tutorial00");
             }
             ));
         return uiContainer;

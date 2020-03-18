@@ -9,13 +9,13 @@ public class FadeComponent : UnityEngine.MonoBehaviour
 
     void Start()
     {
-        Bootstrap.Instance.Log("FadeComponent.Start()", this);
+        Bootstrap.Log("FadeComponent.Start()", this);
         _UIBox = UIBox.FactoryScreenQuad(_depth);
     }
 
     public void SetDepth(int depth)
     {
-        //Bootstrap.Instance.Log("FadeComponent.SetDepth()", this);
+        //Bootstrap.Log("FadeComponent.SetDepth()", this);
         _depth = depth;
     }
 
@@ -45,17 +45,17 @@ public class FadeComponent : UnityEngine.MonoBehaviour
 
 	void Update()
 	{
-        //Bootstrap.Instance.Log("FadeComponent.Update()");
+        //Bootstrap.Log("FadeComponent.Update()");
 
         _alpha = UnityEngine.Mathf.Clamp(_alpha + (_alphaDelta * UnityEngine.Time.deltaTime), 0.0f, 1.0f);
         _UIBox.SetAlpha(_alpha);
-        //Bootstrap.Instance.Log(" _alpha:" + _alpha.ToString());
+        //Bootstrap.Log(" _alpha:" + _alpha.ToString());
 	}
 
     private void OnGUI()
     {
-        //Bootstrap.Instance.Log("FadeComponent.OnGUI()");
-        //Bootstrap.Instance.Log(" _alpha:" + _alpha.ToString());
+        //Bootstrap.Log("FadeComponent.OnGUI()");
+        //Bootstrap.Log(" _alpha:" + _alpha.ToString());
 
         if (0.0f < _alpha)
         {
