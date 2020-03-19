@@ -1,5 +1,5 @@
 ﻿//https://medium.com/ironequal/unity-character-controller-vs-rigidbody-a1e243591483
-public class CreatureComponent : UnityEngine.MonoBehaviour
+public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
 {
     public string typeName = "rat"; //[rat, chicken, 
     private bool _touchingGround = false;
@@ -86,22 +86,8 @@ public class CreatureComponent : UnityEngine.MonoBehaviour
         _inputs.x = UnityEngine.Input.GetAxis("Horizontal");
         _inputs.z = UnityEngine.Input.GetAxis("Vertical");
 
-        if ((true == humanHost) && (null != UnityEngine.Camera.main))
-        {
-            UnityEngine.Camera camera = null;
-            foreach (UnityEngine.Camera trace in UnityEngine.Camera.allCameras)
-            {
-                if (UnityEngine.Camera.main == trace)
-                {
-                    camera = trace;
-                }
-            }
-            if (null != camera)
-            {
-                camera.transform.position = gameObject.transform.position;
-                camera.transform.rotation = gameObject.transform.rotation;
-            }
-        }
+        //temp, move authoraty to gameComponent
+        GameComponent.SetHumanPlayer(0, this);
     }
 
     private static bool UpdateTouchData(TouchData touchData, float deltaTime)
@@ -117,4 +103,11 @@ public class CreatureComponent : UnityEngine.MonoBehaviour
         //_rigidbody.MoveRotation(_rigidbody.rotation * deltaRotation);
         _rigidbody.MovePosition(_rigidbody.position + (_inputs * UnityEngine.Time.fixedDeltaTime));
     }
+
+    //public interface IPlayerComponent
+    public UnityEngine.Transform GetCameraTransform()
+    {
+        return gameObject.transform;
+    }
+
 }
