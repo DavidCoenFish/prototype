@@ -27,7 +27,7 @@ public class Bootstrap : UnityEngine.MonoBehaviour
         //Singleton pattern
         if(_instance == null)
         {
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
             _instance = this;
         }
         else if(_instance != this)

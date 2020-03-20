@@ -4,22 +4,24 @@
 public class CreatureExtraComponent : UnityEngine.MonoBehaviour
 {
     public string typeName = "rat"; //[rat, chicken, 
-    public float crouch; // 0.0 => stand, 1.0 => crouch
     public float height;
     public float viewElevationDegrees; //look up, positive
     public bool viewElevationControlsHead; //when KO/ set flying, turn off?
-    public float bodyLeanForwardDegrees;
+    public float bodyLeanForwardDegrees; // or is this with the ridged body?
     public TPose pose;
 
     private float[] _poseWeight = { 1.0f, 0.0f };
     private System.Collections.Generic.List< GameObjectData > _childGameObjectArray = new System.Collections.Generic.List< GameObjectData >();
     private UnityEngine.GameObject _headGameObject;
     private UnityEngine.GameObject _headParentGameObject;
+	private UnityEngine.Material _materialSphere;
+	private UnityEngine.Material _materialCube;
 
     struct GameObjectData
     {
         public PoseData poseData { get; set; }
         public UnityEngine.GameObject gameObject { get; set; }
+        public bool root { get; set; }
     }
 
     //pose data, todo: from file or prefab
@@ -35,9 +37,8 @@ public class CreatureExtraComponent : UnityEngine.MonoBehaviour
         public string name { get; set; } 
         public bool sphere { get; set; } // represent pose data with a sphere
         public bool cube { get; set; } // represent with a cube
-        public TransformData[] transformData { get; set; }
-        public PoseData[] poseDataChildren { get; set; }
-
+	    public System.Collections.Generic.List< TransformData > transformData { get; set; }
+	    public System.Collections.Generic.List< PoseData > poseDataChildren { get; set; }
     }
 
     public enum TPose
@@ -47,11 +48,11 @@ public class CreatureExtraComponent : UnityEngine.MonoBehaviour
         Count
     }
 
-    private static PoseData _poseData = new PoseData{ 
+    private static PoseData _poseData = new PoseData(){ 
         name = "SpineC", 
         sphere = true, 
         cube = false, 
-        transformData = {
+        transformData = new System.Collections.Generic.List< TransformData >(){
             //standing
             new TransformData{
                 position = new UnityEngine.Vector3(0.0f, -0.25f, 0.0f ),
@@ -65,12 +66,12 @@ public class CreatureExtraComponent : UnityEngine.MonoBehaviour
                 scale = new UnityEngine.Vector3(0.5f, 0.5f, 0.5f )
             }
         },
-        poseDataChildren = {
+        poseDataChildren = new System.Collections.Generic.List< PoseData >(){
             new PoseData{
                 name = "SpineB", 
                 sphere = true, 
                 cube = false, 
-                transformData = {
+                transformData = new System.Collections.Generic.List< TransformData >(){
                     //standing
                     new TransformData{
                         position = new UnityEngine.Vector3(0.0f, 0.542f, 0.0f ),
@@ -84,12 +85,12 @@ public class CreatureExtraComponent : UnityEngine.MonoBehaviour
                         scale = new UnityEngine.Vector3(0.875f, 0.875f, 0.875f )
                     }
                 },
-                poseDataChildren = {
+                poseDataChildren = new System.Collections.Generic.List< PoseData >(){
                     new PoseData{
-                        name = "SpineC", 
+                        name = "SpineA", 
                         sphere = true, 
                         cube = false, 
-                        transformData = {
+                        transformData = new System.Collections.Generic.List< TransformData >(){
                             //standing
                             new TransformData{
                                 position = new UnityEngine.Vector3(0.0f, 0.666f, 0.0f ),
@@ -103,12 +104,12 @@ public class CreatureExtraComponent : UnityEngine.MonoBehaviour
                                 scale = new UnityEngine.Vector3(0.875f, 0.875f, 0.875f )
                             }
                         },
-                        poseDataChildren = {
+                        poseDataChildren = new System.Collections.Generic.List< PoseData >(){
                             new PoseData{
                                 name = "Head", 
                                 sphere = true, 
                                 cube = false, 
-                                transformData = {
+                                transformData = new System.Collections.Generic.List< TransformData >(){
                                     //standing
                                     new TransformData{
                                         position = new UnityEngine.Vector3(0.666f, 0.1666f, 0.0f ),
@@ -122,12 +123,12 @@ public class CreatureExtraComponent : UnityEngine.MonoBehaviour
                                         scale = new UnityEngine.Vector3(0.666f, 0.666f, 0.666f )
                                     }
                                 },
-                                poseDataChildren = {
+                                poseDataChildren = new System.Collections.Generic.List< PoseData >(){
                                     new PoseData{
                                         name = "CubeAgro0", 
                                         sphere = false, 
                                         cube = true, 
-                                        transformData = {
+                                        transformData = new System.Collections.Generic.List< TransformData >(){
                                             //standing
                                             new TransformData{
                                                 position = new UnityEngine.Vector3(0.352f, 0.444f, 0.2159f ),
@@ -141,13 +142,13 @@ public class CreatureExtraComponent : UnityEngine.MonoBehaviour
                                                 scale = new UnityEngine.Vector3(0.12f, 0.12f, 0.4f )
                                             }
                                         },
-                                        poseDataChildren = {}
+                                        poseDataChildren = new System.Collections.Generic.List< PoseData >(){}
                                     },
                                     new PoseData{
                                         name = "CubeAgro1", 
                                         sphere = false, 
                                         cube = true, 
-                                        transformData = {
+                                        transformData = new System.Collections.Generic.List< TransformData >(){
                                             //standing
                                             new TransformData{
                                                 position = new UnityEngine.Vector3(0.352f, 0.444f, -0.2159f ),
@@ -161,7 +162,7 @@ public class CreatureExtraComponent : UnityEngine.MonoBehaviour
                                                 scale = new UnityEngine.Vector3(0.12f, 0.12f, 0.4f )
                                             }
                                         },
-                                        poseDataChildren = {}
+                                        poseDataChildren = new System.Collections.Generic.List< PoseData >(){}
                                     },
                                 }
                             },
@@ -172,43 +173,91 @@ public class CreatureExtraComponent : UnityEngine.MonoBehaviour
         }
     };
 
+	private static UnityEngine.Vector3 AccumulateVector3(UnityEngine.Vector3 output, float weight, UnityEngine.Vector3 input)
+	{
+		return output + (input * weight);
+	}
+
+	private void UpdatePoseTransform(UnityEngine.GameObject subject, PoseData poseData, bool root)
+	{
+		UnityEngine.Vector3 positionSum = new UnityEngine.Vector3();
+		UnityEngine.Vector3 rotationSum = new UnityEngine.Vector3();
+		UnityEngine.Vector3 scaleSum = new UnityEngine.Vector3();
+		for (int index = 0; index < (int)TPose.Count; ++index)
+		{
+			float weight = _poseWeight[index];
+			if (weight <= 0.0f)
+			{
+				continue;
+			}
+			positionSum = AccumulateVector3(positionSum, weight, poseData.transformData[index].position);
+			rotationSum = AccumulateVector3(rotationSum, weight, poseData.transformData[index].rotation);
+            float scaleWeight = weight;
+            if (true == root)
+            {
+                scaleWeight *= height;
+            }
+			scaleSum = AccumulateVector3(scaleSum, scaleWeight, poseData.transformData[index].scale);
+		}
+
+		subject.transform.localPosition = positionSum;
+		subject.transform.localRotation = UnityEngine.Quaternion.Euler(rotationSum.x, rotationSum.y, rotationSum.z);;
+		subject.transform.localScale = scaleSum;
+	}
+
+	private void BuildHeirarchy(UnityEngine.GameObject parentGameObject, PoseData poseData, bool root)
+	{
+		UnityEngine.GameObject created = null;
+		if (true == poseData.sphere)
+		{
+			UnityEngine.GameObject childGameObject = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Sphere);
+			childGameObject.GetComponent<UnityEngine.Renderer>().sharedMaterial = _materialSphere;
+			var sphereCollider = childGameObject.AddComponent<UnityEngine.SphereCollider>();
+			sphereCollider.center = UnityEngine.Vector3.zero;
+			sphereCollider.radius = 0.5f;
+			childGameObject.transform.parent = parentGameObject.transform;
+			_childGameObjectArray.Add( new GameObjectData(){poseData=poseData, gameObject=childGameObject, root=root});
+			UpdatePoseTransform(childGameObject, poseData, root);
+			created = childGameObject;
+		}
+		if (true == poseData.cube)
+		{
+			UnityEngine.GameObject childGameObject = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cube);
+			childGameObject.GetComponent<UnityEngine.Renderer>().sharedMaterial = _materialCube;
+			childGameObject.transform.parent = parentGameObject.transform;
+			_childGameObjectArray.Add( new GameObjectData(){poseData=poseData, gameObject=childGameObject, root=root});
+			UpdatePoseTransform(childGameObject, poseData, root);
+			created = childGameObject;
+		}
+
+		if (null == created)
+		{
+			UnityEngine.GameObject childGameObject =new UnityEngine.GameObject();
+			childGameObject.transform.parent = parentGameObject.transform;
+			_childGameObjectArray.Add( new GameObjectData(){poseData=poseData, gameObject=childGameObject, root=root});
+			UpdatePoseTransform(childGameObject, poseData, root);
+			created = childGameObject;
+		}
+
+		for (int index = 0; index < poseData.poseDataChildren.Count; ++index)
+		{
+			BuildHeirarchy(created, poseData.poseDataChildren[index], false);
+		}
+	}
+
+
     // Start is called before the first frame update
     void Start()
     {
         UnityEngine.Debug.Log("CreatureExtraComponent.Start", this);
 
         //Assets/Resources/material/CreatureSkin.mat
-        UnityEngine.Material materialSkin = UnityEngine.Resources.Load<UnityEngine.Material>("material/CreatureSkin");
+        _materialSphere = UnityEngine.Resources.Load<UnityEngine.Material>("material/CreatureSkin");
         //Assets/Resources/material/CreatureDark.mat
-        UnityEngine.Material materialDark = UnityEngine.Resources.Load<UnityEngine.Material>("material/CreatureDark");
+        _materialCube = UnityEngine.Resources.Load<UnityEngine.Material>("material/CreatureDark");
 
         UnityEngine.GameObject trace = gameObject;
-        BuildHeirarchy(trace, _poseData);
-
-        UpdatePose();
-
-        //foreach (SpherePosData data in _standingSphereCollider)
-        //{
-        //    UnityEngine.GameObject childGameObject = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Sphere);
-        //    childGameObject.GetComponent<UnityEngine.Renderer>().sharedMaterial = materialSkin;
-        //    childGameObject.transform.parent = gameObject.transform;
-        //    childGameObject.transform.localPosition = new UnityEngine.Vector3(data.center.x * height, data.center.y * height, data.center.z * height);
-        //    float childScale = data.radius * height * 2.0f;
-        //    childGameObject.transform.localScale = new UnityEngine.Vector3(childScale, childScale, childScale);
-        //    _childGameObjectArraySphere.Add(childGameObject);
-        //}
-
-        //foreach (ChildTransform data in _standCubeMesh)
-        //{
-        //    UnityEngine.GameObject childGameObject = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cube);
-        //    childGameObject.GetComponent<UnityEngine.Renderer>().sharedMaterial = materialDark;
-        //    childGameObject.transform.parent = gameObject.transform;
-        //    childGameObject.transform.localPosition = new UnityEngine.Vector3(data.position.x * height, data.position.y * height, data.position.z * height);
-        //    childGameObject.transform.localRotation = UnityEngine.Quaternion.Euler(data.rotation.x, data.rotation.y, data.rotation.z);
-        //    childGameObject.transform.localScale = new UnityEngine.Vector3(data.scale.x * height, data.scale.y * height, data.scale.z * height);
-
-        //    _childGameObjectArrayCube.Add(childGameObject);
-        //}
+        BuildHeirarchy(trace, _poseData, true);
     }
 
     // Update is called once per frame
@@ -221,10 +270,10 @@ public class CreatureExtraComponent : UnityEngine.MonoBehaviour
 
     private void UpdatePoseWeight()
     {
-        for (int index = 0; index < TPose.Count; ++index)
+        for (int index = 0; index < (int)TPose.Count; ++index)
         {
             float delta = UnityEngine.Time.deltaTime * 2.0f;
-            if (index != pose)
+            if (index != (int)pose)
             {
                 delta = -delta;
             }
@@ -233,12 +282,15 @@ public class CreatureExtraComponent : UnityEngine.MonoBehaviour
         }
     }
 
-    private void UpdatePose()
-    {
+	private void UpdatePose()
+	{
+		foreach ( GameObjectData gameObjectData in _childGameObjectArray)
+		{
+			UpdatePoseTransform(gameObjectData.gameObject, gameObjectData.poseData, gameObjectData.root);
+		}
+	}
 
-    }
-
-    private UpdateViewElevation()
+    private void UpdateViewElevation()
     {
     }
 

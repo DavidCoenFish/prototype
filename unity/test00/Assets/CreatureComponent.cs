@@ -65,7 +65,7 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
 
         _creatureExtraComponent = gameObject.AddComponent<CreatureExtraComponent>();
         _creatureExtraComponent.typeName = typeName;
-        _creatureExtraComponent.crouch = UnityEngine.Mathf.Sin(_debugTimeAccumulate * 0.5f);
+        //_creatureExtraComponent.crouch = UnityEngine.Mathf.Sin(_debugTimeAccumulate * 0.5f);
         _creatureExtraComponent.height = _height;
     }
 
@@ -81,7 +81,8 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
         bool doJump = UpdateTouchData(_inputTouchData, UnityEngine.Time.deltaTime);
 
         _debugTimeAccumulate += UnityEngine.Time.deltaTime;
-        _creatureExtraComponent.crouch = UnityEngine.Mathf.Sin(_debugTimeAccumulate * 0.5f);
+        //_creatureExtraComponent.crouch = UnityEngine.Mathf.Sin(_debugTimeAccumulate * 0.5f);
+		_creatureExtraComponent.pose = 0.0f < UnityEngine.Mathf.Sin(_debugTimeAccumulate * 0.5f) ? CreatureExtraComponent.TPose.Crouching : CreatureExtraComponent.TPose.Standing;
 
         _inputs.x = UnityEngine.Input.GetAxis("Horizontal");
         _inputs.z = UnityEngine.Input.GetAxis("Vertical");
