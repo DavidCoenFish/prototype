@@ -1,0 +1,21 @@
+﻿2020-03-21
+get a first pass of the tutorial levels done for "tea bag army"
+	gameplay pass
+	ragdoll pass
+	visual pass
+	ballance pass
+
+gameplay pass
+	camera from head pos
+	head controled by view vertical
+	body y rot from view horizontal
+	spring tilt with move
+	move and view ui
+	crouch, jump
+	swing attack
+	pickup pan
+	ko
+	load ammo
+	shoot
+	swirl
+

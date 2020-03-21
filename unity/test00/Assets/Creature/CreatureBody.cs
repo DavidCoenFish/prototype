@@ -42,14 +42,14 @@ public class CreatureBody
         transformData = new System.Collections.Generic.List< TransformData >(){
             //standing
             new TransformData{
-                position = new UnityEngine.Vector3(0.0f, -0.25f, 0.0f ),
-                rotation = new UnityEngine.Vector3(0.0f, 0.0f, 0.0f ),
+                position = new UnityEngine.Vector3(0.0f, 0.25f, 0.0f ),
+                rotation = new UnityEngine.Vector3(0.0f, -90.0f, 0.0f ),
                 scale = new UnityEngine.Vector3(0.5f, 0.5f, 0.5f )
             },
             //Crouching
             new TransformData{
-                position = new UnityEngine.Vector3(0.044f, -0.12f, 0.0f ),
-                rotation = new UnityEngine.Vector3(0.0f, 0.0f, 0.0f ),
+                position = new UnityEngine.Vector3(0.044f, 0.25f, 0.0f ),
+                rotation = new UnityEngine.Vector3(0.0f, -90.0f, 0.0f ),
                 scale = new UnityEngine.Vector3(0.5f, 0.5f, 0.5f )
             }
         },
@@ -188,14 +188,14 @@ public class CreatureBody
 			{
 				continue;
 			}
-			positionSum = AccumulateVector3(positionSum, weight, gameObjectData.poseData.transformData[index].position);
-			rotationSum = AccumulateVector3(rotationSum, weight, gameObjectData.poseData.transformData[index].rotation);
-            float scaleWeight = weight;
+            float tempWeight = weight;
             if (true == gameObjectData.root)
             {
-                scaleWeight *= creatureState.height;
+                tempWeight *= creatureState.height;
             }
-			scaleSum = AccumulateVector3(scaleSum, scaleWeight, gameObjectData.poseData.transformData[index].scale);
+			positionSum = AccumulateVector3(positionSum, tempWeight, gameObjectData.poseData.transformData[index].position);
+			rotationSum = AccumulateVector3(rotationSum, weight, gameObjectData.poseData.transformData[index].rotation);
+			scaleSum = AccumulateVector3(scaleSum, tempWeight, gameObjectData.poseData.transformData[index].scale);
 		}
 
 		gameObjectData.gameObject.transform.localPosition = positionSum;
@@ -210,10 +210,8 @@ public class CreatureBody
 		{
 			UnityEngine.GameObject childGameObject = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Sphere);
 			childGameObject.GetComponent<UnityEngine.Renderer>().sharedMaterial = _materialSphere;
-			var sphereCollider = childGameObject.AddComponent<UnityEngine.SphereCollider>();
-			sphereCollider.center = UnityEngine.Vector3.zero;
-			sphereCollider.radius = 0.5f;
 			childGameObject.transform.parent = parentGameObject.transform;
+            UnityEngine.Object.Destroy(childGameObject.GetComponent<UnityEngine.SphereCollider>());
             var gameObjectData = new GameObjectData(){poseData=poseData, gameObject=childGameObject, root=root};
 			_childGameObjectArray.Add(gameObjectData );
 			UpdatePoseTransform(gameObjectData, creatureState);
@@ -224,6 +222,7 @@ public class CreatureBody
 			UnityEngine.GameObject childGameObject = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cube);
 			childGameObject.GetComponent<UnityEngine.Renderer>().sharedMaterial = _materialCube;
 			childGameObject.transform.parent = parentGameObject.transform;
+            UnityEngine.Object.Destroy(childGameObject.GetComponent<UnityEngine.BoxCollider>());
             var gameObjectData = new GameObjectData(){poseData=poseData, gameObject=childGameObject, root=root};
 			_childGameObjectArray.Add(gameObjectData );
 			UpdatePoseTransform(gameObjectData, creatureState);
@@ -281,4 +280,3 @@ public class CreatureBody
     }
 
 }
-

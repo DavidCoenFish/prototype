@@ -24,12 +24,20 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
             _creatureController = new CreatureControllerAI();
         }
 
-        _rigidbody = gameObject.AddComponent<UnityEngine.Rigidbody>();
-        _rigidbody.constraints = UnityEngine.RigidbodyConstraints.FreezeRotationX | UnityEngine.RigidbodyConstraints.FreezeRotationZ;
+        //_rigidbody = gameObject.AddComponent<UnityEngine.Rigidbody>();
+        _rigidbody = gameObject.GetComponent< UnityEngine.Rigidbody >();
+        //_rigidbody.constraints = UnityEngine.RigidbodyConstraints.FreezeRotationX | UnityEngine.RigidbodyConstraints.FreezeRotationZ;
         _rigidbody.useGravity = true;
+        _rigidbody.centerOfMass = new UnityEngine.Vector3(0.0f, 0.0f, 0.0f);
+        _rigidbody.inertiaTensor = new UnityEngine.Vector3(1.0f, 1.0f, 1.0f);
 
         _creatureState = new CreatureState(typeName);
         _creatureBody = new CreatureBody( this.gameObject, _creatureState);
+
+        var collider = gameObject.AddComponent<UnityEngine.CapsuleCollider>();
+        collider.center = new UnityEngine.Vector3(0.0f, _creatureState.height * 0.5f, 0.0f);
+        collider.height = _creatureState.height;
+        collider.radius = _creatureState.height * 0.25f;
     }
 
     void Update()
@@ -53,14 +61,52 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
             _creatureController.ApplyInputToState(_creatureState);
         }
 
-        _creatureBody.Update(_creatureState);
+        if (null != _creatureBody)
+        {
+            _creatureBody.Update(_creatureState);
+        }
+
+        if (UnityEngine.Input.GetButtonDown("Jump"))
+        {
+            _rigidbody.AddForce(UnityEngine.Vector3.up * UnityEngine.Mathf.Sqrt(-1f * UnityEngine.Physics.gravity.y), UnityEngine.ForceMode.VelocityChange);
+        }
     }
 
     void FixedUpdate()
     {
-        var rotationDelta = UnityEngine.Quaternion.Slerp(UnityEngine.Quaternion.identity, _creatureState.rotationDelta, UnityEngine.Time.fixedDeltaTime);
-        _rigidbody.MoveRotation(_rigidbody.rotation * rotationDelta);
-        _rigidbody.MovePosition(_rigidbody.position + (_creatureState.moveDelta * UnityEngine.Time.fixedDeltaTime));
+        var rotation = _rigidbody.rotation;
+        //move towards pointing up a bit each frame
+        {
+            var forward = rotation * UnityEngine.Vector3.forward;
+            forward.y = 0.0f;
+            forward.Normalize();
+            var rotTarget = UnityEngine.Quaternion.LookRotation(forward, UnityEngine.Vector3.up);
+            float step = 30.0f * UnityEngine.Time.fixedDeltaTime;
+
+            //var drawPosBase = _rigidbody.position;
+            //UnityEngine.Debug.DrawLine(
+            //    drawPosBase, 
+            //    drawPosBase + (rotation * UnityEngine.Vector3.forward), 
+            //    UnityEngine.Color.blue);
+
+            rotation = UnityEngine.Quaternion.RotateTowards(rotation, rotTarget, step);
+        }
+
+        {
+            var forward = rotation * UnityEngine.Vector3.forward;
+            var up = rotation * UnityEngine.Vector3.up;
+            var viewDelta = UnityEngine.Quaternion.AngleAxis(_creatureState.inputView.x * UnityEngine.Time.fixedDeltaTime * 600.0f, UnityEngine.Vector3.up);
+            var newForward = viewDelta * forward;
+            var newUp = viewDelta * up;
+            var newRotation = UnityEngine.Quaternion.LookRotation(newForward, newUp);
+            rotation = newRotation;
+        }
+
+        _rigidbody.MoveRotation(rotation);
+
+        float moveMul = 2.0f * UnityEngine.Time.fixedDeltaTime;
+        var newPosition = _rigidbody.position + new UnityEngine.Vector3(_creatureState.inputMove.x * moveMul, 0.0f, _creatureState.inputMove.y * moveMul);
+        _rigidbody.MovePosition(newPosition);
     }
 
     //public interface IPlayerComponent

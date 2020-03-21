@@ -19,10 +19,20 @@
         for (int index = 0; index < UnityEngine.Input.touchCount; ++index)
         {
             var touch = UnityEngine.Input.GetTouch(index);
-            Bootstrap.Log("Input:" + touch.fingerId);
+            Bootstrap.Log("Input:" + touch.fingerId.ToString());
         }
 
-        creatureState.moveDelta.x = UnityEngine.Input.GetAxis("Horizontal");
-        creatureState.moveDelta.z = UnityEngine.Input.GetAxis("Vertical");
+        //creatureState.moveDelta.x = UnityEngine.Input.GetAxis("Horizontal");
+        //creatureState.moveDelta.z = UnityEngine.Input.GetAxis("Vertical");
+
+        creatureState.inputMove.x = UnityEngine.Input.GetAxis("Horizontal");
+        creatureState.inputMove.y = UnityEngine.Input.GetAxis("Vertical");
+        creatureState.inputView.x = UnityEngine.Input.GetAxis("Horizontal_Alt");
+        creatureState.inputView.y = UnityEngine.Input.GetAxis("Vertical_Alt");
+
+        //if (0.0f != creatureState.inputView.x)
+        //{
+        //    Bootstrap.Log("Horizontal_Alt:" + creatureState.inputView.x.ToString());
+        //}
     }
 }
