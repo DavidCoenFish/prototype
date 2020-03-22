@@ -1,14 +1,11 @@
 ﻿2020-03-21
 get a first pass of the tutorial levels done for "tea bag army"
 	gameplay pass
-	ragdoll pass
 	visual pass
 	ballance pass
+	tool pass
 
 gameplay pass
-	camera from head pos
-	head controled by view vertical
-	body y rot from view horizontal
 	spring tilt with move
 	move and view ui
 	crouch, jump
@@ -18,4 +15,14 @@ gameplay pass
 	load ammo
 	shoot
 	swirl
+
+visual pass
+	ui shader
+	creature visual
+ballance pass
+
+
+tool pass
+	add sheet3array
+	set root by id, metadata on demand
 

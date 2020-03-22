@@ -19,8 +19,8 @@
     //applied to rigid body during FixedUpdate
     //public UnityEngine.Quaternion rotationDelta = new UnityEngine.Quaternion();
     //public UnityEngine.Vector3 moveDelta = new UnityEngine.Vector3();
-    public UnityEngine.Vector2 inputMove = new UnityEngine.Vector2();
-    public UnityEngine.Vector2 inputView = new UnityEngine.Vector2();
+    public UnityEngine.Vector2 inputMove = new UnityEngine.Vector2(0.0f, 0.0f);
+    public UnityEngine.Vector2 inputView = new UnityEngine.Vector2(0.0f, 0.0f);
 
     public CreatureState(string in_typeName)
     {

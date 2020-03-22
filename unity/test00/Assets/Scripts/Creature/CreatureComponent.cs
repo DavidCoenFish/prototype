@@ -8,8 +8,9 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
     private CreatureState _creatureState = null; //null;
     private CreatureBody _creatureBody = null;
     private UnityEngine.Rigidbody _rigidbody = null;
+    private SpringVector2 _inputSpring;
 
-    private float _debugTimeAccumulate = 0.0f;
+    //private float _debugTimeAccumulate = 0.0f;
 
     void Start()
     {
@@ -39,23 +40,18 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
         collider.center = new UnityEngine.Vector3(0.0f, _creatureState.height * 0.5f, 0.0f);
         collider.height = _creatureState.height;
         collider.radius = _creatureState.height * 0.25f;
+
+        _inputSpring = new SpringVector2(10.0f, UnityEngine.Vector2.zero, 1.0f);
     }
 
     void Update()
     {
-        //Time.deltaTime
         //int layerMask = 1 << 8;
-        //todo: may need info on 
         //UnityEngine.Vector3 touchingGroundPosition = new UnityEngine.Vector3(gameObject.transform.position.x, gameObject.transform.position.y - (0.55f * _height), gameObject.transform.position.z);
         //_touchingGround = UnityEngine.Physics.CheckSphere(touchingGroundPosition, 0.1f, layerMask, UnityEngine.QueryTriggerInteraction.Ignore);
 
-        //bool doJump = UpdateTouchData(_inputTouchData, UnityEngine.Time.deltaTime);
-
-        _debugTimeAccumulate += UnityEngine.Time.deltaTime;
-        _creatureState.pose = 0.0f < UnityEngine.Mathf.Sin(_debugTimeAccumulate * 0.5f) ? CreatureState.TPose.Crouching : CreatureState.TPose.Standing;
-
-        //temp, move authoraty to gameComponent
-        GameComponent.SetHumanPlayer(0, this);
+        //_debugTimeAccumulate += UnityEngine.Time.deltaTime;
+        //_creatureState.pose = 0.0f < UnityEngine.Mathf.Sin(_debugTimeAccumulate * 0.5f) ? CreatureState.TPose.Crouching : CreatureState.TPose.Standing;
 
         if (null != _creatureController)
         {
@@ -75,13 +71,31 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
 
     void FixedUpdate()
     {
+        var inputSpring = _inputSpring.Advance(_creatureState.inputMove, UnityEngine.Time.fixedDeltaTime);
+
+        {
+            var drawPosBase = _rigidbody.position;
+            UnityEngine.Debug.DrawLine(
+                drawPosBase, 
+                drawPosBase + UnityEngine.Vector3.up + new UnityEngine.Vector3(inputSpring.x, 0.0f, inputSpring.y), 
+                UnityEngine.Color.blue);
+        }
+
         var rotation = _rigidbody.rotation;
         //move towards pointing up a bit each frame
         {
             var forward = rotation * UnityEngine.Vector3.forward;
             forward.y = 0.0f;
             forward.Normalize();
-            var rotTarget = UnityEngine.Quaternion.LookRotation(forward, UnityEngine.Vector3.up);
+            var right = UnityEngine.Vector3.Cross( forward, UnityEngine.Vector3.up );
+
+            var upOffset = (forward * inputSpring.y) - (right * inputSpring.x);
+            var tiltUp = (UnityEngine.Vector3.up * 2.0f) + upOffset;
+            tiltUp.Normalize();
+
+            forward = UnityEngine.Vector3.Cross( tiltUp, right );
+
+            var rotTarget = UnityEngine.Quaternion.LookRotation(forward, tiltUp);
             float step = 30.0f * UnityEngine.Time.fixedDeltaTime;
 
             //var drawPosBase = _rigidbody.position;
@@ -114,7 +128,7 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
 
             var newPosition = _rigidbody.position;
             newPosition += (forward * (moveMul * _creatureState.inputMove.y));
-            newPosition += (right * (moveMul * _creatureState.inputMove.x));
+            newPosition += (right * (moveMul * -_creatureState.inputMove.x));
             _rigidbody.MovePosition(newPosition);
         }
     }
