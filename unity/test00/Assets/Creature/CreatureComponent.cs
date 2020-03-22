@@ -18,6 +18,7 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
         if (true == startHumanControlled)
         {
             _creatureController = new CreatureControllerHuman();
+            GameComponent.SetHumanPlayer(0, this);
         }
         else
         {
@@ -104,14 +105,27 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
 
         _rigidbody.MoveRotation(rotation);
 
-        float moveMul = 2.0f * UnityEngine.Time.fixedDeltaTime;
-        var newPosition = _rigidbody.position + new UnityEngine.Vector3(_creatureState.inputMove.x * moveMul, 0.0f, _creatureState.inputMove.y * moveMul);
-        _rigidbody.MovePosition(newPosition);
+        {
+            var forward = rotation * UnityEngine.Vector3.forward;
+            forward.y = 0.0f;
+            forward.Normalize();
+            var right = UnityEngine.Vector3.Cross( forward, UnityEngine.Vector3.up );
+            float moveMul = 2.0f * UnityEngine.Time.fixedDeltaTime;
+
+            var newPosition = _rigidbody.position;
+            newPosition += (forward * (moveMul * _creatureState.inputMove.y));
+            newPosition += (right * (moveMul * _creatureState.inputMove.x));
+            _rigidbody.MovePosition(newPosition);
+        }
     }
 
     //public interface IPlayerComponent
     public UnityEngine.Transform GetCameraTransform()
     {
+        if (null != _creatureBody)
+        {
+            return _creatureBody.GetCameraTransform();
+        }
         return gameObject.transform;
     }
 

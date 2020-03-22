@@ -24,8 +24,11 @@
         if ((null != mainCamera) && (null != _playerComponent))
         {
             var transform = _playerComponent.GetCameraTransform();
-            mainCamera.transform.position = transform.position;
-            mainCamera.transform.rotation = transform.rotation;
+            if (null != transform)
+            {
+                mainCamera.transform.position = transform.position;
+                mainCamera.transform.rotation = transform.rotation;
+            }
         }
     }
 }

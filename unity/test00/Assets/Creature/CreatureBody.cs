@@ -7,6 +7,7 @@ public class CreatureBody
     private System.Collections.Generic.List< GameObjectData > _childGameObjectArray = new System.Collections.Generic.List< GameObjectData >();
     private UnityEngine.GameObject _headGameObject;
     private UnityEngine.GameObject _headParentGameObject;
+    private float _headElevationDegrees = 0.0f;
 	private UnityEngine.Material _materialSphere;
 	private UnityEngine.Material _materialCube;
 
@@ -43,13 +44,13 @@ public class CreatureBody
             //standing
             new TransformData{
                 position = new UnityEngine.Vector3(0.0f, 0.25f, 0.0f ),
-                rotation = new UnityEngine.Vector3(0.0f, -90.0f, 0.0f ),
+                rotation = new UnityEngine.Vector3(0.0f, 0.0f, 0.0f ),
                 scale = new UnityEngine.Vector3(0.5f, 0.5f, 0.5f )
             },
             //Crouching
             new TransformData{
-                position = new UnityEngine.Vector3(0.044f, 0.25f, 0.0f ),
-                rotation = new UnityEngine.Vector3(0.0f, -90.0f, 0.0f ),
+                position = new UnityEngine.Vector3(0.0f, 0.25f, -0.108f ),
+                rotation = new UnityEngine.Vector3(0.0f, 0.0f, 0.0f ),
                 scale = new UnityEngine.Vector3(0.5f, 0.5f, 0.5f )
             }
         },
@@ -61,13 +62,13 @@ public class CreatureBody
                 transformData = new System.Collections.Generic.List< TransformData >(){
                     //standing
                     new TransformData{
-                        position = new UnityEngine.Vector3(0.0f, 0.542f, 0.0f ),
+                        position = new UnityEngine.Vector3(0.0f, 0.5f, 0.0f ),
                         rotation = new UnityEngine.Vector3(0.0f, 0.0f, 0.0f ),
                         scale = new UnityEngine.Vector3(0.875f, 0.875f, 0.875f )
                     },
                     //Crouching
                     new TransformData{
-                        position = new UnityEngine.Vector3(-0.292f, 0.25f, 0.0f ),
+                        position = new UnityEngine.Vector3(0.0f, 0.385f, -0.215f ),
                         rotation = new UnityEngine.Vector3(0.0f, 0.0f, 0.0f ),
                         scale = new UnityEngine.Vector3(0.875f, 0.875f, 0.875f )
                     }
@@ -80,13 +81,13 @@ public class CreatureBody
                         transformData = new System.Collections.Generic.List< TransformData >(){
                             //standing
                             new TransformData{
-                                position = new UnityEngine.Vector3(0.0f, 0.666f, 0.0f ),
+                                position = new UnityEngine.Vector3(0.0f, 0.5f, 0.0f ),
                                 rotation = new UnityEngine.Vector3(0.0f, 0.0f, 0.0f ),
                                 scale = new UnityEngine.Vector3(0.875f, 0.875f, 0.875f )
                             },
                             //Crouching
                             new TransformData{
-                                position = new UnityEngine.Vector3(0.3131f, 0.3245f, 0.0f ),
+                                position = new UnityEngine.Vector3(0.0f, 0.202f, 0.298f ),
                                 rotation = new UnityEngine.Vector3(0.0f, 0.0f, 0.0f ),
                                 scale = new UnityEngine.Vector3(0.875f, 0.875f, 0.875f )
                             }
@@ -99,15 +100,15 @@ public class CreatureBody
                                 transformData = new System.Collections.Generic.List< TransformData >(){
                                     //standing
                                     new TransformData{
-                                        position = new UnityEngine.Vector3(0.666f, 0.1666f, 0.0f ),
+                                        position = new UnityEngine.Vector3(0.0f, 0.363f, 0.37f ),
                                         rotation = new UnityEngine.Vector3(0.0f, 0.0f, 0.0f ),
-                                        scale = new UnityEngine.Vector3(0.666f, 0.666f, 0.666f )
+                                        scale = new UnityEngine.Vector3(0.75f, 0.75f, 0.75f )
                                     },
                                     //Crouching
                                     new TransformData{
-                                        position = new UnityEngine.Vector3(0.5733f, 0.0213f, 0.0f ),
+                                        position = new UnityEngine.Vector3(0.0f, 0.03f, 0.5f ),
                                         rotation = new UnityEngine.Vector3(0.0f, 0.0f, 0.0f ),
-                                        scale = new UnityEngine.Vector3(0.666f, 0.666f, 0.666f )
+                                        scale = new UnityEngine.Vector3(0.75f, 0.75f, 0.75f )
                                     }
                                 },
                                 poseDataChildren = new System.Collections.Generic.List< PoseData >(){
@@ -118,15 +119,15 @@ public class CreatureBody
                                         transformData = new System.Collections.Generic.List< TransformData >(){
                                             //standing
                                             new TransformData{
-                                                position = new UnityEngine.Vector3(0.352f, 0.444f, 0.2159f ),
-                                                rotation = new UnityEngine.Vector3(-30.0f, 0.0f, 0.0f ),
-                                                scale = new UnityEngine.Vector3(0.12f, 0.12f, 0.4f )
+                                                position = new UnityEngine.Vector3(0.2368f, 0.29f, 0.4576f ),
+                                                rotation = new UnityEngine.Vector3(0.0f, 0.0f, 30.0f ),
+                                                scale = new UnityEngine.Vector3(0.418f, 0.139f, 0.139f )
                                             },
                                             //Crouching
                                             new TransformData{
-                                                position = new UnityEngine.Vector3(0.352f, 0.332f, 0.216f ),
-                                                rotation = new UnityEngine.Vector3(-30.0f, 0.0f, 0.0f ),
-                                                scale = new UnityEngine.Vector3(0.12f, 0.12f, 0.4f )
+                                                position = new UnityEngine.Vector3(0.237f, 0.29f, 0.458f ),
+                                                rotation = new UnityEngine.Vector3(0.0f, 0.0f, 30.0f ),
+                                                scale = new UnityEngine.Vector3(0.418f, 0.139f, 0.139f )
                                             }
                                         },
                                         poseDataChildren = new System.Collections.Generic.List< PoseData >(){}
@@ -138,15 +139,15 @@ public class CreatureBody
                                         transformData = new System.Collections.Generic.List< TransformData >(){
                                             //standing
                                             new TransformData{
-                                                position = new UnityEngine.Vector3(0.352f, 0.444f, -0.2159f ),
-                                                rotation = new UnityEngine.Vector3(30.0f, 0.0f, 0.0f ),
-                                                scale = new UnityEngine.Vector3(0.12f, 0.12f, 0.4f )
+                                                position = new UnityEngine.Vector3(-0.237f, 0.29f, 0.458f ),
+                                                rotation = new UnityEngine.Vector3(0.0f, 0.0f, -30.0f ),
+                                                scale = new UnityEngine.Vector3(0.418f, 0.139f, 0.139f )
                                             },
                                             //Crouching
                                             new TransformData{
-                                                position = new UnityEngine.Vector3(0.352f, 0.332f, -0.216f ),
-                                                rotation = new UnityEngine.Vector3(30.0f, 0.0f, 0.0f ),
-                                                scale = new UnityEngine.Vector3(0.12f, 0.12f, 0.4f )
+                                                position = new UnityEngine.Vector3(-0.237f, 0.29f, 0.458f ),
+                                                rotation = new UnityEngine.Vector3(0.0f, 0.0f, -30.0f ),
+                                                scale = new UnityEngine.Vector3(0.418f, 0.139f, 0.139f )
                                             }
                                         },
                                         poseDataChildren = new System.Collections.Generic.List< PoseData >(){}
@@ -209,6 +210,7 @@ public class CreatureBody
 		if (true == poseData.sphere)
 		{
 			UnityEngine.GameObject childGameObject = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Sphere);
+            childGameObject.name = poseData.name + "Sphere";
 			childGameObject.GetComponent<UnityEngine.Renderer>().sharedMaterial = _materialSphere;
 			childGameObject.transform.parent = parentGameObject.transform;
             UnityEngine.Object.Destroy(childGameObject.GetComponent<UnityEngine.SphereCollider>());
@@ -220,6 +222,7 @@ public class CreatureBody
 		if (true == poseData.cube)
 		{
 			UnityEngine.GameObject childGameObject = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cube);
+            childGameObject.name = poseData.name + "Cube";
 			childGameObject.GetComponent<UnityEngine.Renderer>().sharedMaterial = _materialCube;
 			childGameObject.transform.parent = parentGameObject.transform;
             UnityEngine.Object.Destroy(childGameObject.GetComponent<UnityEngine.BoxCollider>());
@@ -238,6 +241,16 @@ public class CreatureBody
 			UpdatePoseTransform(gameObjectData, creatureState);
 			created = childGameObject;
 		}
+
+        if (poseData.name == "SpineA")
+        {
+            _headParentGameObject = created;
+        }
+
+        if (poseData.name == "Head")
+        {
+            _headGameObject = created;
+        }
 
 		for (int index = 0; index < poseData.poseDataChildren.Count; ++index)
 		{
@@ -277,6 +290,21 @@ public class CreatureBody
 
     private void UpdateViewElevation(CreatureState creatureState)
     {
+        float lookUpSpeed = 60.0f;
+        float step = (-creatureState.inputView.y) * UnityEngine.Time.deltaTime * lookUpSpeed;
+        _headElevationDegrees = UnityEngine.Mathf.Clamp(_headElevationDegrees + step, -90.0f, 90.0f);
+        if (null != _headParentGameObject)
+        {
+            _headParentGameObject.transform.rotation = _headParentGameObject.transform.rotation * UnityEngine.Quaternion.Euler(_headElevationDegrees, 0.0f, 0.0f);
+        }
     }
 
+    public UnityEngine.Transform GetCameraTransform()
+    {
+        if (null != _headGameObject)
+        {
+            return _headGameObject.transform;
+        }
+        return null;
+    }
 }
