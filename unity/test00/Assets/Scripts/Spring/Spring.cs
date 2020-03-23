@@ -15,6 +15,11 @@
 		_targetChaser = targetChaser;
 	}
 
+	public void SetTarget(float targetChaser)
+	{
+		_targetChaser = targetChaser;
+	}
+
 	//return the targetChaser
 	public float Advance(float target, float timeDelta)
 	{

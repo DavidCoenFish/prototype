@@ -8,7 +8,7 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
     private CreatureState _creatureState = null; //null;
     private CreatureBody _creatureBody = null;
     private UnityEngine.Rigidbody _rigidbody = null;
-    private SpringVector2 _inputSpring;
+    private SpringUnitSphere _inputSpring;
 
     //private float _debugTimeAccumulate = 0.0f;
 
@@ -41,7 +41,7 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
         collider.height = _creatureState.height;
         collider.radius = _creatureState.height * 0.25f;
 
-        _inputSpring = new SpringVector2(10.0f, UnityEngine.Vector2.zero, 1.0f);
+        _inputSpring = new SpringUnitSphere(10.0f, UnityEngine.Vector2.up, 1.0f);
     }
 
     void Update()
@@ -71,67 +71,68 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
 
     void FixedUpdate()
     {
-        var inputSpring = _inputSpring.Advance(_creatureState.inputMove, UnityEngine.Time.fixedDeltaTime);
+        //var drawPosBase = _rigidbody.position;
+        //UnityEngine.Debug.DrawLine(
+        //    drawPosBase, 
+        //    drawPosBase + (UnityEngine.Vector3.up * 0.2f) + new UnityEngine.Vector3(inputSpring.x, 0.0f, inputSpring.y), 
+        //    UnityEngine.Color.blue);
 
-        {
-            var drawPosBase = _rigidbody.position;
-            UnityEngine.Debug.DrawLine(
-                drawPosBase, 
-                drawPosBase + UnityEngine.Vector3.up + new UnityEngine.Vector3(inputSpring.x, 0.0f, inputSpring.y), 
-                UnityEngine.Color.blue);
-        }
+        var newPosition = _rigidbody.position;
+        var newRotation = _rigidbody.rotation;
 
-        var rotation = _rigidbody.rotation;
-        //move towards pointing up a bit each frame
-        {
-            var forward = rotation * UnityEngine.Vector3.forward;
-            forward.y = 0.0f;
-            forward.Normalize();
-            var right = UnityEngine.Vector3.Cross( forward, UnityEngine.Vector3.up );
+        newRotation = FixedUpdateUpdateView(newRotation, _creatureState);
+        newRotation = FixedUpdateUpdateViewSpring(newRotation, _creatureState, _inputSpring);
+        newPosition = FixedUpdateUpdateMove(newPosition, newRotation, _creatureState);
 
-            var upOffset = (forward * inputSpring.y) - (right * inputSpring.x);
-            var tiltUp = (UnityEngine.Vector3.up * 2.0f) + upOffset;
-            tiltUp.Normalize();
-
-            forward = UnityEngine.Vector3.Cross( tiltUp, right );
-
-            var rotTarget = UnityEngine.Quaternion.LookRotation(forward, tiltUp);
-            float step = 30.0f * UnityEngine.Time.fixedDeltaTime;
-
-            //var drawPosBase = _rigidbody.position;
-            //UnityEngine.Debug.DrawLine(
-            //    drawPosBase, 
-            //    drawPosBase + (rotation * UnityEngine.Vector3.forward), 
-            //    UnityEngine.Color.blue);
-
-            rotation = UnityEngine.Quaternion.RotateTowards(rotation, rotTarget, step);
-        }
-
-        {
-            var forward = rotation * UnityEngine.Vector3.forward;
-            var up = rotation * UnityEngine.Vector3.up;
-            var viewDelta = UnityEngine.Quaternion.AngleAxis(_creatureState.inputView.x * UnityEngine.Time.fixedDeltaTime * 600.0f, UnityEngine.Vector3.up);
-            var newForward = viewDelta * forward;
-            var newUp = viewDelta * up;
-            var newRotation = UnityEngine.Quaternion.LookRotation(newForward, newUp);
-            rotation = newRotation;
-        }
-
-        _rigidbody.MoveRotation(rotation);
-
-        {
-            var forward = rotation * UnityEngine.Vector3.forward;
-            forward.y = 0.0f;
-            forward.Normalize();
-            var right = UnityEngine.Vector3.Cross( forward, UnityEngine.Vector3.up );
-            float moveMul = 2.0f * UnityEngine.Time.fixedDeltaTime;
-
-            var newPosition = _rigidbody.position;
-            newPosition += (forward * (moveMul * _creatureState.inputMove.y));
-            newPosition += (right * (moveMul * -_creatureState.inputMove.x));
-            _rigidbody.MovePosition(newPosition);
-        }
+        _rigidbody.MoveRotation(newRotation);
+        _rigidbody.MovePosition(newPosition);
     }
+
+    private static UnityEngine.Quaternion FixedUpdateUpdateView(UnityEngine.Quaternion newRotation, CreatureState creatureState)
+    {
+        var viewDelta = UnityEngine.Quaternion.AngleAxis(creatureState.inputView.x * UnityEngine.Time.fixedDeltaTime * 600.0f, UnityEngine.Vector3.up);
+        var forward = (newRotation * viewDelta) * UnityEngine.Vector3.forward;
+        forward.y = 0.0f;
+        forward.Normalize();
+        var resultRotation = UnityEngine.Quaternion.LookRotation(forward, UnityEngine.Vector3.up);
+        return resultRotation;
+    }
+
+    private static UnityEngine.Quaternion FixedUpdateUpdateViewSpring(UnityEngine.Quaternion newRotation, CreatureState creatureState, SpringUnitSphere inputSpring)
+    {
+        var forward = newRotation * UnityEngine.Vector3.forward;
+        forward.y = 0.0f;
+        forward.Normalize();
+        var right = UnityEngine.Vector3.Cross(forward, UnityEngine.Vector3.up);
+        var target = (UnityEngine.Vector3.up * 4.0f) + (forward * creatureState.inputMove.y) - (right * creatureState.inputMove.x);
+        target.Normalize();
+        var springResult = inputSpring.Advance(target, UnityEngine.Time.fixedDeltaTime);
+#if false
+        var mod = UnityEngine.Quaternion.FromToRotation(springResult, target);
+        return newRotation * mod;
+#else
+        var newRight = UnityEngine.Vector3.Cross( forward, springResult );
+        var newForward = UnityEngine.Vector3.Cross( springResult, newRight );
+        var newNewRotation = UnityEngine.Quaternion.LookRotation(newForward, springResult);
+        return newNewRotation;
+#endif
+    }
+
+    private static UnityEngine.Vector3 FixedUpdateUpdateMove(UnityEngine.Vector3 position, UnityEngine.Quaternion rotation, CreatureState creatureState)
+    {
+        var forward = rotation * UnityEngine.Vector3.forward;
+        forward.y = 0.0f;
+        forward.Normalize();
+        var right = UnityEngine.Vector3.Cross( forward, UnityEngine.Vector3.up );
+        float moveMul = 2.0f * UnityEngine.Time.fixedDeltaTime;
+
+        var newPosition = new UnityEngine.Vector3(position.x, position.y, position.z);
+        newPosition += (forward * (moveMul * creatureState.inputMove.y));
+        newPosition += (right * (moveMul * -creatureState.inputMove.x));
+
+        return newPosition;
+    }
+
 
     //public interface IPlayerComponent
     public UnityEngine.Transform GetCameraTransform()
