@@ -9,7 +9,7 @@
 		var normTarget = targetChaser.normalized;
 		_springX = new Spring(springConstant, normTarget.x, springDeformResistance);
 		_springY = new Spring(springConstant, normTarget.y, springDeformResistance);
-		_springZ = new Spring(springConstant, normTarget.y, springDeformResistance);
+		_springZ = new Spring(springConstant, normTarget.z, springDeformResistance);
 	}
 
 	public UnityEngine.Vector3 Advance(UnityEngine.Vector3 target, float timeDelta)

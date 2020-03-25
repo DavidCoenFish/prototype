@@ -5,6 +5,7 @@ public class CreatureBody
 {
     private float[] _poseWeight = { 1.0f, 0.0f };
     private System.Collections.Generic.List< GameObjectData > _childGameObjectArray = new System.Collections.Generic.List< GameObjectData >();
+    private UnityEngine.GameObject _rootGameObject;
     private UnityEngine.GameObject _headGameObject;
     private UnityEngine.GameObject _headParentGameObject;
     private float _headElevationDegrees = 0.0f;
@@ -200,7 +201,10 @@ public class CreatureBody
 		}
 
 		gameObjectData.gameObject.transform.localPosition = positionSum;
-		gameObjectData.gameObject.transform.localRotation = UnityEngine.Quaternion.Euler(rotationSum.x, rotationSum.y, rotationSum.z);;
+        if (gameObjectData.poseData.name != "SpineC")
+        {
+    		gameObjectData.gameObject.transform.localRotation = UnityEngine.Quaternion.Euler(rotationSum.x, rotationSum.y, rotationSum.z);
+        }
 		gameObjectData.gameObject.transform.localScale = scaleSum;
 	}
 
@@ -250,6 +254,11 @@ public class CreatureBody
         if (poseData.name == "Head")
         {
             _headGameObject = created;
+        }
+
+        if (poseData.name == "SpineC")
+        {
+            _rootGameObject = created;
         }
 
 		for (int index = 0; index < poseData.poseDataChildren.Count; ++index)
@@ -307,4 +316,13 @@ public class CreatureBody
         }
         return null;
     }
+
+    public void SetRoot(UnityEngine.Quaternion in_rotation)
+    {
+        if (null != _rootGameObject)
+        {
+            _rootGameObject.transform.localRotation = in_rotation;
+        }
+    }
+
 }

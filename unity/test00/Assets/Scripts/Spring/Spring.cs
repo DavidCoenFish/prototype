@@ -25,11 +25,6 @@
 	{
 		float x = target - _targetChaser;
 
-		if (0.0f != x)
-		{
-			Bootstrap.Log("got one");
-		}
-
 		float f = (_springConstant) * x;
 		_velocity = UnityEngine.Mathf.MoveTowards(_velocity, 0.0f, _springDeformResistance * timeDelta);
 		_velocity += (f * timeDelta);

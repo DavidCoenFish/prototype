@@ -81,7 +81,7 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
         var newRotation = _rigidbody.rotation;
 
         newRotation = FixedUpdateUpdateView(newRotation, _creatureState);
-        newRotation = FixedUpdateUpdateViewSpring(newRotation, _creatureState, _inputSpring);
+        FixedUpdateUpdateViewSpring(newRotation, _creatureState, _inputSpring, _creatureBody);
         newPosition = FixedUpdateUpdateMove(newPosition, newRotation, _creatureState);
 
         _rigidbody.MoveRotation(newRotation);
@@ -98,24 +98,23 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
         return resultRotation;
     }
 
-    private static UnityEngine.Quaternion FixedUpdateUpdateViewSpring(UnityEngine.Quaternion newRotation, CreatureState creatureState, SpringUnitSphere inputSpring)
+    private static UnityEngine.Quaternion FixedUpdateUpdateViewSpring(UnityEngine.Quaternion newRotation, CreatureState creatureState, SpringUnitSphere inputSpring, CreatureBody _creatureBody)
     {
+#if false
         var forward = newRotation * UnityEngine.Vector3.forward;
         forward.y = 0.0f;
         forward.Normalize();
         var right = UnityEngine.Vector3.Cross(forward, UnityEngine.Vector3.up);
-        var target = (UnityEngine.Vector3.up * 4.0f) + (forward * creatureState.inputMove.y) - (right * creatureState.inputMove.x);
+#else
+        var forward = UnityEngine.Vector3.forward;
+        var right = UnityEngine.Vector3.right;
+#endif
+        var target = (UnityEngine.Vector3.up * 4.0f) + (forward * creatureState.inputMove.y) + (right * creatureState.inputMove.x);
         target.Normalize();
         var springResult = inputSpring.Advance(target, UnityEngine.Time.fixedDeltaTime);
-#if false
         var mod = UnityEngine.Quaternion.FromToRotation(springResult, target);
-        return newRotation * mod;
-#else
-        var newRight = UnityEngine.Vector3.Cross( forward, springResult );
-        var newForward = UnityEngine.Vector3.Cross( springResult, newRight );
-        var newNewRotation = UnityEngine.Quaternion.LookRotation(newForward, springResult);
-        return newNewRotation;
-#endif
+        _creatureBody.SetRoot(mod);
+        return newRotation;
     }
 
     private static UnityEngine.Vector3 FixedUpdateUpdateMove(UnityEngine.Vector3 position, UnityEngine.Quaternion rotation, CreatureState creatureState)
