@@ -5,10 +5,11 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
     public string typeName = "rat"; //[rat, chicken, sheep, dog, bear, elephant, gate
 
     private ICreatureController _creatureController = null;
-    private CreatureState _creatureState = null; //null;
+    private CreatureState _creatureState = null;
     private CreatureBody _creatureBody = null;
     private UnityEngine.Rigidbody _rigidbody = null;
     private SpringUnitSphere _inputSpring;
+    private CreatureUI _creatureUI = null;
 
     //private float _debugTimeAccumulate = 0.0f;
 
@@ -42,6 +43,11 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
         collider.radius = _creatureState.height * 0.25f;
 
         _inputSpring = new SpringUnitSphere(10.0f, UnityEngine.Vector2.up, 1.0f);
+
+        if (true == startHumanControlled)
+        {
+            _creatureUI = new CreatureUI();
+        }
     }
 
     void Update()
@@ -66,6 +72,11 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
         if (UnityEngine.Input.GetButtonDown("Jump"))
         {
             _rigidbody.AddForce(UnityEngine.Vector3.up * UnityEngine.Mathf.Sqrt(-1f * UnityEngine.Physics.gravity.y), UnityEngine.ForceMode.VelocityChange);
+        }
+
+        if (null != _creatureUI)
+        {
+            _creatureUI.Update();
         }
     }
 
@@ -132,6 +143,14 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
         return newPosition;
     }
 
+    private void OnGUI()
+    {
+        //Bootstrap.Instance.Log("UIComponent.OnGUI()");
+        if (null != _creatureUI)
+        {
+            _creatureUI.Draw(_creatureState);
+        }
+    }
 
     //public interface IPlayerComponent
     public UnityEngine.Transform GetCameraTransform()

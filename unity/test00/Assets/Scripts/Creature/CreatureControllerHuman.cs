@@ -16,10 +16,18 @@
 
     public void ApplyInputToState(CreatureState creatureState)
     {
+        creatureState.touchArray.Clear();
+        if (UnityEngine.Input.GetMouseButton(0))
+        {
+            creatureState.touchArray.Add(new UnityEngine.Vector2(UnityEngine.Input.mousePosition.x, UnityEngine.Input.mousePosition.y));
+        }
+
         for (int index = 0; index < UnityEngine.Input.touchCount; ++index)
         {
             var touch = UnityEngine.Input.GetTouch(index);
             Bootstrap.Log("Input:" + touch.fingerId.ToString());
+
+            creatureState.touchArray.Add(new UnityEngine.Vector2(touch.position.x, touch.position.y));
         }
 
         //creatureState.moveDelta.x = UnityEngine.Input.GetAxis("Horizontal");
@@ -34,5 +42,7 @@
         //{
         //    Bootstrap.Log("Horizontal_Alt:" + creatureState.inputView.x.ToString());
         //}
+
+        //
     }
 }

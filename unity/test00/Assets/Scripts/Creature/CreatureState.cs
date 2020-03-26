@@ -22,6 +22,8 @@
     public UnityEngine.Vector2 inputMove = new UnityEngine.Vector2(0.0f, 0.0f);
     public UnityEngine.Vector2 inputView = new UnityEngine.Vector2(0.0f, 0.0f);
 
+    public System.Collections.Generic.List< UnityEngine.Vector2 > touchArray = new System.Collections.Generic.List< UnityEngine.Vector2 >();
+
     public CreatureState(string in_typeName)
     {
         typeName = in_typeName;
