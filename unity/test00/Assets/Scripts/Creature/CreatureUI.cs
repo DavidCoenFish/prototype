@@ -24,7 +24,27 @@ public class CreatureUI
 		return 1.0f - squared;
 	}
 
-	public void Draw(CreatureState creatureState)
+	private void DrawElements(CreatureState creatureState)
+	{
+		UnityEngine.GUI.color = UnityEngine.Color.white;
+		foreach(CreatureState.UIElementData uiElementData in creatureState.uiElementDataArray)
+		{
+			switch (uiElementData.uiElement)
+			{
+				default:
+					continue;
+				case CreatureState.TUIElement.Attack:
+				case CreatureState.TUIElement.Movement:
+				case CreatureState.TUIElement.View:
+					break;
+			}
+			var size = 100.0f;
+			var rect = new UnityEngine.Rect(uiElementData.position.x - (size * 0.5f), (UnityEngine.Screen.height - uiElementData.position.y) - (size * 0.5f), size, size);
+			UnityEngine.GUI.Box(rect, UnityEngine.GUIContent.none, _circleStyle);
+		}
+	}
+
+	private void DrawTouch(CreatureState creatureState)
 	{
 		float ratioA = UnityEngine.Mathf.Repeat(_timeAccumulate, 2.0f) * 0.5f;
 		float ratioB = UnityEngine.Mathf.Repeat(_timeAccumulate + 1.0f, 2.0f) * 0.5f;
@@ -41,6 +61,13 @@ public class CreatureUI
 			var rectB = new UnityEngine.Rect(touch.x - (sizeB * 0.5f), (UnityEngine.Screen.height - touch.y) - (sizeB * 0.5f), sizeB, sizeB);
 			UnityEngine.GUI.Box(rectB, UnityEngine.GUIContent.none, _circleStyle);
 		}
+	}
+
+	public void Draw(CreatureState creatureState)
+	{
+		DrawElements(creatureState);
+		DrawTouch(creatureState);
+
 
 		return;
 	}
