@@ -3,6 +3,13 @@
 
 public class CreatureBody
 {
+    // stand, crouch
+    enum TPose
+    {
+        TStand = 0,
+        TCrouch,
+        TCount
+    }
     private float[] _poseWeight = { 1.0f, 0.0f };
     private System.Collections.Generic.List< GameObjectData > _childGameObjectArray = new System.Collections.Generic.List< GameObjectData >();
     private UnityEngine.GameObject _rootGameObject;
@@ -183,7 +190,7 @@ public class CreatureBody
 		UnityEngine.Vector3 positionSum = new UnityEngine.Vector3();
 		UnityEngine.Vector3 rotationSum = new UnityEngine.Vector3();
 		UnityEngine.Vector3 scaleSum = new UnityEngine.Vector3();
-		for (int index = 0; index < (int)CreatureState.TPose.Count; ++index)
+		for (int index = 0; index < (int)TPose.TCount; ++index)
 		{
 			float weight = _poseWeight[index];
 			if (weight <= 0.0f)
@@ -277,15 +284,31 @@ public class CreatureBody
 
     private void UpdatePoseWeight(CreatureState creatureState)
     {
-        for (int index = 0; index < (int)CreatureState.TPose.Count; ++index)
-        {
-            float delta = UnityEngine.Time.deltaTime * 2.0f;
-            if (index != (int)creatureState.pose)
-            {
-                delta = -delta;
-            }
+        _poseWeight[(int)TPose.TStand] = 0.0f; 
 
-            _poseWeight[index] = UnityEngine.Mathf.Clamp(_poseWeight[index] + delta, 0.0f, 1.0f);
+        float crouch = UnityEngine.Mathf.Min(1.0f, creatureState.creatureStatePerUpdate.crouch);
+        _poseWeight[(int)TPose.TCrouch] = UnityEngine.Mathf.MoveTowards(_poseWeight[(int)TPose.TCrouch], crouch, UnityEngine.Time.deltaTime * 2.0f);
+
+        float sumOtherThanStand = 0.0f;
+        for (int index = 0; index < (int)TPose.TCount; ++index)
+        {
+            if (index != (int)TPose.TStand)
+            {
+                sumOtherThanStand += _poseWeight[index];
+            }
+        }
+
+        if (1.0f < sumOtherThanStand)
+        {
+            //normalise
+            for (int index = 0; index < (int)TPose.TCount; ++index)
+            {
+                _poseWeight[index] *= sumOtherThanStand;
+            }
+        }
+        else
+        {
+            _poseWeight[(int)TPose.TStand] = 1.0f - sumOtherThanStand;
         }
     }
 
@@ -300,7 +323,7 @@ public class CreatureBody
     private void UpdateViewElevation(CreatureState creatureState)
     {
         float lookUpSpeed = 60.0f;
-        float step = (-creatureState.inputView.y) * UnityEngine.Time.deltaTime * lookUpSpeed;
+        float step = (-creatureState.creatureStatePerUpdate.inputView.y) * UnityEngine.Time.deltaTime * lookUpSpeed;
         _headElevationDegrees = UnityEngine.Mathf.Clamp(_headElevationDegrees + step, -90.0f, 90.0f);
         if (null != _headParentGameObject)
         {

@@ -1,6 +1,6 @@
 ﻿class CreatureControllerAI : ICreatureController
 {
-    public void ApplyInputToState(CreatureState creatureState)
+    public void ApplyInputToState(CreatureState creatureState, float timeDelta)
     {
     }
 }

@@ -3,7 +3,8 @@
     private struct TouchData
     {
         public UnityEngine.Vector2 start { get; set; }
-        public CreatureState.TUIElement uiElement { get; set; }
+        public CreatureStatePerUpdate.TUIElement uiElement { get; set; }
+        public float duration { get; set; }
     }
     private System.Collections.Generic.Dictionary<int, TouchData> _touchDataMap = new System.Collections.Generic.Dictionary<int, TouchData>();
     private bool _mouseTouchActive;
@@ -11,18 +12,18 @@
 
     private TouchData MakeTouchData(UnityEngine.Vector2 position)
     {
-        CreatureState.TUIElement uiElement = CreatureState.TUIElement.None;
+        CreatureStatePerUpdate.TUIElement uiElement = CreatureStatePerUpdate.TUIElement.None;
         if (position.x < (UnityEngine.Screen.width * 0.33333f))
         {
-            uiElement = CreatureState.TUIElement.Movement;
+            uiElement = CreatureStatePerUpdate.TUIElement.Movement;
         }
         else if ((UnityEngine.Screen.width * 0.66666f) < position.x)
         {
-            uiElement = CreatureState.TUIElement.View;
+            uiElement = CreatureStatePerUpdate.TUIElement.View;
         }
         else
         {
-            uiElement = CreatureState.TUIElement.Attack;
+            uiElement = CreatureStatePerUpdate.TUIElement.Attack;
         }
         return new TouchData(){start=position, uiElement=uiElement };
     }
@@ -42,37 +43,72 @@
         {
             default:
                 break;
-            case CreatureState.TUIElement.Movement:
-                creatureState.inputMove += (normal * inputLength);
+            case CreatureStatePerUpdate.TUIElement.Movement:
+                creatureState.creatureStatePerUpdate.inputMove += (normal * inputLength);
                 break;
-            case CreatureState.TUIElement.View:
-                creatureState.inputView += (normal * inputLength);
+            case CreatureStatePerUpdate.TUIElement.View:
+                creatureState.creatureStatePerUpdate.inputView += (normal * inputLength);
                 break;
         }
     }
 
-    public void ApplyInputToState(CreatureState creatureState)
+    private float crouchTime = 0.75f;
+    private void DealEndTouch(CreatureState creatureState, TouchData touchData)
+    { 
+        //do we have jump input
+        if ((crouchTime < touchData.duration) || (CreatureStatePerUpdate.TUIElement.Movement != touchData.uiElement))
+        {
+            return;
+        }
+        var amount = ((touchData.duration / crouchTime) * 2.0f) - 1.0f; //normalise -1 ... 1
+        amount *= amount;
+        creatureState.creatureStatePerUpdate.jump = 1.0f - amount;
+    }
+
+    private void DealCrouch(CreatureState creatureState, TouchData touchData, UnityEngine.Vector2 currentPosition)
     {
-        creatureState.inputMove.x = 0.0f;
-        creatureState.inputMove.y = 0.0f;
-        creatureState.inputView.x = 0.0f;
-        creatureState.inputView.y = 0.0f;
-        creatureState.touchArray.Clear();
-        creatureState.uiElementDataArray.Clear();
+        //do we have crouch input
+        if (CreatureStatePerUpdate.TUIElement.Movement != touchData.uiElement)
+        {
+            return;
+        }
+        var length = (touchData.start - currentPosition).magnitude;
+        if (80.0f < length)
+        {
+            return;
+        }
+        length /= 80.0f;
+        length *= length;
+        var factor = 1.0f - length;
+        var crouch = UnityEngine.Mathf.Min(1.0f, touchData.duration / crouchTime);
+        creatureState.creatureStatePerUpdate.crouch += (crouch * factor);
+    }
+
+    public void ApplyInputToState(CreatureState creatureState, float timeDelta)
+    {
         if (UnityEngine.Input.GetMouseButton(0))
         {
             var currentPosition = new UnityEngine.Vector2(UnityEngine.Input.mousePosition.x, UnityEngine.Input.mousePosition.y);
-            creatureState.touchArray.Add(currentPosition);
+            creatureState.creatureStatePerUpdate.touchArray.Add(currentPosition);
             if (false == _mouseTouchActive)
             {
                 _mouseTouchData = MakeTouchData(currentPosition);
             }
+            else
+            {
+                _mouseTouchData.duration += timeDelta;
+                DealCrouch(creatureState, _mouseTouchData, currentPosition);
+            }
             _mouseTouchActive = true;
-            creatureState.uiElementDataArray.Add(new CreatureState.UIElementData(){uiElement=_mouseTouchData.uiElement, position=_mouseTouchData.start });
+            creatureState.creatureStatePerUpdate.uiElementDataArray.Add(new CreatureStatePerUpdate.UIElementData(){uiElement=_mouseTouchData.uiElement, position=_mouseTouchData.start });
             AddMoveView(creatureState, _mouseTouchData, currentPosition);
         }
         else
         {
+            if (true == _mouseTouchActive)
+            {
+                DealEndTouch(creatureState, _mouseTouchData);
+            }
             _mouseTouchActive = false;
         }
 
@@ -81,7 +117,7 @@
             var touch = UnityEngine.Input.GetTouch(index);
             //Bootstrap.Log("Input:" + touch.fingerId.ToString());
 
-            creatureState.touchArray.Add(touch.position);
+            creatureState.creatureStatePerUpdate.touchArray.Add(touch.position);
 
             TouchData touchData;
             if ((touch.phase == UnityEngine.TouchPhase.Began) || (false == _touchDataMap.ContainsKey(touch.fingerId)))
@@ -89,21 +125,30 @@
                 touchData = MakeTouchData(touch.position);
                 _touchDataMap[touch.fingerId] = touchData;
             }
+            else if (touch.phase == UnityEngine.TouchPhase.Ended)
+            {
+                touchData = _touchDataMap[touch.fingerId];
+                touchData.duration += touch.deltaTime;
+                DealEndTouch(creatureState, touchData);
+                continue;
+            }
             else
             {
                 touchData = _touchDataMap[touch.fingerId];
+                touchData.duration += touch.deltaTime;
+                DealCrouch(creatureState, touchData, touch.position);
             }
-            creatureState.uiElementDataArray.Add(new CreatureState.UIElementData(){uiElement=touchData.uiElement, position=touchData.start });
+            creatureState.creatureStatePerUpdate.uiElementDataArray.Add(new CreatureStatePerUpdate.UIElementData(){uiElement=touchData.uiElement, position=touchData.start });
             AddMoveView(creatureState, touchData, touch.position);
         }
 
         //creatureState.moveDelta.x = UnityEngine.Input.GetAxis("Horizontal");
         //creatureState.moveDelta.z = UnityEngine.Input.GetAxis("Vertical");
 
-        creatureState.inputMove.x += UnityEngine.Input.GetAxis("Horizontal");
-        creatureState.inputMove.y += UnityEngine.Input.GetAxis("Vertical");
-        creatureState.inputView.x += UnityEngine.Input.GetAxis("Horizontal_Alt");
-        creatureState.inputView.y += UnityEngine.Input.GetAxis("Vertical_Alt");
+        creatureState.creatureStatePerUpdate.inputMove.x += UnityEngine.Input.GetAxis("Horizontal");
+        creatureState.creatureStatePerUpdate.inputMove.y += UnityEngine.Input.GetAxis("Vertical");
+        creatureState.creatureStatePerUpdate.inputView.x += UnityEngine.Input.GetAxis("Horizontal_Alt");
+        creatureState.creatureStatePerUpdate.inputView.y += UnityEngine.Input.GetAxis("Vertical_Alt");
 
         //if (0.0f != creatureState.inputView.x)
         //{

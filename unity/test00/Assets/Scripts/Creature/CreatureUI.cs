@@ -27,15 +27,15 @@ public class CreatureUI
 	private void DrawElements(CreatureState creatureState)
 	{
 		UnityEngine.GUI.color = UnityEngine.Color.white;
-		foreach(CreatureState.UIElementData uiElementData in creatureState.uiElementDataArray)
+		foreach(CreatureStatePerUpdate.UIElementData uiElementData in creatureState.creatureStatePerUpdate.uiElementDataArray)
 		{
 			switch (uiElementData.uiElement)
 			{
 				default:
 					continue;
-				case CreatureState.TUIElement.Attack:
-				case CreatureState.TUIElement.Movement:
-				case CreatureState.TUIElement.View:
+				case CreatureStatePerUpdate.TUIElement.Attack:
+				case CreatureStatePerUpdate.TUIElement.Movement:
+				case CreatureStatePerUpdate.TUIElement.View:
 					break;
 			}
 			var size = 100.0f;
@@ -48,7 +48,7 @@ public class CreatureUI
 	{
 		float ratioA = UnityEngine.Mathf.Repeat(_timeAccumulate, 2.0f) * 0.5f;
 		float ratioB = UnityEngine.Mathf.Repeat(_timeAccumulate + 1.0f, 2.0f) * 0.5f;
-		foreach(UnityEngine.Vector2 touch in creatureState.touchArray)
+		foreach(UnityEngine.Vector2 touch in creatureState.creatureStatePerUpdate.touchArray)
 		{
 			float sizeA = 40.0f * (0.5f + (0.5f * ratioA));
 			float sizeB = 40.0f * (0.5f + (0.5f * ratioB));

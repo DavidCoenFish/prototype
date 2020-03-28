@@ -6,7 +6,6 @@ get a first pass of the tutorial levels done for "tea bag army"
 	tool pass
 
 gameplay pass
-	crouch, jump
 	swing attack
 	pickup pan
 	ko
@@ -17,13 +16,12 @@ gameplay pass
 visual pass
 	ui shader
 	creature visual
-
 ballance pass
-	var from sheets
-	each tutorial level
 
 
 tool pass
 	add sheet3array
 	set root by id, metadata on demand
 
+
+https://twitter.com/kyxvbx364872/status/1232711737704468480?s=20

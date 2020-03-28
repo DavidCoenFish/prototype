@@ -1,45 +1,18 @@
 ﻿public class CreatureState
 {
-    public enum TPose
-    {
-        Standing = 0,
-        Crouching,
-        //KO ? or from ragdoll flag
-        Count
-    }
-
-    public enum TUIElement
-    {
-        None = 0,
-        Movement,
-        View,
-        Attack,
-        //Health,
-        Count
-    }
-
-    public struct UIElementData
-    {
-        public TUIElement uiElement { get; set; }
-        public UnityEngine.Vector2 position { get; set; }
-    }
-
     public string typeName;// { get; } //[rat, chicken, 
 
     public float height { get; }
-    public float viewElevationDegrees = 0.0f; //look up, positive
-    public float bodyLeanForwardDegrees = 0.0f; // or is this with the ridged body?
-    public TPose pose = TPose.Standing;
+    public float healthCurrent { get; set; }
+    public float healthMax { get; }
+
     public bool ragdoll = false;
+
+    public CreatureStatePerUpdate creatureStatePerUpdate;
 
     //applied to rigid body during FixedUpdate
     //public UnityEngine.Quaternion rotationDelta = new UnityEngine.Quaternion();
     //public UnityEngine.Vector3 moveDelta = new UnityEngine.Vector3();
-    public UnityEngine.Vector2 inputMove = new UnityEngine.Vector2(0.0f, 0.0f);
-    public UnityEngine.Vector2 inputView = new UnityEngine.Vector2(0.0f, 0.0f);
-
-    public System.Collections.Generic.List< UnityEngine.Vector2 > touchArray = new System.Collections.Generic.List< UnityEngine.Vector2 >();
-    public System.Collections.Generic.List< UIElementData > uiElementDataArray = new System.Collections.Generic.List< UIElementData >();
 
     public CreatureState(string in_typeName)
     {
@@ -49,6 +22,14 @@
         //get maxMove "creatures." + typeName + ".max_move"; 
     }
 
-    //string typeName
+    public void StartNewUpdate()
+    {
+        creatureStatePerUpdate = new CreatureStatePerUpdate();
+        creatureStatePerUpdate.uiElementDataArray.Add(new CreatureStatePerUpdate.UIElementData(){
+            position = new UnityEngine.Vector2(UnityEngine.Screen.width * 0.5f, 100.0f),
+            uiElement = CreatureStatePerUpdate.TUIElement.Health
+        });
+    }
+
 }
 

@@ -1,5 +1,5 @@
 ﻿// interface to 
 interface ICreatureController
 {
-	void ApplyInputToState(CreatureState creatureState);
+	void ApplyInputToState(CreatureState creatureState, float timeDelta);
 }
