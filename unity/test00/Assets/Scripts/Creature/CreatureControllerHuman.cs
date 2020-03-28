@@ -25,7 +25,7 @@
         {
             uiElement = CreatureStatePerUpdate.TUIElement.Attack;
         }
-        return new TouchData(){start=position, uiElement=uiElement };
+        return new TouchData(){start=position, uiElement=uiElement};
     }
 
     private void AddMoveView(CreatureState creatureState, TouchData touchData, UnityEngine.Vector2 currentPosition)
@@ -47,7 +47,10 @@
                 creatureState.creatureStatePerUpdate.inputMove += (normal * inputLength);
                 break;
             case CreatureStatePerUpdate.TUIElement.View:
-                creatureState.creatureStatePerUpdate.inputView += (normal * inputLength);
+                creatureState.creatureStatePerUpdate.inputView += new UnityEngine.Vector2(
+                    normal.x * UnityEngine.Mathf.Min(length * 2.0f, 1.0f),
+                    normal.y * length * 2.0f
+                    );
                 break;
         }
     }
@@ -100,7 +103,11 @@
                 DealCrouch(creatureState, _mouseTouchData, currentPosition);
             }
             _mouseTouchActive = true;
-            creatureState.creatureStatePerUpdate.uiElementDataArray.Add(new CreatureStatePerUpdate.UIElementData(){uiElement=_mouseTouchData.uiElement, position=_mouseTouchData.start });
+            creatureState.creatureStatePerUpdate.uiElementDataArray.Add(new CreatureStatePerUpdate.UIElementData(){
+                uiElement=_mouseTouchData.uiElement, 
+                position=_mouseTouchData.start, 
+                touch=currentPosition 
+            });
             AddMoveView(creatureState, _mouseTouchData, currentPosition);
         }
         else
@@ -138,23 +145,18 @@
                 touchData.duration += touch.deltaTime;
                 DealCrouch(creatureState, touchData, touch.position);
             }
-            creatureState.creatureStatePerUpdate.uiElementDataArray.Add(new CreatureStatePerUpdate.UIElementData(){uiElement=touchData.uiElement, position=touchData.start });
+            creatureState.creatureStatePerUpdate.uiElementDataArray.Add(new CreatureStatePerUpdate.UIElementData(){
+                uiElement=touchData.uiElement, 
+                position=touchData.start, 
+                touch=touch.position 
+            });
             AddMoveView(creatureState, touchData, touch.position);
         }
-
-        //creatureState.moveDelta.x = UnityEngine.Input.GetAxis("Horizontal");
-        //creatureState.moveDelta.z = UnityEngine.Input.GetAxis("Vertical");
 
         creatureState.creatureStatePerUpdate.inputMove.x += UnityEngine.Input.GetAxis("Horizontal");
         creatureState.creatureStatePerUpdate.inputMove.y += UnityEngine.Input.GetAxis("Vertical");
         creatureState.creatureStatePerUpdate.inputView.x += UnityEngine.Input.GetAxis("Horizontal_Alt");
         creatureState.creatureStatePerUpdate.inputView.y += UnityEngine.Input.GetAxis("Vertical_Alt");
 
-        //if (0.0f != creatureState.inputView.x)
-        //{
-        //    Bootstrap.Log("Horizontal_Alt:" + creatureState.inputView.x.ToString());
-        //}
-
-        //
     }
 }

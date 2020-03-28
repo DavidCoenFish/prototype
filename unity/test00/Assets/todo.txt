@@ -12,6 +12,7 @@ gameplay pass
 	load ammo
 	shoot
 	swirl
+	past edge of screen object location ui hint
 
 visual pass
 	ui shader
@@ -24,4 +25,9 @@ tool pass
 	set root by id, metadata on demand
 
 
-https://twitter.com/kyxvbx364872/status/1232711737704468480?s=20
+
+main camera
+	x player upper body (or custom body that excludes upper body for fov?)
+
+first person camera
+	y first person

@@ -7,6 +7,8 @@
     public float healthMax { get; }
 
     public bool ragdoll = false;
+    //this is the creature that hosts the game camera, turn off some of the body...
+    public bool firstPersonHost = false;
 
     public CreatureStatePerUpdate creatureStatePerUpdate;
 

@@ -37,6 +37,7 @@ public class CreatureBody
     private struct PoseData
     {
         public string name { get; set; } 
+        public bool visibleFirstPerson; //is this node visible for the first person camera
         public bool sphere { get; set; } // represent pose data with a sphere
         public bool cube { get; set; } // represent with a cube
 	    public System.Collections.Generic.List< TransformData > transformData { get; set; }
@@ -46,6 +47,7 @@ public class CreatureBody
 
     private static PoseData _poseData = new PoseData(){ 
         name = "SpineC", 
+        visibleFirstPerson = true,
         sphere = true, 
         cube = false, 
         transformData = new System.Collections.Generic.List< TransformData >(){
@@ -65,6 +67,7 @@ public class CreatureBody
         poseDataChildren = new System.Collections.Generic.List< PoseData >(){
             new PoseData{
                 name = "SpineB", 
+                visibleFirstPerson = false,
                 sphere = true, 
                 cube = false, 
                 transformData = new System.Collections.Generic.List< TransformData >(){
@@ -84,6 +87,7 @@ public class CreatureBody
                 poseDataChildren = new System.Collections.Generic.List< PoseData >(){
                     new PoseData{
                         name = "SpineA", 
+                        visibleFirstPerson = false,
                         sphere = true, 
                         cube = false, 
                         transformData = new System.Collections.Generic.List< TransformData >(){
@@ -103,6 +107,7 @@ public class CreatureBody
                         poseDataChildren = new System.Collections.Generic.List< PoseData >(){
                             new PoseData{
                                 name = "Head", 
+                                visibleFirstPerson = false,
                                 sphere = true, 
                                 cube = false, 
                                 transformData = new System.Collections.Generic.List< TransformData >(){
@@ -122,6 +127,7 @@ public class CreatureBody
                                 poseDataChildren = new System.Collections.Generic.List< PoseData >(){
                                     new PoseData{
                                         name = "CubeAgro0", 
+                                        visibleFirstPerson = false,
                                         sphere = false, 
                                         cube = true, 
                                         transformData = new System.Collections.Generic.List< TransformData >(){
@@ -142,6 +148,7 @@ public class CreatureBody
                                     },
                                     new PoseData{
                                         name = "CubeAgro1", 
+                                        visibleFirstPerson = false,
                                         sphere = false, 
                                         cube = true, 
                                         transformData = new System.Collections.Generic.List< TransformData >(){
@@ -213,6 +220,8 @@ public class CreatureBody
     		gameObjectData.gameObject.transform.localRotation = UnityEngine.Quaternion.Euler(rotationSum.x, rotationSum.y, rotationSum.z);
         }
 		gameObjectData.gameObject.transform.localScale = scaleSum;
+        bool visible = (creatureState.firstPersonHost == true) ? gameObjectData.poseData.visibleFirstPerson : true;
+        gameObjectData.gameObject.SetActive(visible);
 	}
 
 	private void BuildHeirarchy(UnityEngine.GameObject parentGameObject, PoseData poseData, bool root, CreatureState creatureState)

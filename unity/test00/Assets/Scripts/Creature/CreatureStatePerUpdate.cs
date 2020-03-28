@@ -14,6 +14,7 @@
     {
         public TUIElement uiElement { get; set; }
         public UnityEngine.Vector2 position { get; set; }
+        public UnityEngine.Vector2 touch { get; set; }
     }
 
     public UnityEngine.Vector2 inputMove = new UnityEngine.Vector2(0.0f, 0.0f);

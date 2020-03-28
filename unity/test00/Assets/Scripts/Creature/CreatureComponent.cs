@@ -1,4 +1,6 @@
 ﻿//https://medium.com/ironequal/unity-character-controller-vs-rigidbody-a1e243591483
+using System;
+
 public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
 {
     public bool startHumanControlled = false;
@@ -10,6 +12,7 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
     private UnityEngine.Rigidbody _rigidbody = null;
     private SpringUnitSphere _inputSpring;
     private CreatureUI _creatureUI = null;
+    private CreatureScreenSpace _creatureScreenSpace = null;
 
     //private float _debugTimeAccumulate = 0.0f;
 
@@ -47,6 +50,8 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
         if (true == startHumanControlled)
         {
             _creatureUI = new CreatureUI();
+            _creatureState.firstPersonHost = true;
+            _creatureScreenSpace = new CreatureScreenSpace();
         }
     }
 
@@ -84,6 +89,10 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
         if (null != _creatureUI)
         {
             _creatureUI.Update();
+        }
+        if (null != _creatureScreenSpace)
+        {
+            _creatureScreenSpace.Update(_creatureState);
         }
     }
 
