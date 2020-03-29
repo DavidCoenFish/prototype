@@ -36,6 +36,7 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
         _rigidbody.useGravity = true;
         _rigidbody.centerOfMass = new UnityEngine.Vector3(0.0f, 0.0f, 0.0f);
         _rigidbody.inertiaTensor = new UnityEngine.Vector3(1.0f, 1.0f, 1.0f);
+        gameObject.layer = (int)Project.Layer.TIgnoreRaycast;
 
         _creatureState = new CreatureState(typeName);
         _creatureBody = new CreatureBody( this.gameObject, _creatureState);
@@ -44,6 +45,7 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
         collider.center = new UnityEngine.Vector3(0.0f, _creatureState.height * 0.5f, 0.0f);
         collider.height = _creatureState.height;
         collider.radius = _creatureState.height * 0.25f;
+        
 
         _inputSpring = new SpringUnitSphere(10.0f, UnityEngine.Vector2.up, 1.0f);
 
@@ -59,7 +61,7 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
     {
         float timeDelta = UnityEngine.Time.deltaTime;
 
-        int layerMask = 1 << 8;
+        int layerMask = (int)Project.LayerFlag.TDefault;
         UnityEngine.Vector3 touchingGroundPosition = new UnityEngine.Vector3(gameObject.transform.position.x, gameObject.transform.position.y - 0.05f, gameObject.transform.position.z);
         bool touchingGround = UnityEngine.Physics.CheckSphere(touchingGroundPosition, 0.1f, layerMask, UnityEngine.QueryTriggerInteraction.Ignore);
 
@@ -92,7 +94,7 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
         }
         if (null != _creatureScreenSpace)
         {
-            _creatureScreenSpace.Update(_creatureState);
+            _creatureScreenSpace.Update(_creatureState, _creatureBody.GetCameraTransform());
         }
     }
 

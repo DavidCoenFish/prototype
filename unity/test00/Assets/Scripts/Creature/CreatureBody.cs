@@ -16,8 +16,8 @@ public class CreatureBody
     private UnityEngine.GameObject _headGameObject;
     private UnityEngine.GameObject _headParentGameObject;
     private float _headElevationDegrees = 0.0f;
-	private UnityEngine.Material _materialSphere;
-	private UnityEngine.Material _materialCube;
+	private UnityEngine.Material _materialSkin;
+	private UnityEngine.Material _materialDark;
 
     private struct GameObjectData
     {
@@ -180,9 +180,9 @@ public class CreatureBody
     public CreatureBody(UnityEngine.GameObject parent, CreatureState creatureState)
     {
         //Assets/Resources/material/CreatureSkin.mat
-        _materialSphere = UnityEngine.Resources.Load<UnityEngine.Material>("material/CreatureSkin");
+        _materialSkin = UnityEngine.Resources.Load<UnityEngine.Material>("material/CreatureSkin");
         //Assets/Resources/material/CreatureDark.mat
-        _materialCube = UnityEngine.Resources.Load<UnityEngine.Material>("material/CreatureDark");
+        _materialDark = UnityEngine.Resources.Load<UnityEngine.Material>("material/CreatureDark");
 
         BuildHeirarchy(parent, _poseData, true, creatureState);
     }
@@ -220,8 +220,12 @@ public class CreatureBody
     		gameObjectData.gameObject.transform.localRotation = UnityEngine.Quaternion.Euler(rotationSum.x, rotationSum.y, rotationSum.z);
         }
 		gameObjectData.gameObject.transform.localScale = scaleSum;
-        bool visible = (creatureState.firstPersonHost == true) ? gameObjectData.poseData.visibleFirstPerson : true;
-        gameObjectData.gameObject.SetActive(visible);
+        //bool visible = true; //(creatureState.firstPersonHost == true) ? gameObjectData.poseData.visibleFirstPerson : true;
+        //gameObjectData.gameObject.SetActive(visible);
+        if ((true == creatureState.firstPersonHost) && (false == gameObjectData.poseData.visibleFirstPerson))
+        {
+            gameObjectData.gameObject.layer = (int)Project.Layer.TFirstPersonHide;
+        }
 	}
 
 	private void BuildHeirarchy(UnityEngine.GameObject parentGameObject, PoseData poseData, bool root, CreatureState creatureState)
@@ -231,7 +235,7 @@ public class CreatureBody
 		{
 			UnityEngine.GameObject childGameObject = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Sphere);
             childGameObject.name = poseData.name + "Sphere";
-			childGameObject.GetComponent<UnityEngine.Renderer>().sharedMaterial = _materialSphere;
+			childGameObject.GetComponent<UnityEngine.Renderer>().sharedMaterial = _materialSkin;
 			childGameObject.transform.parent = parentGameObject.transform;
             UnityEngine.Object.Destroy(childGameObject.GetComponent<UnityEngine.SphereCollider>());
             var gameObjectData = new GameObjectData(){poseData=poseData, gameObject=childGameObject, root=root};
@@ -243,7 +247,7 @@ public class CreatureBody
 		{
 			UnityEngine.GameObject childGameObject = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cube);
             childGameObject.name = poseData.name + "Cube";
-			childGameObject.GetComponent<UnityEngine.Renderer>().sharedMaterial = _materialCube;
+			childGameObject.GetComponent<UnityEngine.Renderer>().sharedMaterial = _materialDark;
 			childGameObject.transform.parent = parentGameObject.transform;
             UnityEngine.Object.Destroy(childGameObject.GetComponent<UnityEngine.BoxCollider>());
             var gameObjectData = new GameObjectData(){poseData=poseData, gameObject=childGameObject, root=root};
@@ -296,7 +300,7 @@ public class CreatureBody
         _poseWeight[(int)TPose.TStand] = 0.0f; 
 
         float crouch = UnityEngine.Mathf.Min(1.0f, creatureState.creatureStatePerUpdate.crouch);
-        _poseWeight[(int)TPose.TCrouch] = UnityEngine.Mathf.MoveTowards(_poseWeight[(int)TPose.TCrouch], crouch, UnityEngine.Time.deltaTime * 2.0f);
+        _poseWeight[(int)TPose.TCrouch] = UnityEngine.Mathf.MoveTowards(_poseWeight[(int)TPose.TCrouch], crouch, UnityEngine.Time.deltaTime * 10.0f);
 
         float sumOtherThanStand = 0.0f;
         for (int index = 0; index < (int)TPose.TCount; ++index)

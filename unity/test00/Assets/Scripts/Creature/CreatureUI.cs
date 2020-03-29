@@ -36,7 +36,7 @@ public class CreatureUI
 			{
 				default:
 					continue;
-				//case CreatureStatePerUpdate.TUIElement.Attack:
+				case CreatureStatePerUpdate.TUIElement.ArmHold:
 				case CreatureStatePerUpdate.TUIElement.Movement:
 				case CreatureStatePerUpdate.TUIElement.View:
 					break;

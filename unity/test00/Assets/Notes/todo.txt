@@ -6,9 +6,6 @@ get a first pass of the tutorial levels done for "tea bag army"
 	tool pass
 
 gameplay pass
-	spring tilt with move
-	move and view ui
-	crouch, jump
 	swing attack
 	pickup pan
 	ko

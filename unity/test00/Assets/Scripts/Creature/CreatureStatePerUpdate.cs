@@ -5,8 +5,12 @@
         None = 0,
         Movement,
         View,
-        Attack,
         Health,
+        Arm,
+        ArmIdle,
+        ArmHold,
+        ArmSwing,
+        ArmShoot,
         Count
     }
 
@@ -15,6 +19,7 @@
         public TUIElement uiElement { get; set; }
         public UnityEngine.Vector2 position { get; set; }
         public UnityEngine.Vector2 touch { get; set; }
+        public int weaponIndex { get; set; }
     }
 
     public UnityEngine.Vector2 inputMove = new UnityEngine.Vector2(0.0f, 0.0f);

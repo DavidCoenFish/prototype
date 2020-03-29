@@ -3,7 +3,7 @@
     public string typeName;// { get; } //[rat, chicken, 
 
     public float height { get; }
-    public float healthCurrent { get; set; }
+    public float healthCurrent;
     public float healthMax { get; }
 
     public bool ragdoll = false;
@@ -12,9 +12,16 @@
 
     public CreatureStatePerUpdate creatureStatePerUpdate;
 
-    //applied to rigid body during FixedUpdate
-    //public UnityEngine.Quaternion rotationDelta = new UnityEngine.Quaternion();
-    //public UnityEngine.Vector3 moveDelta = new UnityEngine.Vector3();
+    public System.Collections.Generic.List< WeaponData > weaponArray;
+    public struct WeaponData
+    {
+        public int ammo { get; set; }
+        public TWeapon weapon { get; set; }
+    }
+    public enum TWeapon
+    {
+        TSlingPan
+    }
 
     public CreatureState(string in_typeName)
     {
@@ -22,6 +29,8 @@
         height = 0.125f;//get height "creatures." + typeName + ".height"; 
         //get jumpHeight "creatures." + typeName + ".jump_height"; 
         //get maxMove "creatures." + typeName + ".max_move"; 
+        weaponArray = new System.Collections.Generic.List< WeaponData >();
+        weaponArray.Add(new WeaponData(){weapon=TWeapon.TSlingPan });
     }
 
     public void StartNewUpdate()
