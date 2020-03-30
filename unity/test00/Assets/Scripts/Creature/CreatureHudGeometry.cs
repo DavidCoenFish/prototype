@@ -1,4 +1,4 @@
-﻿public class CreatureScreenSpace
+﻿public class CreatureHudGeometry
 {
     private class PrefabCollection
     {
@@ -18,7 +18,7 @@
             }
             _activeCount = 0;
         }
-        public void Request(UnityEngine.Transform parentTransform, UnityEngine.Vector2 touch)
+        public void Request(UnityEngine.Transform parentTransform, CreatureStatePerUpdate.HandPoseData handPoseData)
         {
             UnityEngine.GameObject gameObject = null;
             if (_array.Count <= _activeCount)
@@ -41,11 +41,21 @@
 
             gameObject.SetActive(true);
             gameObject.transform.localPosition = new UnityEngine.Vector3(
-                ((touch.x / UnityEngine.Screen.width) -0.5f) * hozScale,
-                ((touch.y / UnityEngine.Screen.height) -0.5f) * verScale,
+                ((handPoseData.position.x / UnityEngine.Screen.width) -0.5f) * hozScale,
+                ((handPoseData.position.y / UnityEngine.Screen.height) -0.5f) * verScale,
                 2.0f
                 );
-            gameObject.transform.localRotation = UnityEngine.Quaternion.Euler(0.0f, (0 == (_activeCount & 1)) ? 15.0f : -15.0f, 0.0f);
+            var rotY = (((handPoseData.position.x / UnityEngine.Screen.width) - 0.5f) * 2.0f);
+            switch (handPoseData.handPose)
+            {
+                default:
+                    rotY *= -15.0f;
+                    break;
+                case CreatureStatePerUpdate.THandPose.Swing:
+                    rotY *= 30.0f;
+                    break;
+            }
+            gameObject.transform.localRotation = UnityEngine.Quaternion.Euler(0.0f, rotY, 0.0f);
             gameObject.transform.localScale = UnityEngine.Vector3.one;
         }
     }
@@ -55,7 +65,7 @@
     private PrefabCollection _prefabCollectionArmSwing;
     private PrefabCollection _prefabCollectionArmShoot;
 
-    public CreatureScreenSpace()
+    public CreatureHudGeometry()
     {
         _prefabCollectionArm = new PrefabCollection("prefab/arm");
         _prefabCollectionArmHold = new PrefabCollection("prefab/armhold");
@@ -70,30 +80,25 @@
         _prefabCollectionArmSwing.Clear();
         _prefabCollectionArmShoot.Clear();
 
-        foreach( CreatureStatePerUpdate.UIElementData uiElementData in creatureState.creatureStatePerUpdate.uiElementDataArray)
+        foreach( CreatureStatePerUpdate.HandPoseData handPoseData in creatureState.creatureStatePerUpdate.handPoseArray)
         {
-            switch (uiElementData.uiElement)
+            switch (handPoseData.handPose)
             {
                 default:
                     break;
-                case CreatureStatePerUpdate.TUIElement.Arm:
-                    _prefabCollectionArm.Request(parentTransform, uiElementData.touch);
+                case CreatureStatePerUpdate.THandPose.Empty:
+                    _prefabCollectionArm.Request(parentTransform, handPoseData);
                     break;
-                case CreatureStatePerUpdate.TUIElement.ArmIdle:
-                    _prefabCollectionArm.Request(parentTransform, uiElementData.position);
+                case CreatureStatePerUpdate.THandPose.Hold:
+                    _prefabCollectionArmHold.Request(parentTransform, handPoseData);
                     break;
-                case CreatureStatePerUpdate.TUIElement.ArmHold:
-                    _prefabCollectionArmHold.Request(parentTransform, uiElementData.position);
+                case CreatureStatePerUpdate.THandPose.Shoot:
+                    _prefabCollectionArmShoot.Request(parentTransform, handPoseData);
                     break;
-                case CreatureStatePerUpdate.TUIElement.ArmShoot:
-                    _prefabCollectionArmShoot.Request(parentTransform, uiElementData.touch);
-                    break;
-                case CreatureStatePerUpdate.TUIElement.ArmSwing:
-                    _prefabCollectionArmSwing.Request(parentTransform, uiElementData.touch);
+                case CreatureStatePerUpdate.THandPose.Swing:
+                    _prefabCollectionArmSwing.Request(parentTransform, handPoseData);
                     break;
             }
-            //SetupArms(creatureState, countArms, gameObject, new UnityEngine.Vector2(UnityEngine.Screen.width * 0.2f, UnityEngine.Screen.height * 0.2f));
-            //SetupArms(creatureState, countArms, gameObject, new UnityEngine.Vector2(UnityEngine.Screen.width * 0.8f, UnityEngine.Screen.height * 0.2f));
         }
     }
 }

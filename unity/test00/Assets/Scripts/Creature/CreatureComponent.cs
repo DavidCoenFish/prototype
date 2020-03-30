@@ -12,7 +12,7 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
     private UnityEngine.Rigidbody _rigidbody = null;
     private SpringUnitSphere _inputSpring;
     private CreatureUI _creatureUI = null;
-    private CreatureScreenSpace _creatureScreenSpace = null;
+    private CreatureHudGeometry _creatureScreenSpace = null;
 
     //private float _debugTimeAccumulate = 0.0f;
 
@@ -53,7 +53,7 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
         {
             _creatureUI = new CreatureUI();
             _creatureState.firstPersonHost = true;
-            _creatureScreenSpace = new CreatureScreenSpace();
+            _creatureScreenSpace = new CreatureHudGeometry();
         }
     }
 
