@@ -10,12 +10,6 @@ misc
 	dash
 
 gameplay pass
-	swing attack
-		arms under camera
-		pan prefab
-		arm pan hold prefab
-		arm pan hold prefab
-		arm pan hold prefab
 	pickup pan
 	ko
 	load ammo
@@ -25,12 +19,13 @@ gameplay pass
 visual pass
 	ui shader
 	creature visual
+
 ballance pass
 
 
 tool pass
-	add sheet3array
-	set root by id, metadata on demand
+	drive2json: add sheet3array
+	drive2json: set root by id, metadata on demand
 
 
  */

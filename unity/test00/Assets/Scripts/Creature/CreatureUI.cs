@@ -30,8 +30,10 @@ public class CreatureUI
 		float minScreen = UnityEngine.Mathf.Min((float)UnityEngine.Screen.width, (float)UnityEngine.Screen.height);
 		var size = (minScreen * 0.2f);
 		UnityEngine.GUI.color = UnityEngine.Color.white;
-		foreach(CreatureStatePerUpdate.UIElementData uiElementData in creatureState.creatureStatePerUpdate.uiElementDataArray)
+		//foreach(CreatureStatePerUpdate.UIElementData uiElementData in creatureState.creatureStatePerUpdate.uiElementDataArray)
+		for (int index = 0; index < creatureState.creatureStatePerUpdate.uiElementDataArray.Count; ++index)
 		{
+			var uiElementData = creatureState.creatureStatePerUpdate.uiElementDataArray[index];
 			switch (uiElementData.uiElement)
 			{
 				default:
@@ -39,10 +41,30 @@ public class CreatureUI
 				case CreatureStatePerUpdate.TUIElement.Weapon:
 				case CreatureStatePerUpdate.TUIElement.Movement:
 				case CreatureStatePerUpdate.TUIElement.View:
+					{
+						var rect = new UnityEngine.Rect(uiElementData.position.x - (size * 0.5f), (UnityEngine.Screen.height - uiElementData.position.y) - (size * 0.5f), size, size);
+						UnityEngine.GUI.Box(rect, UnityEngine.GUIContent.none, _circleStyle);
+					}
+					break;
+				case CreatureStatePerUpdate.TUIElement.Pickup:
+					{
+						var rect = new UnityEngine.Rect(uiElementData.position.x - (size * 0.5f), (UnityEngine.Screen.height - uiElementData.position.y) - (size * 0.5f), size, size);
+						if (UnityEngine.GUI.Button(rect, UnityEngine.GUIContent.none, _circleStyle)){
+							if ((uiElementData.gameObject) && (creatureState.weaponArray.Count < 8))
+							{
+								creatureState.weaponArray.Add(new CreatureState.WeaponData(){weapon=CreatureState.TWeapon.TSlingPan });
+
+								UnityEngine.GameObject.Destroy(uiElementData.gameObject);
+								//uiElementData.gameObject = null;
+								creatureState.creatureStatePerUpdate.uiElementDataArray[index] = new CreatureStatePerUpdate.UIElementData(){
+									position = uiElementData.position,
+									uiElement = uiElementData.uiElement
+								};
+							}
+						}
+					}
 					break;
 			}
-			var rect = new UnityEngine.Rect(uiElementData.position.x - (size * 0.5f), (UnityEngine.Screen.height - uiElementData.position.y) - (size * 0.5f), size, size);
-			UnityEngine.GUI.Box(rect, UnityEngine.GUIContent.none, _circleStyle);
 		}
 	}
 

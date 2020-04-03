@@ -134,6 +134,42 @@ class CreatureControllerHuman : ICreatureController
         }
     }
 
+
+    private void MakeUIElementsForPickup(CreatureState creatureState, UnityEngine.Transform cameraTransform)
+    {
+        var fov = 60.0f; //todo
+        var aspect = ((float)UnityEngine.Screen.width) / ((float)UnityEngine.Screen.height); //16.0f / 9.0f;
+        var verScale = UnityEngine.Mathf.Tan(UnityEngine.Mathf.Deg2Rad * (fov / 2.0f));
+        var hozScale = verScale * aspect;
+
+        //make a button for every pickup object in range
+        UnityEngine.Ray ray = new UnityEngine.Ray(cameraTransform.position, cameraTransform.forward); //new { };
+        var listArray = UnityEngine.Physics.SphereCastAll(ray, creatureState.height * 3.0f, 0.0f);
+        foreach (UnityEngine.RaycastHit raycastHit in listArray)
+        {
+            var pickupComponent = raycastHit.collider.gameObject.GetComponent<PickupComponent>();
+            if (null == pickupComponent)
+            {
+                continue;
+            }
+            var offset = raycastHit.collider.gameObject.transform.position - cameraTransform.position;
+            var distance = UnityEngine.Vector3.Dot(cameraTransform.forward, offset);
+            if (distance < (0.01f * creatureState.height))
+            {
+                continue;
+            }
+
+            var x = ((((UnityEngine.Vector3.Dot(cameraTransform.right, offset) / distance) / hozScale) * 0.5f) + 0.5f);
+            var y = ((((UnityEngine.Vector3.Dot(cameraTransform.up, offset) / distance) / verScale) * 0.5f) + 0.5f);
+
+            creatureState.creatureStatePerUpdate.uiElementDataArray.Add(new CreatureStatePerUpdate.UIElementData(){
+                position = new UnityEngine.Vector2(x * UnityEngine.Screen.width, y * UnityEngine.Screen.height),
+                uiElement = CreatureStatePerUpdate.TUIElement.Pickup,
+                gameObject = raycastHit.collider.gameObject
+            });
+        }
+    }
+
     private CreatureStatePerUpdate.TUIElement GetElementForTouch(TouchData touchData, CreatureState creatureState, UnityEngine.Vector2 currentPosition)
     {
         for (int index = 0; index < _weaponUIDataArray.Count; ++index)
@@ -296,4 +332,9 @@ class CreatureControllerHuman : ICreatureController
         DealKeyboard(creatureState);
         AddHandPos(creatureState);
     }
+    public void ApplyCameraToState(CreatureState creatureState, UnityEngine.Transform cameraTransform)
+    {
+        MakeUIElementsForPickup(creatureState, cameraTransform);
+    }
+
 }

@@ -30,7 +30,7 @@
         //get jumpHeight "creatures." + typeName + ".jump_height"; 
         //get maxMove "creatures." + typeName + ".max_move"; 
         weaponArray = new System.Collections.Generic.List< WeaponData >();
-        weaponArray.Add(new WeaponData(){weapon=TWeapon.TSlingPan });
+        //weaponArray.Add(new WeaponData(){weapon=TWeapon.TSlingPan });
     }
 
     public void StartNewUpdate()

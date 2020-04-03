@@ -88,13 +88,19 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
             _rigidbody.AddForce(UnityEngine.Vector3.up * jumpMag, UnityEngine.ForceMode.VelocityChange);
         }
 
-        if (null != _creatureUI)
+        if (null != _creatureController)
         {
-            _creatureUI.Update();
+            _creatureController.ApplyCameraToState(_creatureState, _creatureBody.GetCameraTransform());
         }
+
         if (null != _creatureScreenSpace)
         {
             _creatureScreenSpace.Update(_creatureState, _creatureBody.GetCameraTransform());
+        }
+        
+        if (null != _creatureUI)
+        {
+            _creatureUI.Update();
         }
     }
 

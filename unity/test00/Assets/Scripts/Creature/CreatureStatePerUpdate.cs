@@ -7,12 +7,14 @@
         View,
         Health,
         Weapon,
+        Pickup,
         Count
     }
     public struct UIElementData
     {
         public TUIElement uiElement { get; set; }
         public UnityEngine.Vector2 position { get; set; }
+        public UnityEngine.GameObject gameObject { get; set; }
     }
 
     public enum THandPose
