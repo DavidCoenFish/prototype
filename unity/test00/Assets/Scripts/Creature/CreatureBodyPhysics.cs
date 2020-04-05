@@ -1,25 +1,23 @@
-﻿public class CreatureRigidBody
+﻿public class CreatureBodyPhysics
 {
     private UnityEngine.Rigidbody _rigidbody = null;
-    private SpringUnitSphere _inputSpring;
+    private System.Collections.Generic.List< UnityEngine.SphereCollider > _sphereColliderArray = new System.Collections.Generic.List< UnityEngine.SphereCollider >();
 
-    public CreatureRigidBody(UnityEngine.GameObject parent, CreatureState creatureState)
+    public CreatureBodyPhysics(UnityEngine.GameObject parent, CreatureState creatureState)
     {
-        //_rigidbody = gameObject.AddComponent<UnityEngine.Rigidbody>();
-        _rigidbody = parent.GetComponent< UnityEngine.Rigidbody >();
-        //_rigidbody.constraints = UnityEngine.RigidbodyConstraints.FreezeRotationX | UnityEngine.RigidbodyConstraints.FreezeRotationZ;
+        _rigidbody = parent.AddComponent<UnityEngine.Rigidbody>();
         _rigidbody.useGravity = true;
         _rigidbody.centerOfMass = new UnityEngine.Vector3(0.0f, 0.0f, 0.0f);
         _rigidbody.inertiaTensor = new UnityEngine.Vector3(1.0f, 1.0f, 1.0f);
         parent.layer = (int)Project.Layer.TIgnoreRaycast;
 
-        var collider = parent.AddComponent<UnityEngine.CapsuleCollider>();
-        collider.center = new UnityEngine.Vector3(0.0f, creatureState.height * 0.5f, 0.0f);
-        collider.height = creatureState.height;
-        collider.radius = creatureState.height * 0.25f;
-        
-        _inputSpring = new SpringUnitSphere(10.0f, UnityEngine.Vector2.up, 1.0f);
 
+        foreach (var sphereColliderData in creatureState.creatureStateBody.sphereColliderDataArray)
+        {
+            var collider = parent.AddComponent<UnityEngine.SphereCollider>();
+            collider.center = new UnityEngine.Vector3(sphereColliderData.position.x, sphereColliderData.position.y, sphereColliderData.position.z);
+            collider.radius = sphereColliderData.radius;
+        }
     }
 
     public void Update(UnityEngine.GameObject parent, float timeDelta, CreatureState creatureState)
@@ -28,11 +26,10 @@
         UnityEngine.Vector3 touchingGroundPosition = new UnityEngine.Vector3(parent.transform.position.x, parent.transform.position.y - 0.05f, parent.transform.position.z);
         bool touchingGround = UnityEngine.Physics.CheckSphere(touchingGroundPosition, 0.1f, layerMask, UnityEngine.QueryTriggerInteraction.Ignore);
 
-        //if (UnityEngine.Input.GetButtonDown("Jump"))
-        if ((0.0f < creatureState.creatureStatePerUpdate.jump) && (true == touchingGround))
+        if ((0.0f < creatureState.creatureStateInput.jump) && (true == touchingGround))
         {
             //_rigidbody.AddForce(UnityEngine.Vector3.up * UnityEngine.Mathf.Sqrt(-1f * UnityEngine.Physics.gravity.y), UnityEngine.ForceMode.VelocityChange);
-            float jumpMag = UnityEngine.Mathf.Sqrt(-2.0f * creatureState.creatureStatePerUpdate.jump * UnityEngine.Physics.gravity.y);
+            float jumpMag = UnityEngine.Mathf.Sqrt(-2.0f * creatureState.creatureStateInput.jump * UnityEngine.Physics.gravity.y);
             _rigidbody.AddForce(UnityEngine.Vector3.up * jumpMag, UnityEngine.ForceMode.VelocityChange);
         }
 
@@ -40,11 +37,6 @@
 
     public void FixedUpdate(float timeDelta, CreatureState creatureState)
     {
-        if (null == creatureState.creatureStatePerUpdate)
-        {
-            return;
-        }
-
         //var drawPosBase = _rigidbody.position;
         //UnityEngine.Debug.DrawLine(
         //    drawPosBase, 
@@ -65,7 +57,7 @@
 
     private static UnityEngine.Quaternion FixedUpdateUpdateView(UnityEngine.Quaternion newRotation, CreatureState creatureState, float timeDelta)
     {
-        var viewDelta = UnityEngine.Quaternion.AngleAxis(creatureState.creatureStatePerUpdate.inputView.x * timeDelta * 600.0f, UnityEngine.Vector3.up);
+        var viewDelta = UnityEngine.Quaternion.AngleAxis(creatureState.creatureStateInput.inputView.x * timeDelta * 600.0f, UnityEngine.Vector3.up);
         var forward = (newRotation * viewDelta) * UnityEngine.Vector3.forward;
         forward.y = 0.0f;
         forward.Normalize();
@@ -101,8 +93,8 @@
         float moveMul = 2.0f * UnityEngine.Time.fixedDeltaTime;
 
         var newPosition = new UnityEngine.Vector3(position.x, position.y, position.z);
-        newPosition += (forward * (moveMul * creatureState.creatureStatePerUpdate.inputMove.y));
-        newPosition += (right * (moveMul * -creatureState.creatureStatePerUpdate.inputMove.x));
+        newPosition += (forward * (moveMul * creatureState.creatureStateInput.inputMove.y));
+        newPosition += (right * (moveMul * -creatureState.creatureStateInput.inputMove.x));
 
         return newPosition;
     }

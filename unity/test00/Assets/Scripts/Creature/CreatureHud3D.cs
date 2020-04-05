@@ -20,22 +20,22 @@
         _prefabCollectionArmSwing.Clear();
         _prefabCollectionArmShoot.Clear();
 
-        foreach( CreatureStatePerUpdate.HandPoseData handPoseData in creatureState.creatureStatePerUpdate.handPoseArray)
+        foreach( CreatureStateHud.HandPoseData handPoseData in creatureState.creatureStateHud.handPoseArray)
         {
             switch (handPoseData.handPose)
             {
                 default:
                     break;
-                case CreatureStatePerUpdate.THandPose.Empty:
+                case CreatureStateHud.THandPose.Empty:
                     _prefabCollectionArm.Request(parentTransform, handPoseData);
                     break;
-                case CreatureStatePerUpdate.THandPose.Hold:
+                case CreatureStateHud.THandPose.Hold:
                     _prefabCollectionArmHold.Request(parentTransform, handPoseData);
                     break;
-                case CreatureStatePerUpdate.THandPose.Shoot:
+                case CreatureStateHud.THandPose.Shoot:
                     _prefabCollectionArmShoot.Request(parentTransform, handPoseData);
                     break;
-                case CreatureStatePerUpdate.THandPose.Swing:
+                case CreatureStateHud.THandPose.Swing:
                     _prefabCollectionArmSwing.Request(parentTransform, handPoseData);
                     break;
             }

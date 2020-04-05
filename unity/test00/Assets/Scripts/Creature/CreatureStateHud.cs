@@ -1,4 +1,4 @@
-﻿public class CreatureStatePerUpdate
+﻿public class CreatureStateHud
 {
     public enum TUIElement
     {
@@ -42,7 +42,7 @@
     public float crouch;
     public float jump;
 
-    public CreatureStatePerUpdate()
+    public CreatureStateHud()
     {
     }
 }

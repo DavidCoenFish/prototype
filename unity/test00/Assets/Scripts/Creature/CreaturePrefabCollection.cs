@@ -17,7 +17,7 @@
         }
         _activeCount = 0;
     }
-    public void Request(UnityEngine.Transform parentTransform, CreatureStatePerUpdate.HandPoseData handPoseData)
+    public void Request(UnityEngine.Transform parentTransform, CreatureStateHud.HandPoseData handPoseData)
     {
         UnityEngine.GameObject gameObject = null;
         if (_array.Count <= _activeCount)
@@ -50,7 +50,7 @@
             default:
                 rotY *= -15.0f;
                 break;
-            case CreatureStatePerUpdate.THandPose.Swing:
+            case CreatureStateHud.THandPose.Swing:
                 rotY *= 30.0f;
                 break;
         }

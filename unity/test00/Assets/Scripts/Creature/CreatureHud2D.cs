@@ -36,23 +36,23 @@ public class CreatureHud2D
 	private void DrawElements(CreatureState creatureState)
 	{
 		UnityEngine.GUI.color = UnityEngine.Color.white;
-		//foreach(CreatureStatePerUpdate.UIElementData uiElementData in creatureState.creatureStatePerUpdate.uiElementDataArray)
-		for (int index = 0; index < creatureState.creatureStatePerUpdate.uiElementDataArray.Count; ++index)
+		//foreach(CreatureStateHud.UIElementData uiElementData in creatureState.creatureStateHud.uiElementDataArray)
+		for (int index = 0; index < creatureState.creatureStateHud.uiElementDataArray.Count; ++index)
 		{
-			var uiElementData = creatureState.creatureStatePerUpdate.uiElementDataArray[index];
+			var uiElementData = creatureState.creatureStateHud.uiElementDataArray[index];
 			switch (uiElementData.uiElement)
 			{
 				default:
 					continue;
-				case CreatureStatePerUpdate.TUIElement.Weapon:
-				case CreatureStatePerUpdate.TUIElement.Movement:
-				case CreatureStatePerUpdate.TUIElement.View:
+				case CreatureStateHud.TUIElement.Weapon:
+				case CreatureStateHud.TUIElement.Movement:
+				case CreatureStateHud.TUIElement.View:
 					{
 						var rect = UIPositionToRect(uiElementData.position);
 						UnityEngine.GUI.Box(rect, UnityEngine.GUIContent.none, _circleStyle);
 					}
 					break;
-				case CreatureStatePerUpdate.TUIElement.Pickup:
+				case CreatureStateHud.TUIElement.Pickup:
 					{
 						var rect = UIPositionToRect(uiElementData.position);
 						UnityEngine.GUI.Button(rect, UnityEngine.GUIContent.none, _circleStyle);
@@ -64,7 +64,7 @@ public class CreatureHud2D
 
 								UnityEngine.GameObject.Destroy(uiElementData.gameObject);
 								//uiElementData.gameObject = null;
-								creatureState.creatureStatePerUpdate.uiElementDataArray[index] = new CreatureStatePerUpdate.UIElementData(){
+								creatureState.creatureStateHud.uiElementDataArray[index] = new CreatureStateHud.UIElementData(){
 									position = uiElementData.position,
 									uiElement = uiElementData.uiElement
 								};
@@ -82,7 +82,7 @@ public class CreatureHud2D
 		float minScreen = UnityEngine.Mathf.Min((float)UnityEngine.Screen.width, (float)UnityEngine.Screen.height);
 		float ratioA = UnityEngine.Mathf.Repeat(_timeAccumulate, 2.0f) * 0.5f;
 		float ratioB = UnityEngine.Mathf.Repeat(_timeAccumulate + 1.0f, 2.0f) * 0.5f;
-		foreach(UnityEngine.Vector2 touch in creatureState.creatureStatePerUpdate.touchArray)
+		foreach(UnityEngine.Vector2 touch in creatureState.creatureStateHud.touchArray)
 		{
 			float sizeA = (minScreen * 0.1f) * (0.5f + (0.5f * ratioA));
 			float sizeB = (minScreen * 0.1f) * (0.5f + (0.5f * ratioB));
@@ -99,7 +99,7 @@ public class CreatureHud2D
 
 	public void Draw(CreatureState creatureState)
 	{
-		if ((null == creatureState) || (null == creatureState.creatureStatePerUpdate))
+		if ((null == creatureState) || (null == creatureState.creatureStateHud))
 		{
 			return;
 		}

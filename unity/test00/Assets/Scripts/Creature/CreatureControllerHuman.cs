@@ -48,7 +48,7 @@ class CreatureControllerHuman : ICreatureController
     private TouchData MakeTouchData(UnityEngine.Vector2 position, CreatureState creatureState)
     {
         //are we over an exisiting button
-        //for (int index = 0; index < creatureState.creatureStatePerUpdate.uiElementDataArray.Count; ++index)
+        //for (int index = 0; index < creatureState.CreatureStateHud.uiElementDataArray.Count; ++index)
         //{
         //    var rect = GetWeaponUIRect(uiElementData.position);
         //    if (rect.Contains(position))
@@ -59,7 +59,7 @@ class CreatureControllerHuman : ICreatureController
         return new TouchData(){start=position};
     }
 
-    private void AddMoveView(CreatureState creatureState, TouchData touchData, UnityEngine.Vector2 currentPosition, CreatureStatePerUpdate.TUIElement uiElement)
+    private void AddMoveView(CreatureState creatureState, TouchData touchData, UnityEngine.Vector2 currentPosition, CreatureStateHud.TUIElement uiElement)
     {
         var offset = (currentPosition - touchData.start) / 100.0f;
         var length = offset.magnitude;
@@ -74,11 +74,11 @@ class CreatureControllerHuman : ICreatureController
         {
             default:
                 break;
-            case CreatureStatePerUpdate.TUIElement.Movement:
-                creatureState.creatureStatePerUpdate.inputMove += (normal * inputLength);
+            case CreatureStateHud.TUIElement.Movement:
+                creatureState.creatureStateInput.inputMove += (normal * inputLength);
                 break;
-            case CreatureStatePerUpdate.TUIElement.View:
-                creatureState.creatureStatePerUpdate.inputView += new UnityEngine.Vector2(
+            case CreatureStateHud.TUIElement.View:
+                creatureState.creatureStateInput.inputView += new UnityEngine.Vector2(
                     normal.x * UnityEngine.Mathf.Min(length * 2.0f, 1.0f),
                     normal.y * length * 2.0f
                     );
@@ -87,22 +87,22 @@ class CreatureControllerHuman : ICreatureController
     }
 
     private float crouchTime = 0.3f;
-    private void DealEndTouch(CreatureState creatureState, TouchData touchData, CreatureStatePerUpdate.TUIElement uiElement)
+    private void DealEndTouch(CreatureState creatureState, TouchData touchData, CreatureStateHud.TUIElement uiElement)
     { 
         //do we have jump input
-        if ((crouchTime < touchData.duration) || (CreatureStatePerUpdate.TUIElement.Movement != uiElement))
+        if ((crouchTime < touchData.duration) || (CreatureStateHud.TUIElement.Movement != uiElement))
         {
             return;
         }
         var amount = ((touchData.duration / crouchTime) * 2.0f) - 1.0f; //normalise -1 ... 1
         amount *= amount;
-        creatureState.creatureStatePerUpdate.jump = 1.0f - amount;
+        creatureState.creatureStateInput.jump = 1.0f - amount;
     }
 
-    private void DealCrouch(CreatureState creatureState, TouchData touchData, UnityEngine.Vector2 currentPosition, CreatureStatePerUpdate.TUIElement uiElement)
+    private void DealCrouch(CreatureState creatureState, TouchData touchData, UnityEngine.Vector2 currentPosition, CreatureStateHud.TUIElement uiElement)
     {
         //do we have crouch input
-        if (CreatureStatePerUpdate.TUIElement.Movement != uiElement)
+        if (CreatureStateHud.TUIElement.Movement != uiElement)
         {
             return;
         }
@@ -115,7 +115,7 @@ class CreatureControllerHuman : ICreatureController
         length *= length;
         var factor = 1.0f - length;
         //var crouch = UnityEngine.Mathf.Min(1.0f, touchData.duration / crouchTime);
-        creatureState.creatureStatePerUpdate.crouch += factor; // (crouch * factor);
+        creatureState.creatureStateInput.crouch += factor; // (crouch * factor);
     }
 
     private void MakeUIElementsForWeapons(CreatureState creatureState)
@@ -145,7 +145,7 @@ class CreatureControllerHuman : ICreatureController
 
         //make a button for every pickup object in range
         UnityEngine.Ray ray = new UnityEngine.Ray(cameraTransform.position, cameraTransform.forward); //new { };
-        var listArray = UnityEngine.Physics.SphereCastAll(ray, creatureState.height * 3.0f, 0.0f);
+        var listArray = UnityEngine.Physics.SphereCastAll(ray, creatureState.creatureStateBody.height * 3.0f, 0.0f);
         foreach (UnityEngine.RaycastHit raycastHit in listArray)
         {
             var pickupComponent = raycastHit.collider.gameObject.GetComponent<PickupComponent>();
@@ -155,7 +155,7 @@ class CreatureControllerHuman : ICreatureController
             }
             var offset = raycastHit.collider.gameObject.transform.position - cameraTransform.position;
             var distance = UnityEngine.Vector3.Dot(cameraTransform.forward, offset);
-            if (distance < (0.01f * creatureState.height))
+            if (distance < (0.01f * creatureState.creatureStateBody.height))
             {
                 continue;
             }
@@ -163,65 +163,65 @@ class CreatureControllerHuman : ICreatureController
             var x = ((((UnityEngine.Vector3.Dot(cameraTransform.right, offset) / distance) / hozScale) * 0.5f) + 0.5f);
             var y = ((((UnityEngine.Vector3.Dot(cameraTransform.up, offset) / distance) / verScale) * 0.5f) + 0.5f);
 
-            creatureState.creatureStatePerUpdate.uiElementDataArray.Add(new CreatureStatePerUpdate.UIElementData(){
+            creatureState.creatureStateHud.uiElementDataArray.Add(new CreatureStateHud.UIElementData(){
                 position = new UnityEngine.Vector2(x * UnityEngine.Screen.width, y * UnityEngine.Screen.height),
-                uiElement = CreatureStatePerUpdate.TUIElement.Pickup,
+                uiElement = CreatureStateHud.TUIElement.Pickup,
                 gameObject = raycastHit.collider.gameObject
             });
         }
     }
 
-    private CreatureStatePerUpdate.TUIElement GetElementForTouch(TouchData touchData, CreatureState creatureState, UnityEngine.Vector2 currentPosition)
+    private CreatureStateHud.TUIElement GetElementForTouch(TouchData touchData, CreatureState creatureState, UnityEngine.Vector2 currentPosition)
     {
         for (int index = 0; index < _weaponUIDataArray.Count; ++index)
         {
             WeaponUIData weaponUIData = _weaponUIDataArray[index];
             if ((false == weaponUIData.clickedOn) && (weaponUIData.rect.Contains(touchData.start)))
             {
-                CreatureStatePerUpdate.THandPose pose = CreatureStatePerUpdate.THandPose.Swing;
+                CreatureStateHud.THandPose pose = CreatureStateHud.THandPose.Swing;
                 var distance = (currentPosition - touchData.start).magnitude;
                 var position=currentPosition;
                 if (distance < weaponUIData.rect.width * 0.5f)
                 {
-                    pose = CreatureStatePerUpdate.THandPose.Shoot;
+                    pose = CreatureStateHud.THandPose.Shoot;
                     position = new UnityEngine.Vector2(UnityEngine.Screen.width * 0.5f, UnityEngine.Screen.height * 0.5f)
                         + (currentPosition - touchData.start);
                 }
-                creatureState.creatureStatePerUpdate.handPoseArray.Add(new CreatureStatePerUpdate.HandPoseData(){
+                creatureState.creatureStateHud.handPoseArray.Add(new CreatureStateHud.HandPoseData(){
                     handPose=pose,
                     position=position
                 });
                 weaponUIData.clickedOn = true;
                 _weaponUIDataArray[index] = weaponUIData;
-                return CreatureStatePerUpdate.TUIElement.None;
+                return CreatureStateHud.TUIElement.None;
             }
         }
 
         //dont start a move/ hand action if click was on 
-        foreach (CreatureStatePerUpdate.UIElementData uiElementData in creatureState.creatureStatePerUpdate.uiElementDataArray)
+        foreach (CreatureStateHud.UIElementData uiElementData in creatureState.creatureStateHud.uiElementDataArray)
         {
             //uiElementData.r
             var rect = CreatureHud2D.UIPositionToRect(uiElementData.position);
             if (rect.Contains(touchData.start))
             {
-                return CreatureStatePerUpdate.TUIElement.None;
+                return CreatureStateHud.TUIElement.None;
             }
         }
 
-        CreatureStatePerUpdate.TUIElement uiElement = CreatureStatePerUpdate.TUIElement.None;
+        CreatureStateHud.TUIElement uiElement = CreatureStateHud.TUIElement.None;
         if (touchData.start.x < (UnityEngine.Screen.width * 0.25f))
         {
-            uiElement = CreatureStatePerUpdate.TUIElement.Movement;
+            uiElement = CreatureStateHud.TUIElement.Movement;
         }
         else if ((UnityEngine.Screen.width * 0.75f) < touchData.start.x)
         {
-            uiElement = CreatureStatePerUpdate.TUIElement.View;
+            uiElement = CreatureStateHud.TUIElement.View;
         }
         else
         {
-            uiElement = CreatureStatePerUpdate.TUIElement.None;
-            creatureState.creatureStatePerUpdate.handPoseArray.Add(new CreatureStatePerUpdate.HandPoseData(){
-                handPose=CreatureStatePerUpdate.THandPose.Empty,
+            uiElement = CreatureStateHud.TUIElement.None;
+            creatureState.creatureStateHud.handPoseArray.Add(new CreatureStateHud.HandPoseData(){
+                handPose=CreatureStateHud.THandPose.Empty,
                 position=currentPosition
             });
 
@@ -234,7 +234,7 @@ class CreatureControllerHuman : ICreatureController
         var currentPosition = new UnityEngine.Vector2(UnityEngine.Input.mousePosition.x, UnityEngine.Input.mousePosition.y);
         if (UnityEngine.Input.GetMouseButton(0))
         {
-            creatureState.creatureStatePerUpdate.touchArray.Add(currentPosition);
+            creatureState.creatureStateHud.touchArray.Add(currentPosition);
             if (false == _mouseTouchActive)
             {
                 _mouseTouchData = MakeTouchData(currentPosition, creatureState);
@@ -246,7 +246,7 @@ class CreatureControllerHuman : ICreatureController
             _mouseTouchActive = true;
             var uiElement = GetElementForTouch(_mouseTouchData, creatureState, currentPosition);
             DealCrouch(creatureState, _mouseTouchData, currentPosition, uiElement);
-            creatureState.creatureStatePerUpdate.uiElementDataArray.Add(new CreatureStatePerUpdate.UIElementData(){
+            creatureState.creatureStateHud.uiElementDataArray.Add(new CreatureStateHud.UIElementData(){
                 uiElement=uiElement,
                 position=_mouseTouchData.start
             });
@@ -270,7 +270,7 @@ class CreatureControllerHuman : ICreatureController
             var touch = UnityEngine.Input.GetTouch(index);
             //Bootstrap.Log("Input:" + touch.fingerId.ToString());
 
-            creatureState.creatureStatePerUpdate.touchArray.Add(touch.position);
+            creatureState.creatureStateHud.touchArray.Add(touch.position);
 
             TouchData touchData;
             if ((touch.phase == UnityEngine.TouchPhase.Began) || (false == _touchDataMap.ContainsKey(touch.fingerId)))
@@ -293,7 +293,7 @@ class CreatureControllerHuman : ICreatureController
             }
             var uiElement = GetElementForTouch(_mouseTouchData, creatureState, touch.position);
             DealCrouch(creatureState, touchData, touch.position, uiElement);
-            creatureState.creatureStatePerUpdate.uiElementDataArray.Add(new CreatureStatePerUpdate.UIElementData(){
+            creatureState.creatureStateHud.uiElementDataArray.Add(new CreatureStateHud.UIElementData(){
                 uiElement=uiElement,
                 position=touchData.start
             });
@@ -303,10 +303,10 @@ class CreatureControllerHuman : ICreatureController
 
     private void DealKeyboard(CreatureState creatureState)
     {
-        creatureState.creatureStatePerUpdate.inputMove.x += UnityEngine.Input.GetAxis("Horizontal");
-        creatureState.creatureStatePerUpdate.inputMove.y += UnityEngine.Input.GetAxis("Vertical");
-        creatureState.creatureStatePerUpdate.inputView.x += UnityEngine.Input.GetAxis("Horizontal_Alt");
-        creatureState.creatureStatePerUpdate.inputView.y += UnityEngine.Input.GetAxis("Vertical_Alt");
+        creatureState.creatureStateInput.inputMove.x += UnityEngine.Input.GetAxis("Horizontal");
+        creatureState.creatureStateInput.inputMove.y += UnityEngine.Input.GetAxis("Vertical");
+        creatureState.creatureStateInput.inputView.x += UnityEngine.Input.GetAxis("Horizontal_Alt");
+        creatureState.creatureStateInput.inputView.y += UnityEngine.Input.GetAxis("Vertical_Alt");
     }
 
     private void AddHandPos(CreatureState creatureState)
@@ -315,22 +315,22 @@ class CreatureControllerHuman : ICreatureController
         {
             if (false == weaponUIData.clickedOn)
             {
-                creatureState.creatureStatePerUpdate.handPoseArray.Add(new CreatureStatePerUpdate.HandPoseData(){
-                    handPose=CreatureStatePerUpdate.THandPose.Hold,
+                creatureState.creatureStateHud.handPoseArray.Add(new CreatureStateHud.HandPoseData(){
+                    handPose=CreatureStateHud.THandPose.Hold,
                     position=weaponUIData.position
                 });
             }
-            creatureState.creatureStatePerUpdate.uiElementDataArray.Add(new CreatureStatePerUpdate.UIElementData(){
-                uiElement=CreatureStatePerUpdate.TUIElement.Weapon,
+            creatureState.creatureStateHud.uiElementDataArray.Add(new CreatureStateHud.UIElementData(){
+                uiElement=CreatureStateHud.TUIElement.Weapon,
                 position=weaponUIData.position
             });
         }
-        int trace = creatureState.creatureStatePerUpdate.handPoseArray.Count;
+        int trace = creatureState.creatureStateHud.handPoseArray.Count;
         for (int index = trace; index < 2; ++index)
         {
             var position = GetWeaponUIPosition(index);
-            creatureState.creatureStatePerUpdate.handPoseArray.Add(new CreatureStatePerUpdate.HandPoseData(){
-                handPose=CreatureStatePerUpdate.THandPose.Empty,
+            creatureState.creatureStateHud.handPoseArray.Add(new CreatureStateHud.HandPoseData(){
+                handPose=CreatureStateHud.THandPose.Empty,
                 position=position
             });
         }
