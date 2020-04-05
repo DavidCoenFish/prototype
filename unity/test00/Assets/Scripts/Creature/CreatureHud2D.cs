@@ -1,12 +1,12 @@
 ﻿//var texture = Resources.Load<Texture2D>("Textures/texture01");
 
-public class CreatureUI
+public class CreatureHud2D
 {
 	private UnityEngine.Texture2D _circleTexture;
 	private UnityEngine.GUIStyle _circleStyle;
 	private float _timeAccumulate = 0.0f;
 
-	public CreatureUI()
+	public CreatureHud2D()
 	{ 
 		_circleTexture = UnityEngine.Resources.Load<UnityEngine.Texture2D>("texture/circle");
 		_circleStyle = new UnityEngine.GUIStyle();
@@ -25,10 +25,16 @@ public class CreatureUI
 		return 1.0f - squared;
 	}
 
-	private void DrawElements(CreatureState creatureState)
+	public static UnityEngine.Rect UIPositionToRect(UnityEngine.Vector2 position)
 	{
 		float minScreen = UnityEngine.Mathf.Min((float)UnityEngine.Screen.width, (float)UnityEngine.Screen.height);
 		var size = (minScreen * 0.2f);
+		var rect = new UnityEngine.Rect(position.x - (size * 0.5f), (UnityEngine.Screen.height - position.y) - (size * 0.5f), size, size);
+		return rect;
+	}
+
+	private void DrawElements(CreatureState creatureState)
+	{
 		UnityEngine.GUI.color = UnityEngine.Color.white;
 		//foreach(CreatureStatePerUpdate.UIElementData uiElementData in creatureState.creatureStatePerUpdate.uiElementDataArray)
 		for (int index = 0; index < creatureState.creatureStatePerUpdate.uiElementDataArray.Count; ++index)
@@ -42,13 +48,15 @@ public class CreatureUI
 				case CreatureStatePerUpdate.TUIElement.Movement:
 				case CreatureStatePerUpdate.TUIElement.View:
 					{
-						var rect = new UnityEngine.Rect(uiElementData.position.x - (size * 0.5f), (UnityEngine.Screen.height - uiElementData.position.y) - (size * 0.5f), size, size);
+						var rect = UIPositionToRect(uiElementData.position);
 						UnityEngine.GUI.Box(rect, UnityEngine.GUIContent.none, _circleStyle);
 					}
 					break;
 				case CreatureStatePerUpdate.TUIElement.Pickup:
 					{
-						var rect = new UnityEngine.Rect(uiElementData.position.x - (size * 0.5f), (UnityEngine.Screen.height - uiElementData.position.y) - (size * 0.5f), size, size);
+						var rect = UIPositionToRect(uiElementData.position);
+						UnityEngine.GUI.Button(rect, UnityEngine.GUIContent.none, _circleStyle);
+#if false
 						if (UnityEngine.GUI.Button(rect, UnityEngine.GUIContent.none, _circleStyle)){
 							if ((uiElementData.gameObject) && (creatureState.weaponArray.Count < 8))
 							{
@@ -62,6 +70,7 @@ public class CreatureUI
 								};
 							}
 						}
+#endif
 					}
 					break;
 			}
@@ -90,6 +99,11 @@ public class CreatureUI
 
 	public void Draw(CreatureState creatureState)
 	{
+		if ((null == creatureState) || (null == creatureState.creatureStatePerUpdate))
+		{
+			return;
+		}
+
 		DrawElements(creatureState);
 		DrawTouch(creatureState);
 

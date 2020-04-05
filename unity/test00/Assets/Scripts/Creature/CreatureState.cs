@@ -7,7 +7,6 @@
     public float healthMax { get; }
 
     public bool ragdoll = false;
-    //this is the creature that hosts the game camera, turn off some of the body...
     public bool firstPersonHost = false;
 
     public CreatureStatePerUpdate creatureStatePerUpdate;
@@ -16,11 +15,7 @@
     public struct WeaponData
     {
         public int ammo { get; set; }
-        public TWeapon weapon { get; set; }
-    }
-    public enum TWeapon
-    {
-        TSlingPan
+        public PickupComponent.TPickupType weapon { get; set; }
     }
 
     public CreatureState(string in_typeName)
@@ -31,6 +26,8 @@
         //get maxMove "creatures." + typeName + ".max_move"; 
         weaponArray = new System.Collections.Generic.List< WeaponData >();
         //weaponArray.Add(new WeaponData(){weapon=TWeapon.TSlingPan });
+
+        StartNewUpdate();
     }
 
     public void StartNewUpdate()

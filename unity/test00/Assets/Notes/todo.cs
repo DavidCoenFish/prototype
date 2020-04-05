@@ -1,4 +1,6 @@
 ﻿/*
+a tea bagging simulator where you hit people with flaming banjos
+
 2020-03-21
 get a first pass of the tutorial levels done for "tea bag army"
 	gameplay pass
@@ -26,6 +28,13 @@ ballance pass
 tool pass
 	drive2json: add sheet3array
 	drive2json: set root by id, metadata on demand
+
+notes:
+
+ body updates camera pos (using prev input)
+flush the per frame state
+ want camera update before working out ui pick button pos
+ want to collect all buttons before process input
 
 
  */

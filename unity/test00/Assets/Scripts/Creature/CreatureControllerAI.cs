@@ -1,6 +1,6 @@
 ﻿class CreatureControllerAI : ICreatureController
 {
-    public void ApplyInputToState(CreatureState creatureState, float timeDelta)
+    public void ApplyInputToState(CreatureState creatureState, float timeDelta, UnityEngine.Transform cameraTransform)
     {
     }
 

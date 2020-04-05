@@ -1,4 +1,5 @@
-﻿using UnityEngine.Assertions.Must;
+﻿using UnityEngine;
+using UnityEngine.Assertions.Must;
 
 class CreatureControllerHuman : ICreatureController
 {
@@ -196,6 +197,17 @@ class CreatureControllerHuman : ICreatureController
             }
         }
 
+        //dont start a move/ hand action if click was on 
+        foreach (CreatureStatePerUpdate.UIElementData uiElementData in creatureState.creatureStatePerUpdate.uiElementDataArray)
+        {
+            //uiElementData.r
+            var rect = CreatureHud2D.UIPositionToRect(uiElementData.position);
+            if (rect.Contains(touchData.start))
+            {
+                return CreatureStatePerUpdate.TUIElement.None;
+            }
+        }
+
         CreatureStatePerUpdate.TUIElement uiElement = CreatureStatePerUpdate.TUIElement.None;
         if (touchData.start.x < (UnityEngine.Screen.width * 0.25f))
         {
@@ -324,17 +336,13 @@ class CreatureControllerHuman : ICreatureController
         }
     }
 
-    public void ApplyInputToState(CreatureState creatureState, float timeDelta)
+    public void ApplyInputToState(CreatureState creatureState, float timeDelta, UnityEngine.Transform cameraTransform)
     {
+        MakeUIElementsForPickup(creatureState, cameraTransform);
         MakeUIElementsForWeapons(creatureState);
         DealMouse(creatureState, timeDelta);
         DealTouch(creatureState, timeDelta);
         DealKeyboard(creatureState);
         AddHandPos(creatureState);
     }
-    public void ApplyCameraToState(CreatureState creatureState, UnityEngine.Transform cameraTransform)
-    {
-        MakeUIElementsForPickup(creatureState, cameraTransform);
-    }
-
 }

@@ -220,8 +220,7 @@ public class CreatureBody
     		gameObjectData.gameObject.transform.localRotation = UnityEngine.Quaternion.Euler(rotationSum.x, rotationSum.y, rotationSum.z);
         }
 		gameObjectData.gameObject.transform.localScale = scaleSum;
-        //bool visible = true; //(creatureState.firstPersonHost == true) ? gameObjectData.poseData.visibleFirstPerson : true;
-        //gameObjectData.gameObject.SetActive(visible);
+
         if ((true == creatureState.firstPersonHost) && (false == gameObjectData.poseData.visibleFirstPerson))
         {
             gameObjectData.gameObject.layer = (int)Project.Layer.TFirstPersonHide;
