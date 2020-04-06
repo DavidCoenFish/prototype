@@ -2,10 +2,11 @@
 {
     Properties
     {
-        _Color("Color", Color) = (.5, .5, .5, 1)
-        _VecP0("P0", Vector) = (0.0, 0.0, 0.0, 0.0)
-        _VecP1("P1", Vector) = (0.0, 0.0, 0.0, 0.0)
-        _VecP2("P2", Vector) = (0.0, 0.0, 0.0, 0.0)
+        [PerRendererData]_Color("Color", Color) = (.5, .5, .5, 1)
+        [PerRendererData]_UVScale("UVScale", Vector) = (0.0, 0.0, 1.0, 1.0) //x, y, width, height
+        [PerRendererData]_VecP0("PointA", Vector) = (0.0, 0.0, 0.0, 0.0)
+        [PerRendererData]_VecP1("PointB", Vector) = (0.0, 0.0, 0.0, 0.0)
+        [PerRendererData]_VecP2("PointC", Vector) = (0.0, 0.0, 0.0, 0.0)
     }
     SubShader
     {
@@ -23,9 +24,10 @@
             #include "UnityCG.cginc"
 
             fixed4 _Color;
-            fixed4 _VecP0;
-            fixed4 _VecP1;
-            fixed4 _VecP2;
+            fixed4 _UVScale;
+            fixed4 _PointA;
+            fixed4 _PointB;
+            fixed4 _PointC;
 
             struct appdata
             {
@@ -116,26 +118,27 @@
 
             fixed4 frag (v2f i) : SV_Target
             {
-                float2 result = sdBezier(float2(_VecP0.x, _VecP0.y), float2(_VecP1.x, _VecP1.y), float2(_VecP2.x, _VecP2.y), i.uv);
+                float2 uv = float2((_UVScale.z * i.uv.x) + _UVScale.x, (_UVScale.w * i.uv.y) + _UVScale.y);
+                float2 result = sdBezier(float2(_PointA.x, _PointA.y), float2(_PointB.x, _PointB.y), float2(_PointC.x, _PointC.y), uv);
                 float d = abs(result.x);
                 float t = result.y;
                 float r = 0.0;
                 //fixed4 col = float4(r.x, r.y, 0.0, 1.0);
                 if (t < 0.0)
                 {
-                    d = length(_VecP0 - i.uv);
+                    d = length(_PointA - uv);
                     t = 0.0;
-                    r = _VecP0.z;
+                    r = _PointA.z;
                 }
                 else if (1.0 < t)
                 {
-                    d = length(_VecP2 - i.uv);
+                    d = length(_PointC - uv);
                     t = 1.0;
-                    r = _VecP2.z;
+                    r = _PointC.z;
                 }
                 else
                 {
-                    r = quadraticBezier(_VecP0.z, _VecP1.z, _VecP2.z, t);
+                    r = quadraticBezier(_PointA.z, _PointB.z, _PointC.z, t);
                 }
 
                 if (r < d)
