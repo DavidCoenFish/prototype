@@ -116,7 +116,7 @@
                 return float2(s * sqrt(r.x), r.y);
             }
 
-            
+            /**/
             fixed4 frag (v2f i) : SV_Target
             {
                 float2 uv = float2((_UVScale.z * i.uv.x) + _UVScale.x, (_UVScale.w * i.uv.y) + _UVScale.y);
@@ -154,7 +154,6 @@
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 return col;
             }
-            
 
             /*
             fixed4 frag(v2f i) : SV_Target

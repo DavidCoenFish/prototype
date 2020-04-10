@@ -114,8 +114,8 @@ public class CreatureBodyVisual
     {
         float scale = averageZ / point.z;
         return new UnityEngine.Vector3(
-            ((point.x - (UnityEngine.Screen.width * 0.5f)) * scale) + (UnityEngine.Screen.width * 0.5f),
-            ((point.y - (UnityEngine.Screen.height * 0.5f)) * scale) + (UnityEngine.Screen.height * 0.5f),
+            point.x,
+            point.y,
             radius * scale * worldUnitsToPixels
             );
     }
@@ -126,9 +126,9 @@ public class CreatureBodyVisual
         var tempP0 = mainCamera.WorldToScreenPoint(new UnityEngine.Vector3(splineRenderData.p0.x, splineRenderData.p0.y, splineRenderData.p0.z));
         var tempP1 = mainCamera.WorldToScreenPoint(new UnityEngine.Vector3(splineRenderData.p1.x, splineRenderData.p1.y, splineRenderData.p1.z));
         var tempP2 = mainCamera.WorldToScreenPoint(new UnityEngine.Vector3(splineRenderData.p2.x, splineRenderData.p2.y, splineRenderData.p2.z));
-        var radius0 = splineRenderData.p0.w * 0.5f;
-        var radius1 = splineRenderData.p1.w * 0.5f;
-        var radius2 = splineRenderData.p2.w * 0.5f;
+        var radius0 = splineRenderData.p0.w;// * 0.5f;
+        var radius1 = splineRenderData.p1.w;// * 0.5f;
+        var radius2 = splineRenderData.p2.w;// * 0.5f;
 
         //bail if all three spheres are less than near plane, The z position is in world units from the camera.
         float nearPlane = 0.01f;
