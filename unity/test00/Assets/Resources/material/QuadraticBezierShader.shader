@@ -4,7 +4,7 @@
     {
         [PerRendererData]_Color("Color", Color) = (.5, .5, .5, 1)
         [PerRendererData]_UVScale("UVScale", Vector) = (0.0, 0.0, 1.0, 1.0) //x, y, width, height
-        [PerRendererData]_VecP0("PointA", Vector) = (0.0, 0.0, 0.0, 0.0)
+        [PerRendererData]_VecP0("PointA", Vector) = (0.0, 0.0, 0.0, 0.0) //x [0..1 pos], y [0..1 pos], z [0.. radius]
         [PerRendererData]_VecP1("PointB", Vector) = (0.0, 0.0, 0.0, 0.0)
         [PerRendererData]_VecP2("PointC", Vector) = (0.0, 0.0, 0.0, 0.0)
     }
@@ -116,9 +116,11 @@
                 return float2(s * sqrt(r.x), r.y);
             }
 
+            
             fixed4 frag (v2f i) : SV_Target
             {
                 float2 uv = float2((_UVScale.z * i.uv.x) + _UVScale.x, (_UVScale.w * i.uv.y) + _UVScale.y);
+                //float2 uv = i.uv;
                 float2 result = sdBezier(float2(_PointA.x, _PointA.y), float2(_PointB.x, _PointB.y), float2(_PointC.x, _PointC.y), uv);
                 float d = abs(result.x);
                 float t = result.y;
@@ -147,11 +149,37 @@
                 }
 
                 fixed4 col = _Color;
-                //fixed4 col = float4(i.uv.x,i.uv.y, 0.0, 1.0);
+                //fixed4 col = float4(i.uv.x, i.uv.y, 0.0, 1.0);
 
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 return col;
             }
+            
+
+            /*
+            fixed4 frag(v2f i) : SV_Target
+            {
+                float2 uv = float2((_UVScale.z * i.uv.x) + _UVScale.x, (_UVScale.w * i.uv.y) + _UVScale.y);
+                float dA = length(uv - float2(_PointA.x, _PointA.y));
+                float dB = length(uv - float2(_PointB.x, _PointB.y));
+                float dC = length(uv - float2(_PointC.x, _PointC.y));
+
+                fixed4 col = float4(0.0, 0.0, 0.0, 0.0);
+                if ((dA < _PointA.z) || (dB < _PointB.z) || (dC < _PointC.z))
+                {
+                    col = float4(1.0, 0.0, 0.0, 1.0);
+                }
+                else
+                {
+                    col = float4(0.0, 1.0, 0.0, 1.0);
+                    //discard;
+                }
+
+                UNITY_APPLY_FOG(i.fogCoord, col);
+                return col;
+            }
+            */
+
             ENDCG
         }
     }

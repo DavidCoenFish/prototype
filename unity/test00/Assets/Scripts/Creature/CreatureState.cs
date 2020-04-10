@@ -28,6 +28,8 @@
         //weaponArray.Add(new WeaponData(){weapon=TWeapon.TSlingPan });
 
         creatureStateBody = new CreatureStateBody();
+        creatureStateHud = new CreatureStateHud();
+        creatureStateInput = new CreatureStateInput();
 
         StartNewUpdate();
     }

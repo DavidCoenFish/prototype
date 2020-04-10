@@ -8,7 +8,7 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
 
     //private ICreatureController _creatureController = null;
     private CreatureState _creatureState = null;
-    //private CreatureBodyVisual _creatureBodyVisual = null;
+    private CreatureBodyVisual _creatureBodyVisual = null;
     //private CreatureBodyPhysics _creatureBodyPhysics = null;
     //private CreatureHud2D _creatureHud2D = null;
     //private CreatureHud3D _creatureHud3D = null;
@@ -18,7 +18,7 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
         UnityEngine.Debug.Log("CreatureComponent.Start", this);
 
         _creatureState = new CreatureState(typeName);
-        //_creatureBodyVisual = new CreatureBodyVisual(this.gameObject, _creatureState);
+        _creatureBodyVisual = new CreatureBodyVisual();
         //_creatureRigidBody = new CreatureRigidBody(this.gameObject, _creatureState);
 
         //if (true == startHumanControlled)
@@ -38,6 +38,11 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
     private void Update()
     {
         float timeDelta = UnityEngine.Time.deltaTime;
+
+        if (null != _creatureBodyVisual)
+        {
+            _creatureBodyVisual.Update(_creatureState, gameObject.transform);
+        }
 
 
         //_creatureRigidBody.Update(gameObject, timeDelta, _creatureState);
