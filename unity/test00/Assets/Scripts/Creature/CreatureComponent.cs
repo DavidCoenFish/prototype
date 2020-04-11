@@ -13,16 +13,22 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
     //private CreatureHud2D _creatureHud2D = null;
     //private CreatureHud3D _creatureHud3D = null;
 
+    private ThirdPersonCameraComponent _thirdPersonCameraComponent = null;
+
     private void Start()
     {
         UnityEngine.Debug.Log("CreatureComponent.Start", this);
+
+        _thirdPersonCameraComponent = GetComponent<ThirdPersonCameraComponent>();
 
         _creatureState = new CreatureState(typeName);
         _creatureBodyVisual = new CreatureBodyVisual();
         //_creatureRigidBody = new CreatureRigidBody(this.gameObject, _creatureState);
 
-        //if (true == startHumanControlled)
-        //{
+        if (true == startHumanControlled)
+        {
+            GameComponent.SetHumanPlayer(0, this);
+        }
         //    _creatureController = new CreatureControllerHuman();
         //    GameComponent.SetHumanPlayer(0, this);
         //    _creatureState.firstPersonHost = true;
@@ -81,6 +87,11 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
     //public interface IPlayerComponent
     public UnityEngine.Transform GetCameraTransform()
     {
+        if (_thirdPersonCameraComponent)
+        {
+            return _thirdPersonCameraComponent.GetCameraTransform();
+        }
+
         return gameObject.transform;
     }
 
