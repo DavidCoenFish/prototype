@@ -3834,16 +3834,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bcca72e635e34540bdf3157e76863b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dolly: 1
+  dolly: 2.5
   dollyRangeLow: 0.5
-  dollyRangeHigh: 3
-  dollyInputFactor: 1
+  dollyRangeHigh: 10
+  dollyInputFactor: 10
   latitudeDegrees: 30
   latitudeDegreesRangeLow: 0
   latitudeDegreesRangeHigh: 90
-  latitudeDegreesInputFactor: 1
-  longitudeDegrees: 0
-  longitudeDegreesInputFactor: 1
+  latitudeDegreesInputFactor: 100
+  longitudeDegrees: 30
+  longitudeDegreesInputFactor: 100
 --- !u!4 &2141197454
 Transform:
   m_ObjectHideFlags: 0

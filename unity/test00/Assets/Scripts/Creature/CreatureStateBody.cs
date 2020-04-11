@@ -8,6 +8,10 @@
 public class CreatureStateBody
 {
     public float height { get; }
+    //public float viewElevation { get; }
+    public UnityEngine.Quaternion headRotationWorldSpace;
+    public UnityEngine.Color colorSkin;
+    public UnityEngine.Color colorDetail;
 
     public struct SplineRenderData
     {
@@ -28,6 +32,9 @@ public class CreatureStateBody
     public CreatureStateBody()
     {
         height = 0.125f;//get height "creatures." + typeName + ".height"; 
+        headRotationWorldSpace = UnityEngine.Quaternion.identity;
+        colorSkin = new UnityEngine.Color(0.96f, 0.291f, 0.27f, 1.0f);
+        colorDetail = new UnityEngine.Color(0.01f, 0.01f, 0.01f, 1.0f);
 
         var debugZOffset = new UnityEngine.Vector4(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -40,7 +47,7 @@ public class CreatureStateBody
             p2 = new UnityEngine.Vector4(1.0f, 0.0f, 0.0f, 0.5f) + debugZOffset
         });
 #else
-        var ratColor = new UnityEngine.Color(0.96f, 0.291f, 0.27f, 1.0f);
+        var ratColor = colorSkin;
         //body
         splineRenderDataArray.Add(new SplineRenderData(){
             color=ratColor,
