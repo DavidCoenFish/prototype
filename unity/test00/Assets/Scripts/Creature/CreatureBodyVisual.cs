@@ -156,19 +156,12 @@ public class CreatureBodyVisual
         var projectedP2 = ProjectXYRadius(tempP2, averageZ, radius2, worldUnitsToPixels);
 
         //get screen pixel space bounds
-#if false
-        var minX = UnityEngine.Mathf.Min(UnityEngine.Mathf.Min(projectedP0.x - projectedP0.z, projectedP1.x - projectedP1.z), projectedP2.x - projectedP2.z);
-        var minY = UnityEngine.Mathf.Min(UnityEngine.Mathf.Min(projectedP0.y - projectedP0.z, projectedP1.y - projectedP1.z), projectedP2.y - projectedP2.z);
-        var maxX = UnityEngine.Mathf.Max(UnityEngine.Mathf.Max(projectedP0.x + projectedP0.z, projectedP1.x + projectedP1.z), projectedP2.x + projectedP2.z);
-        var maxY = UnityEngine.Mathf.Max(UnityEngine.Mathf.Max(projectedP0.y + projectedP0.z, projectedP1.y + projectedP1.z), projectedP2.y + projectedP2.z);
-#else
         // clamp to screen bounds
         var minX = UnityEngine.Mathf.Clamp(UnityEngine.Mathf.Min(UnityEngine.Mathf.Min(projectedP0.x - projectedP0.z, projectedP1.x - projectedP1.z), projectedP2.x - projectedP2.z), 0.0f, UnityEngine.Screen.width);
         var minY = UnityEngine.Mathf.Clamp(UnityEngine.Mathf.Min(UnityEngine.Mathf.Min(projectedP0.y - projectedP0.z, projectedP1.y - projectedP1.z), projectedP2.y - projectedP2.z), 0.0f, UnityEngine.Screen.height);
 
         var maxX = UnityEngine.Mathf.Clamp(UnityEngine.Mathf.Max(UnityEngine.Mathf.Max(projectedP0.x + projectedP0.z, projectedP1.x + projectedP1.z), projectedP2.x + projectedP2.z), 0.0f, UnityEngine.Screen.width);
         var maxY = UnityEngine.Mathf.Clamp(UnityEngine.Mathf.Max(UnityEngine.Mathf.Max(projectedP0.y + projectedP0.z, projectedP1.y + projectedP1.z), projectedP2.y + projectedP2.z), 0.0f, UnityEngine.Screen.height);
-#endif
         // zero area, off screen
         if ((minX == maxX) || (minY == maxY))
         {
@@ -224,6 +217,8 @@ public class CreatureBodyVisual
 
             data.splineComponent.uvScale.Set(pos2Low.x, pos2Low.y, pos2High.x - pos2Low.x, pos2High.y - pos2Low.y);
         }
+
+        data.splineComponent.color = splineRenderData.color;
 
         data.splineComponent.Update();
 

@@ -6,7 +6,6 @@
     public UnityEngine.Vector4 p1; //_VecP1("P1", Vector) = (0.0, 0.0, 0.0, 0.0)
     public UnityEngine.Vector4 p2; //_VecP2("P2", Vector) = (0.0, 0.0, 0.0, 0.0)
 
-
     private UnityEngine.Renderer _renderer;
     private UnityEngine.MaterialPropertyBlock _propBlock;
 
@@ -15,7 +14,7 @@
         _propBlock = new UnityEngine.MaterialPropertyBlock();
         _renderer = GetComponent<UnityEngine.Renderer>();
     }
- 
+
     public void Update()
     {
         if ((null == _renderer) || (null == _propBlock))

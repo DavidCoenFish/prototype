@@ -1,6 +1,8 @@
 ﻿/*
 a tea bagging simulator where you hit people with flaming banjos
 
+oVPI2ESkgIw
+
 2020-03-21
 get a first pass of the tutorial levels done for "tea bag army"
 	gameplay pass
@@ -36,5 +38,8 @@ flush the per frame state
  want camera update before working out ui pick button pos
  want to collect all buttons before process input
 
+
+
+ rigidbody.AddRelativeForce( Vector3.up * (rigidbody.mass * Mathf.Abs(Physics.gravity.y) ) );
 
  */

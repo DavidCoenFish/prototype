@@ -40,55 +40,58 @@ public class CreatureStateBody
             p2 = new UnityEngine.Vector4(1.0f, 0.0f, 0.0f, 0.5f) + debugZOffset
         });
 #else
+        var ratColor = new UnityEngine.Color(0.96f, 0.291f, 0.27f, 1.0f);
         //body
         splineRenderDataArray.Add(new SplineRenderData(){
-            color=new UnityEngine.Color(0.0f, 1.0f, 0.0f, 1.0f),
-            p0=new UnityEngine.Vector4(0.0f, 0.573f, 0.043f, 0.55f * 0.5f) + debugZOffset,
-            p1=new UnityEngine.Vector4(0.0f, 0.837f, -0.026f, 0.6f * 0.5f) + debugZOffset,
-            p2=new UnityEngine.Vector4(0.0f, 1.102f, 0.080f, 0.55f * 0.5f) + debugZOffset
+            color=ratColor,
+            p0=new UnityEngine.Vector4(0.0f, 0.517f, 0.043f, 0.5f * 0.5f) + debugZOffset,
+            p1=new UnityEngine.Vector4(0.0f, 0.739f, 0.045f, 0.4f * 0.5f) + debugZOffset,
+            p2=new UnityEngine.Vector4(0.0f, 0.849f, -0.028f, 0.3f * 0.5f) + debugZOffset
         });
-        //arm
+        //left arm
         splineRenderDataArray.Add(new SplineRenderData(){
-            color=new UnityEngine.Color(0.0f, 0.0f, 1.0f, 1.0f),
-            p0=new UnityEngine.Vector4(0.293f, 0.962f, -0.016f, 0.04f * 0.5f) + debugZOffset,
-            p1=new UnityEngine.Vector4(0.415f, 0.745f, -0.016f, 0.04f * 0.5f) + debugZOffset,
-            p2=new UnityEngine.Vector4(0.415f, 0.517f, -0.016f, 0.04f * 0.5f) + debugZOffset,
+            color=ratColor,
+            p0=new UnityEngine.Vector4(0.2f, 0.683f, 0.051f, 0.04f * 0.5f) + debugZOffset,
+            p1=new UnityEngine.Vector4(0.296f, 0.539f, 0.051f, 0.04f * 0.5f) + debugZOffset,
+            p2=new UnityEngine.Vector4(0.32f, 0.375f, 0.051f, 0.04f * 0.5f) + debugZOffset,
         });
-        //leg
+        //left leg
         splineRenderDataArray.Add(new SplineRenderData(){
-            color=new UnityEngine.Color(1.0f, 0.0f, 0.0f, 1.0f),
-            p0=new UnityEngine.Vector4(0.196f, 0.375f, 0.116f, 0.04f * 0.5f) + debugZOffset,
-            p1=new UnityEngine.Vector4(0.241f, 0.202f, 0.076f, 0.04f * 0.5f) + debugZOffset,
-            p2=new UnityEngine.Vector4(0.247f, 0.02f, 0.165f, 0.04f * 0.5f) + debugZOffset,
+            color=ratColor,
+            p0=new UnityEngine.Vector4(0.084f, 0.291f, 0.131f, 0.04f * 0.5f) + debugZOffset,
+            p1=new UnityEngine.Vector4(0.1025f, 0.1594f, 0.0722f, 0.04f * 0.5f) + debugZOffset,
+            p2=new UnityEngine.Vector4(0.1089f, 0.021f, 0.101f, 0.04f * 0.5f) + debugZOffset,
         });
-        //foot
+        //left foot
         splineRenderDataArray.Add(new SplineRenderData(){
-            color=new UnityEngine.Color(1.0f, 0.0f, 0.0f, 1.0f),
-            p0=new UnityEngine.Vector4(0.247f, 0.02f, 0.165f, 0.04f * 0.5f) + debugZOffset,
-            p1=new UnityEngine.Vector4(0.247f, 0.027f, 0.089f, 0.04f * 0.5f) + debugZOffset,
-            p2=new UnityEngine.Vector4(0.247f, 0.02f, 0.001f, 0.04f * 0.5f) + debugZOffset,
+            color=ratColor,
+            p0=new UnityEngine.Vector4(0.1089f, 0.021f, 0.101f, 0.04f * 0.5f) + debugZOffset,
+            p1=new UnityEngine.Vector4(0.1089f, 0.025f, 0.074f, 0.04f * 0.5f) + debugZOffset,
+            p2=new UnityEngine.Vector4(0.1089f, 0.0198f, 0.051f, 0.04f * 0.5f) + debugZOffset,
         });
-        //arm
+
+        //right arm
         splineRenderDataArray.Add(new SplineRenderData(){
-            color=new UnityEngine.Color(0.0f, 0.0f, 1.0f, 1.0f),
-            p0=new UnityEngine.Vector4(-0.293f, 0.962f, -0.016f, 0.04f * 0.5f) + debugZOffset,
-            p1=new UnityEngine.Vector4(-0.415f, 0.745f, -0.016f, 0.04f * 0.5f) + debugZOffset,
-            p2=new UnityEngine.Vector4(-0.415f, 0.517f, -0.016f, 0.04f * 0.5f) + debugZOffset,
+            color=ratColor,
+            p0=new UnityEngine.Vector4(-0.2f, 0.683f, 0.051f, 0.04f * 0.5f) + debugZOffset,
+            p1=new UnityEngine.Vector4(-0.296f, 0.539f, 0.051f, 0.04f * 0.5f) + debugZOffset,
+            p2=new UnityEngine.Vector4(-0.32f, 0.375f, 0.051f, 0.04f * 0.5f) + debugZOffset,
         });
-        //leg
+        //right leg
         splineRenderDataArray.Add(new SplineRenderData(){
-            color=new UnityEngine.Color(1.0f, 0.0f, 0.0f, 1.0f),
-            p0=new UnityEngine.Vector4(-0.196f, 0.375f, 0.116f, 0.04f * 0.5f) + debugZOffset,
-            p1=new UnityEngine.Vector4(-0.241f, 0.202f, 0.076f, 0.04f * 0.5f) + debugZOffset,
-            p2=new UnityEngine.Vector4(-0.247f, 0.02f, 0.165f, 0.04f * 0.5f) + debugZOffset,
+            color=ratColor,
+            p0=new UnityEngine.Vector4(-0.084f, 0.291f, 0.131f, 0.04f * 0.5f) + debugZOffset,
+            p1=new UnityEngine.Vector4(-0.1025f, 0.1594f, 0.0722f, 0.04f * 0.5f) + debugZOffset,
+            p2=new UnityEngine.Vector4(-0.1089f, 0.021f, 0.101f, 0.04f * 0.5f) + debugZOffset,
         });
-        //foot
+        //right foot
         splineRenderDataArray.Add(new SplineRenderData(){
-            color=new UnityEngine.Color(1.0f, 0.0f, 0.0f, 1.0f),
-            p0=new UnityEngine.Vector4(-0.247f, 0.02f, 0.165f, 0.04f * 0.5f) + debugZOffset,
-            p1=new UnityEngine.Vector4(-0.247f, 0.027f, 0.089f, 0.04f * 0.5f) + debugZOffset,
-            p2=new UnityEngine.Vector4(-0.247f, 0.02f, 0.001f, 0.04f * 0.5f) + debugZOffset,
+            color=ratColor,
+            p0=new UnityEngine.Vector4(-0.1089f, 0.021f, 0.101f, 0.04f * 0.5f) + debugZOffset,
+            p1=new UnityEngine.Vector4(-0.1089f, 0.025f, 0.074f, 0.04f * 0.5f) + debugZOffset,
+            p2=new UnityEngine.Vector4(-0.1089f, 0.0198f, 0.051f, 0.04f * 0.5f) + debugZOffset,
         });
+
 #endif
     }
 
