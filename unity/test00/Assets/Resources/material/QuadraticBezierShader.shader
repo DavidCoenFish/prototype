@@ -52,11 +52,6 @@
 				return o;
 			}
 
-			float easeInOutFunc(float t)
-			{
-				return ((3.0 * t) - (2.0 * t * t)) * t;
-			}
-
 			float thicknessFunction(float t)
 			{
 				float a = (1.0 - t) * (1.0 - t);
@@ -66,25 +61,7 @@
 				return thickness;
 			}
 
-			//float thicknessFunction(float t)
-			//{
-			//	if (t <= 0.0)
-			//	{
-			//		return _PointA.z;
-			//	}
-			//	else if (t < 0.5)
-			//	{
-			//		float ratio = easeInOutFunc(t * 2.0);
-			//		return lerp(_PointA.z, _PointB.z, ratio);
-			//	}
-			//	else if (t < 1.0)
-			//	{
-			//		float ratio = easeInOutFunc((t - 0.5) * 2.0);
-			//		return lerp(_PointB.z, _PointC.z, ratio);
-			//	}
-			//	return _PointC.z;
-			//}
-			//return the squared distance from QuadraticBezierCurve to our sample point v_uv
+			//return 0 if sample point is inside the thickness, else return input nullDistance
 			float distanceFunction(float inputT, float nullDistance, float2 p0, float2 p1, float2 p2, float2 samplePoint) {
 				float t = clamp(inputT, 0.0, 1.0);
 				float a = (1.0 - t) * (1.0 - t);
@@ -108,12 +85,12 @@
 			float thirdDegreeEquationMin(float a, float b, float c, float d, float nullDistance, float2 p0, float2 p1, float2 p2, float2 samplePoint) {
 				if (zeroMax < abs(a))
 				{
-					//30: let's adopt form: x3 + ax2 + bx + d = 0
+					// let's adopt form: x3 + ax2 + bx + d = 0
 					float z = a;
 					a = b / z;
 					b = c / z;
 					c = d / z;
-					//35: we solve using Cardan formula: http://fr.wikipedia.org/wiki/M%C3%A9thode_de_Cardan
+					// we solve using Cardan formula: http://fr.wikipedia.org/wiki/M%C3%A9thode_de_Cardan
 					float p = b - ((a * a) / 3.0);
 					float q = (a * ((2.0 * a * a) - (9.0 * b)) / 27.0) + c;
 					float p3 = p * p * p;
@@ -121,7 +98,7 @@
 					float offset = -a / 3.0;
 					if (zeroMax < D)
 					{
-						//43: D positive
+						// D positive
 						z = sqrt(D);
 						float u = (-q + z) / 2.0;
 						float v = (-q - z) / 2.0;
@@ -240,7 +217,6 @@
 				UNITY_APPLY_FOG(i.fogCoord, col);
 				return col;
 			}
-
 
 			ENDCG
 		}
