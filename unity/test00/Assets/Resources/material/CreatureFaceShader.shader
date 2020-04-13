@@ -90,6 +90,17 @@
                 return step(dinstanceToNearestSquared, thickness * thickness);
             }
 
+            float4 DealEyes(float4 col, float2 uv, float4 eye, float2 up)
+            {
+                float eyeAmount = DealSphere(uv, float2(eye.x, eye.y), eye.z, eye.w, up);
+                col = lerp(col, _ColorA, eyeAmount);
+                float eyeHighlight = DealSphere(uv, float2(eye.x + (eye.w * 0.25), eye.y + (eye.w * 0.25)), eye.w * 0.2, eye.w * 0.2, up);
+                col = lerp(col, float4(1.0, 1.0, 1.0, 1.0), eyeAmount * eyeHighlight);
+
+                return col;
+            }
+
+
             fixed4 frag (v2f i) : SV_Target
             {
                 //float2 uv = i.uv;
@@ -97,8 +108,8 @@
                 float2 up = float2(_Data0.x, _Data0.y);
 
                 float4 col = float4(0.0, 0.0, 0.0, 0.0);
-                col = lerp(col, _ColorA, DealSphere(uv, float2(_Eye0.x, _Eye0.y), _Eye0.z, _Eye0.w, up));
-                col = lerp(col, _ColorA, DealSphere(uv, float2(_Eye1.x, _Eye1.y), _Eye1.z, _Eye1.w, up));
+                col = DealEyes(col, uv, _Eye0, up);
+                col = DealEyes(col, uv, _Eye1, up);
                 col = lerp(col, _ColorA, DealLineSegment(uv, float2(_EyeBrow0.x, _EyeBrow0.y), float2(_EyeBrow0.z, _EyeBrow0.w), _Data0.z, _Data0.w));
                 col = lerp(col, _ColorA, DealLineSegment(uv, float2(_EyeBrow1.x, _EyeBrow1.y), float2(_EyeBrow1.z, _EyeBrow1.w), _Data0.z, _Data0.w));
 

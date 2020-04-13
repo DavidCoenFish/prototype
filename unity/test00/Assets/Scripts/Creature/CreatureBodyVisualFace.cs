@@ -40,6 +40,8 @@ public class CreatureBodyVisualFace
         var right = UnityEngine.Vector3.Cross(e1, e0);
         var up = UnityEngine.Vector3.Cross(right, e0).normalized;
 
+        var eyeFactor = UnityEngine.Vector3.Dot(e0, mainCamera.transform.forward) < 0.0f ? 1.0f : 0.0f;
+
         var faceBase = new UnityEngine.Vector3(creatureState.creatureStateBody.faceRenderData.p0.x, creatureState.creatureStateBody.faceRenderData.p0.y, creatureState.creatureStateBody.faceRenderData.p0.z) 
             + (up * (creatureState.creatureStateBody.faceRenderData.p0.w * 0.25f));
 
@@ -62,7 +64,7 @@ public class CreatureBodyVisualFace
         var eye0x = projectedP.x - (0.2f * projectedP.z);
         var eyeY = projectedP.y;
         var eye1x = projectedP.x + (0.2f * projectedP.z);
-        var eyeRx = projectedP.z * 0.15f;
+        var eyeRx = projectedP.z * 0.15f * eyeFactor; //* blink
         var eyeRy = projectedP.z * 0.2f;
         var eyeBrow0a = new UnityEngine.Vector2(projectedP.x - (0.075f * projectedP.z), eyeY + (yMul * eyeRy * 0.95f));
         var eyeBrow0b = new UnityEngine.Vector2(projectedP.x - (0.5f * projectedP.z), eyeY + (yMul * eyeRy * 2.0f));
