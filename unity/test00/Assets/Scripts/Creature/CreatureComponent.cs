@@ -21,7 +21,7 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
 
         _thirdPersonCameraComponent = GetComponent<ThirdPersonCameraComponent>();
 
-        _creatureState = new CreatureState(typeName);
+        _creatureState = new CreatureState(typeName, this.gameObject);
         _creatureBodyVisual = new CreatureBodyVisual();
         //_creatureRigidBody = new CreatureRigidBody(this.gameObject, _creatureState);
 
@@ -44,6 +44,11 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
     private void Update()
     {
         float timeDelta = UnityEngine.Time.deltaTime;
+        if (null != _creatureState)
+        {
+            _creatureState.Update();
+        }
+
 
         if (null != _creatureBodyVisual)
         {

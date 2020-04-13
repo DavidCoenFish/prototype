@@ -5,7 +5,6 @@ this class looks after the visual representation of the creature
 public class CreatureBodyVisualSpline
 {
     private UnityEngine.GameObject _prefab = null;
-    private UnityEngine.GameObject _prefabFace = null;
     private int _activeCount;
     private class Data
     {
@@ -36,7 +35,7 @@ public class CreatureBodyVisualSpline
     }
 
 
-    private bool ConvertSplineRenderDataToData(Data data, CreatureStateBody.SplineRenderData splineRenderData, UnityEngine.Camera mainCamera)
+    private bool ConvertSplineRenderDataToData(Data data, CreatureStateBodyVisual.SplineRenderData splineRenderData, UnityEngine.Camera mainCamera)
     {
         var tempP0 = mainCamera.WorldToScreenPoint(new UnityEngine.Vector3(splineRenderData.p0.x, splineRenderData.p0.y, splineRenderData.p0.z));
         var tempP1 = mainCamera.WorldToScreenPoint(new UnityEngine.Vector3(splineRenderData.p1.x, splineRenderData.p1.y, splineRenderData.p1.z));
@@ -166,7 +165,7 @@ public class CreatureBodyVisualSpline
         }
         _activeCount = 0;
 
-        foreach( var spline in creatureState.creatureStateBody.splineRenderDataArray)
+        foreach( var spline in creatureState.creatureStateBody.creatureStateBodyVisual.splineRenderDataArray)
         {
             Data data = GetFreeData();
             data.gameObject.transform.parent = parentTransform;

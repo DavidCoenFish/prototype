@@ -12,7 +12,7 @@
         parent.layer = (int)Project.Layer.TIgnoreRaycast;
 
 
-        foreach (var sphereColliderData in creatureState.creatureStateBody.sphereColliderDataArray)
+        foreach (var sphereColliderData in creatureState.creatureStateBody.creatureStateBodyPhysics.sphereColliderDataArray)
         {
             var collider = parent.AddComponent<UnityEngine.SphereCollider>();
             collider.center = new UnityEngine.Vector3(sphereColliderData.position.x, sphereColliderData.position.y, sphereColliderData.position.z);

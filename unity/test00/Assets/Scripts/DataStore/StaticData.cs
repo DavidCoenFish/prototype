@@ -39,7 +39,7 @@
         {
             return node.Value;
         }
-        Bootstrap.Warn("LocaleData.GetString() path not found:" + path);
+        Bootstrap.Warn("StaticData.GetString() path not found:" + path);
         return "";
     }
 
@@ -50,11 +50,11 @@
         {
             return node.AsFloat;
         }
-        Bootstrap.Warn("LocaleData.GetFloat() path not found:" + path);
+        Bootstrap.Warn("StaticData.GetFloat() path not found:" + path);
         return 0.0f;
     }
 
-    private SimpleJSON.JSONNode GetNode(string path)
+    public SimpleJSON.JSONNode GetNode(string path)
     {
         System.String[] seperator = {"."};
         System.String[] splitPath = path.Split(seperator, System.StringSplitOptions.None);

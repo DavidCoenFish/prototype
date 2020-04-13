@@ -19,7 +19,7 @@
         public PickupComponent.TPickupType weapon { get; set; }
     }
 
-    public CreatureState(string in_typeName)
+    public CreatureState(string in_typeName, UnityEngine.GameObject parent)
     {
         typeName = in_typeName;
         //get jumpHeight "creatures." + typeName + ".jump_height"; 
@@ -27,19 +27,20 @@
         weaponArray = new System.Collections.Generic.List< WeaponData >();
         //weaponArray.Add(new WeaponData(){weapon=TWeapon.TSlingPan });
 
-        creatureStateBody = new CreatureStateBody();
+        creatureStateBody = new CreatureStateBody(in_typeName, parent);
         creatureStateHud = new CreatureStateHud();
         creatureStateInput = new CreatureStateInput();
 
-        StartNewUpdate();
     }
 
-    public void StartNewUpdate()
+    public void Update()
     {
         //creatureStatePerUpdate.uiElementDataArray.Add(new CreatureStatePerUpdate.UIElementData(){
         //    position = new UnityEngine.Vector2(UnityEngine.Screen.width * 0.5f, 100.0f),
         //    uiElement = CreatureStatePerUpdate.TUIElement.Health
         //});
+
+        creatureStateBody.Update();
     }
 
 }

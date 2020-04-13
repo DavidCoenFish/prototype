@@ -1,18 +1,5 @@
 {
-	"version": "0.0.1.20200313130506",
-	"ghost": {
-		"top_speed_horizontal": 5,
-		"on_move_release_horizontal_dampen": 1.5,
-		"jump_speed": 3,
-		"jump_speed_dampen": 1.5,
-		"down_speed": 2,
-		"on_down_release_dampen": 2
-	},
-	"game": {
-		"vfov_degrees": 90,
-		"flick_duration": 0.2,
-		"tap_duration": 0.2
-	},
+	"version": "0.0.1.20200413164144",
 	"creatures": {
 		"rat": {
 			"health": 2,
@@ -23,7 +10,433 @@
 			"jump_height": 0.5,
 			"height": 0.125,
 			"damage_mellee_hand": 0.25,
-			"damage_mellee_weapon": 1
+			"damage_mellee_weapon": 1,
+			"face_color": [
+				0.1,
+				0.1,
+				0.1,
+				1
+			],
+			"face_name": [
+				"bodysnoot",
+				"bodynose",
+				"bodylow"
+			],
+			"spline_data_array": [
+				{
+					"color": [
+						0.96,
+						0.291,
+						0.27,
+						1
+					],
+					"name": [
+						"bodylow",
+						"bodymid",
+						"bodyhigh"
+					]
+				},
+				{
+					"color": [
+						0.96,
+						0.291,
+						0.27,
+						1
+					],
+					"name": [
+						"bodyhigh",
+						"bodysnoot",
+						"bodynose"
+					]
+				},
+				{
+					"color": [
+						0.93,
+						0.261,
+						0.24,
+						1
+					],
+					"name": [
+						"leftarm0shoulder",
+						"leftarm0elbow",
+						"leftarm0hand"
+					]
+				},
+				{
+					"color": [
+						0.93,
+						0.261,
+						0.24,
+						1
+					],
+					"name": [
+						"rightarm0shoulder",
+						"rightarm0elbow",
+						"rightarm0hand"
+					]
+				},
+				{
+					"color": [
+						0.93,
+						0.261,
+						0.24,
+						1
+					],
+					"name": [
+						"leftleg0hip",
+						"leftleg0knee",
+						"leftleg0ankle"
+					]
+				},
+				{
+					"color": [
+						0.93,
+						0.261,
+						0.24,
+						1
+					],
+					"name": [
+						"leftleg0ankle",
+						"leftleg0foot",
+						"leftleg0toe"
+					]
+				},
+				{
+					"color": [
+						0.93,
+						0.261,
+						0.24,
+						1
+					],
+					"name": [
+						"rightleg0hip",
+						"rightleg0knee",
+						"rightleg0ankle"
+					]
+				},
+				{
+					"color": [
+						0.93,
+						0.261,
+						0.24,
+						1
+					],
+					"name": [
+						"rightleg0ankle",
+						"rightleg0foot",
+						"rightleg0toe"
+					]
+				},
+				{
+					"color": [
+						0.93,
+						0.261,
+						0.24,
+						1
+					],
+					"name": [
+						"tailbase",
+						"tailmid",
+						"tailend"
+					]
+				}
+			],
+			"body_data_array": [
+				{
+					"name": "bodylow",
+					"position": [
+						0,
+						0.517,
+						0.043
+					],
+					"scale": 0.5,
+					"joint_parent": false
+				},
+				{
+					"name": "bodymid",
+					"position": [
+						0,
+						0.739,
+						0.045
+					],
+					"scale": 0.4,
+					"parent_name": "bodylow",
+					"joint_parent": true
+				},
+				{
+					"name": "bodyhigh",
+					"position": [
+						0,
+						0.849,
+						-0.028
+					],
+					"scale": 0.3,
+					"parent_name": "bodymid",
+					"joint_parent": true
+				},
+				{
+					"name": "bodysnoot",
+					"position": [
+						0,
+						0.908,
+						-0.151
+					],
+					"scale": 0.18,
+					"parent_name": "bodyhigh",
+					"joint_parent": true
+				},
+				{
+					"name": "bodynose",
+					"position": [
+						0,
+						0.856,
+						-0.33
+					],
+					"scale": 0.04,
+					"parent_name": "bodysnoot",
+					"joint_parent": true
+				},
+				{
+					"name": "bodymouth",
+					"position": [
+						0,
+						0.789,
+						-0.176
+					],
+					"scale": 0.02,
+					"parent_name": "bodyhigh",
+					"joint_parent": false
+				},
+				{
+					"name": "leftarm0shoulder",
+					"position": [
+						0.2,
+						0.683,
+						0.051
+					],
+					"scale": 0.04,
+					"parent_name": "bodymid",
+					"joint_parent": false
+				},
+				{
+					"name": "leftarm0elbow",
+					"position": [
+						0.296,
+						0.539,
+						0.051
+					],
+					"scale": 0.04,
+					"parent_name": "leftarm0shoulder",
+					"joint_parent": true
+				},
+				{
+					"name": "leftarm0hand",
+					"position": [
+						0.32,
+						0.375,
+						0.051
+					],
+					"scale": 0.04,
+					"parent_name": "leftarm0elbow",
+					"joint_parent": true
+				},
+				{
+					"name": "rightarm0shoulder",
+					"position": [
+						-0.2,
+						0.683,
+						0.051
+					],
+					"scale": 0.04,
+					"parent_name": "bodymid",
+					"joint_parent": false
+				},
+				{
+					"name": "rightarm0elbow",
+					"position": [
+						-0.296,
+						0.539,
+						0.051
+					],
+					"scale": 0.04,
+					"parent_name": "rightarm0shoulder",
+					"joint_parent": true
+				},
+				{
+					"name": "rightarm0hand",
+					"position": [
+						-0.32,
+						0.375,
+						0.051
+					],
+					"scale": 0.04,
+					"parent_name": "rightarm0elbow",
+					"joint_parent": true
+				},
+				{
+					"name": "leftleg0hip",
+					"position": [
+						0.0845,
+						0.291,
+						0.131
+					],
+					"scale": 0.04,
+					"parent_name": "bodylow",
+					"joint_parent": false
+				},
+				{
+					"name": "leftleg0knee",
+					"position": [
+						0.1025,
+						0.1594,
+						0.0722
+					],
+					"scale": 0.04,
+					"parent_name": "leftleg0hip",
+					"joint_parent": true
+				},
+				{
+					"name": "leftleg0ankle",
+					"position": [
+						0.1089,
+						0.021,
+						0.1006
+					],
+					"scale": 0.04,
+					"parent_name": "leftleg0knee",
+					"joint_parent": true
+				},
+				{
+					"name": "leftleg0foot",
+					"position": [
+						0.1089,
+						0.0246,
+						0.0738
+					],
+					"scale": 0.04,
+					"parent_name": "leftleg0ankle",
+					"joint_parent": true
+				},
+				{
+					"name": "leftleg0toe",
+					"position": [
+						0.1089,
+						0.0198,
+						0.051
+					],
+					"scale": 0.04,
+					"parent_name": "leftleg0foot",
+					"joint_parent": true
+				},
+				{
+					"name": "rightleg0hip",
+					"position": [
+						-0.0845,
+						0.291,
+						0.131
+					],
+					"scale": 0.04,
+					"parent_name": "bodylow",
+					"joint_parent": false
+				},
+				{
+					"name": "rightleg0knee",
+					"position": [
+						-0.1025,
+						0.1594,
+						0.0722
+					],
+					"scale": 0.04,
+					"parent_name": "rightleg0hip",
+					"joint_parent": true
+				},
+				{
+					"name": "rightleg0ankle",
+					"position": [
+						-0.1089,
+						0.021,
+						0.1006
+					],
+					"scale": 0.04,
+					"parent_name": "rightleg0knee",
+					"joint_parent": true
+				},
+				{
+					"name": "rightleg0foot",
+					"position": [
+						-0.1089,
+						0.0246,
+						0.0738
+					],
+					"scale": 0.04,
+					"parent_name": "rightleg0ankle",
+					"joint_parent": true
+				},
+				{
+					"name": "rightleg0toe",
+					"position": [
+						-0.1089,
+						0.0198,
+						0.051
+					],
+					"scale": 0.04,
+					"parent_name": "rightleg0foot",
+					"joint_parent": true
+				},
+				{
+					"name": "tailbase",
+					"position": [
+						0,
+						0.395,
+						0.259
+					],
+					"scale": 0.04,
+					"parent_name": "bodylow",
+					"joint_parent": false
+				},
+				{
+					"name": "tailmid",
+					"position": [
+						0,
+						0.248,
+						0.553
+					],
+					"scale": 0.04,
+					"parent_name": "tailbase",
+					"joint_parent": true
+				},
+				{
+					"name": "tailend",
+					"position": [
+						0,
+						0.248,
+						0.928
+					],
+					"scale": 0.04,
+					"parent_name": "tailmid",
+					"joint_parent": true
+				}
+			],
+			"sphere_data_array": [
+				{
+					"color": [
+						0.1,
+						0.1,
+						0.1,
+						1
+					],
+					"name": "bodynose"
+				},
+				{
+					"color": [
+						0.1,
+						0.1,
+						0.1,
+						1
+					],
+					"name": "bodymouth"
+				}
+			]
 		},
 		"chicken": {
 			"health": 3,
@@ -104,6 +517,19 @@
 			"damage_mellee_special": 2,
 			"damage_mellee_weapon": 1
 		}
+	},
+	"ghost": {
+		"top_speed_horizontal": 5,
+		"on_move_release_horizontal_dampen": 1.5,
+		"jump_speed": 3,
+		"jump_speed_dampen": 1.5,
+		"down_speed": 2,
+		"on_down_release_dampen": 2
+	},
+	"game": {
+		"vfov_degrees": 90,
+		"flick_duration": 0.2,
+		"tap_duration": 0.2
 	},
 	"locale": {
 		"en": "English",

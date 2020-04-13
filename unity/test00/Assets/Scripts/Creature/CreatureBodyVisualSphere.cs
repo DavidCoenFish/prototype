@@ -1,7 +1,6 @@
 ﻿public class CreatureBodyVisualSphere
 {
     private UnityEngine.GameObject _prefab = null;
-    private UnityEngine.GameObject _prefabFace = null;
     private int _activeCount;
     private class Data
     {
@@ -32,7 +31,7 @@
     }
 
 
-    private bool ConvertSphereRenderDataToData(Data data, CreatureStateBody.SphereRenderData sphereRenderData, UnityEngine.Camera mainCamera)
+    private bool ConvertSphereRenderDataToData(Data data, CreatureStateBodyVisual.SphereRenderData sphereRenderData, UnityEngine.Camera mainCamera)
     {
         var tempP0 = mainCamera.WorldToScreenPoint(new UnityEngine.Vector3(sphereRenderData.p0.x, sphereRenderData.p0.y, sphereRenderData.p0.z));
         var radius0 = sphereRenderData.p0.w;// * 0.5f;
@@ -145,7 +144,7 @@
         }
         _activeCount = 0;
 
-        foreach( var sphere in creatureState.creatureStateBody.sphereRenderDataArray)
+        foreach( var sphere in creatureState.creatureStateBody.creatureStateBodyVisual.sphereRenderDataArray)
         {
             Data data = GetFreeData();
             data.gameObject.transform.parent = parentTransform;
