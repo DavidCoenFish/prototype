@@ -1,0 +1,81 @@
+﻿
+public class TestControllerComponent : UnityEngine.MonoBehaviour
+{
+    private UnityEngine.Rigidbody _rigidbody;
+    private UnityEngine.Material _material;
+    private float _hoverHeight;
+
+    public float Kp;
+    public float Ki;
+    public float Kd;
+ 
+    private UnityEngine.Vector3 _totalError = new UnityEngine.Vector3( 0, 0, 0 );
+    private UnityEngine.Vector3 _lastError = new UnityEngine.Vector3( 0, 0, 0 );
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        _rigidbody = gameObject.GetComponent< UnityEngine.Rigidbody >();
+        _hoverHeight = 1.5f;
+
+        var renderer = gameObject.GetComponent<UnityEngine.Renderer>();
+        _material = renderer.material;
+    }
+
+    void FixedUpdate()
+    {
+        int layerMask = (int)Project.LayerFlag.TDefault;
+        //UnityEngine.Vector3 touchingGroundPosition = new UnityEngine.Vector3(gameObject.transform.position.x, gameObject.transform.position.y - 0.05f, gameObject.transform.position.z);
+        //UnityEngine.Vector3 touchingGroundPosition = gameObject.transform.position;
+        //bool touchingGround = UnityEngine.Physics.CheckSphere(touchingGroundPosition, 0.1f, layerMask, UnityEngine.QueryTriggerInteraction.Ignore);
+        //UnityEngine.Physics.Raycast(new UnityEngine.Ray(
+        UnityEngine.RaycastHit raycastHit;
+        //var hit = UnityEngine.Physics.SphereCast(
+        //    new UnityEngine.Ray(gameObject.transform.position, new UnityEngine.Vector3(0.0f, -1.0f, 0.0f)),
+        //    0.5f, 
+        //    out raycastHit,
+        //    _hoverHeight,
+        //    layerMask
+        //    );
+
+        var hit = UnityEngine.Physics.Raycast(
+            new UnityEngine.Ray(gameObject.transform.position, new UnityEngine.Vector3(0.0f, -1.0f, 0.0f)),
+            out raycastHit,
+            _hoverHeight,
+            layerMask
+            );
+
+        if (false == hit)
+        {
+            _material.SetColor("_Color", UnityEngine.Color.red);
+            return;
+            //raycastHit.distance;
+
+        }
+            _material.SetColor("_Color", UnityEngine.Color.blue);
+
+
+        //
+        //_rigidbody.AddForce(new UnityEngine.Vector3(0.0f, 10.0f, 0.0f), UnityEngine.ForceMode.Acceleration);
+        //var heightDelta = _hoverHeight - raycastHit.distance;
+
+        //gameObject.transform.position - this.DestinationPosition;
+        //var currentError = gameObject.transform.position + new UnityEngine.Vector3(0.0f, heightDelta, 0.0f);
+        var currentError = new UnityEngine.Vector3(0.0f, raycastHit.distance - _hoverHeight, 0.0f);
+            
+        //https://en.wikipedia.org/wiki/PID_controller
+        UnityEngine.Vector3 cp = currentError * Kp;
+        UnityEngine.Vector3 cd = Kd * (_lastError - currentError) / UnityEngine.Time.fixedDeltaTime;
+        UnityEngine.Vector3 ci = _totalError * Ki * UnityEngine.Time.fixedDeltaTime;
+ 
+        _lastError = currentError;
+        _totalError += currentError;
+ 
+        var navigationForce = UnityEngine.Vector3.ClampMagnitude( cp + ci + cd, 300.0f );
+        var standardForce = _rigidbody.useGravity ? (UnityEngine.Physics.gravity * _rigidbody.mass * -1) : new UnityEngine.Vector3( 0, 0, 0 );
+ 
+        var finalForce = standardForce - navigationForce;
+ 
+        _rigidbody.AddForce( finalForce );
+    }
+}
