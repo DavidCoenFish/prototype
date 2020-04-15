@@ -13,6 +13,8 @@
     public float longitudeDegrees = 30.0f;
     public float longitudeDegreesInputFactor = 1.0f;
 
+    public float verticalOffset = 0.0f;
+
     UnityEngine.GameObject _dummyCamera;
 
     void Start()
@@ -57,7 +59,9 @@
 
         var rotation = UnityEngine.Quaternion.Euler(latitudeDegrees, -longitudeDegrees, 0.0f);
         _dummyCamera.transform.rotation = rotation;
-        _dummyCamera.transform.position = gameObject.transform.position + (rotation * new UnityEngine.Vector3(0.0f, 0.0f, -dolly));
+        _dummyCamera.transform.position = gameObject.transform.position 
+            + (rotation * new UnityEngine.Vector3(0.0f, 0.0f, -dolly)) 
+            + new UnityEngine.Vector3(0.0f, verticalOffset, 0.0f);
     }
 
     public UnityEngine.Transform GetCameraTransform()
