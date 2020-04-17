@@ -23,20 +23,64 @@ public class TestControllerComponent : UnityEngine.MonoBehaviour
         _rigidbody.centerOfMass = new UnityEngine.Vector3(0.0f, 0.0f, 0.0f);
         _rigidbody.inertiaTensor = new UnityEngine.Vector3(1.0f, 1.0f, 1.0f);
 
-        var collider = _root.AddComponent<UnityEngine.SphereCollider>();
-        collider.center = UnityEngine.Vector3.zero;
-        collider.radius = 0.5f;
+        {
+            var collider = _root.AddComponent<UnityEngine.SphereCollider>();
+            collider.center = UnityEngine.Vector3.zero;
+            collider.radius = 0.5f;
+        }
+
+        {
+            var debugOrientationHint = UnityEngine.Object.Instantiate(_prefabDebugOrientationHint);
+            debugOrientationHint.SetActive(true);
+            debugOrientationHint.transform.parent = _root.transform;
+            debugOrientationHint.transform.localPosition = UnityEngine.Vector3.zero;
+            debugOrientationHint.transform.localRotation = UnityEngine.Quaternion.identity;
+
+            var renderer = debugOrientationHint.GetComponent<UnityEngine.Renderer>();
+            _material = renderer.material;
+        }
 
 #if true
-        var debugOrientationHint = UnityEngine.Object.Instantiate(_prefabDebugOrientationHint);
-        debugOrientationHint.SetActive(true);
-        debugOrientationHint.transform.parent = _root.transform;
-        debugOrientationHint.transform.localPosition = UnityEngine.Vector3.zero;
-        debugOrientationHint.transform.localRotation = UnityEngine.Quaternion.identity;
+        {
+            var child = new UnityEngine.GameObject("child");
+            child.SetActive(true);
+            child.transform.position = new UnityEngine.Vector3(0.0f, 3.0f, -0.5f);
+            child.transform.parent = _root.transform;
+            child.layer = (int)Project.Layer.TIgnoreRaycast;
+            var rigidbody = child.AddComponent< UnityEngine.Rigidbody >();
+            rigidbody.useGravity = true;
+            rigidbody.centerOfMass = new UnityEngine.Vector3(0.0f, 0.0f, 0.0f);
+            rigidbody.inertiaTensor = new UnityEngine.Vector3(1.0f, 1.0f, 1.0f);
 
-        var renderer = debugOrientationHint.GetComponent<UnityEngine.Renderer>();
-        _material = renderer.material;
+            var collider = child.AddComponent<UnityEngine.SphereCollider>();
+            collider.center = UnityEngine.Vector3.zero;
+            collider.radius = 0.5f;
+
+            var characterJoint = child.AddComponent<UnityEngine.CharacterJoint>();
+            characterJoint.connectedBody = _rigidbody;
+
+            {
+                var debugOrientationHint = UnityEngine.Object.Instantiate(_prefabDebugOrientationHint);
+                debugOrientationHint.SetActive(true);
+                debugOrientationHint.transform.parent = child.transform;
+                debugOrientationHint.transform.localPosition = UnityEngine.Vector3.zero;
+                debugOrientationHint.transform.localRotation = UnityEngine.Quaternion.identity;
+            }
+        }
 #endif
+    }
+
+    //https://answers.unity.com/questions/171859/figuring-out-the-correct-amount-of-torque-to-apply.html
+    private UnityEngine.Vector3 OrientTorque(UnityEngine.Vector3 torque)
+    {
+        // Quaternion's Euler conversion results in (0-360)
+        // For torque, we need -180 to 180.
+ 
+        return new UnityEngine.Vector3(
+            torque.x > 180f ? 180f - torque.x : torque.x,
+            torque.y > 180f ? 180f - torque.y : torque.y,
+            torque.z > 180f ? 180f - torque.z : torque.z
+        );
     }
 
     void FixedUpdate()
@@ -51,31 +95,50 @@ public class TestControllerComponent : UnityEngine.MonoBehaviour
             layerMask
             );
 
-        var targetVerticalVelocity = 0.0f;
-        if (hit)
+        //force
+#if true
         {
-            targetVerticalVelocity = (targetHeight - raycastHit.distance) * 2.0f;
-        }
+            var targetVerticalVelocity = 0.0f;
+            if (hit)
+            {
+                targetVerticalVelocity = (targetHeight - raycastHit.distance) * 2.0f;
+            }
 
-        var targetVelocity = new UnityEngine.Vector3(
-            2.0f * UnityEngine.Input.GetAxis("Horizontal_Alt"),
-            targetVerticalVelocity, //0.0f, //UnityEngine.Input.GetAxis("Dolly_Alt"),
-            2.0f * UnityEngine.Input.GetAxis("Vertical_Alt")
-            );
+            var targetVelocity = new UnityEngine.Vector3(
+                2.0f * UnityEngine.Input.GetAxis("Horizontal_Alt"),
+                targetVerticalVelocity, //0.0f, //UnityEngine.Input.GetAxis("Dolly_Alt"),
+                2.0f * UnityEngine.Input.GetAxis("Vertical_Alt")
+                );
 
-        var deltaVelocity = targetVelocity - _rigidbody.velocity;
-        var acceleration = deltaVelocity / UnityEngine.Time.fixedDeltaTime;
-        if (false == hit)
-        {
-            acceleration.y = 0.0f;
-            _material.SetColor("_Color", UnityEngine.Color.red);
-        }
-        else
-        {
-            _material.SetColor("_Color", UnityEngine.Color.blue);
-        }
+            var deltaVelocity = targetVelocity - _rigidbody.velocity;
+            var acceleration = deltaVelocity / UnityEngine.Time.fixedDeltaTime;
+            if (false == hit)
+            {
+                acceleration.y = 0.0f;
+                _material.SetColor("_Color", UnityEngine.Color.red);
+            }
+            else
+            {
+                _material.SetColor("_Color", UnityEngine.Color.blue);
+            }
 
-        _rigidbody.AddForce(acceleration, UnityEngine.ForceMode.Acceleration);
+            _rigidbody.AddForce(acceleration, UnityEngine.ForceMode.Acceleration);
+        }
+#endif
+#if true
+        //torque
+        //https://answers.unity.com/questions/171859/figuring-out-the-correct-amount-of-torque-to-apply.html
+        { 
+            var rotEular = OrientTorque(UnityEngine.Quaternion.FromToRotation(_root.transform.up, UnityEngine.Vector3.up).eulerAngles) * UnityEngine.Mathf.Deg2Rad;
+
+            var targetRot = rotEular; // * 0.5f;
+            var deltaRot = targetRot - _rigidbody.angularVelocity;
+
+            var acceleration = deltaRot / UnityEngine.Time.fixedDeltaTime;
+
+            _rigidbody.AddTorque(acceleration, UnityEngine.ForceMode.Acceleration);
+        }
+#endif
     }
 
     void Update()
