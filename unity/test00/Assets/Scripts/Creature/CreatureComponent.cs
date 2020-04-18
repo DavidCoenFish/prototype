@@ -18,9 +18,9 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
 
         _thirdPersonCameraComponent = GetComponent<ThirdPersonCameraComponent>();
 
-        _creatureState = new CreatureState(typeName, this.gameObject);
+        _creatureState = new CreatureState(typeName, gameObject);
         _creatureBodyVisual = new CreatureBodyVisual();
-        //_creatureBodyPhysics = new CreatureBodyPhysics(typeName);
+        _creatureBodyPhysics = new CreatureBodyPhysics(gameObject, _creatureState);
 
         if (true == startHumanControlled)
         {
@@ -31,11 +31,16 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
     private void Update()
     {
         float timeDelta = UnityEngine.Time.deltaTime;
+
+        if (null != _creatureBodyPhysics)
+        {
+            _creatureBodyPhysics.Update(gameObject, _creatureState);
+        }
+
         if (null != _creatureState)
         {
             _creatureState.Update();
         }
-
 
         if (null != _creatureBodyVisual)
         {
@@ -45,7 +50,13 @@ public class CreatureComponent : UnityEngine.MonoBehaviour, IPlayerComponent
 
     private void FixedUpdate()
     {
-        float timeDelta = UnityEngine.Time.fixedDeltaTime;
+        float fixedDeltaTime = UnityEngine.Time.fixedDeltaTime;
+
+        if (null != _creatureBodyPhysics)
+        {
+            _creatureBodyPhysics.FixedUpdate(fixedDeltaTime, _creatureState);
+        }
+
     }
 
     private void OnGUI()

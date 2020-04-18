@@ -426,6 +426,15 @@
 						1
 					],
 					"name": "bodynose"
+				},
+				{
+					"color": [
+						0.1,
+						0.1,
+						0.1,
+						1
+					],
+					"name": "bodymouth"
 				}
 			]
 		},

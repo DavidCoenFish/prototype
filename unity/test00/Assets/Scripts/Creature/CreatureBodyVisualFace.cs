@@ -47,7 +47,7 @@ public class CreatureBodyVisualFace
 
         var tempP = mainCamera.WorldToScreenPoint(faceBase);
         
-        var radiusP = creatureState.creatureStateBody.creatureStateBodyVisual.faceRenderData.p0.w;// * 0.5f;
+        var radiusP = creatureState.creatureStateBody.creatureStateBodyVisual.faceRenderData.p0.w * 2.0f;// * 0.5f;
         var averageZ = tempP.z - radiusP;
 
         var yMul = (0.0f < UnityEngine.Vector3.Dot(mainCamera.transform.up, up)) ? 1.0f : -1.0f;

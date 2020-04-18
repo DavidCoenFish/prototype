@@ -1,102 +1,190 @@
-﻿public class CreatureBodyPhysics
+﻿/*
+our job is to make the game objects to host the collision components and create the character joints
+
+we also apply the move input to the root ridgid body
+
+we also update the state info about the position of stuff
+
+ */
+
+public class CreatureBodyPhysics
 {
-    private UnityEngine.Rigidbody _rigidbody = null;
-    private System.Collections.Generic.List< UnityEngine.SphereCollider > _sphereColliderArray = new System.Collections.Generic.List< UnityEngine.SphereCollider >();
+    private UnityEngine.GameObject _root;
+    private UnityEngine.Rigidbody _rootRigidbody;
+    private float _targetHeight = 1.0f;
 
-    public CreatureBodyPhysics(UnityEngine.GameObject parent, CreatureState creatureState)
+    private struct Data
     {
-        _rigidbody = parent.AddComponent<UnityEngine.Rigidbody>();
-        _rigidbody.useGravity = true;
-        _rigidbody.centerOfMass = new UnityEngine.Vector3(0.0f, 0.0f, 0.0f);
-        _rigidbody.inertiaTensor = new UnityEngine.Vector3(1.0f, 1.0f, 1.0f);
-        parent.layer = (int)Project.Layer.TIgnoreRaycast;
+        public string m_name;
+        public UnityEngine.GameObject m_gameObject;
+    }
+    private System.Collections.Generic.List< Data > _dataArray = new System.Collections.Generic.List< Data >();
 
+    private Data MakeData(UnityEngine.GameObject master, CreatureStateBody.BodyData bodyData, float scale)
+    {
+        var gameObject = new UnityEngine.GameObject(bodyData.m_name);
+        gameObject.SetActive(true);
 
-        foreach (var sphereColliderData in creatureState.creatureStateBody.creatureStateBodyPhysics.sphereColliderDataArray)
+        UnityEngine.GameObject parent = null;
+        foreach( var data in _dataArray)
         {
-            var collider = parent.AddComponent<UnityEngine.SphereCollider>();
-            collider.center = new UnityEngine.Vector3(sphereColliderData.position.x, sphereColliderData.position.y, sphereColliderData.position.z);
-            collider.radius = sphereColliderData.radius;
+            if (data.m_name == bodyData.m_parentName)
+            {
+                parent = data.m_gameObject;
+                break;
+            }
+        }
+
+        gameObject.transform.position = master.transform.position + (bodyData.m_pos * scale);
+        gameObject.layer = (int)Project.Layer.TIgnoreRaycast;
+
+        var rigidbody = gameObject.AddComponent< UnityEngine.Rigidbody >();
+        //rigidbody.drag = 1.0f;
+        rigidbody.useGravity = true; //true;
+        rigidbody.centerOfMass = new UnityEngine.Vector3(0.0f, 0.0f, 0.0f);
+        rigidbody.inertiaTensor = new UnityEngine.Vector3(1.0f, 1.0f, 1.0f);
+
+        if (0 != bodyData.m_radius)
+        {
+            var sphereCollider = gameObject.AddComponent<UnityEngine.SphereCollider>();
+            sphereCollider.radius = 0.5f * scale * bodyData.m_radius;
+        }
+
+        if (null != parent)
+        {
+            //if (true == bodyData.m_jointParent)
+            //{
+                var characterJoint = gameObject.AddComponent<UnityEngine.CharacterJoint>();
+                characterJoint.connectedBody = parent.GetComponent<UnityEngine.Rigidbody>();
+            //}
+
+            if (false == bodyData.m_jointParent)
+            {
+                //characterJoint.f
+            }
+
+            gameObject.transform.parent = parent.transform;
+        }
+        //attach to root if no parent
+        if ((null == gameObject.transform.parent) && (null != _root))
+        {
+            gameObject.transform.parent = _root.transform;
+        }
+
+        return new Data(){
+            m_gameObject = gameObject,
+            m_name = bodyData.m_name
+        };
+    }
+
+    public CreatureBodyPhysics(UnityEngine.GameObject master, CreatureState creatureState)
+    { 
+        float scale = 1.0f; //creatureState.creatureStateBody.height;
+        bool first = true;
+        int trace = 0;
+        foreach( var bodyData in creatureState.creatureStateBody.bodyDataArray)
+        {
+            var data = MakeData(master, bodyData, scale);
+            _dataArray.Add(data);
+            if (true == first)
+            {
+                _root = data.m_gameObject;
+                _rootRigidbody = _root.GetComponent< UnityEngine.Rigidbody >();
+                first = false;
+            }
+
+            trace += 1;
+
+            //if (4 == trace)
+            //{
+            //    break;
+            //}
         }
     }
 
-    public void Update(UnityEngine.GameObject parent, float timeDelta, CreatureState creatureState)
+    private UnityEngine.Vector3 OrientTorque(UnityEngine.Vector3 torque)
     {
+        return new UnityEngine.Vector3(
+            180.0f < torque.x ? torque.x - 360.0f : torque.x,
+            180.0f < torque.y ? torque.y - 360.0f : torque.y,
+            180.0f < torque.z ? torque.z - 360.0f : torque.z
+        );
+    }
+
+    //UnityEngine.Time.fixedDeltaTime
+    public void FixedUpdate(float fixedDeltaTime, CreatureState creatureState)
+    {
+        if (null == _rootRigidbody)
+        {
+            return;
+        }
+
         int layerMask = (int)Project.LayerFlag.TDefault;
-        UnityEngine.Vector3 touchingGroundPosition = new UnityEngine.Vector3(parent.transform.position.x, parent.transform.position.y - 0.05f, parent.transform.position.z);
-        bool touchingGround = UnityEngine.Physics.CheckSphere(touchingGroundPosition, 0.1f, layerMask, UnityEngine.QueryTriggerInteraction.Ignore);
+        UnityEngine.RaycastHit raycastHit;
+        var hit = UnityEngine.Physics.SphereCast(
+            new UnityEngine.Ray(_root.transform.position, new UnityEngine.Vector3(0.0f, -1.0f, 0.0f)),
+            0.5f,
+            out raycastHit,
+            _targetHeight,
+            layerMask
+            );
 
-        if ((0.0f < creatureState.creatureStateInput.jump) && (true == touchingGround))
+        //force
+#if true
         {
-            //_rigidbody.AddForce(UnityEngine.Vector3.up * UnityEngine.Mathf.Sqrt(-1f * UnityEngine.Physics.gravity.y), UnityEngine.ForceMode.VelocityChange);
-            float jumpMag = UnityEngine.Mathf.Sqrt(-2.0f * creatureState.creatureStateInput.jump * UnityEngine.Physics.gravity.y);
-            _rigidbody.AddForce(UnityEngine.Vector3.up * jumpMag, UnityEngine.ForceMode.VelocityChange);
+            var targetVerticalVelocity = 0.0f;
+            if (hit)
+            {
+                targetVerticalVelocity = (_targetHeight - raycastHit.distance) * 2.0f;
+            }
+
+            var targetVelocity = new UnityEngine.Vector3(
+                2.0f * UnityEngine.Input.GetAxis("Horizontal"),
+                targetVerticalVelocity, //0.0f, //UnityEngine.Input.GetAxis("Dolly_Alt"),
+                2.0f * UnityEngine.Input.GetAxis("Vertical")
+                );
+
+            var deltaVelocity = (targetVelocity * 10.0f) - _rootRigidbody.velocity;
+            var acceleration = deltaVelocity / fixedDeltaTime;
+            if (false == hit)
+            {
+                acceleration.y = 0.0f;
+            }
+
+            _rootRigidbody.AddForce(acceleration, UnityEngine.ForceMode.Acceleration);
         }
+#endif
+#if true
+        //torque
+        { 
+            var fromToRot = UnityEngine.Quaternion.FromToRotation(_root.transform.up, UnityEngine.Vector3.up).eulerAngles;
+            var rotEular = OrientTorque(fromToRot);
 
+            var targetRot = rotEular * UnityEngine.Mathf.Deg2Rad * 10.0f; // * 0.5f;
+            targetRot.y += UnityEngine.Input.GetAxis("Horizontal_Alt");
+            var deltaRot = targetRot - _rootRigidbody.angularVelocity;
+
+            var acceleration = deltaRot / fixedDeltaTime;
+            _rootRigidbody.AddTorque(acceleration, UnityEngine.ForceMode.Acceleration);
+        }
+#endif
     }
 
-    public void FixedUpdate(float timeDelta, CreatureState creatureState)
+
+    public void Update(UnityEngine.GameObject master, CreatureState creatureState)
     {
-        //var drawPosBase = _rigidbody.position;
-        //UnityEngine.Debug.DrawLine(
-        //    drawPosBase, 
-        //    drawPosBase + (UnityEngine.Vector3.up * 0.2f) + new UnityEngine.Vector3(inputSpring.x, 0.0f, inputSpring.y), 
-        //    UnityEngine.Color.blue);
+        //todo: what height
+        master.transform.position = new UnityEngine.Vector3(_root.transform.position.x, 0.0f, _root.transform.position.z);
 
-        var newPosition = _rigidbody.position;
-        var newRotation = _rigidbody.rotation;
+        //_targetHeight = creatureState.
 
-        newRotation = FixedUpdateUpdateView(newRotation, creatureState, timeDelta);
-        //FixedUpdateUpdateViewSpring(newRotation, creatureState, _inputSpring, creatureBody);
-        newPosition = FixedUpdateUpdateMove(newPosition, newRotation, creatureState);
-
-        _rigidbody.MoveRotation(newRotation);
-        _rigidbody.MovePosition(newPosition);
-
+        //update the pos of each physics body for creature state body
+        foreach (var data in _dataArray)
+        {
+            creatureState.creatureStateBody.creatureStateBodyPhysics.SetNodePos(
+                data.m_name,
+                data.m_gameObject.transform.position
+                );
+        }
     }
-
-    private static UnityEngine.Quaternion FixedUpdateUpdateView(UnityEngine.Quaternion newRotation, CreatureState creatureState, float timeDelta)
-    {
-        var viewDelta = UnityEngine.Quaternion.AngleAxis(creatureState.creatureStateInput.inputView.x * timeDelta * 600.0f, UnityEngine.Vector3.up);
-        var forward = (newRotation * viewDelta) * UnityEngine.Vector3.forward;
-        forward.y = 0.0f;
-        forward.Normalize();
-        var resultRotation = UnityEngine.Quaternion.LookRotation(forward, UnityEngine.Vector3.up);
-        return resultRotation;
-    }
-
-//    private static UnityEngine.Quaternion FixedUpdateUpdateViewSpring(UnityEngine.Quaternion newRotation, CreatureState creatureState, SpringUnitSphere inputSpring, CreatureBody _creatureBody)
-//    {
-//#if false
-//        var forward = newRotation * UnityEngine.Vector3.forward;
-//        forward.y = 0.0f;
-//        forward.Normalize();
-//        var right = UnityEngine.Vector3.Cross(forward, UnityEngine.Vector3.up);
-//#else
-//        var forward = UnityEngine.Vector3.forward;
-//        var right = UnityEngine.Vector3.right;
-//#endif
-//        var target = (UnityEngine.Vector3.up * 4.0f) + (forward * creatureState.creatureStatePerUpdate.inputMove.y) + (right * creatureState.creatureStatePerUpdate.inputMove.x);
-//        target.Normalize();
-//        var springResult = inputSpring.Advance(target, UnityEngine.Time.fixedDeltaTime);
-//        var mod = UnityEngine.Quaternion.FromToRotation(springResult, target);
-//        _creatureBody.SetRoot(mod);
-//        return newRotation;
-//    }
-
-    private static UnityEngine.Vector3 FixedUpdateUpdateMove(UnityEngine.Vector3 position, UnityEngine.Quaternion rotation, CreatureState creatureState)
-    {
-        var forward = rotation * UnityEngine.Vector3.forward;
-        forward.y = 0.0f;
-        forward.Normalize();
-        var right = UnityEngine.Vector3.Cross( forward, UnityEngine.Vector3.up );
-        float moveMul = 2.0f * UnityEngine.Time.fixedDeltaTime;
-
-        var newPosition = new UnityEngine.Vector3(position.x, position.y, position.z);
-        newPosition += (forward * (moveMul * creatureState.creatureStateInput.inputMove.y));
-        newPosition += (right * (moveMul * -creatureState.creatureStateInput.inputMove.x));
-
-        return newPosition;
-    }
-
 }

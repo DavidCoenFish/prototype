@@ -7,15 +7,24 @@
 */
 public class CreatureStateBodyPhysics
 {
-    public struct SphereColliderData
-    {
-        public UnityEngine.Vector3 position;
-        public float radius;
-    };
-    public System.Collections.Generic.List< SphereColliderData > sphereColliderDataArray = new System.Collections.Generic.List< SphereColliderData >();
+    private System.Collections.Generic.Dictionary< string, UnityEngine.Vector3 > _mapNameNodeData = new System.Collections.Generic.Dictionary< string, UnityEngine.Vector3 >();
 
     public CreatureStateBodyPhysics()
     {
+    }
+
+    public void SetNodePos(string name, UnityEngine.Vector3 pos)
+    {
+        _mapNameNodeData[name] = pos;
+    }
+
+    public UnityEngine.Vector3 GetNodePos(string name)
+    {
+        if (_mapNameNodeData.ContainsKey(name))
+        {
+            return _mapNameNodeData[name];
+        }
+        return UnityEngine.Vector3.zero;
     }
 
 }

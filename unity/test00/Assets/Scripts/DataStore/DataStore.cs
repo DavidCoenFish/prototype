@@ -32,6 +32,13 @@
 		}
 	}
 
+	public void InitSync()
+	{
+        _staticData = StaticData.Factory();
+        _userData = UserData.Factory();
+        _localeData = LocaleData.Factory(_userData.locale);
+	}
+
 	//fake threading in the main thread for now
 	public System.Collections.IEnumerator Init()
     {

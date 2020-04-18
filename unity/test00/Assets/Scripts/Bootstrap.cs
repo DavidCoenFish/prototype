@@ -114,8 +114,18 @@ public class Bootstrap : UnityEngine.MonoBehaviour
         _fadeComponent.SetFadeToTransparent();
     }
 
+    private static DataStore _editorDataStore = null;
     public static DataStore GetDataStore()
     {
+        if (null == _instance)
+        {
+            if (null == _editorDataStore)
+            {
+                _editorDataStore = new DataStore();
+                _editorDataStore.InitSync();
+            }
+            return _editorDataStore;
+        }
         return _instance._dataStore;
     }
 }
