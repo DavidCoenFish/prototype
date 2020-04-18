@@ -30,6 +30,7 @@ public class CreatureStateBodyVisual
 
     public CreatureStateBodyVisual()
     {
+//populate with test data
 #if false
 #if false
         var debugZOffset = new UnityEngine.Vector4(0.0f, 0.0f, 0.0f, 0.0f);

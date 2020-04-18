@@ -16,6 +16,7 @@ public class TestControllerComponent : UnityEngine.MonoBehaviour
         _root.SetActive(true);
         //_root.transform.parent = gameObject.transform;
         _root.transform.position = new UnityEngine.Vector3(0.0f, 1.5f, 0.0f);
+        _root.transform.rotation = UnityEngine.Quaternion.Euler(0.0f, 90.0f, 0.0f);
         _root.layer = (int)Project.Layer.TIgnoreRaycast;
         _rigidbody = _root.AddComponent< UnityEngine.Rigidbody >();
         //_rigidbody.drag = 1.0f;
@@ -44,7 +45,7 @@ public class TestControllerComponent : UnityEngine.MonoBehaviour
         {
             var child = new UnityEngine.GameObject("child");
             child.SetActive(true);
-            child.transform.position = new UnityEngine.Vector3(0.0f, 3.0f, -0.5f);
+            child.transform.position = new UnityEngine.Vector3(-0.5f, 3.0f, 0.0f);
             child.transform.parent = _root.transform;
             child.layer = (int)Project.Layer.TIgnoreRaycast;
             var rigidbody = child.AddComponent< UnityEngine.Rigidbody >();
@@ -70,16 +71,12 @@ public class TestControllerComponent : UnityEngine.MonoBehaviour
 #endif
     }
 
-    //https://answers.unity.com/questions/171859/figuring-out-the-correct-amount-of-torque-to-apply.html
     private UnityEngine.Vector3 OrientTorque(UnityEngine.Vector3 torque)
     {
-        // Quaternion's Euler conversion results in (0-360)
-        // For torque, we need -180 to 180.
- 
         return new UnityEngine.Vector3(
-            torque.x > 180f ? 180f - torque.x : torque.x,
-            torque.y > 180f ? 180f - torque.y : torque.y,
-            torque.z > 180f ? 180f - torque.z : torque.z
+            180.0f < torque.x ? torque.x - 360.0f : torque.x,
+            180.0f < torque.y ? torque.y - 360.0f : torque.y,
+            180.0f < torque.z ? torque.z - 360.0f : torque.z
         );
     }
 
@@ -105,9 +102,9 @@ public class TestControllerComponent : UnityEngine.MonoBehaviour
             }
 
             var targetVelocity = new UnityEngine.Vector3(
-                2.0f * UnityEngine.Input.GetAxis("Horizontal_Alt"),
+                2.0f * UnityEngine.Input.GetAxis("Horizontal"),
                 targetVerticalVelocity, //0.0f, //UnityEngine.Input.GetAxis("Dolly_Alt"),
-                2.0f * UnityEngine.Input.GetAxis("Vertical_Alt")
+                2.0f * UnityEngine.Input.GetAxis("Vertical")
                 );
 
             var deltaVelocity = targetVelocity - _rigidbody.velocity;
@@ -129,14 +126,21 @@ public class TestControllerComponent : UnityEngine.MonoBehaviour
         //torque
         //https://answers.unity.com/questions/171859/figuring-out-the-correct-amount-of-torque-to-apply.html
         { 
-            var rotEular = OrientTorque(UnityEngine.Quaternion.FromToRotation(_root.transform.up, UnityEngine.Vector3.up).eulerAngles) * UnityEngine.Mathf.Deg2Rad;
+            var fromToRot = UnityEngine.Quaternion.FromToRotation(_root.transform.up, UnityEngine.Vector3.up).eulerAngles;
+            var rotEular = OrientTorque(fromToRot);
 
-            var targetRot = rotEular; // * 0.5f;
+            var targetRot = rotEular * UnityEngine.Mathf.Deg2Rad; // * 0.5f;
+            targetRot.y += UnityEngine.Input.GetAxis("Horizontal_Alt");
             var deltaRot = targetRot - _rigidbody.angularVelocity;
 
             var acceleration = deltaRot / UnityEngine.Time.fixedDeltaTime;
-
             _rigidbody.AddTorque(acceleration, UnityEngine.ForceMode.Acceleration);
+
+            //Bootstrap.Log("up " + _root.transform.up.ToString("F4"));
+            //Bootstrap.Log("fromToRot deg " + fromToRot.ToString("F4"));
+            //Bootstrap.Log("targetRot " + targetRot.ToString("F4"));
+            //Bootstrap.Log("angularVelocity " + _rigidbody.angularVelocity.ToString("F4"));
+            //Bootstrap.Log("acceleration " + acceleration.ToString("F4"));
         }
 #endif
     }
