@@ -32,7 +32,7 @@ public class CreatureBodyVisualFace
             );
     }
 
-    private void UpdateFace(CreatureState creatureState, UnityEngine.Camera mainCamera)
+    private void UpdateFace(CreatureState creatureState, UnityEngine.Camera mainCamera, float scale)
     {
         var e0 = new UnityEngine.Vector3(creatureState.creatureStateBody.creatureStateBodyVisual.faceRenderData.p1.x - creatureState.creatureStateBody.creatureStateBodyVisual.faceRenderData.p0.x, creatureState.creatureStateBody.creatureStateBodyVisual.faceRenderData.p1.y - creatureState.creatureStateBody.creatureStateBodyVisual.faceRenderData.p0.y, creatureState.creatureStateBody.creatureStateBodyVisual.faceRenderData.p1.z - creatureState.creatureStateBody.creatureStateBodyVisual.faceRenderData.p0.z);
         var e1 = new UnityEngine.Vector3(creatureState.creatureStateBody.creatureStateBodyVisual.faceRenderData.p2.x - creatureState.creatureStateBody.creatureStateBodyVisual.faceRenderData.p0.x, creatureState.creatureStateBody.creatureStateBodyVisual.faceRenderData.p2.y - creatureState.creatureStateBody.creatureStateBodyVisual.faceRenderData.p0.y, creatureState.creatureStateBody.creatureStateBodyVisual.faceRenderData.p2.z - creatureState.creatureStateBody.creatureStateBodyVisual.faceRenderData.p0.z);
@@ -43,11 +43,11 @@ public class CreatureBodyVisualFace
         var eyeFactor = UnityEngine.Vector3.Dot(e0.normalized, mainCamera.transform.forward) < 0.5f ? 1.0f : 0.0f;
 
         var faceBase = new UnityEngine.Vector3(creatureState.creatureStateBody.creatureStateBodyVisual.faceRenderData.p0.x, creatureState.creatureStateBody.creatureStateBodyVisual.faceRenderData.p0.y, creatureState.creatureStateBody.creatureStateBodyVisual.faceRenderData.p0.z) 
-            + (up * (creatureState.creatureStateBody.creatureStateBodyVisual.faceRenderData.p0.w * 0.25f));
+            + (up * (creatureState.creatureStateBody.creatureStateBodyVisual.faceRenderData.p0.w * 0.25f * scale));
 
         var tempP = mainCamera.WorldToScreenPoint(faceBase);
         
-        var radiusP = creatureState.creatureStateBody.creatureStateBodyVisual.faceRenderData.p0.w * 2.0f;// * 0.5f;
+        var radiusP = creatureState.creatureStateBody.creatureStateBodyVisual.faceRenderData.p0.w * 2.0f * scale;// * 0.5f;
         var averageZ = tempP.z - radiusP;
 
         var yMul = (0.0f < UnityEngine.Vector3.Dot(mainCamera.transform.up, up)) ? 1.0f : -1.0f;
@@ -160,6 +160,6 @@ public class CreatureBodyVisualFace
 
         _faceGameObject.transform.parent = parentTransform;
 
-        UpdateFace(creatureState, mainCamera);
+        UpdateFace(creatureState, mainCamera, creatureState.creatureStateBody.height);
     }
 }

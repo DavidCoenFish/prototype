@@ -31,10 +31,10 @@
     }
 
 
-    private bool ConvertSphereRenderDataToData(Data data, CreatureStateBodyVisual.SphereRenderData sphereRenderData, UnityEngine.Camera mainCamera)
+    private bool ConvertSphereRenderDataToData(Data data, CreatureStateBodyVisual.SphereRenderData sphereRenderData, UnityEngine.Camera mainCamera, float scale)
     {
         var tempP0 = mainCamera.WorldToScreenPoint(new UnityEngine.Vector3(sphereRenderData.p0.x, sphereRenderData.p0.y, sphereRenderData.p0.z));
-        var radius0 = sphereRenderData.p0.w;// * 0.5f;
+        var radius0 = sphereRenderData.p0.w * scale;// * 0.5f;
 
         //bail if all three spheres are less than near plane, The z position is in world units from the camera.
         float nearPlane = 0.01f;
@@ -134,6 +134,7 @@
 
     public void Update(CreatureState creatureState, UnityEngine.Transform parentTransform)
     {
+        float scale = creatureState.creatureStateBody.height;
         var mainCamera = UnityEngine.Camera.main;
         _fov = mainCamera.fieldOfView;//  60.0f; //todo
         _aspect = ((float)UnityEngine.Screen.width) / ((float)UnityEngine.Screen.height); //16.0f / 9.0f;
@@ -148,7 +149,7 @@
         {
             Data data = GetFreeData();
             data.gameObject.transform.parent = parentTransform;
-            if (true == ConvertSphereRenderDataToData(data, sphere, mainCamera))
+            if (true == ConvertSphereRenderDataToData(data, sphere, mainCamera, scale))
             {
                 data.gameObject.SetActive(true);
                 _activeCount += 1;

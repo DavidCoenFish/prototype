@@ -30,7 +30,12 @@
         creatureStateBody = new CreatureStateBody(in_typeName, parent);
         creatureStateHud = new CreatureStateHud();
         creatureStateInput = new CreatureStateInput();
+    }
 
+    public void StartOfUpdate()
+    {
+        creatureStateHud = new CreatureStateHud();
+        creatureStateInput = new CreatureStateInput();
     }
 
     public void Update()

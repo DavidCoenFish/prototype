@@ -21,6 +21,8 @@ public class CreatureBodyVisual
 
     public void Update(CreatureState creatureState, UnityEngine.Transform parentTransform)
     {
+        _creatureBodyVisualDebug.Update(creatureState, parentTransform);
+
         _creatureBodyVisualSphere.Update(creatureState, parentTransform);
         _creatureBodyVisualSpline.Update(creatureState, parentTransform);
         _creatureBodyVisualFace.Update(creatureState, parentTransform);

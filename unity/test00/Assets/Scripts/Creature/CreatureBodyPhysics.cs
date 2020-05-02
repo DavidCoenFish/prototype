@@ -11,7 +11,8 @@ public class CreatureBodyPhysics
 {
     private UnityEngine.GameObject _root;
     private UnityEngine.Rigidbody _rootRigidbody;
-    private float _targetHeight = 1.0f;
+    private float _targetHeight = 0.375f;
+    private float _jumpAmmountForFixedUpdate = 0.0f;
 
     private struct Data
     {
@@ -79,9 +80,8 @@ public class CreatureBodyPhysics
 
     public CreatureBodyPhysics(UnityEngine.GameObject master, CreatureState creatureState)
     { 
-        float scale = 1.0f; //creatureState.creatureStateBody.height;
+        float scale = creatureState.creatureStateBody.height;
         bool first = true;
-        int trace = 0;
         foreach( var bodyData in creatureState.creatureStateBody.bodyDataArray)
         {
             var data = MakeData(master, bodyData, scale);
@@ -92,13 +92,6 @@ public class CreatureBodyPhysics
                 _rootRigidbody = _root.GetComponent< UnityEngine.Rigidbody >();
                 first = false;
             }
-
-            trace += 1;
-
-            //if (4 == trace)
-            //{
-            //    break;
-            //}
         }
     }
 
@@ -121,9 +114,10 @@ public class CreatureBodyPhysics
 
         int layerMask = (int)Project.LayerFlag.TDefault;
         UnityEngine.RaycastHit raycastHit;
+        var floorHitRadius = 0.25f * creatureState.creatureStateBody.height;
         var hit = UnityEngine.Physics.SphereCast(
             new UnityEngine.Ray(_root.transform.position, new UnityEngine.Vector3(0.0f, -1.0f, 0.0f)),
-            0.5f,
+            floorHitRadius,
             out raycastHit,
             _targetHeight,
             layerMask
@@ -139,9 +133,9 @@ public class CreatureBodyPhysics
             }
 
             var targetVelocity = new UnityEngine.Vector3(
-                2.0f * UnityEngine.Input.GetAxis("Horizontal"),
+                2.0f * creatureState.creatureStateInput.inputMove.x,
                 targetVerticalVelocity, //0.0f, //UnityEngine.Input.GetAxis("Dolly_Alt"),
-                2.0f * UnityEngine.Input.GetAxis("Vertical")
+                2.0f * creatureState.creatureStateInput.inputMove.y //UnityEngine.Input.GetAxis("Vertical")
                 );
 
             var deltaVelocity = (targetVelocity * 10.0f) - _rootRigidbody.velocity;
@@ -154,14 +148,28 @@ public class CreatureBodyPhysics
             _rootRigidbody.AddForce(acceleration, UnityEngine.ForceMode.Acceleration);
         }
 #endif
+        //jump
+#if true
+        if (0.0f < _jumpAmmountForFixedUpdate)
+        {
+            if (hit)
+            {
+                var jumpVel = UnityEngine.Vector3.up * (_jumpAmmountForFixedUpdate * 50.0f);
+                _rootRigidbody.AddForce(jumpVel, UnityEngine.ForceMode.VelocityChange);
+            }
+
+            _jumpAmmountForFixedUpdate = 0.0f;
+        }
+#endif
+
 #if true
         //torque
         { 
             var fromToRot = UnityEngine.Quaternion.FromToRotation(_root.transform.up, UnityEngine.Vector3.up).eulerAngles;
             var rotEular = OrientTorque(fromToRot);
 
-            var targetRot = rotEular * UnityEngine.Mathf.Deg2Rad * 10.0f; // * 0.5f;
-            targetRot.y += UnityEngine.Input.GetAxis("Horizontal_Alt");
+            var targetRot = rotEular * UnityEngine.Mathf.Deg2Rad * 5.0f; // * 0.5f;
+            targetRot.y += creatureState.creatureStateInput.inputView.y / fixedDeltaTime; //UnityEngine.Input.GetAxis("Horizontal_Alt");
             var deltaRot = targetRot - _rootRigidbody.angularVelocity;
 
             var acceleration = deltaRot / fixedDeltaTime;
@@ -173,10 +181,16 @@ public class CreatureBodyPhysics
 
     public void Update(UnityEngine.GameObject master, CreatureState creatureState)
     {
+        _jumpAmmountForFixedUpdate = UnityEngine.Mathf.Max(_jumpAmmountForFixedUpdate, creatureState.creatureStateInput.jump);
+
         //todo: what height
         master.transform.position = new UnityEngine.Vector3(_root.transform.position.x, 0.0f, _root.transform.position.z);
 
+        //_rootRigidbody.AddRelativeForce();
+
         //_targetHeight = creatureState.
+
+        creatureState.creatureStateBody.ClearDebugSphere();
 
         //update the pos of each physics body for creature state body
         foreach (var data in _dataArray)
@@ -185,6 +199,8 @@ public class CreatureBodyPhysics
                 data.m_name,
                 data.m_gameObject.transform.position
                 );
+
+            creatureState.creatureStateBody.AddDebugSphere(data.m_gameObject.transform.position, 0.04f * creatureState.creatureStateBody.height);
         }
     }
 }

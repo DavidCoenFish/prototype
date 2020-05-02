@@ -86,7 +86,7 @@ class CreatureControllerHuman : ICreatureController
         }
     }
 
-    private float crouchTime = 0.3f;
+    private float crouchTime = 0.5f;
     private void DealEndTouch(CreatureState creatureState, TouchData touchData, CreatureStateHud.TUIElement uiElement)
     { 
         //do we have jump input
@@ -94,9 +94,9 @@ class CreatureControllerHuman : ICreatureController
         {
             return;
         }
-        var amount = ((touchData.duration / crouchTime) * 2.0f) - 1.0f; //normalise -1 ... 1
-        amount *= amount;
-        creatureState.creatureStateInput.jump = 1.0f - amount;
+        var normalisedRatio = ((touchData.duration / crouchTime) * 2.0f) - 1.0f; //normalise -1 ... 1
+        var temp = normalisedRatio * normalisedRatio;
+        creatureState.creatureStateInput.jump = 1.0f - temp;
     }
 
     private void DealCrouch(CreatureState creatureState, TouchData touchData, UnityEngine.Vector2 currentPosition, CreatureStateHud.TUIElement uiElement)
@@ -345,4 +345,12 @@ class CreatureControllerHuman : ICreatureController
         DealKeyboard(creatureState);
         AddHandPos(creatureState);
     }
+
+    public void Update(CreatureState creatureState, float timeDelta)
+    {
+        DealMouse(creatureState, timeDelta);
+        DealTouch(creatureState, timeDelta);
+        DealKeyboard(creatureState);
+    }
+
 }

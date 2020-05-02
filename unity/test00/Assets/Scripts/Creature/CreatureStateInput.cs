@@ -10,4 +10,9 @@
     public CreatureStateInput()
     {
     }
+
+    //UnityEngine.Input.GetAxis("Horizontal")
+    //UnityEngine.Input.GetAxis("Vertical")
+    //UnityEngine.Input.GetAxis("Horizontal_Alt")
+
 }

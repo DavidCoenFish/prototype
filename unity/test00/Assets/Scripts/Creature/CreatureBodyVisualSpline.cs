@@ -6,6 +6,7 @@ public class CreatureBodyVisualSpline
 {
     private UnityEngine.GameObject _prefab = null;
     private int _activeCount;
+
     private class Data
     {
         public UnityEngine.GameObject gameObject;
@@ -35,14 +36,14 @@ public class CreatureBodyVisualSpline
     }
 
 
-    private bool ConvertSplineRenderDataToData(Data data, CreatureStateBodyVisual.SplineRenderData splineRenderData, UnityEngine.Camera mainCamera)
+    private bool ConvertSplineRenderDataToData(Data data, CreatureStateBodyVisual.SplineRenderData splineRenderData, UnityEngine.Camera mainCamera, float scale)
     {
         var tempP0 = mainCamera.WorldToScreenPoint(new UnityEngine.Vector3(splineRenderData.p0.x, splineRenderData.p0.y, splineRenderData.p0.z));
         var tempP1 = mainCamera.WorldToScreenPoint(new UnityEngine.Vector3(splineRenderData.p1.x, splineRenderData.p1.y, splineRenderData.p1.z));
         var tempP2 = mainCamera.WorldToScreenPoint(new UnityEngine.Vector3(splineRenderData.p2.x, splineRenderData.p2.y, splineRenderData.p2.z));
-        var radius0 = splineRenderData.p0.w;// * 0.5f;
-        var radius1 = splineRenderData.p1.w;// * 0.5f;
-        var radius2 = splineRenderData.p2.w;// * 0.5f;
+        var radius0 = splineRenderData.p0.w * scale;// * 0.5f;
+        var radius1 = splineRenderData.p1.w * scale;// * 0.5f;
+        var radius2 = splineRenderData.p2.w * scale;// * 0.5f;
 
         //bail if all three spheres are less than near plane, The z position is in world units from the camera.
         float nearPlane = 0.01f;
@@ -165,11 +166,12 @@ public class CreatureBodyVisualSpline
         }
         _activeCount = 0;
 
+        float scale = creatureState.creatureStateBody.height;
         foreach( var spline in creatureState.creatureStateBody.creatureStateBodyVisual.splineRenderDataArray)
         {
             Data data = GetFreeData();
             data.gameObject.transform.parent = parentTransform;
-            if (true == ConvertSplineRenderDataToData(data, spline, mainCamera))
+            if (true == ConvertSplineRenderDataToData(data, spline, mainCamera, scale))
             {
                 data.gameObject.SetActive(true);
                 _activeCount += 1;
